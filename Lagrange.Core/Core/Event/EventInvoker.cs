@@ -1,0 +1,41 @@
+using Lagrange.Core.Core.Event.EventArg;
+
+namespace Lagrange.Core.Core.Event;
+
+public partial class EventInvoker : IDisposable
+{
+    private readonly Dictionary<Type, Action<EventBase>> _events;
+    
+    public delegate void LagrangeEvent<in TEvent>(BotContext context, TEvent e) where TEvent : EventBase;
+
+    internal EventInvoker(BotContext context)
+    {
+        _events = new Dictionary<Type, Action<EventBase>>
+        {
+            { typeof(BotOnlineEvent), e => OnBotOnlineEvent?.Invoke(context, (BotOnlineEvent)e) },
+            { typeof(BotOfflineEvent), e => OnBotOfflineEvent?.Invoke(context, (BotOfflineEvent)e) },
+            { typeof(BotLogEvent), e => OnBotLogEvent?.Invoke(context, (BotLogEvent)e) }
+        };
+    }
+    
+    internal void PostEvent(EventBase e)
+    {
+        Task.Run(() =>
+        {
+            try
+            {
+                if (_events.TryGetValue(e.GetType(), out var action)) action(e);
+                else PostEvent(new BotLogEvent("BotContext", LogLevel.Warning, $"Event {e.GetType().Name} is not registered but pushed to invoker"));
+            }
+            catch (Exception ex)
+            {
+                PostEvent(new BotLogEvent("BotContext", LogLevel.Exception, $"{ex.StackTrace}\n{ex.Message}"));
+            }
+        });
+    }
+    
+    public void Dispose()
+    {
+        _events.Clear();
+    }
+}
