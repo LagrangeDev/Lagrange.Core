@@ -66,9 +66,7 @@ internal class FaceEntity : IMessageEntity
         if (elems.Face is { Old: not null })
         {
             using var stream = new MemoryStream(elems.Face.Old);
-            var face = Serializer.Deserialize<FaceExtra>(stream);
-
-            ushort? faceId = (ushort?)face.FaceId;
+            ushort? faceId = (ushort?)elems.Face.Index;
             if (faceId != null) return new FaceEntity((ushort)faceId, false);
         }
 
@@ -84,5 +82,5 @@ internal class FaceEntity : IMessageEntity
         return null;
     }
 
-    public string ToPreviewString() => $"[Face][{(IsLargeFace ? "Small" : "Large")}]: {FaceId}";
+    public string ToPreviewString() => $"[Face][{(IsLargeFace ? "Large" : "Small")}]: {FaceId}";
 }

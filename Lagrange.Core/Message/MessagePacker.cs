@@ -15,7 +15,7 @@ namespace Lagrange.Core.Message;
 /// </summary>
 internal class MessagePacker
 {
-    private static readonly Dictionary<Type, PropertyInfo> EntityToElem;
+    private static readonly Dictionary<Type, List<PropertyInfo>> EntityToElem;
     private static readonly Dictionary<Type, IMessageEntity> Factory;
     private static readonly List<IMessageEntity> MsgFactory;
 
@@ -23,7 +23,7 @@ internal class MessagePacker
 
     static MessagePacker()
     {
-        EntityToElem = new Dictionary<Type, PropertyInfo>();
+        EntityToElem = new Dictionary<Type, List<PropertyInfo>>();
         Factory = new Dictionary<Type, IMessageEntity>();
 
         var assembly = Assembly.GetExecutingAssembly();
@@ -38,7 +38,11 @@ internal class MessagePacker
             foreach (var attribute in attributes)
             {
                 var property = elemType.GetProperty(attribute.Element.Name);
-                if (property != null) EntityToElem[type] = property;
+                if (property != null)
+                {
+                    if (EntityToElem.TryGetValue(type, out var properties)) properties.Add(property);
+                    else EntityToElem[type] = new List<PropertyInfo> { property };
+                }
             }
 
             if (type.CreateInstance() is IMessageEntity factory) Factory[type] = factory;
@@ -85,16 +89,19 @@ internal class MessagePacker
         {
             foreach (var element in message.Body.RichText.Elems)
             {
-                foreach (var (entityType, expectElem) in EntityToElem)
+                foreach (var (entityType, expectElems) in EntityToElem)
                 {
-                    var val = expectElem.GetValueByExpr(element);
-                    if (val != null)
+                    foreach (var expectElem in expectElems)
                     {
-                        var entity = Factory[entityType].UnpackElement(element);
-                        if (entity != null)
+                        var val = expectElem.GetValueByExpr(element);
+                        if (val != null)
                         {
-                            chain.Add(entity);
-                            break;
+                            var entity = Factory[entityType].UnpackElement(element);
+                            if (entity != null)
+                            {
+                                chain.Add(entity);
+                                break;
+                            }
                         }
                     }
                 }
