@@ -10,11 +10,16 @@
         <Description>The Implementation of NTQQ for Pure C#, Event Driven, derived from Konata.Core</Description>
         <LangVersion>10</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Version>0.0.1</Version>
+        <Version>0.0.1-alpha</Version>
+        <Copyright>Linwenxuan04 2023</Copyright>
+        <RepositoryUrl>https://github.com/Linwenxuan05/Lagrange.Core</RepositoryUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="protobuf-net" Version="3.2.16" />
+        <None Include="../README.md" Pack="true" PackagePath="\"/>
+        <PackageReference Include="protobuf-net" Version="3.2.16" />
       <PackageReference Include="System.Text.Json" Version="7.0.2" />
     </ItemGroup>
 
