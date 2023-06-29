@@ -2,8 +2,9 @@ name: Lagrange.Core NuGet Push
 
 on:
   push:
-    tags:
-      - '*.*.*'
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
