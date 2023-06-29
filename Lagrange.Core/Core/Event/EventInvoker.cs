@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Lagrange.Core.Core.Event.EventArg;
 
 namespace Lagrange.Core.Core.Event;
@@ -10,14 +11,19 @@ public partial class EventInvoker : IDisposable
 
     internal EventInvoker(BotContext context)
     {
-        _events = new Dictionary<Type, Action<EventBase>>
-        {
-            { typeof(BotOnlineEvent), e => OnBotOnlineEvent?.Invoke(context, (BotOnlineEvent)e) },
-            { typeof(BotOfflineEvent), e => OnBotOfflineEvent?.Invoke(context, (BotOfflineEvent)e) },
-            { typeof(BotLogEvent), e => OnBotLogEvent?.Invoke(context, (BotLogEvent)e) }
-        };
+        _events = new Dictionary<Type, Action<EventBase>>();
+        
+        RegisterEvent((BotOnlineEvent e) => OnBotOnlineEvent?.Invoke(context, e));
+        RegisterEvent((BotOfflineEvent e) => OnBotOfflineEvent?.Invoke(context, e));
+        RegisterEvent((BotLogEvent e) => OnBotLogEvent?.Invoke(context, e));
+        RegisterEvent((FriendMessageEvent e) => OnFriendMessageReceived?.Invoke(context, e));
+        RegisterEvent((GroupMessageEvent e) => OnGroupMessageReceived?.Invoke(context, e));
+        RegisterEvent((TempMessageEvent e) => OnTempMessageReceived?.Invoke(context, e));
     }
     
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void RegisterEvent<TEvent>(Action<TEvent> action) where TEvent : EventBase => _events[typeof(TEvent)] = e => action((TEvent)e);
+
     internal void PostEvent(EventBase e)
     {
         Task.Run(() =>
@@ -36,6 +42,7 @@ public partial class EventInvoker : IDisposable
     
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
         _events.Clear();
     }
 }
