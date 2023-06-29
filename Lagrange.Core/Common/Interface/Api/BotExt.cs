@@ -17,6 +17,11 @@ public static class BotExt
     public static async Task<bool> LoginByPassword(this BotContext bot)
         => await bot.ContextCollection.Business.WtExchangeLogic.LoginByPassword();
     
+    /// <summary>
+    /// Use this method to update keystore, so EasyLogin may be preformed next time by using this keystore
+    /// </summary>
+    /// <param name="bot"></param>
+    /// <returns></returns>
     public static BotKeystore UpdateKeystore(this BotContext bot)
         => bot.ContextCollection.Keystore;
 }

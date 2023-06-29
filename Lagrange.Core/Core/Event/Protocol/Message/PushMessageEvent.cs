@@ -11,4 +11,11 @@ internal class PushMessageEvent : ProtocolEvent
     }
     
     public static PushMessageEvent Create() => new(0);
+    
+    public enum MessageType
+    {
+        Friend,
+        Group,
+        Temp,
+    }
 }

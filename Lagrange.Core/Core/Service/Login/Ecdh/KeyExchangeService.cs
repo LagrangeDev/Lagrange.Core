@@ -60,7 +60,7 @@ internal class KeyExchangeService : BaseService<KeyExchangeEvent>
         Serializer.Serialize(stream, plain1);
         var gcmCalc1 = new AesGcmImpl().Encrypt(stream.ToArray(), keystore.PrimeImpl.ShareKey);
 
-        var timestamp = (uint)(DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds;
+        var timestamp = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         var plain2 = new SsoKeyExchangePlain2
         {
             PublicKey = keystore.PrimeImpl.GetPublicKey(false),

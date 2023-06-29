@@ -81,7 +81,7 @@ internal class MessagePacker
     {
         var chain = ParseChain(message);
 
-        if (message.Body?.RichText.Elems != null)
+        if (message.Body.RichText?.Elems != null)
         {
             foreach (var element in message.Body.RichText.Elems)
             {

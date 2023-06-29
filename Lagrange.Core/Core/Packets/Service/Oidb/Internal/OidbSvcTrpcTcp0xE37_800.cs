@@ -13,6 +13,8 @@ public class OidbSvcTrpcTcp0xE37_800
     
     [ProtoMember(2)] public int Field2 { get; set; } // Unknown
     
+    [ProtoMember(10)] public OidbSvcTrpcTcp0xE37_800Body Body { get; set; }
+    
     [ProtoMember(101)] public int Field101 { get; set; } // Unknown
     
     [ProtoMember(102)] public int Field102 { get; set; } // Unknown

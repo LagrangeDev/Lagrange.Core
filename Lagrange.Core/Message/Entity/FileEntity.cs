@@ -59,15 +59,13 @@ public class FileEntity : IMessageEntity
 
     IMessageEntity? IMessageEntity.UnpackMessageContent(ReadOnlySpan<byte> content)
     {
-        var notOnlineFile = Serializer.Deserialize<NotOnlineFile>(content);
+        var extra = Serializer.Deserialize<FileExtra>(content);
+        var notOnlineFile = extra.File;
         
         return notOnlineFile is { FileSize: not null, FileName: not null, FileMd5: not null } 
             ? new FileEntity((long)notOnlineFile.FileSize, notOnlineFile.FileName, notOnlineFile.FileMd5) 
             : null;
     }
 
-    public string ToPreviewString()
-    {
-        throw new NotImplementedException();
-    }
+    public string ToPreviewString() => $"[File] {FileName} ({FileSize})";
 }
