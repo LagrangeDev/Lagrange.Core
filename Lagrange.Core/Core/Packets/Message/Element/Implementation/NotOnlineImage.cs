@@ -10,7 +10,7 @@ internal partial class NotOnlineImage
 {
     [ProtoMember(1)] public string FilePath { get; set; }
     
-    [ProtoMember(2)] public int FileLen { get; set; }
+    [ProtoMember(2)] public uint FileLen { get; set; }
     
     [ProtoMember(3)] public string DownloadPath { get; set; }
     
@@ -22,9 +22,9 @@ internal partial class NotOnlineImage
     
     [ProtoMember(7)] public byte[] PicMd5 { get; set; }
     
-    [ProtoMember(8)] public int PicHeight { get; set; }
+    [ProtoMember(8)] public uint PicHeight { get; set; }
     
-    [ProtoMember(9)] public int PicWidth { get; set; }
+    [ProtoMember(9)] public uint PicWidth { get; set; }
     
     [ProtoMember(10)] public string ResId { get; set; }
     
@@ -54,9 +54,9 @@ internal partial class NotOnlineImage
     
     [ProtoMember(23)] public int FileId { get; set; }
     
-    [ProtoMember(24)] public int ShowLen { get; set; }
+    [ProtoMember(24)] public uint ShowLen { get; set; }
     
-    [ProtoMember(25)] public int DownloadLen { get; set; }
+    [ProtoMember(25)] public uint DownloadLen { get; set; }
     
     [ProtoMember(29)] public PbReserve PbRes { get; set; }
 }
