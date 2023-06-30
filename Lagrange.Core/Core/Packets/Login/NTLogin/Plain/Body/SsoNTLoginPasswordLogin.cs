@@ -9,6 +9,7 @@ namespace Lagrange.Core.Core.Packets.Login.NTLogin.Plain.Body;
 /// <summary>
 /// Should be serialized with <see cref="BinarySerializer"/> and encrypted with Tea, key to be investigated
 /// </summary>
+[Serializable]
 internal class SsoNTLoginPasswordLogin
 {
     [BinaryProperty] public ushort Const4 { get; set; } = 4;
@@ -16,12 +17,12 @@ internal class SsoNTLoginPasswordLogin
     [BinaryProperty] public uint Random { get; set; }
 
     [BinaryProperty] public uint UnknownConst2 { get; set; } = 0;
-
-    [BinaryProperty] public uint Ver { get; set; } = 8001;
-
+    
     [BinaryProperty] public uint AppId { get; set; }
-
-    [BinaryProperty] public ushort UnknownConst3 { get; set; } = 0;
+    
+    [BinaryProperty] public uint Ver { get; set; } = 8001;
+    
+    [BinaryProperty] public uint UnknownConst3 { get; set; } = 0;
 
     [BinaryProperty] public uint Uin { get; set; }
 
