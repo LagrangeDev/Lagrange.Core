@@ -12,6 +12,7 @@ using Lagrange.Core.Utility.Crypto;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Generator;
 using ProtoBuf;
+using BitConverter = Lagrange.Core.Utility.Binary.BitConverter;
 
 namespace Lagrange.Core.Core.Service.Login;
 
@@ -36,7 +37,8 @@ internal class PasswordLoginService : BaseService<PasswordLoginEvent>
             UinString = keystore.Uin.ToString()
         };
         var plainBytes = BinarySerializer.Serialize(plainBody);
-        var encryptedPlain = keystore.TeaImpl.Encrypt(plainBytes.ToArray(), new byte[16]); // TODO: Investigate key
+        var plainKey = keystore.PasswordMd5.UnHex().Concat(new byte[4]).Concat(BitConverter.GetBytes(keystore.Uin, false)).ToArray().Md5().UnHex();
+        var encryptedPlain = keystore.TeaImpl.Encrypt(plainBytes.ToArray(), plainKey); // TODO: Investigate key
 
         var packet = new SsoNTLoginBase<SsoNTLoginEasyLogin>
         {
