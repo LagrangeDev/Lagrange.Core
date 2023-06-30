@@ -71,7 +71,7 @@ internal class KeyExchangeService : BaseService<KeyExchangeEvent>
         };
         var stream2 = BinarySerializer.Serialize(plain2);
         using var sha256 = SHA256.Create();
-        var hash = sha256.ComputeHash(stream2.ToArray()) ?? throw new InvalidOperationException();
+        var hash = sha256.ComputeHash(stream2.ToArray());
         var gcmCalc2 = new AesGcmImpl().Encrypt(hash, GcmCalc2Key.UnHex());
 
         return new SsoKeyExchange
