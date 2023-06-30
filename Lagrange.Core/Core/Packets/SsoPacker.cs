@@ -17,13 +17,14 @@ internal static class SsoPacker
     public static BinaryPacket Build(SsoPacket packet, BotAppInfo appInfo, BotDeviceInfo device, BotKeystore keystore)
     {
         var writer = new BinaryPacket();
-        
+
+        var sign = Signature.GetSignature(packet.Command, packet.Sequence, packet.Payload.ToArray());
         var signature = new NTDeviceSign
         {
-            Sign = new Sign
+            Sign = sign == null ? null : new Sign
             {
                 S = new Software { Ver = appInfo.PackageSign },
-                Signature = Signature.GetSignature(packet.Command, packet.Sequence, packet.Payload.ToArray())
+                Signature = sign
             },
             Trace = StringGen.GenerateTrace(),
             Uid = keystore.Uid
