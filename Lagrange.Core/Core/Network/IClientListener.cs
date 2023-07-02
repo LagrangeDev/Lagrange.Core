@@ -1,4 +1,4 @@
-namespace Lagrange.Core.Core.Network.Tcp;
+namespace Lagrange.Core.Core.Network;
 
 internal interface IClientListener
 {

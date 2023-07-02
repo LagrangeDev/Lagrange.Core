@@ -1,6 +1,6 @@
 using System.Buffers.Binary;
 using Lagrange.Core.Common;
-using Lagrange.Core.Core.Network.Tcp;
+using Lagrange.Core.Core.Network;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Network;
 

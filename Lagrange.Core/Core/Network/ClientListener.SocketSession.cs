@@ -1,6 +1,6 @@
 using System.Net.Sockets;
 
-namespace Lagrange.Core.Core.Network.Tcp;
+namespace Lagrange.Core.Core.Network;
 
 internal abstract partial class ClientListener
 {

@@ -2,7 +2,7 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using Lagrange.Core.Utility.Extension;
 
-namespace Lagrange.Core.Core.Network.Tcp;
+namespace Lagrange.Core.Core.Network;
 
 internal abstract partial class ClientListener : IClientListener
 {
