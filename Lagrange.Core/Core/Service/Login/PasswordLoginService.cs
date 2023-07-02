@@ -23,8 +23,6 @@ internal class PasswordLoginService : BaseService<PasswordLoginEvent>
     protected override bool Build(PasswordLoginEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
-        if (keystore.Session.ExchangeKey == null || keystore.Session.KeySign == null) throw new InvalidOperationException("TempPassword is null");
-
         var plainBody = new SsoNTLoginPasswordLogin
         {
             Random = (uint)Random.Shared.Next(),
@@ -39,46 +37,8 @@ internal class PasswordLoginService : BaseService<PasswordLoginEvent>
         var plainBytes = BinarySerializer.Serialize(plainBody);
         var plainKey = keystore.PasswordMd5.UnHex().Concat(new byte[4]).Concat(BitConverter.GetBytes(keystore.Uin, false)).ToArray().Md5().UnHex();
         var encryptedPlain = keystore.TeaImpl.Encrypt(plainBytes.ToArray(), plainKey); // TODO: Investigate key
-
-        var packet = new SsoNTLoginBase<SsoNTLoginEasyLogin>
-        {
-            Header = new SsoNTLoginHeader
-            {
-                Uin = new SsoNTLoginUin { Uin = keystore.Uin.ToString() },
-                System = new SsoNTLoginSystem
-                {
-                    Os = appInfo.Os,
-                    DeviceName = device.DeviceName,
-                    Type = 1,
-                    Guid = device.Guid.ToByteArray()
-                },
-                Version = new SsoNTLoginVersion
-                {
-                    KernelVersion = device.KernelVersion,
-                    AppId = appInfo.AppId,
-                    PackageName = appInfo.PackageName
-                }
-            },
-            Body = new SsoNTLoginEasyLogin // 这样也没事 省的再开一个类
-            {
-                TempPassword = encryptedPlain
-            }
-        };
-        using var stream = new MemoryStream();
-        Serializer.Serialize(stream, packet);
-
-        var encrypted = new AesGcmImpl().Encrypt(stream.ToArray(), keystore.Session.ExchangeKey);
-        var encryptPacket = new SsoNTLoginEncryptedData
-        {
-            Sign = keystore.Session.KeySign,
-            GcmCalc = encrypted,
-            Type = 1
-        };
-
-        using var encryptStream = new MemoryStream();
-        Serializer.Serialize(encryptStream, encryptPacket);
-        output = new BinaryPacket(encryptStream.ToArray());
-
+        
+        output = SsoNTLoginCommon.BuildNTLoginPacket(keystore, appInfo, device, encryptedPlain);
         extraPackets = null;
         return true;
     }
