@@ -40,7 +40,7 @@ internal class PacketContext : ContextBase
             }
             case 13:
             {
-                var service = ServicePacker.BuildProtocol13(packet.Payload, packet.Command, packet.Sequence);
+                var service = ServicePacker.BuildProtocol13(packet.Payload, Keystore, packet.Command, packet.Sequence);
                 bool _ = Collection.Socket.Send(service.ToArray()).Result;
                 break;
             }
@@ -64,7 +64,7 @@ internal class PacketContext : ContextBase
             }
             case 13:
             {
-                var service = ServicePacker.BuildProtocol13(packet.Payload, packet.Command, packet.Sequence);
+                var service = ServicePacker.BuildProtocol13(packet.Payload, Keystore, packet.Command, packet.Sequence);
                 return await Collection.Socket.Send(service.ToArray());
             }
             default:

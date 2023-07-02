@@ -1,15 +1,22 @@
 using Lagrange.Core.Common;
+using Lagrange.Core.Core.Packets.System;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
+using ProtoBuf;
 using static Lagrange.Core.Utility.Binary.BinaryPacket;
 
 namespace Lagrange.Core.Core.Packets;
 
 internal static class ServicePacker
 {
-    public static BinaryPacket BuildProtocol13(BinaryPacket packet, string command, uint sequence)
+    public static BinaryPacket BuildProtocol13(BinaryPacket packet, BotKeystore keystore, string command, uint sequence)
     {
         var frame = new BinaryPacket();
+        
+        using var stream = new MemoryStream();
+        var uid = new NTPacketUid { Uid = keystore.Uid };
+        Serializer.Serialize(stream, uid);
+        var uidBytes = keystore.Uid == null ? Array.Empty<byte>() : stream.ToArray();
 
         frame.Barrier(typeof(uint), () => new BinaryPacket()
             .WriteUint(13, false)
@@ -20,7 +27,7 @@ internal static class ServicePacker
             .Barrier(typeof(uint), () => new BinaryPacket()
                 .WriteString(command, Prefix.Uint32 | Prefix.WithPrefix)
                 .WriteBytes(Array.Empty<byte>(), Prefix.Uint32 | Prefix.WithPrefix) // TODO: Unknown
-                .WriteUint(4, false), false, true)
+                .WriteBytes(uidBytes,Prefix.Uint32 | Prefix.WithPrefix), false, true)
             .WriteBytes(packet.ToArray(), Prefix.Uint32 | Prefix.WithPrefix), false, true);
 
         return frame;
