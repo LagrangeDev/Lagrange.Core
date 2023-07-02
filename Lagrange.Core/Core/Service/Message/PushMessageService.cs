@@ -30,7 +30,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             foreach (var entity in chain)
             {
                 chainBuilder.Append(entity.ToPreviewString());
-                chainBuilder.Append(" | ");
+                if (chain.Last() != entity) chainBuilder.Append(" | ");
             }
             
             Console.WriteLine(chainBuilder.ToString());

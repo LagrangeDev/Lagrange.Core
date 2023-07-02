@@ -1,3 +1,4 @@
+using Lagrange.Core.Core.Packets.System;
 using ProtoBuf;
 
 namespace Lagrange.Core.Core.Packets.Message;
@@ -8,6 +9,14 @@ namespace Lagrange.Core.Core.Packets.Message;
 internal class PushMsg
 {
     [ProtoMember(1)] public PushMsgBody Message { get; set; }
+	
+    [ProtoMember(3)] public int? Status { get; set; }
+	
+    [ProtoMember(4)] public NTSysEvent? NtEvent { get; set; }
+	
+    [ProtoMember(5)] public int? PingFLag { get; set; }
+	
+    [ProtoMember(9)] public int? GeneralFlag { get; set; }
 }
 
 [ProtoContract]
