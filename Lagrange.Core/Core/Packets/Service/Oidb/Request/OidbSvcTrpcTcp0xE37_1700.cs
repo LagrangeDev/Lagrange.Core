@@ -3,8 +3,11 @@ using ProtoBuf;
 #pragma warning disable CS8618
 // ReSharper disable InconsistentNaming
 
-namespace Lagrange.Core.Core.Packets.Service.Oidb.Internal;
+namespace Lagrange.Core.Core.Packets.Service.Oidb.Request;
 
+/// <summary>
+/// Upload Offline File
+/// </summary>
 [ProtoContract]
 [OidbSvcTrpcTcp(0xE37, 1700)]
 internal class OidbSvcTrpcTcp0xE37_1700
@@ -18,7 +21,7 @@ internal class OidbSvcTrpcTcp0xE37_1700
     [ProtoMember(102)] public int Field102 { get; set; } // Unknown
     
     [ProtoMember(200)] public int Field200 { get; set; } // Unknown
- }
+}
 
 [ProtoContract]
 internal class OidbSvcTrpcTcp0xE37_1700Body

@@ -3,8 +3,11 @@ using ProtoBuf;
 #pragma warning disable CS8618
 // ReSharper disable InconsistentNaming
 
-namespace Lagrange.Core.Core.Packets.Service.Oidb.Internal;
+namespace Lagrange.Core.Core.Packets.Service.Oidb.Request;
 
+/// <summary>
+/// Get Offline File Download
+/// </summary>
 [ProtoContract]
 [OidbSvcTrpcTcp(0xE37, 800)]
 public class OidbSvcTrpcTcp0xE37_800

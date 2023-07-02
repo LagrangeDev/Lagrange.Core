@@ -1,6 +1,6 @@
 using System.Reflection;
 using Lagrange.Core.Core.Packets.Service.Oidb.Generics;
-using Lagrange.Core.Core.Packets.Service.Oidb.Internal;
+using Lagrange.Core.Core.Packets.Service.Oidb.Request;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
