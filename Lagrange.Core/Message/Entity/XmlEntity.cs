@@ -36,15 +36,12 @@ public class XmlEntity : IMessageEntity
     {
         if (elems.RichMsg is { ServiceId: 35, Template1: not null })
         {
-            var xml = ZCompression.ZDecompress(elems.RichMsg.Template1[1..]);
+            var xml = ZCompression.ZDecompress(elems.RichMsg.Template1.Skip(1).ToArray());
             return new XmlEntity(Encoding.UTF8.GetString(xml));
         }
 
         return null;
     }
     
-    public string ToPreviewString()
-    {
-        throw new NotImplementedException();
-    }
+    public string ToPreviewString() => $"[Xml]: {Xml}";
 }

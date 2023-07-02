@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Text;
 
@@ -24,28 +23,15 @@ internal static class ZCompression
     }
     
     public static byte[] ZCompress(string data, byte[]? header = null) => ZCompress(Encoding.UTF8.GetBytes(data), header);
-    
-    [SuppressMessage("ReSharper", "MustUseReturnValue")]
+
     public static byte[] ZDecompress(byte[] data)
     {
-        using var stream = new MemoryStream(data);
-        var header = new byte[2];
-        stream.Read(header);
-        if (header[0] != 0x78 || header[1] != 0xDA) throw new InvalidDataException("Invalid Zlib header");
+        var checksum = data[^4..];
         
-        var deflate = new byte[stream.Length - stream.Position - 4];
-        stream.Read(deflate);
-        
-        var checksum = new byte[4];
-        stream.Read(checksum);
-        
-        var decompressed = Common.Inflate(deflate);
-        var checksum2 = Adler32(decompressed);
-        if (!checksum.AsSpan().SequenceEqual(checksum2.AsSpan())) throw new InvalidDataException("Invalid Zlib checksum");
-        
-        return decompressed;
+        var inflate = Common.Inflate(data[2..^4]);
+        return checksum.SequenceEqual(Adler32(inflate)) ? inflate : throw new Exception("Checksum mismatch");
     }
-    
+        
     private static byte[] Adler32(byte[] data)
     {
         uint a = 1, b = 0;
