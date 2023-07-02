@@ -75,55 +75,99 @@ internal class WtExchangeLogic : LogicBase
     
     public async Task<bool> LoginByPassword()
     {
-        Collection.Log.LogInfo(Tag, "Trying to Login by Keystore and Password...");
-        
         if (!Collection.Socket.Connected) // if socket not connected, try to connect
         {        
             if (!await Collection.Socket.Connect()) return false;
             Collection.Scheduler.Interval("Heartbeat.Alive", 10 * 1000, async () => await Collection.Business.PushEvent(AliveEvent.Create()));
         }
-        
+
+        if (Collection.Keystore.Session.ExchangeKey == null) await KeyExchange();
+
+        if (Collection.Keystore.Session.TempPassword != null) // try EasyLogin
+        {
+            Collection.Log.LogInfo(Tag, "Trying to Login by EasyLogin...");
+            var easyLoginEvent = EasyLoginEvent.Create();
+            var easyLoginResult = await Collection.Business.SendEvent(easyLoginEvent);
+
+            if (easyLoginResult.Count != 0)
+            {
+                switch ((EasyLoginEvent)easyLoginResult[0])
+                {
+                    case { Success: true, UnusualVerify: false }:
+                    {
+                        Collection.Log.LogInfo(Tag, "Login Success");
+
+                        await BotOnline();
+                        return true;
+                    }
+                    case { Success: true, UnusualVerify: true }:
+                    {
+                        Collection.Log.LogInfo(Tag, "Login Success, but need to verify");
+
+                        await FetchUnusual();
+                        Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => await QueryUnusualState());
+                        return true;
+                    }
+                    case { Success: false }:
+                    {
+                        Collection.Log.LogWarning(Tag, "Fast Login Failed, trying to Login by Password...");
+                        
+                        Collection.Keystore.Session.TempPassword = null; // clear temp password
+                        return await LoginByPassword(); // try password login
+                    }
+                }
+            }
+        }
+        else
+        {
+            Collection.Log.LogInfo(Tag, "Trying to Login by Password...");
+            var passwordLoginEvent = PasswordLoginEvent.Create();
+            var passwordLoginResult = await Collection.Business.SendEvent(passwordLoginEvent);
+
+            if (passwordLoginResult.Count != 0)
+            {
+                var @event = (PasswordLoginEvent)passwordLoginResult[0];
+                switch (@event)
+                {
+                    case { Success: true, UnusualVerify: false }:
+                    {
+                        Collection.Log.LogInfo(Tag, "Login Success");
+
+                        await BotOnline();
+                        return true;
+                    }
+                    case { Success: true, UnusualVerify: true }:
+                    {
+                        Collection.Log.LogInfo(Tag, "Login Success, but need to verify");
+
+                        await FetchUnusual();
+                        Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => await QueryUnusualState());
+                        return true;
+                    }
+                    case { Success: false }:
+                    {
+                        Collection.Log.LogWarning(Tag, @event is { Message: not null, Tag: not null }
+                            ? $"Login Failed: {@event.Tag}: {@event.Message}"
+                            : "Login Failed");
+                        
+                        Collection.Invoker.Dispose();
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private async Task<bool> KeyExchange()
+    {
         var keyExchangeEvent = KeyExchangeEvent.Create();
         var exchangeResult = await Collection.Business.SendEvent(keyExchangeEvent);
         if (exchangeResult.Count != 0)
         {
             Collection.Log.LogInfo(Tag, "Key Exchange successfully!");
-
-            if (Collection.Keystore.Session.TempPassword != null) // try EasyLogin
-            {
-                Collection.Log.LogInfo(Tag, "Trying to Login by EasyLogin...");
-                var easyLoginEvent = EasyLoginEvent.Create();
-                var easyLoginResult = await Collection.Business.SendEvent(easyLoginEvent);
-
-                if (easyLoginResult.Count != 0)
-                {
-                    var @event = (EasyLoginEvent)easyLoginResult[0];
-                    if (@event is { Success: true, UnusualVerify: false })
-                    {
-                        Collection.Log.LogInfo(Tag, "Login Success");
-
-                        var onlineEvent = new BotOnlineEvent();
-                        Collection.Invoker.PostEvent(onlineEvent);
-                        
-                        var registerEvent = StatusRegisterEvent.Create();
-                        var registerResponse = await Collection.Business.SendEvent(registerEvent);
-                        Collection.Log.LogInfo(Tag, $"Register Status: {((StatusRegisterEvent)registerResponse[0]).Message}");
-                        Collection.Scheduler.Interval("trpc.qq_new_tech.status_svc.StatusService.SsoHeartBeat", 
-                            5 * 60 * 1000, async () => await Collection.Business.PushEvent(SsoAliveEvent.Create()));
-
-                        return true;
-                    }
-
-                    if (@event is { Success: true, UnusualVerify: true })
-                    {
-                        throw new NotImplementedException(); // TODO: UnusualVerify
-                    }
-                }
-            }
-            else
-            {
-                throw new NotImplementedException(); // TODO: Login by Password
-            }
+            return true;
         }
 
         return false;
@@ -146,15 +190,7 @@ internal class WtExchangeLogic : LogicBase
                 Collection.Log.LogInfo(Tag, "Login Success");
                 Collection.Keystore.Info = new BotKeystore.BotInfo(@event.Age, @event.Sex, @event.Name);
                 Collection.Log.LogInfo(Tag, Collection.Keystore.Info.ToString());
-
-                var registerEvent = StatusRegisterEvent.Create();
-                var registerResponse = await Collection.Business.SendEvent(registerEvent);
-                Collection.Log.LogInfo(Tag, $"Register Status: {((StatusRegisterEvent)registerResponse[0]).Message}");
-                Collection.Scheduler.Interval("trpc.qq_new_tech.status_svc.StatusService.SsoHeartBeat", 5 * 60 * 1000, 
-                    async () => await Collection.Business.PushEvent(SsoAliveEvent.Create()));
-
-                var onlineEvent = new BotOnlineEvent();
-                Collection.Invoker.PostEvent(onlineEvent);
+                await BotOnline();
 
                 return true;
             }
@@ -235,5 +271,73 @@ internal class WtExchangeLogic : LogicBase
         }
 
         return false;
+    }
+
+    private async Task BotOnline()
+    {
+        var onlineEvent = new BotOnlineEvent();
+        Collection.Invoker.PostEvent(onlineEvent);
+        
+        var registerEvent = StatusRegisterEvent.Create();
+        var registerResponse = await Collection.Business.SendEvent(registerEvent);
+        var heartbeatDelegate = new Action(async () => await Collection.Business.PushEvent(SsoAliveEvent.Create()));
+        Collection.Log.LogInfo(Tag, $"Register Status: {((StatusRegisterEvent)registerResponse[0]).Message}");
+        Collection.Scheduler.Interval("SsoHeartBeat", (int)(4.5 * 60 * 1000), heartbeatDelegate);
+    }
+
+    private async Task<bool> FetchUnusual()
+    {
+        var transEmp = TransEmpEvent.Create(TransEmpEvent.State.FetchQrCode);
+        var result = await Collection.Business.SendEvent(transEmp);
+
+        if (result.Count != 0)
+        {
+            Collection.Log.LogInfo(Tag, "Confirmation Request Send");
+            return true;
+        }
+
+        return false;
+    }
+
+    private async Task QueryUnusualState()
+    {
+        var transEmp = TransEmpEvent.Create(TransEmpEvent.State.QueryResult);
+        var result = await Collection.Business.SendEvent(transEmp);
+        
+        if (result.Count != 0)
+        {
+            var @event = (TransEmpEvent)result[0];
+            var state = (TransEmp12.State)@event.ResultCode;
+            Collection.Log.LogInfo(Tag, $"Confirmation State Queried: {state}");
+
+            switch (state)
+            {
+                case TransEmp12.State.Confirmed:
+                {
+                    Collection.Log.LogInfo(Tag, "Verification Confirmed, Logging in Unusual Login Service...");
+                    Collection.Scheduler.Cancel(QueryEvent); // cancel query task
+
+                    if (@event.TempPassword != null) Collection.Keystore.Session.TempPassword = @event.TempPassword;
+                    break;
+                }
+                case TransEmp12.State.CodeExpired:
+                {
+                    Collection.Log.LogWarning(Tag, "Verification Expired, Please Login Again");
+                    Collection.Scheduler.Cancel(QueryEvent);
+                    Collection.Scheduler.Dispose();
+                    break;
+                }
+                case TransEmp12.State.Canceled:
+                {
+                    Collection.Log.LogWarning(Tag, "Verification Canceled, Please Login Again");
+                    Collection.Scheduler.Cancel(QueryEvent);
+                    Collection.Scheduler.Dispose();
+                    break;
+                }
+                case TransEmp12.State.WaitingForConfirm:
+                default:
+                    break;
+            }
+        }
     }
 }

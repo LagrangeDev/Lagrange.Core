@@ -50,30 +50,34 @@ internal class PasswordLoginService : BaseService<PasswordLoginEvent>
 
         var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
         var encrypted = Serializer.Deserialize<SsoNTLoginEncryptedData>(payload.AsSpan());
+        
         if (encrypted.GcmCalc != null)
         {
             var decrypted = new AesGcmImpl().Decrypt(encrypted.GcmCalc, keystore.Session.ExchangeKey);
-            var response = Serializer.Deserialize<SsoNTLoginBase<SsoNTLoginResponse>>(decrypted.AsSpan()).Body;
+            var response = Serializer.Deserialize<SsoNTLoginBase<SsoNTLoginResponse>>(decrypted.AsSpan());
+            var body = response.Body;
 
-            if (response != null)
+            if (body != null && response.Header?.Error == null)
             {
-                if (response.Unusual != null || response.Credentials == null)
+                if (body.Unusual != null || body.Credentials == null)
                 {
-                    keystore.Session.UnusualSign = response.Unusual?.Sig;
+                    keystore.Session.UnusualSign = body.Unusual?.Sig;
                 }
                 else
                 {
-                    keystore.Session.Tgt = response.Credentials.Tgt;
-                    keystore.Session.D2 = response.Credentials.D2;
-                    keystore.Session.D2Key = response.Credentials.D2Key;
-                    keystore.Session.TempPassword = response.Credentials.TempPassword;
+                    keystore.Session.Tgt = body.Credentials.Tgt;
+                    keystore.Session.D2 = body.Credentials.D2;
+                    keystore.Session.D2Key = body.Credentials.D2Key;
+                    keystore.Session.TempPassword = body.Credentials.TempPassword;
                 }
 
-                output = PasswordLoginEvent.Result(true, response.Unusual != null);
+                output = PasswordLoginEvent.Result(true, body.Unusual != null);
             }
             else
             {
-                output = PasswordLoginEvent.Result(false);
+                string? tag = response.Header?.Error?.Tag;
+                string? message = response.Header?.Error?.Message;
+                output = PasswordLoginEvent.Result(false, false, tag, message);
             }
         }
         else

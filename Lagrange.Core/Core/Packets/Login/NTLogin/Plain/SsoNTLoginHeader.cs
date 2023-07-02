@@ -13,4 +13,6 @@ internal class SsoNTLoginHeader
     [ProtoMember(2)] public SsoNTLoginSystem? System { get; set; }
     
     [ProtoMember(3)] public SsoNTLoginVersion? Version { get; set; }
+    
+    [ProtoMember(4)] public SsoNTLoginError? Error { get; set; }
 }

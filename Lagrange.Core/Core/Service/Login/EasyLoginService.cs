@@ -5,7 +5,6 @@ using Lagrange.Core.Core.Packets;
 using Lagrange.Core.Core.Packets.Login.NTLogin;
 using Lagrange.Core.Core.Packets.Login.NTLogin.Plain;
 using Lagrange.Core.Core.Packets.Login.NTLogin.Plain.Body;
-using Lagrange.Core.Core.Packets.Login.NTLogin.Plain.Universal;
 using Lagrange.Core.Core.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Crypto;
@@ -38,23 +37,24 @@ internal class EasyLoginService : BaseService<EasyLoginEvent>
         if (encrypted.GcmCalc != null)
         {
             var decrypted = new AesGcmImpl().Decrypt(encrypted.GcmCalc, keystore.Session.ExchangeKey);
-            var response = Serializer.Deserialize<SsoNTLoginBase<SsoNTLoginResponse>>(decrypted.AsSpan()).Body;
+            var response = Serializer.Deserialize<SsoNTLoginBase<SsoNTLoginResponse>>(decrypted.AsSpan());
+            var body = response.Body;
 
-            if (response != null)
+            if (body != null && response.Header?.Error == null)
             {
-                if (response.Unusual != null || response.Credentials == null)
+                if (body.Unusual != null || body.Credentials == null)
                 {
-                    keystore.Session.UnusualSign = response.Unusual?.Sig;
+                    keystore.Session.UnusualSign = body.Unusual?.Sig;
                 }
                 else
                 {
-                    keystore.Session.Tgt = response.Credentials.Tgt;
-                    keystore.Session.D2 = response.Credentials.D2;
-                    keystore.Session.D2Key = response.Credentials.D2Key;
-                    keystore.Session.TempPassword = response.Credentials.TempPassword;
+                    keystore.Session.Tgt = body.Credentials.Tgt;
+                    keystore.Session.D2 = body.Credentials.D2;
+                    keystore.Session.D2Key = body.Credentials.D2Key;
+                    keystore.Session.TempPassword = body.Credentials.TempPassword;
                 }
 
-                output = EasyLoginEvent.Result(true, response.Unusual != null);
+                output = EasyLoginEvent.Result(true, body.Unusual != null);
             }
             else
             {

@@ -5,13 +5,19 @@ internal class PasswordLoginEvent : ProtocolEvent
     public bool Success { get; set; }
 
     public bool UnusualVerify { get; set; }
+    
+    public string? Tag { get; set; }
+    
+    public string? Message { get; set; }
 
-    protected PasswordLoginEvent() : base(true) { }
+    private PasswordLoginEvent() : base(true) { }
 
-    protected PasswordLoginEvent(bool success, bool unusualVerify) : base(0)
+    private PasswordLoginEvent(bool success, bool unusualVerify, string? tag = null, string? message = null) : base(0)
     {
         Success = success;
         UnusualVerify = unusualVerify;
+        Tag = tag;
+        Message = message;
     }
 
     public static PasswordLoginEvent Create()
@@ -19,8 +25,8 @@ internal class PasswordLoginEvent : ProtocolEvent
         return new PasswordLoginEvent();
     }
 
-    public static PasswordLoginEvent Result(bool success, bool unusualVerify = false)
+    public static PasswordLoginEvent Result(bool success, bool unusualVerify = false, string? tag = null, string? message = null)
     {
-        return new PasswordLoginEvent(success, unusualVerify);
+        return new PasswordLoginEvent(success, unusualVerify, tag, message);
     }
 }
