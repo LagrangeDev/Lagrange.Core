@@ -22,8 +22,8 @@ internal static class ServicePacker
             .WriteUint(13, false)
             .WriteByte(0) // flag
             .WriteUint(sequence, false)
-            .WriteUint(0, false)
-            .WriteUshort(0x530, false)
+            .WriteByte(0)
+            .WriteString("0", Prefix.Uint32 | Prefix.WithPrefix)
             .Barrier(typeof(uint), () => new BinaryPacket()
                 .WriteString(command, Prefix.Uint32 | Prefix.WithPrefix)
                 .WriteBytes(Array.Empty<byte>(), Prefix.Uint32 | Prefix.WithPrefix) // TODO: Unknown
