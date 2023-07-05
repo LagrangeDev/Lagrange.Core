@@ -2,6 +2,7 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Core.Packets.System;
 using Lagrange.Core.Utility;
 using Lagrange.Core.Utility.Binary;
+using Lagrange.Core.Utility.Binary.Compression;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Generator;
 using ProtoBuf;
@@ -53,13 +54,21 @@ internal static class SsoPacker
     /// </summary>
     public static SsoPacket Parse(BinaryPacket packet)
     {
-        uint headerLength = packet.ReadUint(false);
+        uint _ = packet.ReadUint(false); // header length
         uint sequence = packet.ReadUint(false);
         ulong dummy = packet.ReadUlong(false);
         string command = packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix);
-        packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix); // TODO: unknown
-        packet.Skip((int)(headerLength - 4 - 4 - 8 - command.Length - 4 - 4));
+        packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix); // unknown
+        int isCompressed = packet.ReadInt(); 
+        packet.ReadBytes(Prefix.Uint32 | Prefix.LengthOnly); // Dummy Sso header
         
-        return new SsoPacket(12, command, sequence, packet);
+        return new SsoPacket(12, command, sequence, isCompressed == 0 ? packet : InflatePacket(packet));
+    }
+
+    private static BinaryPacket InflatePacket(BinaryPacket original)
+    {
+        var raw = original.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix);
+        ZCompression.ZDecompress(raw);
+        return new BinaryPacket(raw);
     }
 }
