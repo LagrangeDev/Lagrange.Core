@@ -28,6 +28,12 @@ internal partial class BinaryPacket
         _stream = new MemoryStream(data);
         _reader = new BinaryReader(_stream);
     }
+    
+    public BinaryPacket(MemoryStream stream)
+    {
+        _stream = stream;
+        _reader = new BinaryReader(_stream);
+    }
 
     public BinaryPacket WriteByte(byte value)
     {

@@ -7,7 +7,7 @@ using ProtoBuf;
 namespace Lagrange.Core.Core.Packets.Service.Oidb;
 
 /// <summary>
-/// This class to declear a OidbSvcTrpcTcp packet 我愿称之为Protobuf版Tlv
+/// <para>This class to declear a OidbSvcTrpcTcp packet 我愿称之为Protobuf版Tlv</para>
 /// <para><see cref="OidbSvcTrpcTcp0xE37_1700"/> Responsible for the uploading of NotOnlineFile, originally from OfflineFilleHandleSvr.pb_ftn_CMD_REQ_APPLY_UPLOAD_V3-1700 of legacy oicq protocol</para>
 /// </summary>
 [ProtoContract]
@@ -40,7 +40,7 @@ internal class OidbSvcTrpcTcpBase<T> where T : class
     
     [ProtoMember(12)] public int Reserved { get; set; }
     
-    protected OidbSvcTrpcTcpBase(T body, bool isLafter)
+    public OidbSvcTrpcTcpBase(T body, bool isLafter = false)
     {
         var (command, subCommand) = OidbReference[typeof(T)];
         

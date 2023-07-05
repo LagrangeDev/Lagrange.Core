@@ -1,5 +1,6 @@
 using Lagrange.Core.Core.Context.Attributes;
 using Lagrange.Core.Core.Event.Protocol;
+using Lagrange.Core.Core.Event.Protocol.System;
 
 namespace Lagrange.Core.Core.Context.Logic.Implementation;
 
@@ -14,4 +15,14 @@ internal class OperationLogic : LogicBase
     {
         
     }
+
+    public async Task<List<string>> GetCookies(List<string> domains)
+    {
+        var fetchCookieEvent = FetchCookieEvent.Create(domains);
+        var events = await Collection.Business.SendEvent(fetchCookieEvent);
+        return events.Count != 0 ? ((FetchCookieEvent)events[0]).Cookies : new List<string>();
+    }
+
+    private static int CalculateBkn(string sKey) => 
+        (int)sKey.Aggregate<char, long>(5381, (current, t) => current + (current << 5) + t) & int.MaxValue;
 }

@@ -21,6 +21,8 @@ internal class BusinessContext : ContextBase
     internal MessagingLogic MessagingLogic { get; private set; }
     
     internal WtExchangeLogic WtExchangeLogic { get; private set; }
+    
+    internal OperationLogic OperationLogic { get; private set; }
 
     #endregion
 
@@ -57,6 +59,9 @@ internal class BusinessContext : ContextBase
                     break;
                 case MessagingLogic messagingLogic:
                     MessagingLogic = messagingLogic;
+                    break;
+                case OperationLogic operationLogic:
+                    OperationLogic = operationLogic;
                     break;
             }
         }

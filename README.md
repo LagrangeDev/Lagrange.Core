@@ -24,7 +24,7 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 |          |         |                           |         | ~~Flash Image~~  | 🔴         | Group Request       | 🔴        | GroupPromoteAdmin      | 🔴      |
 |          |         |                           |         | Reply            | 🔴         | ~~Voice Call~~      | 🔴        | GroupInvite            | 🔴      |
 |          |         |                           |         | File             | 🔴         | Csrf Token          | 🔴        | GroupRequestJoin       | 🔴      |
-|          |         |                           |         |                  |            | Cookies             | 🔴        | FriendRequest          | 🔴      |
+|          |         |                           |         |                  |            | Cookies             | 🟢        | FriendRequest          | 🔴      |
 |          |         |                           |         |                  |            |                     |           | ~~FriendTyping~~       | 🔴      |
 |          |         |                           |         |                  |            |                     |           | ~~FriendVoiceCall~~    | 🔴      |
 
