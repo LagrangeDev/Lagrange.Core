@@ -36,7 +36,7 @@ internal static class ServicePacker
     /// <summary>
     /// Build Universal Packet, every service should derive from this, protocol 12 only
     /// </summary>
-    public static BinaryPacket Build(BinaryPacket packet, BotKeystore keystore)
+    public static BinaryPacket BuildProtocol12(BinaryPacket packet, BotKeystore keystore)
     {
         var frame = new BinaryPacket();
         
@@ -52,22 +52,23 @@ internal static class ServicePacker
     }
 
     /// <summary>
-    /// Parse Universal Packet, every service should derive from this, protocol 12 only
+    /// Parse Universal Packet, every service should derive from this, protocol 12 and 13
     /// </summary>
     public static BinaryPacket Parse(BinaryPacket packet, BotKeystore keystore)
     {
         uint length = packet.ReadUint(false);
         uint protocol = packet.ReadUint(false);
-        byte header = packet.ReadByte();
-        uint flag = packet.ReadByte();
+        byte authFlag = packet.ReadByte();
+        byte flag = packet.ReadByte();
         string uin = packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix);
 
-        if (protocol == 13) return new BinaryPacket(); // Only Client.CorrectTime and Heartbeat.Alive so Ignored
-        if (protocol != 12) throw new Exception($"Unrecognized protocol: {protocol}");
-        if (uin != keystore.Uin.ToString()) throw new Exception($"Uin mismatch: {uin} != {keystore.Uin}");
+        if (protocol != 12 && protocol != 13) throw new Exception($"Unrecognized protocol: {protocol}");
+        if (uin != keystore.Uin.ToString() && protocol == 12) throw new Exception($"Uin mismatch: {uin} != {keystore.Uin}");
         
         var encrypted = packet.ReadBytes((int)packet.Remaining);
-        var decrypted = keystore.TeaImpl.Decrypt(encrypted, keystore.Session.D2Key);
+        var decrypted = authFlag == 0 
+            ? encrypted
+            : keystore.TeaImpl.Decrypt(encrypted, keystore.Session.D2Key);
         
         return new BinaryPacket(decrypted);
     }

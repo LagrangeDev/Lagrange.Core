@@ -34,7 +34,7 @@ internal class PacketContext : ContextBase
             case 12:
             {
                 var sso = SsoPacker.Build(packet, AppInfo, DeviceInfo, Keystore);
-                var service = ServicePacker.Build(sso, Keystore);
+                var service = ServicePacker.BuildProtocol12(sso, Keystore);
                 bool _ = Collection.Socket.Send(service.ToArray()).Result;
                 break;
             }
@@ -59,7 +59,7 @@ internal class PacketContext : ContextBase
             case 12:
             {
                 var sso = SsoPacker.Build(packet, AppInfo, DeviceInfo, Keystore);
-                var service = ServicePacker.Build(sso, Keystore);
+                var service = ServicePacker.BuildProtocol12(sso, Keystore);
                 return await Collection.Socket.Send(service.ToArray());
             }
             case 13:
