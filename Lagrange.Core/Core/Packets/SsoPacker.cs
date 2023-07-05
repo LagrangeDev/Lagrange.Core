@@ -68,7 +68,7 @@ internal static class SsoPacker
     private static BinaryPacket InflatePacket(BinaryPacket original)
     {
         var raw = original.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix);
-        ZCompression.ZDecompress(raw);
-        return new BinaryPacket(raw);
+        var decompressed = ZCompression.ZDecompress(raw);
+        return new BinaryPacket().WriteBytes(decompressed, Prefix.Uint32 | Prefix.WithPrefix);
     }
 }
