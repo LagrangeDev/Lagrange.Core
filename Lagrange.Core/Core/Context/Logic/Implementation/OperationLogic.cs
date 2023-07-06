@@ -23,6 +23,13 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 ? ((FetchCookieEvent)events[0]).Cookies : new List<string>();
     }
 
+    public async Task<List<BotFriend>> FetchFriends()
+    {
+        var fetchFriendsEvent = FetchFriendsEvent.Create();
+        var events = await Collection.Business.SendEvent(fetchFriendsEvent);
+        return events.Count != 0 ? ((FetchFriendsEvent)events[0]).Friends : new List<BotFriend>();
+    }
+
     private static int CalculateBkn(string sKey) => 
         (int)sKey.Aggregate<char, long>(5381, (current, t) => current + (current << 5) + t) & int.MaxValue;
 }

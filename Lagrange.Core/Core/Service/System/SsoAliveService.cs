@@ -29,9 +29,6 @@ internal class SsoAliveService : BaseService<SsoAliveEvent>
     protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out SsoAliveEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
-        Console.WriteLine(payload.Hex());
-        
         output = SsoAliveEvent.Result();
         extraEvents = null;
         return true;
