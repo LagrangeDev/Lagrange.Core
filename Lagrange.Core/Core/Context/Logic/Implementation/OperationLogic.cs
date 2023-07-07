@@ -1,3 +1,4 @@
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Core.Context.Attributes;
 using Lagrange.Core.Core.Event.Protocol;
 using Lagrange.Core.Core.Event.Protocol.System;
