@@ -2,23 +2,33 @@ using System.Security.Cryptography;
 using Lagrange.Core.Core.Packets.Message.Component;
 using Lagrange.Core.Core.Packets.Message.Component.Extra;
 using Lagrange.Core.Core.Packets.Message.Element;
+using Lagrange.Core.Core.Packets.Message.Element.Implementation;
+using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
 namespace Lagrange.Core.Message.Entity;
 
+[MessageElement(typeof(TransElem))]
 public class FileEntity : IMessageEntity
 {
-    public long FileSize { get; set; }
+    public bool IsGroup { get; internal set; }
     
-    public string FileName { get; set; }
+    public long FileSize { get; internal set; }
     
-    public byte[] FileMd5 { get; set; }
+    public string FileName { get; internal set; }
+    
+    public byte[] FileMd5 { get; internal set; }
+    
+    internal string? FileUuid { get; set; }
+    
+    internal string? FileHash { get; set; }
     
     public FileEntity()
     {
         FileName = "";
         FileMd5 = Array.Empty<byte>();
+        
     }
     
     public FileEntity(string path)
@@ -30,11 +40,13 @@ public class FileEntity : IMessageEntity
         FileName = Path.GetFileName(path);
     }
 
-    private FileEntity(long fileSize, string fileName, byte[] fileMd5)
+    private FileEntity(long fileSize, string fileName, byte[] fileMd5, string fileUuid, string fileHash)
     {
         FileSize = fileSize;
         FileName = fileName;
         FileMd5 = fileMd5;
+        FileUuid = fileUuid;
+        FileHash = fileHash;
     }
     
     IEnumerable<Elem> IMessageEntity.PackElement() => Array.Empty<Elem>();
@@ -55,15 +67,26 @@ public class FileEntity : IMessageEntity
         }
     };
     
-    IMessageEntity? IMessageEntity.UnpackElement(Elem elems) => null;
+    IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
+    {
+        if (elems.TransElem?.ElemType == 24)
+        {
+            var payload = new BinaryPacket(elems.TransElem.ElemValue);
+            payload.Skip(1);
+            var protobuf = payload.ReadBytes(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
+            Console.WriteLine(protobuf.Hex());
+        }
+
+        return null;
+    }
 
     IMessageEntity? IMessageEntity.UnpackMessageContent(ReadOnlySpan<byte> content)
     {
         var extra = Serializer.Deserialize<FileExtra>(content);
-        var notOnlineFile = extra.File;
+        var file = extra.File;
         
-        return notOnlineFile is { FileSize: not null, FileName: not null, FileMd5: not null } 
-            ? new FileEntity((long)notOnlineFile.FileSize, notOnlineFile.FileName, notOnlineFile.FileMd5) 
+        return file is { FileSize: not null, FileName: not null, FileMd5: not null, FileUuid: not null, FileHash: not null }
+            ? new FileEntity((long)file.FileSize, file.FileName, file.FileMd5, file.FileUuid, file.FileHash) 
             : null;
     }
 
