@@ -7,7 +7,7 @@ internal partial class SrcMsg
 {
 	[ProtoMember(1)] public List<uint>? OrigSeqs { get; set; }
     
-    [ProtoMember(2)] public ulong? SenderUin { get; set; }
+    [ProtoMember(2)] public ulong SenderUin { get; set; }
     
     [ProtoMember(3)] public int? Time { get; set; }
     

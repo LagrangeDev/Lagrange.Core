@@ -7,9 +7,9 @@ namespace Lagrange.Core.Message.Entity;
 [MessageElement(typeof(SrcMsg))]
 public class ForwardEntity : IMessageEntity
 {
-    public uint Sequence { get; }
+    public uint Sequence { get; internal set; }
     
-    public string? Uid { get; }
+    public string? Uid { get; internal set; }
 
     public uint TargetUin { get; internal set; }
 
@@ -64,13 +64,18 @@ public class ForwardEntity : IMessageEntity
     {
         if (elems.SrcMsg != null)
         {
-
+            var forward = new ForwardEntity
+            {
+                Sequence = elems.SrcMsg.OrigSeqs?[0] ?? 0,
+                TargetUin = (uint)elems.SrcMsg.SenderUin,
+            };
+            return forward;
         }
 
-        throw new NotImplementedException();
+        return null;
     }
 
     public void SetSelfUid(string selfUid) => SelfUin = selfUid;
 
-    public string ToPreviewString() => $"[Forward]: ";
+    public string ToPreviewString() => $"[Forward]: Sequence: {Sequence}";
 }
