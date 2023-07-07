@@ -7,6 +7,7 @@ using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Generator;
 using ProtoBuf;
 using static Lagrange.Core.Utility.Binary.BinaryPacket;
+using BitConverter = Lagrange.Core.Utility.Binary.BitConverter;
 
 namespace Lagrange.Core.Core.Packets;
 
@@ -69,6 +70,12 @@ internal static class SsoPacker
     {
         var raw = original.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix);
         var decompressed = ZCompression.ZDecompress(raw);
-        return new BinaryPacket().WriteBytes(decompressed, Prefix.Uint32 | Prefix.WithPrefix);
+        
+        var stream = new MemoryStream();
+        stream.Write(BitConverter.GetBytes(decompressed.Length + sizeof(int), false));
+        stream.Write(decompressed);
+        stream.Position = 0;
+        
+        return new BinaryPacket(stream);
     }
 }
