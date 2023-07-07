@@ -10,17 +10,20 @@ public sealed class MessageChain : List<IMessageEntity>
 
     internal uint Sequence { get; }
     
+    internal string? SelfUid { get; }
+    
     internal string? Uid { get; }
 
     internal bool IsGroup { get; }
     
     internal List<Elem> Elements { get; }
 
-    internal MessageChain(uint friendUin, string friendUid)
+    internal MessageChain(uint friendUin, string selfUid, string friendUid)
     {
         GroupUin = null;
         FriendUin = friendUin;
         Sequence = 0; // TODO: Allocate a dedicated sequence to this field
+        SelfUid = selfUid;
         Uid = friendUid;
         IsGroup = false;
         Elements = new List<Elem>();

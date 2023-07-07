@@ -8,7 +8,7 @@ namespace Lagrange.Core.Core.Packets.Message;
 [ProtoContract]
 internal class MessageBody
 {
-	[ProtoMember(1)] public RichText RichText { get; set; }
+	[ProtoMember(1)] public RichText? RichText { get; set; }
     
     [ProtoMember(2)] public byte[]? MsgContent { get; set; } // Offline file is now put here(?
     

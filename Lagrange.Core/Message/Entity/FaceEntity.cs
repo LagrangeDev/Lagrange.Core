@@ -6,7 +6,7 @@ using ProtoBuf;
 namespace Lagrange.Core.Message.Entity;
 
 [MessageElement(typeof(Face)), MessageElement(typeof(CommonElem))]
-internal class FaceEntity : IMessageEntity
+public class FaceEntity : IMessageEntity
 {
     public ushort FaceId { get; }
     

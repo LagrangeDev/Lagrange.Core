@@ -66,7 +66,7 @@ internal class MessagePacker
             
             if (message.Body != null)
             {
-                message.Body.RichText.Elems.AddRange(entity.PackElement());
+                message.Body.RichText?.Elems.AddRange(entity.PackElement());
                 
                 var msgContent = entity.PackMessageContent();
                 if (msgContent is not null)
@@ -85,7 +85,7 @@ internal class MessagePacker
     {
         var chain = ParseChain(message);
 
-        if (message.Body.RichText?.Elems != null)
+        if (message.Body?.RichText?.Elems != null) // 怎么Body还能是null的
         {
             foreach (var element in message.Body.RichText.Elems)
             {
@@ -158,7 +158,7 @@ internal class MessagePacker
     private static MessageChain ParseChain(Core.Packets.Message.PushMsgBody message)
     {
         return message.ResponseHead.Grp == null
-            ? new MessageChain(message.ResponseHead.FromUin, message.ResponseHead.FromUid ?? string.Empty)
+            ? new MessageChain(message.ResponseHead.FromUin,message.ResponseHead.ToUid ?? string.Empty ,message.ResponseHead.FromUid ?? string.Empty)
             : new MessageChain(message.ResponseHead.Grp.GroupUin, message.ResponseHead.FromUin);
     }
 }

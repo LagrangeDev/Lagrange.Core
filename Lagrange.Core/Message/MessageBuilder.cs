@@ -14,7 +14,7 @@ public sealed class MessageBuilder
     public static MessageBuilder Friend(uint friendUin)
     {
         // TODO: Get the real UID
-        return new MessageBuilder(new MessageChain(friendUin, ""));
+        return new MessageBuilder(new MessageChain(friendUin, "", ""));
     }
 
     public static MessageBuilder Group(uint groupUin, uint memberUin) => new(new MessageChain(groupUin, memberUin));

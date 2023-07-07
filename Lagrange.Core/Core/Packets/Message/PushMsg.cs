@@ -26,5 +26,5 @@ internal class PushMsgBody
     
     [ProtoMember(2)] public ContentHead ContentHead { get; set; }
     
-    [ProtoMember(3)] public MessageBody Body { get; set; }
+    [ProtoMember(3)] public MessageBody? Body { get; set; }
 }

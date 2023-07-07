@@ -1,18 +1,19 @@
+using Lagrange.Core.Message;
+
 namespace Lagrange.Core.Core.Event.Protocol.Message;
 
 internal class PushMessageEvent : ProtocolEvent
 {
     public MessageType Type { get; set; }
-    
-    private PushMessageEvent() : base(false)
-    {
-    }
 
-    private PushMessageEvent(int resultCode) : base(resultCode)
+    public MessageChain Chain { get; set; }
+
+    private PushMessageEvent(int resultCode, MessageChain chain) : base(resultCode)
     {
+        Chain = chain;
     }
     
-    public static PushMessageEvent Create() => new(0);
+    public static PushMessageEvent Create(MessageChain chain) => new(0, chain);
     
     public enum MessageType
     {

@@ -16,7 +16,7 @@ internal class Elem
     
 	[ProtoMember(4)] public NotOnlineImage? NotOnlineImage { get; set; } // Offline Image
 	
-	[ProtoMember(5)] public TransElem? TransElemInfo { get; set; }
+	[ProtoMember(5)] public TransElem? TransElem { get; set; }
 	
 	[ProtoMember(6)] public MarketFace? MarketFace { get; set; }
 	
