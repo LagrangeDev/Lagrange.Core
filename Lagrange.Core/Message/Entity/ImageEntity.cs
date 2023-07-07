@@ -5,9 +5,12 @@ using Lagrange.Core.Core.Packets.Message.Element.Implementation;
 namespace Lagrange.Core.Message.Entity;
 
 [MessageElement(typeof(NotOnlineImage))]
+[MessageElement(typeof(CustomFace))]
 public class ImageEntity : IMessageEntity
 {
     private const string BaseUrl = "https://multimedia.nt.qq.com.cn";
+    
+    private const string LegacyBaseUrl = "http://gchat.qpic.cn";
     
     public Vector2 PictureSize { get; set; }
     
@@ -51,6 +54,17 @@ public class ImageEntity : IMessageEntity
                 FilePath = target.FilePath,
                 ImageSize = target.FileLen,
                 ImageUrl = $"{BaseUrl}{target.OrigUrl}"
+            };
+        }
+        if (elems.CustomFace is not null)
+        {
+            var target = elems.CustomFace;
+            return new ImageEntity
+            {
+                PictureSize = new Vector2(target.Width, target.Height),
+                FilePath = target.FilePath,
+                ImageSize = (uint)target.Size,
+                ImageUrl = $"{LegacyBaseUrl}{target.OrigUrl}"
             };
         }
         
