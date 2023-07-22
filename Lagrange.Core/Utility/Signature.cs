@@ -60,9 +60,9 @@ internal static class Signature
     /// </summary>
     public static byte[]? GetSignature(string cmd, uint seq, byte[] body)
     {
-        if (!_available || string.IsNullOrEmpty(Url)) return new byte[20]; // Dummy signature
         if (!WhiteListCommand.Contains(cmd)) return null;
-        
+        if (!_available || string.IsNullOrEmpty(Url)) return new byte[20]; // Dummy signature
+
         try
         {
             var payload = new Dictionary<string, string>

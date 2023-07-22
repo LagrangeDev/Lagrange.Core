@@ -1,7 +1,5 @@
 using ProtoBuf;
 
-#pragma warning disable CS8618
-
 namespace Lagrange.Core.Core.Packets.System;
 
 /// <summary>
@@ -11,7 +9,9 @@ namespace Lagrange.Core.Core.Packets.System;
 [ProtoContract]
 internal class Sign
 {
-    [ProtoMember(1)] public byte[] Signature { get; set; }
+    [ProtoMember(1)] public byte[]? Signature { get; set; }
     
-    [ProtoMember(3)] public Software S { get; set; }
+    [ProtoMember(2)] public string? Token { get; set; }
+    
+    [ProtoMember(3)] public Software? S { get; set; }
 }
