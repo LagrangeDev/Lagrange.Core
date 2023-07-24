@@ -7,8 +7,6 @@ namespace Lagrange.Core.Core.Service.Abstraction;
 
 internal interface IService
 {
-    public Dictionary<uint, ProtocolEvent> SourceEvents { get; }
-
     public bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out ProtocolEvent output, out List<ProtocolEvent>? extraEvents);
     

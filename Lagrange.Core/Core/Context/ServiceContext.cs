@@ -72,18 +72,11 @@ internal partial class ServiceContext : ContextBase
 
             if (success && binary != null)
             {
-                uint sequence = (uint)_sequenceProvider.GetNewSequence();
-                instance.SourceEvents[sequence] = protocolEvent;
-                result.Add(new SsoPacket(attribute.PacketType, attribute.Command, sequence, binary));
+                result.Add(new SsoPacket(attribute.PacketType, attribute.Command, (uint)_sequenceProvider.GetNewSequence(), binary));
                 
                 if (extraPackets != null)
                 {
-                    result.AddRange(extraPackets.Select(extra =>
-                    {
-                        uint extraSequence = (uint)_sequenceProvider.GetNewSequence();
-                        instance.SourceEvents[extraSequence] = protocolEvent;
-                        return new SsoPacket(attribute.PacketType, attribute.Command, extraSequence, extra);
-                    }));
+                    result.AddRange(extraPackets.Select(extra => new SsoPacket(attribute.PacketType, attribute.Command, (uint)_sequenceProvider.GetNewSequence(), extra)));
                 }
                 
                 Collection.Log.LogVerbose(Tag, $"Outgoing SSOFrame: {attribute.Command}");
@@ -108,7 +101,6 @@ internal partial class ServiceContext : ContextBase
         }
 
         bool success = service.Parse(packet, Keystore, AppInfo, DeviceInfo, out var @event, out var extraEvents);
-        service.SourceEvents.Remove(packet.Sequence);
 
         if (success)
         {
