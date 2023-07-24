@@ -48,6 +48,15 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((HighwayUrlEvent)events[0]).ResultCode == 0;
     }
 
+    public async Task<bool> RecallGroupMessage(uint groupUin, MessageResult result)
+    {
+        if (result.Sequence == null) return false;
+        
+        var recallMessageEvent = RecallMessageEvent.Create(groupUin, (uint)result.Sequence);
+        var events = await Collection.Business.SendEvent(recallMessageEvent);
+        return events.Count != 0 && ((RecallMessageEvent)events[0]).ResultCode == 0;
+    }
+
     private static int CalculateBkn(string sKey) => 
         (int)sKey.Aggregate<char, long>(5381, (current, t) => current + (current << 5) + t) & int.MaxValue;
     

@@ -16,4 +16,7 @@ public static class OperationExt
 
     public static Task<MessageResult> SendMessage(this BotContext bot, MessageChain chain)
         => bot.ContextCollection.Business.OperationLogic.SendMessage(chain);
+    
+    public static Task<bool> RecallGroupMessage(this BotContext bot, uint groupUin, MessageResult result)
+        => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(groupUin, result);
 }
