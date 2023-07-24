@@ -1,4 +1,5 @@
 using Lagrange.Core.Common.Entity;
+using Lagrange.Core.Message;
 
 namespace Lagrange.Core.Common.Interface.Api;
 
