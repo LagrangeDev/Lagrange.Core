@@ -29,4 +29,6 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 |          |         |                           |         |                  |            |                   |            | ~~FriendVoiceCall~~    | 🔴      |
 
 ## Known Problem
-- [ ] Signature Service is currently not established, so the login tend to be failed and return code may be 45, you can establish your own sign service by rewriting the `Signature` static class.
+~~- [ ] Signature Service is currently not established, so the login tend to be failed and return code may be 45, you can establish your own sign service by rewriting the `Signature` static class.~~
+
+Thanks KonataDev/TheSnowfield for Provision of Signature API
