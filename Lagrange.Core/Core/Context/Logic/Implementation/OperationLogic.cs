@@ -52,9 +52,9 @@ internal class OperationLogic : LogicBase
     {
         if (result.Sequence == null) return false;
         
-        var recallMessageEvent = RecallMessageEvent.Create(groupUin, (uint)result.Sequence);
+        var recallMessageEvent = RecallGroupMessageEvent.Create(groupUin, (uint)result.Sequence);
         var events = await Collection.Business.SendEvent(recallMessageEvent);
-        return events.Count != 0 && ((RecallMessageEvent)events[0]).ResultCode == 0;
+        return events.Count != 0 && ((RecallGroupMessageEvent)events[0]).ResultCode == 0;
     }
 
     private static int CalculateBkn(string sKey) => 
