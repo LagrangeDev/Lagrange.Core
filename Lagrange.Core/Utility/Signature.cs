@@ -9,9 +9,7 @@ namespace Lagrange.Core.Utility;
 
 internal static class Signature
 {
-    private const string Url = "";
-
-    private const string Key = "";
+    private const string Url = "http://cn-chengdu.qwqq.moe:20747/api/sign";
     
     private static bool _available = true;
     
@@ -70,7 +68,6 @@ internal static class Signature
                 { "cmd", cmd },
                 { "seq", seq.ToString() },
                 { "src", body.Hex() },
-                { "key", Key }
             };
             string response = Http.GetAsync(Url, payload).GetAwaiter().GetResult();
             var json = JsonSerializer.Deserialize<JsonObject>(response);
