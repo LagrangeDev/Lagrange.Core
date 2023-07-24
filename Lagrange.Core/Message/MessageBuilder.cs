@@ -7,7 +7,7 @@ namespace Lagrange.Core.Message;
 /// </summary>
 public sealed class MessageBuilder
 {
-    private MessageChain _chain;
+    private readonly MessageChain _chain;
 
     private MessageBuilder(MessageChain chain) => _chain = chain;
 
@@ -17,7 +17,7 @@ public sealed class MessageBuilder
         return new MessageBuilder(new MessageChain(friendUin, "", ""));
     }
 
-    public static MessageBuilder Group(uint groupUin, uint memberUin) => new(new MessageChain(groupUin, memberUin));
+    public static MessageBuilder Group(uint groupUin) => new(new MessageChain(groupUin));
 
     public MessageBuilder Text(string text)
     {

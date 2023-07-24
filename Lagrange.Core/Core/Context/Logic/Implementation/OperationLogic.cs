@@ -2,6 +2,9 @@ using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Core.Context.Attributes;
 using Lagrange.Core.Core.Event.Protocol;
 using Lagrange.Core.Core.Event.Protocol.System;
+using Lagrange.Core.Core.Event.Protocol.Message;
+using Lagrange.Core.Message;
+using System.Text;
 
 namespace Lagrange.Core.Core.Context.Logic.Implementation;
 
@@ -31,6 +34,22 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 ? ((FetchFriendsEvent)events[0]).Friends : new List<BotFriend>();
     }
 
+    public async Task<bool> SendMessage(MessageChain chain)
+    {
+        var sendMessageEvent = SendMessageEvent.Create(chain);
+        var events = await Collection.Business.SendEvent(sendMessageEvent);
+        return events.Count != 0 && ((SendMessageEvent)events[0]).ResultCode == 0;
+    }
+    
+    public async Task<bool> GetHighwayAddress()
+    {
+        var highwayUrlEvent = HighwayUrlEvent.Create();
+        var events = await Collection.Business.SendEvent(highwayUrlEvent);
+        return events.Count != 0 && ((HighwayUrlEvent)events[0]).ResultCode == 0;
+    }
+
     private static int CalculateBkn(string sKey) => 
         (int)sKey.Aggregate<char, long>(5381, (current, t) => current + (current << 5) + t) & int.MaxValue;
+    
+    public int GetCsrfToken() => CalculateBkn(Encoding.ASCII.GetString(Collection.Keystore.Session.D2Key));
 }

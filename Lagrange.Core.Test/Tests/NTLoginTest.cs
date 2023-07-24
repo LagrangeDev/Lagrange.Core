@@ -1,6 +1,7 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Message;
 
 namespace Lagrange.Core.Test.Tests;
 
@@ -29,6 +30,7 @@ public class NTLoginTest
         
         bot.Invoker.OnBotLogEvent += (context, @event) =>
         {
+            Utility.Console.ChangeColorByTitle(@event.Level);
             Console.WriteLine(@event.ToString());
         };
         
@@ -39,5 +41,17 @@ public class NTLoginTest
         };
 
         await bot.LoginByPassword();
+
+        var cookies = await bot.FetchCookies(new List<string> { "qun.qq.com" });
+        Console.WriteLine(cookies[0]);
+        Console.WriteLine(bot.GetCsrfToken());
+
+        var friends = await bot.FetchFriends();
+        
+        await bot.GetHighwayAddress();
+
+        var friendChain = MessageBuilder.Friend(1925648680);
+        friendChain.Text("This is the friend message sent by Lagrange.Core");
+        await bot.SendMessage(friendChain.Build());
     }
 }

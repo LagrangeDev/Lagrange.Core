@@ -20,22 +20,31 @@ internal class PushMessageService : BaseService<PushMessageEvent>
     {
         var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
         var message = Serializer.Deserialize<PushMsg>(payload.AsSpan());
-        Console.WriteLine(payload.Hex());
-        try
+        var packetType = (PkgType)message.Message.ContentHead.PkgNum!;
+        if (packetType is PkgType.PrivateMessage or PkgType.GroupMessage)
         {
             var chain = MessagePacker.Parse(message.Message);
-
             output = PushMessageEvent.Create(chain);
-            extraEvents = null;
-            return true;
         }
-        catch (Exception e)
+        else
         {
-            Console.WriteLine(e);
-
             output = null!;
-            extraEvents = null;
-            return false;
+            Console.WriteLine($"Unknown message type: {packetType}: {payload.Hex()}");
         }
+        
+        extraEvents = null;
+        return true;
+    }
+    
+    public enum PkgType
+    {
+        PrivateMessage = 166,
+        GroupMessage = 82,
+        GroupKickNotice = 34,
+        GroupInviteNotice = 33,
+        /// <summary>Also for FriendChangeNotice</summary>
+        GroupCardChangeNotice = 528,
+        GroupAdminPromoteNotice = 44,
+        GroupPokeNotice = 732
     }
 }

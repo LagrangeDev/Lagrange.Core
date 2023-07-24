@@ -71,6 +71,8 @@ internal class MessagePacker
                 var msgContent = entity.PackMessageContent();
                 if (msgContent is not null)
                 {
+                    if (message.Body.MsgContent is not null) throw new InvalidOperationException("Message content is not null, conflicting with the message entity.");
+                    
                     using var stream = new MemoryStream();
                     Serializer.Serialize(stream, msgContent);
                     message.Body.MsgContent = stream.ToArray();
@@ -150,8 +152,8 @@ internal class MessagePacker
             DivSeq = 0
         },
         Body = new Core.Packets.Message.MessageBody { RichText = new RichText { Elems = new List<Elem>() } },
-        Seq = 0, // TODO: Add the dedicated sequence to the service
-        Rand = (uint?)Random.Shared.Next(10000000, int.MaxValue),
+        Seq = (uint)Random.Shared.Next(1000000, 9999999), // 草泥马开摆！
+        Rand = (uint)Random.Shared.Next(100000000, int.MaxValue),
         Ctrl = chain.IsGroup ? null : new MessageControl { MsgFlag = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() }
     };
     

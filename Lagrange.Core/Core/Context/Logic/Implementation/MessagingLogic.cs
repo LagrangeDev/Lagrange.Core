@@ -16,8 +16,13 @@ namespace Lagrange.Core.Core.Context.Logic.Implementation;
 internal class MessagingLogic : LogicBase
 {
     private const string Tag = nameof(MessagingLogic);
-    
-    internal MessagingLogic(ContextCollection collection) : base(collection) { }
+
+    private readonly Dictionary<uint, string> _uinToUid;
+
+    internal MessagingLogic(ContextCollection collection) : base(collection)
+    {
+        _uinToUid = new Dictionary<uint, string>();
+    }
 
     public override async Task Incoming(ProtocolEvent e)
     {
@@ -51,7 +56,8 @@ internal class MessagingLogic : LogicBase
                 Collection.Invoker.PostEvent(args);
                 
                 break;
-            case SendMessageEvent send:
+            case SendMessageEvent send: // resolve Uin to Uid
+                if (_uinToUid.Count == 0) await ResolveUinToUid();
                 break;
         }
     }
@@ -70,5 +76,12 @@ internal class MessagingLogic : LogicBase
                 var result = (FileDownloadEvent)results[0];
             }
         }
+    }
+
+    private async Task ResolveUinToUid()
+    {
+        var friends = await Collection.Business.OperationLogic.FetchFriends();
+        
+        foreach (var friend in friends) _uinToUid.Add(friend.Uin, friend.Uid);
     }
 }

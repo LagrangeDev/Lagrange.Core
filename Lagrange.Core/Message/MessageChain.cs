@@ -29,10 +29,19 @@ public sealed class MessageChain : List<IMessageEntity>
         Elements = new List<Elem>();
     }
 
-    internal MessageChain(uint groupUin, uint memberUin)
+    internal MessageChain(uint groupUin)
     {
         GroupUin = groupUin;
-        FriendUin = memberUin;
+        Sequence = 0; // TODO: Allocate a dedicated sequence to this field
+        Uid = null;
+        IsGroup = true;
+        Elements = new List<Elem>();
+    }
+    
+    internal MessageChain(uint groupUin, uint friendUin)
+    {
+        GroupUin = groupUin;
+        FriendUin = friendUin;
         Sequence = 0; // TODO: Allocate a dedicated sequence to this field
         Uid = null;
         IsGroup = true;
