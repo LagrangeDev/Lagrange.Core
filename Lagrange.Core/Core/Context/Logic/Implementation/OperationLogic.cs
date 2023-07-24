@@ -34,11 +34,11 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 ? ((FetchFriendsEvent)events[0]).Friends : new List<BotFriend>();
     }
 
-    public async Task<bool> SendMessage(MessageChain chain)
+    public async Task<MessageResult> SendMessage(MessageChain chain)
     {
         var sendMessageEvent = SendMessageEvent.Create(chain);
         var events = await Collection.Business.SendEvent(sendMessageEvent);
-        return events.Count != 0 && ((SendMessageEvent)events[0]).ResultCode == 0;
+        return ((SendMessageEvent)events[0]).MsgResult;
     }
     
     public async Task<bool> GetHighwayAddress()

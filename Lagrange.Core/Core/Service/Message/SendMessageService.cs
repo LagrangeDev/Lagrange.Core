@@ -37,7 +37,14 @@ internal class SendMessageService : BaseService<SendMessageEvent>
         Console.WriteLine(payload.Hex());
         
         var response = Serializer.Deserialize<SendMessageResponse>(payload.AsSpan());
-        output = SendMessageEvent.Result(response.Result);
+        var result = new MessageResult
+        {
+            Result = (uint)response.Result,
+            Sequence = response.Sequence,
+            Timestamp = response.Timestamp1,
+        };
+        
+        output = SendMessageEvent.Result(response.Result, result);
         extraEvents = null;
         return true;
     }

@@ -14,6 +14,6 @@ public static class OperationExt
     public static int GetCsrfToken(this BotContext bot)
         => bot.ContextCollection.Business.OperationLogic.GetCsrfToken();
 
-    public static Task<bool> SendMessage(this BotContext bot, MessageChain chain)
+    public static Task<MessageResult> SendMessage(this BotContext bot, MessageChain chain)
         => bot.ContextCollection.Business.OperationLogic.SendMessage(chain);
 }
