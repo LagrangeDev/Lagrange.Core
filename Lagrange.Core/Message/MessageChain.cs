@@ -50,5 +50,5 @@ public sealed class MessageChain : List<IMessageEntity>
     
     public bool HasTypeOf<T>() where T : IMessageEntity => this.Any(entity => entity is T);
     
-    public T? GetEntity<T>() where T : class, IMessageEntity => this.First(entity => entity is T) as T;
+    public T? GetEntity<T>() where T : class, IMessageEntity => this.FirstOrDefault(entity => entity is T, null) as T;
 }
