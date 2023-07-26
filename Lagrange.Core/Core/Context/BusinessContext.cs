@@ -87,6 +87,7 @@ internal class BusinessContext : ContextBase
     /// </summary>
     public async Task<List<ProtocolEvent>> SendEvent(ProtocolEvent @event)
     {
+        await HandleOutgoingEvent(@event);
         var result = new List<ProtocolEvent>();
         
         try
@@ -131,6 +132,31 @@ internal class BusinessContext : ContextBase
             catch (Exception e)
             {
                 Collection.Log.LogFatal(Tag, $"Error occurred while handling event {@event.GetType().Name}");
+                Collection.Log.LogFatal(Tag, e.Message);
+            }
+        }
+        
+        return true;
+    }
+    
+    public async Task<bool> HandleOutgoingEvent(ProtocolEvent @event)
+    {
+        _businessLogics.TryGetValue(typeof(ProtocolEvent), out var baseLogics);
+        _businessLogics.TryGetValue(@event.GetType(), out var normalLogics);
+
+        var logics = new List<LogicBase>();
+        if (baseLogics != null) logics.AddRange(baseLogics);
+        if (normalLogics != null) logics.AddRange(normalLogics);
+
+        foreach (var logic in logics)
+        {
+            try
+            {
+                await logic.Outgoing(@event);
+            }
+            catch (Exception e)
+            {
+                Collection.Log.LogFatal(Tag, $"Error occurred while handling outgoing event {@event.GetType().Name}");
                 Collection.Log.LogFatal(Tag, e.Message);
             }
         }
