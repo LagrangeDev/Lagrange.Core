@@ -18,10 +18,12 @@ internal class MessagingLogic : LogicBase
     private const string Tag = nameof(MessagingLogic);
 
     private readonly Dictionary<uint, string> _uinToUid;
+    private readonly List<uint> _cachedGroups;
 
     internal MessagingLogic(ContextCollection collection) : base(collection)
     {
         _uinToUid = new Dictionary<uint, string>();
+        _cachedGroups = new List<uint>();
     }
 
     public override async Task Incoming(ProtocolEvent e)
@@ -56,8 +58,23 @@ internal class MessagingLogic : LogicBase
                 Collection.Invoker.PostEvent(args);
                 
                 break;
+        }
+    }
+
+    public override async Task Outgoing(ProtocolEvent e)
+    {
+        switch (e)
+        {
             case SendMessageEvent send: // resolve Uin to Uid
-                if (_uinToUid.Count == 0) await ResolveUinToUid();
+                if (_uinToUid.Count == 0) await ResolveFriendsUid();
+
+                if (send.Chain.GroupUin != null && !_cachedGroups.Contains(send.Chain.GroupUin.Value))
+                {
+                    await ResolveMembersUid(send.Chain.GroupUin.Value);
+                    _cachedGroups.Add(send.Chain.GroupUin.Value);
+                }
+
+                ResolveChainUid(send.Chain); 
                 break;
         }
     }
@@ -78,10 +95,30 @@ internal class MessagingLogic : LogicBase
         }
     }
 
-    private async Task ResolveUinToUid()
+    private void ResolveChainUid(MessageChain chain)
+    {
+        foreach (var entity in chain)
+        {
+            switch (entity)
+            {
+                case MentionEntity mention:
+                    mention.Uid = _uinToUid[mention.Uin];
+                    break;
+            }
+        }
+    }
+
+    private async Task ResolveFriendsUid()
     {
         var friends = await Collection.Business.OperationLogic.FetchFriends();
         
         foreach (var friend in friends) _uinToUid.Add(friend.Uin, friend.Uid);
+    }
+
+    private async Task ResolveMembersUid(uint groupUin)
+    {
+        var members = await Collection.Business.OperationLogic.FetchMembers(groupUin);
+        
+        foreach (var member in members) _uinToUid.TryAdd(member.Uin, member.Uid);
     }
 }

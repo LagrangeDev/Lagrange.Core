@@ -28,7 +28,7 @@ public class MentionEntity : IMessageEntity
     public MentionEntity(string name, uint target = 0)
     {
         Uin = target;
-        Uid = ""; // TODO: Get UID from UIN
+        Uid = ""; // automatically resolved by MessagingLogic.cs
         Name = name;
     }
 
@@ -39,7 +39,7 @@ public class MentionEntity : IMessageEntity
             Type = Uin == 0 ? 1 : 2,
             Field4 = 0,
             Field5 = 0,
-            Uid = Uid
+            Uid = Uid,
         };
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, reserve);
@@ -51,7 +51,7 @@ public class MentionEntity : IMessageEntity
                 Text = new Text
                 {
                     Str = Name,
-                    Attr6Buf = stream.ToArray()
+                    PbReserve = stream.ToArray()
                 }
             }
         };

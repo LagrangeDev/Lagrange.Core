@@ -27,5 +27,13 @@ public sealed class MessageBuilder
         return this;
     }
     
+    public MessageBuilder Mention(uint target, string? display = null)
+    {
+        var mentionEntity = new MentionEntity(display ?? target.ToString(), target);
+        _chain.Add(mentionEntity);
+        
+        return this;
+    }
+    
     public MessageChain Build() => _chain;
 }

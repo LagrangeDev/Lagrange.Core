@@ -1,6 +1,5 @@
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Core.Context.Attributes;
-using Lagrange.Core.Core.Event.Protocol;
 using Lagrange.Core.Core.Event.Protocol.System;
 using Lagrange.Core.Core.Event.Protocol.Message;
 using Lagrange.Core.Message;
@@ -14,11 +13,6 @@ internal class OperationLogic : LogicBase
     private const string Tag = nameof(OperationLogic);
     
     internal OperationLogic(ContextCollection collection) : base(collection) { }
-
-    public override async Task Incoming(ProtocolEvent e)
-    {
-        
-    }
 
     public async Task<List<string>> GetCookies(List<string> domains)
     {
