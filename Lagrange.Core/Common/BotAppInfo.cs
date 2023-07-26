@@ -80,7 +80,7 @@ public class BotAppInfo
         
         UnknownIdentifier = 70644224,
         AppId = 1600001602,
-        SubAppId = 537149057,
+        SubAppId = 537138182,
         AppIdQrCode = 537138182,
         AppClientVersion = 13172,
         
@@ -102,9 +102,14 @@ public class BotAppInfo
         WtLoginSdk = "nt.wtlogin.0.0.1",
         PackageSign = "V1_WIN_NQ_9.8.3-13183_RDM_B",
         
+        UnknownIdentifier = 70644224,
         AppId = 1600001604,
-        AppIdQrCode = 13697054,
-        AppClientVersion = 13172
+        SubAppId = 537138217,
+        AppIdQrCode = 537138217,
+        AppClientVersion = 13172,
+        
+        MainSigMap = 169742560,
+        SubSigMap = 0
     };
     
     public static readonly Dictionary<Protocols, BotAppInfo> ProtocolToAppInfo = new()
