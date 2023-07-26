@@ -33,6 +33,13 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(fetchFriendsEvent);
         return events.Count != 0 ? ((FetchFriendsEvent)events[0]).Friends : new List<BotFriend>();
     }
+    
+    public async Task<List<BotGroupMember>> FetchMembers(uint groupUin)
+    {
+        var fetchFriendsEvent = FetchMembersEvent.Create(groupUin);
+        var events = await Collection.Business.SendEvent(fetchFriendsEvent);
+        return events.Count != 0 ? ((FetchMembersEvent)events[0]).Members : new List<BotGroupMember>();
+    }
 
     public async Task<MessageResult> SendMessage(MessageChain chain)
     {
