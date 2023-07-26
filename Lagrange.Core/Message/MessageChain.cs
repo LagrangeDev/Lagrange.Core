@@ -22,7 +22,7 @@ public sealed class MessageChain : List<IMessageEntity>
     {
         GroupUin = null;
         FriendUin = friendUin;
-        Sequence = 0; // TODO: Allocate a dedicated sequence to this field
+        Sequence = 0; // unuseful at there
         SelfUid = selfUid;
         Uid = friendUid;
         IsGroup = false;
@@ -32,7 +32,7 @@ public sealed class MessageChain : List<IMessageEntity>
     internal MessageChain(uint groupUin)
     {
         GroupUin = groupUin;
-        Sequence = 0; // TODO: Allocate a dedicated sequence to this field
+        Sequence = 0; // unuseful at there
         Uid = null;
         IsGroup = true;
         Elements = new List<Elem>();
@@ -42,7 +42,7 @@ public sealed class MessageChain : List<IMessageEntity>
     {
         GroupUin = groupUin;
         FriendUin = friendUin;
-        Sequence = 0; // TODO: Allocate a dedicated sequence to this field
+        Sequence = 0; // unuseful at there
         Uid = null;
         IsGroup = true;
         Elements = new List<Elem>();

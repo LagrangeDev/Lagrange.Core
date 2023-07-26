@@ -32,7 +32,7 @@ public class FaceEntity : IMessageEntity
                 Field4 = 1,
                 Field5 = 1,
                 Field6 = "",
-                Preview = "[骚扰]",
+                Preview = "",
                 Field9 = 1
             };
             using var stream = new MemoryStream();
@@ -44,21 +44,15 @@ public class FaceEntity : IMessageEntity
                 {
                     CommonElem = new CommonElem
                     {
-                        ServiceType = 33,
+                        ServiceType = 37,
                         PbElem = stream.ToArray(),
                         BusinessType = 1
                     }
                 }
             };
         }
-        else
-        {
-            var face = new FaceExtra { FaceId = FaceId };
-            using var stream = new MemoryStream();
-            Serializer.Serialize(stream, face);
         
-            return new Elem[] { new() { Face = new Face { Old = stream.ToArray() } } };
-        }
+        return new Elem[] { new() { Face = new Face { Index = FaceId } } };
     }
 
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)

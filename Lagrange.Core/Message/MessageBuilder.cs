@@ -11,11 +11,7 @@ public sealed class MessageBuilder
 
     private MessageBuilder(MessageChain chain) => _chain = chain;
 
-    public static MessageBuilder Friend(uint friendUin)
-    {
-        // TODO: Get the real UID
-        return new MessageBuilder(new MessageChain(friendUin, "", ""));
-    }
+    public static MessageBuilder Friend(uint friendUin) => new(new MessageChain(friendUin, "", "")); // automatically set selfUid and friendUid by MessagingLogic
 
     public static MessageBuilder Group(uint groupUin) => new(new MessageChain(groupUin));
 
@@ -31,6 +27,14 @@ public sealed class MessageBuilder
     {
         var mentionEntity = new MentionEntity(display ?? target.ToString(), target);
         _chain.Add(mentionEntity);
+        
+        return this;
+    }
+    
+    public MessageBuilder Face(ushort id, bool isLarge = false)
+    {
+        var faceEntity = new FaceEntity(id, isLarge);
+        _chain.Add(faceEntity);
         
         return this;
     }

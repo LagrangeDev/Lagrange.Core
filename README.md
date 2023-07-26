@@ -16,7 +16,7 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 | Windows  | 🔴      | QrCode                    | 🟢      | Images           | 🟡         | ~~Poke~~          | 🔴         | Captcha                | 🔴      |
 | macOS    | 🔴      | Password                  | 🟢      | Text / At        | 🟢         | Recall            | 🟡         | BotOnline              | 🟢      |
 | Linux    | 🟢      | EasyLogin                 | 🟢      | Records          | 🔴         | Leave Group       | 🔴         | BotOffline             | 🟢      |
-|          |         | UnusalDevice<br/>Password | 🔴      | QFace            | 🟡         | ~~Special Title~~ | 🔴         | Message                | 🟢      |
+|          |         | UnusalDevice<br/>Password | 🔴      | QFace            | 🟢         | ~~Special Title~~ | 🔴         | Message                | 🟢      |
 |          |         | UnusalDevice<br/>Easy     | 🔴      | Json             | 🟡         | Kick Member       | 🔴         | ~~Poke~~               | 🔴      |
 |          |         |                           |         | Xml              | 🟡         | Mute Member       | 🔴         | MessageRecall          | 🔴      |
 |          |         |                           |         | Forward          | 🔴         | Set Admin         | 🔴         | GroupMemberDecrease    | 🔴      |
