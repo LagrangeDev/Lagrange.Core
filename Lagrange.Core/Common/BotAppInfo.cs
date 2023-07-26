@@ -66,7 +66,7 @@ public class BotAppInfo
     
     private static readonly BotAppInfo MacOs = new()
     {
-        Os = "MacOS",
+        Os = "Mac",
 
         BaseVersion = "6.9.17-12118",
         CurrentVersion = "6.9.17-12118",
@@ -74,13 +74,18 @@ public class BotAppInfo
         PtVersion = "2.0.0",
         MiscBitmap = 32764,
         PtOsVersion = 23,
-        PackageName = "com.tencent.qqdesktop",
+        PackageName = "com.tencent.qq",
         WtLoginSdk = "nt.wtlogin.0.0.1",
         PackageSign = "V1_MAC_NQ_6.9.17-12118_RDM_B",
         
+        UnknownIdentifier = 70644224,
         AppId = 1600001602,
-        AppIdQrCode = 13697054,
-        AppClientVersion = 13172
+        SubAppId = 537149057,
+        AppIdQrCode = 537138182,
+        AppClientVersion = 13172,
+        
+        MainSigMap = 169742560,
+        SubSigMap = 0
     };
     
     private static readonly BotAppInfo Windows = new()
