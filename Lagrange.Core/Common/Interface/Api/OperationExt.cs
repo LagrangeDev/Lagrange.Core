@@ -25,4 +25,7 @@ public static class OperationExt
     
     public static Task<bool> MuteGroupMember(this BotContext bot, uint groupUin, uint targetUin, int duration)
         => bot.ContextCollection.Business.OperationLogic.MuteGroupMember(groupUin, targetUin, duration);
+    
+    public static Task<bool> MuteGroupGlobal(this BotContext bot, uint groupUin, bool isMute)
+        => bot.ContextCollection.Business.OperationLogic.MuteGroupGlobal(groupUin, isMute);
 }
