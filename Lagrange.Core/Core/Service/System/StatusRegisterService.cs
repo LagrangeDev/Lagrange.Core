@@ -27,10 +27,10 @@ internal class StatusRegisterService : BaseService<StatusRegisterEvent>
             Online = new OnlineOsInfo
             {
                 User = device.DeviceName,
-                Os = appInfo.Os,
+                Os = appInfo.Kernel,
                 OsVer = device.SystemKernel,
                 Field4 = "",
-                OsLower = appInfo.Os.ToLower(),
+                OsLower = appInfo.Kernel.ToLower(),
             },
             Field7 = 0,
             Field8 = 0,

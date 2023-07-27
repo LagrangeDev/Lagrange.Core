@@ -6,6 +6,8 @@ public class BotAppInfo
 {
     public string Os { get; private set; }
     
+    public string Kernel { get; private set; }
+    
     public string BaseVersion { get; private set; }
     
     public string CurrentVersion { get; private set; }
@@ -43,6 +45,7 @@ public class BotAppInfo
     private static readonly BotAppInfo Linux = new()
     {
         Os = "Linux",
+        Kernel = "Linux",
         
         BaseVersion = "3.1.1-11223",
         CurrentVersion = "3.1.2-13107",
@@ -67,6 +70,7 @@ public class BotAppInfo
     private static readonly BotAppInfo MacOs = new()
     {
         Os = "Mac",
+        Kernel = "Darwin",
 
         BaseVersion = "6.9.17-12118",
         CurrentVersion = "6.9.17-12118",
@@ -91,7 +95,8 @@ public class BotAppInfo
     private static readonly BotAppInfo Windows = new()
     {
         Os = "Windows",
-        
+        Kernel = "Windows",
+
         BaseVersion = "9.8.3-13183",
         CurrentVersion = "9.8.3-13183",
         BuildVersion = 13183,
