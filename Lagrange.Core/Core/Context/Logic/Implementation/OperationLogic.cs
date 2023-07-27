@@ -4,6 +4,7 @@ using Lagrange.Core.Core.Event.Protocol.System;
 using Lagrange.Core.Core.Event.Protocol.Message;
 using Lagrange.Core.Message;
 using System.Text;
+using Lagrange.Core.Core.Event.Protocol.Action;
 
 namespace Lagrange.Core.Core.Context.Logic.Implementation;
 
@@ -41,7 +42,17 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(sendMessageEvent);
         return ((SendMessageEvent)events[0]).MsgResult;
     }
-    
+
+    public async Task<bool> MuteGroupMember(uint groupUin, uint targetUin, int duration)
+    {
+        string? uid = await Collection.Business.CachingLogic.ResolveUid(groupUin, targetUin);
+        if (uid == null) return false;
+        
+        var muteGroupMemberEvent = GroupMuteMemberEvent.Create(groupUin, duration, uid);
+        var events = await Collection.Business.SendEvent(muteGroupMemberEvent);
+        return events.Count != 0 && ((GroupMuteMemberEvent)events[0]).ResultCode == 0;
+    }
+
     public async Task<bool> GetHighwayAddress()
     {
         var highwayUrlEvent = HighwayUrlEvent.Create();
