@@ -16,7 +16,7 @@ internal class OidbSvcTrpcTcp0x8A0_1
     
     [ProtoMember(3)] public string TargetUid { get; set; }
     
-    [ProtoMember(4)] public uint Type { get; set; }
+    [ProtoMember(4)] public bool RejectAddRequest { get; set; }
     
-    [ProtoMember(5)] public string Field5 { get; set; }
+    [ProtoMember(5)] public string Field5 { get; set; } // ""
 }
