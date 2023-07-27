@@ -23,6 +23,8 @@ internal class BusinessContext : ContextBase
     internal WtExchangeLogic WtExchangeLogic { get; private set; }
     
     internal OperationLogic OperationLogic { get; private set; }
+    
+    internal CachingLogic CachingLogic { get; private set; }
 
     #endregion
 
@@ -62,6 +64,9 @@ internal class BusinessContext : ContextBase
                     break;
                 case OperationLogic operationLogic:
                     OperationLogic = operationLogic;
+                    break;
+                case CachingLogic cachingLogic:
+                    CachingLogic = cachingLogic;
                     break;
             }
         }
@@ -158,6 +163,7 @@ internal class BusinessContext : ContextBase
             {
                 Collection.Log.LogFatal(Tag, $"Error occurred while handling outgoing event {@event.GetType().Name}");
                 Collection.Log.LogFatal(Tag, e.Message);
+                if (e.StackTrace != null) Collection.Log.LogFatal(Tag, e.StackTrace);
             }
         }
         
