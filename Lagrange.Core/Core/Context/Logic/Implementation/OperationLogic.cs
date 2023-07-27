@@ -69,6 +69,16 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(muteGroupMemberEvent);
         return events.Count != 0 && ((GroupKickMemberEvent)events[0]).ResultCode == 0;
     }
+    
+    public async Task<bool> SetGroupAdmin(uint groupUin, uint targetUin, bool isAdmin)
+    {
+        string? uid = await Collection.Business.CachingLogic.ResolveUid(groupUin, targetUin);
+        if (uid == null) return false;
+        
+        var muteGroupMemberEvent = GroupSetAdminEvent.Create(groupUin, uid, isAdmin);
+        var events = await Collection.Business.SendEvent(muteGroupMemberEvent);
+        return events.Count != 0 && ((GroupSetAdminEvent)events[0]).ResultCode == 0;
+    }
 
     public async Task<bool> GetHighwayAddress()
     {
