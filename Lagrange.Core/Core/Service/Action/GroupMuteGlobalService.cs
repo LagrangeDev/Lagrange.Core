@@ -4,10 +4,9 @@ using Lagrange.Core.Core.Event.Protocol.Action;
 using Lagrange.Core.Core.Packets;
 using Lagrange.Core.Core.Packets.Service.Oidb;
 using Lagrange.Core.Core.Packets.Service.Oidb.Request;
+using Lagrange.Core.Core.Packets.Service.Oidb.Resopnse;
 using Lagrange.Core.Core.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
-using Lagrange.Core.Utility.Extension;
-using ProtoBuf;
 using ProtoBuf.Meta;
 
 namespace Lagrange.Core.Core.Service.Action;
@@ -18,7 +17,7 @@ internal class GroupMuteGlobalService : BaseService<GroupMuteGlobalEvent>
 {
     private static readonly RuntimeTypeModel Serializer = RuntimeTypeModel.Create();
 
-static GroupMuteGlobalService() => Serializer.UseImplicitZeroDefaults = false; // 666
+    static GroupMuteGlobalService() => Serializer.UseImplicitZeroDefaults = false; // 666
 
     protected override bool Build(GroupMuteGlobalEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
@@ -41,9 +40,9 @@ static GroupMuteGlobalService() => Serializer.UseImplicitZeroDefaults = false; /
         out GroupMuteGlobalEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
-        Console.WriteLine(payload.Hex());
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x89A_0Response>>(payload.AsSpan());
         
-        output = GroupMuteGlobalEvent.Result(0);
+        output = GroupMuteGlobalEvent.Result(packet.Body.ErorMsg == null ? 0 : -1);
         extraEvents = null;
         return true;
     }
