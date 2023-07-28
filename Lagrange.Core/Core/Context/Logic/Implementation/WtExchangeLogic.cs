@@ -101,16 +101,16 @@ internal class WtExchangeLogic : LogicBase
 
             if (easyLoginResult.Count != 0)
             {
-                switch ((EasyLoginEvent)easyLoginResult[0])
+                switch ((LoginCommon.Error)easyLoginResult[0].ResultCode)
                 {
-                    case { Success: true, UnusualVerify: false }:
+                    case LoginCommon.Error.Success:
                     {
                         Collection.Log.LogInfo(Tag, "Login Success");
 
                         await BotOnline();
                         return true;
                     }
-                    case { Success: true, UnusualVerify: true }:
+                    case LoginCommon.Error.UnusualVerify:
                     {
                         Collection.Log.LogInfo(Tag, "Login Success, but need to verify");
 
@@ -125,7 +125,7 @@ internal class WtExchangeLogic : LogicBase
                         if (result) await BotOnline();
                         return result;
                     }
-                    case { Success: false }:
+                    default:
                     {
                         Collection.Log.LogWarning(Tag, "Fast Login Failed, trying to Login by Password...");
                         
@@ -144,16 +144,16 @@ internal class WtExchangeLogic : LogicBase
             if (passwordLoginResult.Count != 0)
             {
                 var @event = (PasswordLoginEvent)passwordLoginResult[0];
-                switch (@event)
+                switch ((LoginCommon.Error)@event.ResultCode)
                 {
-                    case { Success: true, UnusualVerify: false }:
+                    case LoginCommon.Error.Success:
                     {
                         Collection.Log.LogInfo(Tag, "Login Success");
 
                         await BotOnline();
                         return true;
                     }
-                    case { Success: true, UnusualVerify: true }:
+                    case LoginCommon.Error.UnusualVerify:
                     {
                         Collection.Log.LogInfo(Tag, "Login Success, but need to verify");
 
@@ -161,7 +161,7 @@ internal class WtExchangeLogic : LogicBase
                         Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => await QueryUnusualState());
                         return true;
                     }
-                    case { Success: false }:
+                    default:
                     {
                         Collection.Log.LogWarning(Tag, @event is { Message: not null, Tag: not null }
                             ? $"Login Failed: {@event.Tag}: {@event.Message}"

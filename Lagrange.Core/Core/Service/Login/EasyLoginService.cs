@@ -39,40 +39,30 @@ internal class EasyLoginService : BaseService<EasyLoginEvent>
             var decrypted = new AesGcmImpl().Decrypt(encrypted.GcmCalc, keystore.Session.ExchangeKey);
             var response = Serializer.Deserialize<SsoNTLoginBase<SsoNTLoginResponse>>(decrypted.AsSpan());
             var body = response.Body;
-
-            if (body != null && (response.Header?.Error == null || response.Header?.Error?.ErrorCode == (ulong)Error.UnusualVerify))
+            
+            if (response.Header?.Error != null || body?.Credentials == null)
             {
-                if (body.Unusual != null || body.Credentials == null)
-                {
-                    keystore.Session.UnusualSign = body.Unusual?.Sig;
-                    keystore.Session.UnusualCookies = response.Header?.Cookie?.Cookie;
-                }
-                else
-                {
-                    keystore.Session.Tgt = body.Credentials.Tgt;
-                    keystore.Session.D2 = body.Credentials.D2;
-                    keystore.Session.D2Key = body.Credentials.D2Key;
-                    keystore.Session.TempPassword = body.Credentials.TempPassword;
-                }
-
-                output = EasyLoginEvent.Result(true, body.Unusual != null);
+                output = EasyLoginEvent.Result((int)(response.Header?.Error?.ErrorCode ?? 1));
+                
+                keystore.Session.UnusualSign = body?.Unusual?.Sig;
+                keystore.Session.UnusualCookies = response.Header?.Cookie?.Cookie;
             }
             else
             {
-                output = EasyLoginEvent.Result(false);
+                keystore.Session.Tgt = body.Credentials.Tgt;
+                keystore.Session.D2 = body.Credentials.D2;
+                keystore.Session.D2Key = body.Credentials.D2Key;
+                keystore.Session.TempPassword = body.Credentials.TempPassword;
+
+                output = EasyLoginEvent.Result(0);
             }
         }
         else
         {
-            output = EasyLoginEvent.Result(false);
+            output = EasyLoginEvent.Result(1);
         }
 
         extraEvents = null;
         return true;
-    }
-
-    public enum Error
-    {
-        UnusualVerify = 140022011
     }
 }

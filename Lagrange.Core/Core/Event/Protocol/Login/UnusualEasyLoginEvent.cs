@@ -4,11 +4,11 @@ internal class UnusualEasyLoginEvent : ProtocolEvent
 {
     public bool Success { get; set; }
     
-    protected UnusualEasyLoginEvent() : base(true) { }
+    private UnusualEasyLoginEvent() : base(true) { }
 
-    protected UnusualEasyLoginEvent(bool success) : base(0)
+    private UnusualEasyLoginEvent(int result) : base(result)
     {
-        Success = success;
+        Success = result == 0;
     }
     
     public static UnusualEasyLoginEvent Create()
@@ -16,8 +16,8 @@ internal class UnusualEasyLoginEvent : ProtocolEvent
         return new UnusualEasyLoginEvent();
     }
     
-    public static UnusualEasyLoginEvent Result(bool success)
+    public static UnusualEasyLoginEvent Result(int result)
     {
-        return new UnusualEasyLoginEvent(success);
+        return new UnusualEasyLoginEvent(result);
     }
 }

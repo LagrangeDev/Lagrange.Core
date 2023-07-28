@@ -39,24 +39,24 @@ internal class UnusualEasyLoginService : BaseService<UnusualEasyLoginEvent>
             var decrypted = new AesGcmImpl().Decrypt(encrypted.GcmCalc, keystore.Session.ExchangeKey);
             var response = Serializer.Deserialize<SsoNTLoginBase<SsoNTLoginResponse>>(decrypted.AsSpan());
             var body = response.Body;
-
-            if (body != null && response.Header?.Error == null && body.Credentials != null)
+            
+            if (response.Header?.Error != null || body is not { Credentials: not null })
+            {
+                output = UnusualEasyLoginEvent.Result((int)(response.Header?.Error?.ErrorCode ?? 1));
+            }
+            else
             {
                 keystore.Session.Tgt = body.Credentials.Tgt;
                 keystore.Session.D2 = body.Credentials.D2;
                 keystore.Session.D2Key = body.Credentials.D2Key;
                 keystore.Session.TempPassword = body.Credentials.TempPassword;
 
-                output = UnusualEasyLoginEvent.Result(true);
-            }
-            else
-            {
-                output = UnusualEasyLoginEvent.Result(false);
+                output = UnusualEasyLoginEvent.Result(0);
             }
         }
         else
         {
-            output = UnusualEasyLoginEvent.Result(false);
+            output = UnusualEasyLoginEvent.Result(1);
         }
 
         extraEvents = null;

@@ -1,3 +1,4 @@
+using Lagrange.Core.Core.Packets.Login.NTLogin.Plain.Universal;
 using ProtoBuf;
 
 namespace Lagrange.Core.Core.Packets.Login.NTLogin.Plain.Body;
@@ -8,4 +9,6 @@ namespace Lagrange.Core.Core.Packets.Login.NTLogin.Plain.Body;
 internal class SsoNTLoginEasyLogin
 {
     [ProtoMember(1)] public byte[]? TempPassword { get; set; }
+    
+    [ProtoMember(2)] public SsoNTLoginCaptchaSubmit? Captcha { get; set; }
 }
