@@ -8,8 +8,8 @@ public static class BotExt
     /// <summary>
     /// Use this method to login by QrCode, you should call <see cref="FetchQrCode"/> first
     /// </summary>
-    public static async Task LoginByQrCode(this BotContext bot)
-        => await bot.ContextCollection.Business.WtExchangeLogic.LoginByQrCode();
+    public static Task LoginByQrCode(this BotContext bot)
+        => bot.ContextCollection.Business.WtExchangeLogic.LoginByQrCode();
     
     /// <summary>
     /// Use this method to login by password, EasyLogin may be preformed if there is sig in <see cref="BotKeystore"/>
