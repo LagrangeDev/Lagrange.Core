@@ -24,11 +24,16 @@ internal class WtExchangeLogic : LogicBase
 {
     private const string Tag = nameof(WtExchangeLogic);
 
+    private readonly TaskCompletionSource<bool> _qrCodeTask;
+
     private const string Interface = "https://ntlogin.qq.com/qr/getFace";
 
     private const string QueryEvent = "wtlogin.trans_emp CMD0x12";
 
-    internal WtExchangeLogic(ContextCollection collection) : base(collection) { }
+    internal WtExchangeLogic(ContextCollection collection) : base(collection)
+    {
+        _qrCodeTask = new TaskCompletionSource<bool>();
+    }
 
     public override async Task Incoming(ProtocolEvent e)
     {
@@ -70,9 +75,12 @@ internal class WtExchangeLogic : LogicBase
         return null;
     }
 
-    public async Task LoginByQrCode() => 
-        await Task.Run(() => Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => await QueryQrCodeState()));
-    
+    public Task LoginByQrCode()
+    {
+        Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => await QueryQrCodeState());
+        return _qrCodeTask.Task;
+    }
+
     public async Task<bool> LoginByPassword()
     {
         if (!Collection.Socket.Connected) // if socket not connected, try to connect
@@ -202,12 +210,13 @@ internal class WtExchangeLogic : LogicBase
         return false;
     }
 
-    private async Task<bool> QueryQrCodeState()
+    private async Task QueryQrCodeState()
     {
         if (Collection.Keystore.Session.QrString == null)
         {
             Collection.Log.LogFatal(Tag, "QrString is null, Please Fetch QrCode First");
-            return false;
+            _qrCodeTask.SetResult(false);
+            return;
         }
 
         var request = new NTLoginHttpRequest
@@ -243,7 +252,7 @@ internal class WtExchangeLogic : LogicBase
                         Collection.Keystore.Session.TempPassword = @event.TempPassword;
                         Collection.Keystore.Session.NoPicSig = @event.NoPicSig;
 
-                        return await DoWtLogin();
+                        _qrCodeTask.SetResult(await DoWtLogin());
                     }
                     break;
                 }
@@ -253,7 +262,8 @@ internal class WtExchangeLogic : LogicBase
                     Collection.Scheduler.Cancel(QueryEvent);
                     Collection.Scheduler.Dispose();
 
-                    return false;
+                    _qrCodeTask.SetResult(false);
+                    return;
                 }
                 case TransEmp12.State.Canceled:
                 {
@@ -261,7 +271,8 @@ internal class WtExchangeLogic : LogicBase
                     Collection.Scheduler.Cancel(QueryEvent);
                     Collection.Scheduler.Dispose();
 
-                    return false;
+                    _qrCodeTask.SetResult(false);
+                    return;
                 }
                 case TransEmp12.State.WaitingForConfirm: 
                 case TransEmp12.State.WaitingForScan:
@@ -270,7 +281,6 @@ internal class WtExchangeLogic : LogicBase
             }
         }
 
-        return false;
     }
 
     private async Task BotOnline()
