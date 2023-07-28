@@ -1,3 +1,4 @@
+using System.Text;
 using Lagrange.Core.Core.Packets.Message.Element;
 
 namespace Lagrange.Core.Message;
@@ -51,4 +52,21 @@ public sealed class MessageChain : List<IMessageEntity>
     public bool HasTypeOf<T>() where T : IMessageEntity => this.Any(entity => entity is T);
     
     public T? GetEntity<T>() where T : class, IMessageEntity => this.FirstOrDefault(entity => entity is T, null) as T;
+
+    public string ToPreviewString()
+    {
+        var chainBuilder = new StringBuilder();
+
+        chainBuilder.Append("[MessageChain");
+        if (GroupUin != null) chainBuilder.Append($"({GroupUin})");
+        chainBuilder.Append($"({FriendUin})");
+        chainBuilder.Append("] ");
+        foreach (var entity in this)
+        {
+            chainBuilder.Append(entity.ToPreviewString());
+            if (this.Last() != entity) chainBuilder.Append(" | ");
+        }
+        
+        return chainBuilder.ToString();
+    }
 }

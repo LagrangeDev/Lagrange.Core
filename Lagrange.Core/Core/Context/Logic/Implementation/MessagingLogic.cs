@@ -29,23 +29,9 @@ internal class MessagingLogic : LogicBase
                 if (push.Chain.Count == 0) return;
                 await ResolveAdditionalPackets(push.Chain);
 
-                #region Debug Console Output
 
                 var chain = push.Chain;
-                var chainBuilder = new StringBuilder();
-
-                chainBuilder.Append("[MessageChain");
-                if (chain.GroupUin != null) chainBuilder.Append($"({chain.GroupUin})");
-                chainBuilder.Append($"({chain.FriendUin})");
-                chainBuilder.Append("] ");
-                foreach (var entity in chain)
-                {
-                    chainBuilder.Append(entity.ToPreviewString());
-                    if (chain.Last() != entity) chainBuilder.Append(" | ");
-                }
-                Collection.Log.LogVerbose(Tag, chainBuilder.ToString());
-
-                #endregion
+                Collection.Log.LogVerbose(Tag, chain.ToPreviewString());
 
                 EventBase args = push.Chain.GroupUin != null
                     ? new GroupMessageEvent(push.Chain)
