@@ -75,6 +75,7 @@ public class BotKeystore // TODO: 你自己不恶心吗，穿件衣服吧你
         internal byte[]? QrSign { get; set; } // size: 24
         internal byte[]? KeySign { get; set; }
         internal byte[]? UnusualSign { get; set; }
+        internal string? UnusualCookies { get; set; }
         internal string? QrString { get; set; }
         
         internal byte[]? ExchangeKey { get; set; }

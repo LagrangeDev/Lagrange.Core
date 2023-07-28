@@ -31,7 +31,8 @@ internal static class SsoNTLoginCommon
                     KernelVersion = device.KernelVersion,
                     AppId = appInfo.AppId,
                     PackageName = appInfo.PackageName
-                }
+                },
+                Cookie = new SsoNTLoginCookie { Cookie = keystore.Session.UnusualCookies }
             },
             Body = new SsoNTLoginEasyLogin { TempPassword = body }
         };

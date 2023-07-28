@@ -25,6 +25,7 @@ internal class WtExchangeLogic : LogicBase
     private const string Tag = nameof(WtExchangeLogic);
 
     private readonly TaskCompletionSource<bool> _qrCodeTask;
+    private readonly TaskCompletionSource<bool> _unusualTask;
 
     private const string Interface = "https://ntlogin.qq.com/qr/getFace";
 
@@ -33,6 +34,7 @@ internal class WtExchangeLogic : LogicBase
     internal WtExchangeLogic(ContextCollection collection) : base(collection)
     {
         _qrCodeTask = new TaskCompletionSource<bool>();
+        _unusualTask = new TaskCompletionSource<bool>();
     }
 
     public override async Task Incoming(ProtocolEvent e)
@@ -112,9 +114,16 @@ internal class WtExchangeLogic : LogicBase
                     {
                         Collection.Log.LogInfo(Tag, "Login Success, but need to verify");
 
-                        await FetchUnusual();
+                        if (!await FetchUnusual())
+                        {
+                            Collection.Log.LogInfo(Tag, "Fetch unusual state failed");
+                            return false;
+                        }
+                        
                         Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => await QueryUnusualState());
-                        return true;
+                        bool result = await _unusualTask.Task;
+                        if (result) await BotOnline();
+                        return result;
                     }
                     case { Success: false }:
                     {
@@ -328,6 +337,7 @@ internal class WtExchangeLogic : LogicBase
                     Collection.Scheduler.Cancel(QueryEvent); // cancel query task
 
                     if (@event.TempPassword != null) Collection.Keystore.Session.TempPassword = @event.TempPassword;
+                    _unusualTask.SetResult(await DoUnusualEasyLogin());
                     break;
                 }
                 case TransEmp12.State.CodeExpired:
@@ -335,6 +345,8 @@ internal class WtExchangeLogic : LogicBase
                     Collection.Log.LogWarning(Tag, "Verification Expired, Please Login Again");
                     Collection.Scheduler.Cancel(QueryEvent);
                     Collection.Scheduler.Dispose();
+                    
+                    _unusualTask.SetResult(false);
                     break;
                 }
                 case TransEmp12.State.Canceled:
@@ -342,6 +354,8 @@ internal class WtExchangeLogic : LogicBase
                     Collection.Log.LogWarning(Tag, "Verification Canceled, Please Login Again");
                     Collection.Scheduler.Cancel(QueryEvent);
                     Collection.Scheduler.Dispose();
+                    
+                    _unusualTask.SetResult(false);
                     break;
                 }
                 case TransEmp12.State.WaitingForConfirm:
@@ -349,5 +363,15 @@ internal class WtExchangeLogic : LogicBase
                     break;
             }
         }
+    }
+
+    private async Task<bool> DoUnusualEasyLogin()
+    {
+        Collection.Log.LogInfo(Tag, "Trying to Login by EasyLogin...");
+        var unusualEvent = UnusualEasyLoginEvent.Create();
+        var result = await Collection.Business.SendEvent(unusualEvent);
+        if (result.Count != 0) return ((UnusualEasyLoginEvent)result[0]).Success;
+
+        return false;
     }
 }

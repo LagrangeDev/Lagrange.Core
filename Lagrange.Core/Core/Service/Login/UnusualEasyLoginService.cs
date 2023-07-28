@@ -12,11 +12,11 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Core.Service.Login;
 
-[EventSubscribe(typeof(EasyLoginEvent))]
-[Service("trpc.login.ecdh.EcdhService.SsoNTLoginEasyLogin")]
-internal class EasyLoginService : BaseService<EasyLoginEvent>
+[EventSubscribe(typeof(UnusualEasyLoginEvent))]
+[Service("trpc.login.ecdh.EcdhService.SsoNTLoginEasyLoginUnusualDevice")]
+internal class UnusualEasyLoginService : BaseService<UnusualEasyLoginEvent>
 {
-    protected override bool Build(EasyLoginEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Build(UnusualEasyLoginEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
         if (keystore.Session.TempPassword == null) throw new InvalidOperationException("TempPassword is null");
@@ -27,7 +27,7 @@ internal class EasyLoginService : BaseService<EasyLoginEvent>
     }
 
     protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
-        out EasyLoginEvent output, out List<ProtocolEvent>? extraEvents)
+        out UnusualEasyLoginEvent output, out List<ProtocolEvent>? extraEvents)
     {
         if (keystore.Session.ExchangeKey == null) throw new InvalidOperationException("ExchangeKey is null");
         
@@ -40,39 +40,26 @@ internal class EasyLoginService : BaseService<EasyLoginEvent>
             var response = Serializer.Deserialize<SsoNTLoginBase<SsoNTLoginResponse>>(decrypted.AsSpan());
             var body = response.Body;
 
-            if (body != null && (response.Header?.Error == null || response.Header?.Error?.ErrorCode == (ulong)Error.UnusualVerify))
+            if (body != null && response.Header?.Error == null && body.Credentials != null)
             {
-                if (body.Unusual != null || body.Credentials == null)
-                {
-                    keystore.Session.UnusualSign = body.Unusual?.Sig;
-                    keystore.Session.UnusualCookies = response.Header?.Cookie?.Cookie;
-                }
-                else
-                {
-                    keystore.Session.Tgt = body.Credentials.Tgt;
-                    keystore.Session.D2 = body.Credentials.D2;
-                    keystore.Session.D2Key = body.Credentials.D2Key;
-                    keystore.Session.TempPassword = body.Credentials.TempPassword;
-                }
+                keystore.Session.Tgt = body.Credentials.Tgt;
+                keystore.Session.D2 = body.Credentials.D2;
+                keystore.Session.D2Key = body.Credentials.D2Key;
+                keystore.Session.TempPassword = body.Credentials.TempPassword;
 
-                output = EasyLoginEvent.Result(true, body.Unusual != null);
+                output = UnusualEasyLoginEvent.Result(true);
             }
             else
             {
-                output = EasyLoginEvent.Result(false);
+                output = UnusualEasyLoginEvent.Result(false);
             }
         }
         else
         {
-            output = EasyLoginEvent.Result(false);
+            output = UnusualEasyLoginEvent.Result(false);
         }
 
         extraEvents = null;
         return true;
-    }
-
-    public enum Error
-    {
-        UnusualVerify = 140022011
     }
 }
