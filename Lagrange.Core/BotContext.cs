@@ -30,7 +30,7 @@ public class BotContext : IDisposable
         _deviceInfo = deviceInfo;
         _keystore = keystore;
         
-        ContextCollection = new ContextCollection(keystore, _appInfo, deviceInfo, Invoker, Scheduler);
+        ContextCollection = new ContextCollection(_keystore, _appInfo, _deviceInfo, _config, Invoker, Scheduler);
     }
     
     public void Dispose()

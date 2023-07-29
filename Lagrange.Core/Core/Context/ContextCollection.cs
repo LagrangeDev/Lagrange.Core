@@ -19,11 +19,11 @@ internal class ContextCollection
     public TaskScheduler Scheduler { get; }
     public EventInvoker Invoker { get; }
     
-    public ContextCollection(BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, EventInvoker invoker, 
-        TaskScheduler scheduler)
+    public ContextCollection(BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, BotConfig config,
+        EventInvoker invoker, TaskScheduler scheduler)
     {
         Packet = new PacketContext(this, keystore, appInfo, device);
-        Socket = new SocketContext(this, keystore, appInfo, device);
+        Socket = new SocketContext(this, keystore, appInfo, device, config.AutoReconnect);
         Service = new ServiceContext(this, keystore, appInfo, device);
         Business = new BusinessContext(this, keystore, appInfo, device);
         Log = new LogContext(this, keystore, appInfo, device, invoker);

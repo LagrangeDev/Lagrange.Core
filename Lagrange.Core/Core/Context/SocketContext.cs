@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Net;
 using Lagrange.Core.Common;
 using Lagrange.Core.Core.Network;
 using Lagrange.Core.Utility.Binary;
@@ -16,24 +17,27 @@ internal class SocketContext : ContextBase, IClientListener
     private const string Tag = nameof(SocketContext);
     
     private readonly ClientListener _tcpClient;
-    
+
+    private readonly bool _reconnect;
+
     private Uri? ServerUri { get; set; }
     
     public uint HeaderSize => 4;
 
     public bool Connected => _tcpClient.Connected;
     
-    public SocketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device) 
+    public SocketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, bool reconnect) 
         : base(collection, keystore, appInfo, device)
     {
         _tcpClient = new CallbackClientListener(this);
+        _reconnect = reconnect;
     }
 
     public async Task<bool> Connect(bool useIPv6Network = false)
     {
         if (_tcpClient.Connected) return true;
 
-        var servers = await OptimumServer(false, useIPv6Network);
+        var servers = await OptimumServer(true, useIPv6Network);
         ServerUri = servers.First();
         return await _tcpClient.Connect(ServerUri.Host, ServerUri.Port);
     }
@@ -57,7 +61,7 @@ internal class SocketContext : ContextBase, IClientListener
 
     public void OnDisconnect()
     {
-        throw new NotImplementedException();
+        if (_reconnect) _ = Reconnect();
     }
 
     public void OnSocketError(Exception e)
@@ -110,19 +114,8 @@ internal class SocketContext : ContextBase, IClientListener
     
     private async Task<List<Uri>> OptimumServer(bool requestMsf, bool useIPv6Network = false)
     {
-        Uri[] result;
-        
-        if (requestMsf)
-        {
-            result = Array.Empty<Uri>();
-            // Implement MSF server request
-            // TODO: tx自己用的都tm是硬编码 实现尼玛
-        }
-        else
-        {
-            result = useIPv6Network ? HardCodeIPv6Uris : TestIPv4HardCodes;
-        }
 
+        var result = requestMsf ? await ResolveDns() : useIPv6Network ? HardCodeIPv6Uris : TestIPv4HardCodes;
         var latencyTasks = result.Select(uri => Icmp.PingAsync(uri)).ToArray();
         var latency = await Task.WhenAll(latencyTasks);
         Array.Sort(latency, result);
@@ -130,5 +123,16 @@ internal class SocketContext : ContextBase, IClientListener
         var list = result.ToList();
         for (int i = 0; i < list.Count; i++) Collection.Log.LogVerbose(Tag, $"Server: {list[i]} Latency: {latency[i]}");
         return list;
+    }
+    
+    private static async Task<Uri[]> ResolveDns(bool useIPv6Network = false)
+    {
+        string dns = useIPv6Network ? "msfwifiv6.3g.qq.com" : "msfwifi.3g.qq.com";
+        var addresses = await Dns.GetHostAddressesAsync(dns);
+        var result = new Uri[addresses.Length];
+        
+        for (int i = 0; i < addresses.Length; i++) result[i] = new Uri($"http://{addresses[i]}:8080");
+
+        return result;
     }
 }
