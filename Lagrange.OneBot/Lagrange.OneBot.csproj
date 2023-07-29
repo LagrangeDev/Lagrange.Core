@@ -11,7 +11,10 @@
       <PackageReference Include="MessagePack" Version="2.5.108" />
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
       <PackageReference Include="ZXing.Net" Version="0.16.9" />
-      <PackageReference Include="ZXing.Net.Bindings.SkiaSharp" Version="0.16.13" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Lagrange.Core\Lagrange.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>

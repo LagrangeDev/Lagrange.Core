@@ -7,7 +7,7 @@ internal static class QrCodeHelper
 {
     internal static void Output(string text)
     {
-        var writer = new ZXing.BarcodeWriterGeneric()
+        var writer = new BarcodeWriterGeneric
                      {
                          Format = BarcodeFormat.QR_CODE, Options = new QrCodeEncodingOptions { Width = 33, Height = 33, Margin = 1 }
                      };
