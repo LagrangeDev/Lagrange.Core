@@ -1,6 +1,8 @@
 using System.Buffers.Binary;
 using System.Net;
+using System.Net.Sockets;
 using Lagrange.Core.Common;
+using Lagrange.Core.Core.Event.Protocol.System;
 using Lagrange.Core.Core.Network;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Network;
@@ -44,7 +46,17 @@ internal class SocketContext : ContextBase, IClientListener
     
     public async Task<bool> Reconnect()
     {
-        if (ServerUri != null) return await _tcpClient.Connect(ServerUri.Host, ServerUri.Port);
+        if (ServerUri != null)
+        {
+            bool reconnect = await _tcpClient.Connect(ServerUri.Host, ServerUri.Port);
+            if (reconnect)
+            {
+                var registerEvent = StatusRegisterEvent.Create();
+                var registerResponse = await Collection.Business.SendEvent(registerEvent);
+                Collection.Log.LogInfo(Tag, $"Reconnect to {ServerUri}");
+                Collection.Log.LogInfo(Tag, $"Register Status: {((StatusRegisterEvent)registerResponse[0]).Message}");
+            }
+        }
 
         return false;
     }
@@ -66,7 +78,10 @@ internal class SocketContext : ContextBase, IClientListener
 
     public void OnSocketError(Exception e)
     {
-        Console.WriteLine(e);
+        if (e.GetType() == typeof(SocketException))
+        {
+            if (((SocketException)e).SocketErrorCode == SocketError.TimedOut) OnDisconnect();
+        }
     }
     
     private static readonly Uri[] MsfUris =
