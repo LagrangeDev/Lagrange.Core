@@ -6,6 +6,7 @@ internal class LoginCommon
     {
         TokenExpired = 140022015,
         UnusualVerify = 140022011,
+        NewDeviceVerify = 14002010,
         CaptchaVerify = 140022008,
         Success = 0,
         Unknown = 1,
