@@ -73,12 +73,14 @@ public class BotKeystore // TODO: 你自己不恶心吗，穿件衣服吧你
         internal byte[] Tgt { get; set; } = Array.Empty<byte>();
 
         internal byte[]? QrSign { get; set; } // size: 24
-        internal byte[]? KeySign { get; set; }
-        internal byte[]? UnusualSign { get; set; }
-        internal string? UnusualCookies { get; set; }
         internal string? QrString { get; set; }
         
         internal byte[]? ExchangeKey { get; set; }
+        internal byte[]? KeySign { get; set; }
+        internal byte[]? UnusualSign { get; set; }
+        internal string? UnusualCookies { get; set; }
+        internal string? CaptchaUrl { get; set; }
+        internal (string, string, string)? Captcha { get; set; }
         
         public byte[]? TempPassword { get; set; }
         internal byte[]? NoPicSig { get; set; } // size: 16, may be from Tlv19, for Tlv16A

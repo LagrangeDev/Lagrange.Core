@@ -8,7 +8,7 @@ internal class PasswordLoginEvent : ProtocolEvent
 
     private PasswordLoginEvent() : base(true) { }
 
-    private PasswordLoginEvent(int result, string? tag = null, string? message = null) : base(0)
+    private PasswordLoginEvent(int result, string? tag = null, string? message = null) : base(result)
     {
         Tag = tag;
         Message = message;

@@ -17,6 +17,9 @@ public static class BotExt
     public static async Task<bool> LoginByPassword(this BotContext bot)
         => await bot.ContextCollection.Business.WtExchangeLogic.LoginByPassword();
     
+    public static bool SubmitCaptcha(this BotContext bot, string ticket, string randStr)
+        => bot.ContextCollection.Business.WtExchangeLogic.SubmitCaptcha(ticket, randStr);
+    
     /// <summary>
     /// Use this method to update keystore, so EasyLogin may be preformed next time by using this keystore
     /// </summary>

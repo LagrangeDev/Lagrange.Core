@@ -34,8 +34,19 @@ internal static class SsoNTLoginCommon
                 },
                 Cookie = new SsoNTLoginCookie { Cookie = keystore.Session.UnusualCookies }
             },
-            Body = new SsoNTLoginEasyLogin { TempPassword = body }
+            Body = new SsoNTLoginEasyLogin { TempPassword = body, }
         };
+
+        if (keystore.Session.Captcha is not null)
+        {
+            var (ticket, randStr, aid) = keystore.Session.Captcha.Value;
+            packet.Body.Captcha = new SsoNTLoginCaptchaSubmit
+            {
+                Ticket = ticket,
+                RandStr = randStr,
+                Aid = aid
+            };
+        }
         
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, packet);

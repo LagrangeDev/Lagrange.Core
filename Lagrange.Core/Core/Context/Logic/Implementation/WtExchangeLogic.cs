@@ -26,6 +26,7 @@ internal class WtExchangeLogic : LogicBase
 
     private readonly TaskCompletionSource<bool> _qrCodeTask;
     private readonly TaskCompletionSource<bool> _unusualTask;
+    private TaskCompletionSource<(string, string)>? _captchaTask;
 
     private const string Interface = "https://ntlogin.qq.com/qr/getFace";
 
@@ -91,7 +92,14 @@ internal class WtExchangeLogic : LogicBase
             Collection.Scheduler.Interval("Heartbeat.Alive", 10 * 1000, async () => await Collection.Business.PushEvent(AliveEvent.Create()));
         }
 
-        if (Collection.Keystore.Session.ExchangeKey == null) await KeyExchange();
+        if (Collection.Keystore.Session.ExchangeKey == null)
+        {
+            if (!await KeyExchange())
+            {
+                Collection.Log.LogInfo(Tag, "Key Exchange Failed, please try again later");
+                return false;
+            }
+        }
 
         if (Collection.Keystore.Session.TempPassword != null) // try EasyLogin
         {
@@ -161,11 +169,30 @@ internal class WtExchangeLogic : LogicBase
                         Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => await QueryUnusualState());
                         return true;
                     }
+                    case LoginCommon.Error.CaptchaVerify:
+                    {
+                        Collection.Log.LogInfo(Tag, "Login Success, but captcha is required, please follow the link from event");
+                        if (Collection.Keystore.Session.CaptchaUrl != null)
+                        {
+                            var captchaEvent = new BotCaptchaEvent(Collection.Keystore.Session.CaptchaUrl);
+                            Collection.Invoker.PostEvent(captchaEvent);
+                            
+                            string aid = Collection.Keystore.Session.CaptchaUrl.Split("&sid=")[1].Split("&")[0];
+                            _captchaTask = new TaskCompletionSource<(string, string)>();
+                            var (ticket, randStr) = await _captchaTask.Task;
+                            Collection.Keystore.Session.Captcha = new ValueTuple<string, string, string>(ticket, randStr, aid);
+
+                            return await LoginByPassword();
+                        }
+                        
+                        Collection.Log.LogInfo(Tag, "Captcha Url is null, please try again later");
+                        return false;
+                    }
                     default:
                     {
                         Collection.Log.LogWarning(Tag, @event is { Message: not null, Tag: not null }
-                            ? $"Login Failed: {@event.Tag}: {@event.Message}"
-                            : "Login Failed");
+                            ? $"Login Failed: {(LoginCommon.Error)@event.ResultCode} | {@event.Tag}: {@event.Message}"
+                            : $"Login Failed: {(LoginCommon.Error)@event.ResultCode}");
                         
                         Collection.Invoker.Dispose();
                         return false;
@@ -370,8 +397,9 @@ internal class WtExchangeLogic : LogicBase
         Collection.Log.LogInfo(Tag, "Trying to Login by EasyLogin...");
         var unusualEvent = UnusualEasyLoginEvent.Create();
         var result = await Collection.Business.SendEvent(unusualEvent);
-        if (result.Count != 0) return ((UnusualEasyLoginEvent)result[0]).Success;
+        return result.Count != 0 && ((UnusualEasyLoginEvent)result[0]).Success;
 
-        return false;
     }
+    
+    public bool SubmitCaptcha(string ticket, string randStr) => _captchaTask?.TrySetResult((ticket, randStr)) ?? false;
 }
