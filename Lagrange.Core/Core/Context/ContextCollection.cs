@@ -11,6 +11,7 @@ internal class ContextCollection
     public ServiceContext Service { get; }
     public BusinessContext Business { get; }
     public LogContext Log { get; }
+    public HighwayContext Highway { get; }
     
     public BotKeystore Keystore { get; }
     public BotAppInfo AppInfo { get; }
@@ -23,10 +24,12 @@ internal class ContextCollection
         EventInvoker invoker, TaskScheduler scheduler)
     {
         Packet = new PacketContext(this, keystore, appInfo, device);
-        Socket = new SocketContext(this, keystore, appInfo, device, config.AutoReconnect);
+        Socket = new SocketContext(this, keystore, appInfo, device, config);
         Service = new ServiceContext(this, keystore, appInfo, device);
         Business = new BusinessContext(this, keystore, appInfo, device);
         Log = new LogContext(this, keystore, appInfo, device, invoker);
+        Highway = new HighwayContext(this, keystore, appInfo, device);
+        
 
         Keystore = keystore;
         AppInfo = appInfo;

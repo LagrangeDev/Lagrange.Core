@@ -20,7 +20,7 @@ internal class SocketContext : ContextBase, IClientListener
     
     private readonly ClientListener _tcpClient;
 
-    private readonly bool _reconnect;
+    private readonly BotConfig _config;
 
     private Uri? ServerUri { get; set; }
     
@@ -28,18 +28,18 @@ internal class SocketContext : ContextBase, IClientListener
 
     public bool Connected => _tcpClient.Connected;
     
-    public SocketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, bool reconnect) 
+    public SocketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, BotConfig config) 
         : base(collection, keystore, appInfo, device)
     {
         _tcpClient = new CallbackClientListener(this);
-        _reconnect = reconnect;
+        _config = config;
     }
 
-    public async Task<bool> Connect(bool useIPv6Network = false)
+    public async Task<bool> Connect()
     {
         if (_tcpClient.Connected) return true;
 
-        var servers = await OptimumServer(true, useIPv6Network);
+        var servers = await OptimumServer(_config.GetOptimumServer, _config.UseIPv6Network);
         ServerUri = servers.First();
         return await _tcpClient.Connect(ServerUri.Host, ServerUri.Port);
     }
@@ -73,7 +73,7 @@ internal class SocketContext : ContextBase, IClientListener
 
     public void OnDisconnect()
     {
-        if (_reconnect) _ = Reconnect();
+        if (_config.AutoReconnect) _ = Reconnect();
     }
 
     public void OnSocketError(Exception e)
@@ -83,34 +83,6 @@ internal class SocketContext : ContextBase, IClientListener
             if (((SocketException)e).SocketErrorCode == SocketError.TimedOut) OnDisconnect();
         }
     }
-    
-    private static readonly Uri[] MsfUris =
-    {
-        new("http://msfwifi.3g.qq.com:8080"), // IPv4
-        new("http://msfwifiv6.3g.qq.com:14000") // IPv6
-    };
-    
-    private static readonly Uri[] HardCodeIPv4Uris = 
-    {
-        new("http://msfwifi.3g.qq.com:8080"),
-        new("http://163.177.89.195:14000"),
-        new("http://120.232.18.27:443"),
-        new("http://157.255.13.77:443"),
-        new("http://140.207.123.177:8080"),
-        new("http://221.198.69.96:443"),
-        new("http://123.150.76.143:14000"),
-        new("http://183.3.235.162:443"),
-        new("http://61.129.6.101:8080"),
-        new("http://42.81.169.100:443"),
-        new("http://183.232.94.44:14000"),
-        new("http://msfxg.3g.qq.com:80"),
-        new("http://117.144.244.33:8080"),
-        new("http://111.30.138.152:443"),
-        new("http://203.205.255.221:14000"),
-        new("http://203.205.255.224:443"),
-        new("http://183.3.235.162:8080"),
-        new("http://183.47.102.193:8080")
-    };
 
     private static readonly Uri[] HardCodeIPv6Uris = 
     {
@@ -130,7 +102,7 @@ internal class SocketContext : ContextBase, IClientListener
     private async Task<List<Uri>> OptimumServer(bool requestMsf, bool useIPv6Network = false)
     {
 
-        var result = requestMsf ? await ResolveDns() : useIPv6Network ? HardCodeIPv6Uris : TestIPv4HardCodes;
+        var result = requestMsf ? await ResolveDns(useIPv6Network) : useIPv6Network ? HardCodeIPv6Uris : TestIPv4HardCodes;
         var latencyTasks = result.Select(uri => Icmp.PingAsync(uri)).ToArray();
         var latency = await Task.WhenAll(latencyTasks);
         Array.Sort(latency, result);
@@ -143,10 +115,10 @@ internal class SocketContext : ContextBase, IClientListener
     private static async Task<Uri[]> ResolveDns(bool useIPv6Network = false)
     {
         string dns = useIPv6Network ? "msfwifiv6.3g.qq.com" : "msfwifi.3g.qq.com";
-        var addresses = await Dns.GetHostAddressesAsync(dns);
-        var result = new Uri[addresses.Length];
+        var addresses = await Dns.GetHostEntryAsync(dns);
+        var result = new Uri[addresses.AddressList.Length];
         
-        for (int i = 0; i < addresses.Length; i++) result[i] = new Uri($"http://{addresses[i]}:8080");
+        for (int i = 0; i < addresses.AddressList.Length; i++) result[i] = new Uri($"http://{addresses.AddressList[i]}:8080");
 
         return result;
     }
