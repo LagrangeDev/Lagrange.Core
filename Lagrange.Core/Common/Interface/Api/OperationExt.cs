@@ -8,7 +8,7 @@ public static class OperationExt
     public static Task<List<BotFriend>> FetchFriends(this BotContext bot) 
         => bot.ContextCollection.Business.OperationLogic.FetchFriends();
     
-    public static Task<List<BotGroupMember>> FetMembers(this BotContext bot, uint groupUin)
+    public static Task<List<BotGroupMember>> FetchMembers(this BotContext bot, uint groupUin)
         => bot.ContextCollection.Business.OperationLogic.FetchMembers(groupUin);
 
     public static Task<List<string>> FetchCookies(this BotContext bot, List<string> domains)
