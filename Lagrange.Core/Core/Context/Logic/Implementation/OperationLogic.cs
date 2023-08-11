@@ -40,7 +40,7 @@ internal class OperationLogic : LogicBase
     {
         if (refreshCache) await Collection.Business.PushEvent(InfoSyncEvent.Create());
 
-        return Collection.Business.CachingLogic.GetCachedGroups();
+        return await Collection.Business.CachingLogic.GetCachedGroups();
     }
 
     public async Task<MessageResult> SendMessage(MessageChain chain)

@@ -15,6 +15,8 @@ internal class CachingLogic : LogicBase
     private readonly Dictionary<uint, string> _uinToUid;
     private readonly List<uint> _cachedGroups;
     private readonly List<BotGroup> _cachedGroupEntities;
+
+    private TaskCompletionSource<List<BotGroup>>? _initCompletionSource;
     
     internal CachingLogic(ContextCollection collection) : base(collection)
     {
@@ -30,6 +32,13 @@ internal class CachingLogic : LogicBase
             case InfoPushGroupEvent infoPushGroupEvent:
                 _cachedGroupEntities.Clear();
                 _cachedGroupEntities.AddRange(infoPushGroupEvent.Groups);
+                
+                if (_initCompletionSource != null)
+                {
+                    _initCompletionSource.SetResult(_cachedGroupEntities);
+                    _initCompletionSource = null;
+                }
+                
                 Collection.Log.LogVerbose(Tag, $"Caching group entities: {infoPushGroupEvent.Groups.Count}");
                 break;
         }
@@ -37,7 +46,15 @@ internal class CachingLogic : LogicBase
         return Task.CompletedTask;
     }
     
-    public List<BotGroup> GetCachedGroups() => _cachedGroupEntities;
+    public Task<List<BotGroup>> GetCachedGroups()
+    {
+        if (_cachedGroupEntities.Count == 0)
+        {
+            _initCompletionSource = new TaskCompletionSource<List<BotGroup>>();
+            return _initCompletionSource.Task;
+        }
+        return Task.FromResult(_cachedGroupEntities);
+    }
 
     public async Task<string?> ResolveUid(uint? groupUin, uint friendUin)
     {
