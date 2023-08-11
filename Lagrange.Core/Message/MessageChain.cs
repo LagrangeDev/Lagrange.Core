@@ -39,11 +39,11 @@ public sealed class MessageChain : List<IMessageEntity>
         Elements = new List<Elem>();
     }
     
-    internal MessageChain(uint groupUin, uint friendUin)
+    internal MessageChain(uint groupUin, uint friendUin, uint sequence)
     {
         GroupUin = groupUin;
         FriendUin = friendUin;
-        Sequence = 0; // unuseful at there
+        Sequence = sequence;
         Uid = null;
         IsGroup = true;
         Elements = new List<Elem>();

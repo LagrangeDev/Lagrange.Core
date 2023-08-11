@@ -13,6 +13,8 @@
         <Version>0.0.5-alpha</Version>
         <Copyright>Linwenxuan04 2023</Copyright>
         <RepositoryUrl>https://github.com/Linwenxuan05/Lagrange.Core</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <IsPublishable>true</IsPublishable>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>

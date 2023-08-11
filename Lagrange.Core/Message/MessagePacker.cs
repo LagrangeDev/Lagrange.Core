@@ -161,6 +161,6 @@ internal class MessagePacker
     {
         return message.ResponseHead.Grp == null
             ? new MessageChain(message.ResponseHead.FromUin,message.ResponseHead.ToUid ?? string.Empty ,message.ResponseHead.FromUid ?? string.Empty)
-            : new MessageChain(message.ResponseHead.Grp.GroupUin, message.ResponseHead.FromUin);
+            : new MessageChain(message.ResponseHead.Grp.GroupUin, message.ResponseHead.FromUin, (uint)(message.ContentHead.MsgSe ?? 0));
     }
 }

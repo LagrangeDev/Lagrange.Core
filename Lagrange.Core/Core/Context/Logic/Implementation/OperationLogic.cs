@@ -98,10 +98,20 @@ internal class OperationLogic : LogicBase
     {
         if (result.Sequence == null) return false;
         
-        var recallMessageEvent = RecallGroupMessageEvent.Create(groupUin, (uint)result.Sequence);
+        var recallMessageEvent = RecallGroupMessageEvent.Create(groupUin, result.Sequence.Value);
         var events = await Collection.Business.SendEvent(recallMessageEvent);
         return events.Count != 0 && ((RecallGroupMessageEvent)events[0]).ResultCode == 0;
     }
+    
+    public async Task<bool> RecallGroupMessage(MessageChain chain)
+    {
+        if (chain.GroupUin == null) return false;
+        
+        var recallMessageEvent = RecallGroupMessageEvent.Create(chain.GroupUin.Value, chain.Sequence);
+        var events = await Collection.Business.SendEvent(recallMessageEvent);
+        return events.Count != 0 && ((RecallGroupMessageEvent)events[0]).ResultCode == 0;
+    }
+
 
     private static int CalculateBkn(string sKey) => 
         (int)sKey.Aggregate<char, long>(5381, (current, t) => current + (current << 5) + t) & int.MaxValue;
