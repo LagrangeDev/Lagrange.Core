@@ -329,6 +329,8 @@ internal class WtExchangeLogic : LogicBase
         var heartbeatDelegate = new Action(async () => await Collection.Business.PushEvent(SsoAliveEvent.Create()));
         Collection.Log.LogInfo(Tag, $"Register Status: {((StatusRegisterEvent)registerResponse[0]).Message}");
         Collection.Scheduler.Interval("SsoHeartBeat", (int)(4.5 * 60 * 1000), heartbeatDelegate);
+
+        await Collection.Business.PushEvent(InfoSyncEvent.Create());
     }
 
     private async Task<bool> FetchUnusual()
