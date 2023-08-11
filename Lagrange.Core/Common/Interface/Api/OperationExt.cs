@@ -10,6 +10,9 @@ public static class OperationExt
     
     public static Task<List<BotGroupMember>> FetchMembers(this BotContext bot, uint groupUin)
         => bot.ContextCollection.Business.OperationLogic.FetchMembers(groupUin);
+    
+    public static Task<List<BotGroup>> FetchGroups(this BotContext bot, bool refreshCache = false)
+        => bot.ContextCollection.Business.OperationLogic.FetchGroups(refreshCache);
 
     public static Task<List<string>> FetchCookies(this BotContext bot, List<string> domains)
         => bot.ContextCollection.Business.OperationLogic.GetCookies(domains);

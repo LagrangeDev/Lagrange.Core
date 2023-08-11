@@ -35,6 +35,13 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(fetchFriendsEvent);
         return events.Count != 0 ? ((FetchMembersEvent)events[0]).Members : new List<BotGroupMember>();
     }
+    
+    public async Task<List<BotGroup>> FetchGroups(bool refreshCache)
+    {
+        if (refreshCache) await Collection.Business.PushEvent(InfoSyncEvent.Create());
+
+        return Collection.Business.CachingLogic.GetCachedGroups();
+    }
 
     public async Task<MessageResult> SendMessage(MessageChain chain)
     {

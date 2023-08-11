@@ -1,7 +1,12 @@
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Core.Context.Attributes;
+using Lagrange.Core.Core.Event.Protocol;
+using Lagrange.Core.Core.Event.Protocol.System;
+using Lagrange.Core.Core.Service;
 
 namespace Lagrange.Core.Core.Context.Logic.Implementation;
 
+[EventSubscribe(typeof(InfoPushGroupEvent))]
 [BusinessLogic("CachingLogic", "Cache Uin to Uid")]
 internal class CachingLogic : LogicBase
 {
@@ -9,12 +14,30 @@ internal class CachingLogic : LogicBase
     
     private readonly Dictionary<uint, string> _uinToUid;
     private readonly List<uint> _cachedGroups;
+    private readonly List<BotGroup> _cachedGroupEntities;
     
     internal CachingLogic(ContextCollection collection) : base(collection)
     {
         _uinToUid = new Dictionary<uint, string>();
         _cachedGroups = new List<uint>();
+        _cachedGroupEntities = new List<BotGroup>();
     }
+
+    public override Task Incoming(ProtocolEvent e)
+    {
+        switch (e)
+        {
+            case InfoPushGroupEvent infoPushGroupEvent:
+                _cachedGroupEntities.Clear();
+                _cachedGroupEntities.AddRange(infoPushGroupEvent.Groups);
+                Collection.Log.LogVerbose(Tag, $"Caching group entities: {infoPushGroupEvent.Groups.Count}");
+                break;
+        }
+        
+        return Task.CompletedTask;
+    }
+    
+    public List<BotGroup> GetCachedGroups() => _cachedGroupEntities;
 
     public async Task<string?> ResolveUid(uint? groupUin, uint friendUin)
     {
