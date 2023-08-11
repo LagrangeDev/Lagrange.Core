@@ -35,6 +35,6 @@ public class BotGroupMember
 public enum GroupMemberPermission : uint
 {
     Member = 0,
+    Owner = 1,
     Admin = 2,
-    Owner = 3
 }
