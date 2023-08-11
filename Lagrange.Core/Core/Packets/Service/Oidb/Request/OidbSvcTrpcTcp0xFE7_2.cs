@@ -28,7 +28,7 @@ internal class OidbSvcTrpcScp0xFE7_2Body
     
     [ProtoMember(11)] public bool MemberCard { get; set; } // 1
     
-    [ProtoMember(12)] public bool Permission { get; set; } // 1
+    [ProtoMember(12)] public bool Level { get; set; } // 1
     
     [ProtoMember(20)] public bool Field4 { get; set; } // 1
     
@@ -48,5 +48,5 @@ internal class OidbSvcTrpcScp0xFE7_2Body
     
     [ProtoMember(106)] public bool Field12 { get; set; } // 1
     
-    [ProtoMember(107)] public bool Field13 { get; set; } // 1
+    [ProtoMember(107)] public bool Permission { get; set; } // 1
 }

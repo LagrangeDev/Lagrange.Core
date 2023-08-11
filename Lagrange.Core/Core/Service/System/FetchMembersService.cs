@@ -8,6 +8,7 @@ using Lagrange.Core.Core.Packets.Service.Oidb.Request;
 using Lagrange.Core.Core.Packets.Service.Oidb.Resopnse;
 using Lagrange.Core.Core.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
+using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
 namespace Lagrange.Core.Core.Service.System;
@@ -28,9 +29,10 @@ internal class FetchMembersService : BaseService<FetchMembersEvent>
             {
                 MemberName = true,
                 MemberCard = true,
-                Permission = true,
+                Level = true,
                 JoinTimestamp = true,
-                LastMsgTimestamp = true
+                LastMsgTimestamp = true,
+                Permission = true,
             }
         });
         
@@ -48,29 +50,17 @@ internal class FetchMembersService : BaseService<FetchMembersEvent>
         var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
         var response = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xFE7_2Response>>(payload.AsSpan());
 
-        var members = response.Body.Members.Select(member =>
-        {
-            var permission = GroupMemberPermission.Member;
-            if (member.Permission?.Infos != null)
-            {
-                permission = member.Permission.Infos[0] switch
-                {
-                    2 => GroupMemberPermission.Owner,
-                    3 => GroupMemberPermission.Admin,
-                    _ => permission
-                };
-            }
-
-            return new BotGroupMember(member.Uin.Uin,
-                                      member.Uin.Uid,
-                                      permission,
-                                      member.Permission?.Level ?? 0,
-                                      member.MemberCard.MemberCard,
-                                      member.MemberName,
-                                      DateTimeOffset.FromUnixTimeSeconds(member.JoinTimestamp).DateTime,
-                                      DateTimeOffset.FromUnixTimeSeconds(member.LastMsgTimestamp).DateTime);
-        }).ToList();
+        var members = response.Body.Members.Select(member => 
+            new BotGroupMember(member.Uin.Uin,
+                               member.Uin.Uid,
+                               (GroupMemberPermission)member.Permission,
+                               member.Level?.Level ?? 0,
+                               member.MemberCard.MemberCard,
+                               member.MemberName,
+                               DateTimeOffset.FromUnixTimeSeconds(member.JoinTimestamp).DateTime,
+                               DateTimeOffset.FromUnixTimeSeconds(member.LastMsgTimestamp).DateTime)).ToList();
         
+        Console.WriteLine(payload.Hex());
         output = FetchMembersEvent.Result(members);
         extraEvents = null;
         return true;

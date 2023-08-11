@@ -22,11 +22,13 @@ internal class OidbSvcTrpcTcp0xFE7_2Member
     
     [ProtoMember(11)] public OidbSvcTrpcTcp0xFE7_2Card MemberCard { get; set; }
     
-    [ProtoMember(12)] public OidbSvcTrpcTcp0xFE7_2Permission? Permission { get; set; }
+    [ProtoMember(12)] public OidbSvcTrpcTcp0xFE7_2Level? Level { get; set; }
 
     [ProtoMember(100)] public uint JoinTimestamp { get; set; }
     
     [ProtoMember(101)] public uint LastMsgTimestamp { get; set; }
+    
+    [ProtoMember(107)] public uint Permission { get; set; }
 }
 
 [ProtoContract]
@@ -44,7 +46,7 @@ internal class OidbSvcTrpcTcp0xFE7_2Card
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0xFE7_2Permission
+internal class OidbSvcTrpcTcp0xFE7_2Level
 {
     [ProtoMember(1)] public List<uint>? Infos { get; set; }
     
