@@ -1,10 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lagrange.Core", "Lagrange.Core\Lagrange.Core.csproj", "{909C99CC-0CB7-4A34-8C75-AD25E6AEA535}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lagrange.Core", "Lagrange.Core\Lagrange.Core.csproj", "{909C99CC-0CB7-4A34-8C75-AD25E6AEA535}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lagrange.Core.Test", "Lagrange.Core.Test\Lagrange.Core.Test.csproj", "{D64B6BAB-CD20-4660-8A6E-BCC936652204}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lagrange.Core.Test", "Lagrange.Core.Test\Lagrange.Core.Test.csproj", "{D64B6BAB-CD20-4660-8A6E-BCC936652204}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lagrange.OneBot", "Lagrange.OneBot\Lagrange.OneBot.csproj", "{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lagrange.OneBot", "Lagrange.OneBot\Lagrange.OneBot.csproj", "{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +27,8 @@ Global
 		{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

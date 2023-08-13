@@ -21,8 +21,8 @@ internal class BaseService<TEvent> : IService where TEvent : ProtocolEvent
         return (output = null!) != null;
     }
 
-    bool IService.Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
-        out ProtocolEvent output, out List<ProtocolEvent>? extraEvents)
+    bool IService.Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+        out ProtocolEvent? output, out List<ProtocolEvent>? extraEvents)
     {
         bool result = Parse(input, keystore, appInfo, device, out var @event, out extraEvents);
         output = @event;
@@ -30,6 +30,6 @@ internal class BaseService<TEvent> : IService where TEvent : ProtocolEvent
     }
 
     bool IService.Build(ProtocolEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets) =>
+        out BinaryPacket? output, out List<BinaryPacket>? extraPackets) =>
         Build((TEvent) input, keystore, appInfo, device, out output, out extraPackets);
 }

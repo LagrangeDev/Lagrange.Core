@@ -6,7 +6,6 @@ using Lagrange.Core.Core.Service;
 using Lagrange.Core.Core.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
-// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 namespace Lagrange.Core.Core.Context;
 
@@ -104,7 +103,7 @@ internal partial class ServiceContext : ContextBase
 
         if (success)
         {
-            result.Add(@event);
+            if (@event != null) result.Add(@event);
             if (extraEvents != null) result.AddRange(extraEvents);
             
             Collection.Log.LogVerbose(Tag, $"Incoming SSOFrame: {packet.Command}");

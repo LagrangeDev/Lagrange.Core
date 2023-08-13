@@ -8,8 +8,8 @@ namespace Lagrange.Core.Core.Service.Abstraction;
 internal interface IService
 {
     public bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out ProtocolEvent output, out List<ProtocolEvent>? extraEvents);
+        out ProtocolEvent? output, out List<ProtocolEvent>? extraEvents);
     
     public bool Build(ProtocolEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets);
+        out BinaryPacket? output, out List<BinaryPacket>? extraPackets);
 }
