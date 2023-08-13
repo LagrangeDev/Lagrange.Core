@@ -15,7 +15,7 @@ internal class ContentHead
     
     [ProtoMember(4)] public long? MsgId { get; set; }
     
-    [ProtoMember(5)] public int? MsgSe { get; set; }
+    [ProtoMember(5)] public int? Sequence { get; set; }
     
     [ProtoMember(6)] public long? Timestamp { get; set; }
     

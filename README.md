@@ -22,7 +22,7 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 |          |         |                           |         | Forward          | 🔴         | Set Admin         | 🟢         | GroupMemberDecrease    | 🔴      |
 |          |         |                           |         | Video            | 🔴         | Friend Request    | 🔴         | GroupMemberIncrease    | 🔴      |
 |          |         |                           |         | ~~Flash Image~~  | 🔴         | Group Request     | 🔴         | GroupPromoteAdmin      | 🔴      |
-|          |         |                           |         | Reply            | 🟡         | ~~Voice Call~~    | 🔴         | GroupInvite            | 🔴      |
+|          |         |                           |         | Reply            | 🟡         | ~~Voice Call~~    | 🔴         | GroupInvite            | 🟢      |
 |          |         |                           |         | File             | 🔴         | Csrf Token        | 🔴         | GroupRequestJoin       | 🔴      |
 |          |         |                           |         |                  |            | Cookies           | 🟢         | FriendRequest          | 🔴      |
 |          |         |                           |         |                  |            | Send Message      | 🟢         | ~~FriendTyping~~       | 🔴      |

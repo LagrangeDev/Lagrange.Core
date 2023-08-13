@@ -6,39 +6,46 @@ using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Core.Event;
 using Lagrange.Core.Core.Event.EventArg;
-using System.Text;
+using Lagrange.Core.Core.Event.Protocol.Notify;
 
 namespace Lagrange.Core.Core.Context.Logic.Implementation;
 
 [EventSubscribe(typeof(PushMessageEvent))]
 [EventSubscribe(typeof(SendMessageEvent))]
-[BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages")]
+[EventSubscribe(typeof(GroupSysInviteEvent))]
+[BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
 internal class MessagingLogic : LogicBase
 {
     private const string Tag = nameof(MessagingLogic);
 
-    internal MessagingLogic(ContextCollection collection) : base(collection)
-    {
-    }
+    internal MessagingLogic(ContextCollection collection) : base(collection) { }
 
     public override async Task Incoming(ProtocolEvent e)
     {
         switch (e)
         {
             case PushMessageEvent push:
+            {
                 if (push.Chain.Count == 0) return;
                 await ResolveAdditionalPackets(push.Chain);
-
 
                 var chain = push.Chain;
                 Collection.Log.LogVerbose(Tag, chain.ToPreviewString());
 
                 EventBase args = push.Chain.GroupUin != null
-                    ? new GroupMessageEvent(push.Chain)
-                    : new FriendMessageEvent(push.Chain);
+                        ? new GroupMessageEvent(push.Chain)
+                        : new FriendMessageEvent(push.Chain);
                 Collection.Invoker.PostEvent(args);
-                
+
                 break;
+            }
+            case GroupSysInviteEvent invite:
+            {
+                uint invitorUin = await Collection.Business.CachingLogic.ResolveUin(null, invite.InvitorUid) ?? 0;
+                var inviteArgs = new GroupInvitationEvent(invite.GroupUin, invitorUin);
+                Collection.Invoker.PostEvent(inviteArgs);
+                break;
+            }
         }
     }
 
