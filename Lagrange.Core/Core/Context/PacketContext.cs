@@ -71,25 +71,6 @@ internal class PacketContext : ContextBase
                 return false;
         }
     }
-
-    /// <summary>
-    /// Handle the incoming packet with new sequence number.
-    /// </summary>
-    public async Task<bool> HandleServerPacket(SsoPacket packet)
-    {
-        bool success = false;
-        
-        var events = Collection.Service.ResolveEventByPacket(packet);
-        foreach (var @event in events)
-        {
-            var isSuccessful = await Collection.Business.HandleIncomingEvent(@event);
-            if (!isSuccessful) break;
-            
-            success = true;
-        }
-
-        return success;
-    }
     
     public void DispatchPacket(BinaryPacket packet)
     {
@@ -99,6 +80,6 @@ internal class PacketContext : ContextBase
         var sso = SsoPacker.Parse(service);
         
         if (_pendingTasks.TryRemove(sso.Sequence, out var task)) task.SetResult(sso);
-        else HandleServerPacket(sso);
+        else Collection.Business.HandleServerPacket(sso);
     }
 }

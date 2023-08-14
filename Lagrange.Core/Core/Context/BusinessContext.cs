@@ -4,6 +4,7 @@ using Lagrange.Core.Core.Context.Attributes;
 using Lagrange.Core.Core.Context.Logic;
 using Lagrange.Core.Core.Context.Logic.Implementation;
 using Lagrange.Core.Core.Event.Protocol;
+using Lagrange.Core.Core.Packets;
 using Lagrange.Core.Core.Service;
 using Lagrange.Core.Utility.Extension;
 #pragma warning disable CS8618
@@ -109,7 +110,7 @@ internal class BusinessContext : ContextBase
                 }
             }
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Collection.Log.LogWarning(Tag, $"Error when processing the event: {@event}");
             Collection.Log.LogWarning(Tag, e.Message);
@@ -168,5 +169,33 @@ internal class BusinessContext : ContextBase
         }
         
         return true;
+    }
+    
+    /// <summary>
+    /// Handle the incoming packet with new sequence number.
+    /// </summary>
+    public async Task<bool> HandleServerPacket(SsoPacket packet)
+    {
+        bool success = false;
+
+        try
+        {
+            var events = Collection.Service.ResolveEventByPacket(packet);
+            foreach (var @event in events)
+            {
+                var isSuccessful = await Collection.Business.HandleIncomingEvent(@event);
+                if (!isSuccessful) break;
+
+                success = true;
+            }
+        }
+        catch (Exception e)
+        {
+            Collection.Log.LogWarning(Tag, $"Error while handling msf push: {packet.PacketType} {packet.Command}");
+            Collection.Log.LogWarning(Tag, e.Message);
+            Collection.Log.LogDebug(Tag, packet.Payload.ToArray().Hex());
+        }
+
+        return success;
     }
 }
