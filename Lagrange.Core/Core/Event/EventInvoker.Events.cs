@@ -21,4 +21,8 @@ public partial class EventInvoker
     public event LagrangeEvent<TempMessageEvent>? OnTempMessageReceived;
     
     public event LagrangeEvent<GroupAdminChangedEvent>? OnGroupAdminChangedEvent;
+    
+    public event LagrangeEvent<GroupMemberIncreaseEvent>? OnGroupMemberIncreaseEvent;
+    
+    public event LagrangeEvent<GroupMemberDecreaseEvent>? OnGroupMemberDecreaseEvent;
 }

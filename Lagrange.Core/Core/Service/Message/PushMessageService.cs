@@ -67,6 +67,24 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 extraEvents.Add(adminEvent);
                 break;
             }
+            case PkgType.GroupMemberIncreaseNotice:
+            {
+                if (message.Message.Body?.MsgContent == null) return false;
+                
+                var increase = Serializer.Deserialize<GroupChange>(message.Message.Body.MsgContent.AsSpan());
+                var increaseEvent = GroupSysIncreaseEvent.Result(increase.GroupUin, increase.MemberUid, increase.OperatorUid);
+                extraEvents.Add(increaseEvent);
+                break;
+            }
+            case PkgType.GroupMemberDecreaseNotice:
+            {
+                if (message.Message.Body?.MsgContent == null) return false;
+                
+                var decrease = Serializer.Deserialize<GroupChange>(message.Message.Body.MsgContent.AsSpan());
+                var decreaseEvent = GroupSysDecreaseEvent.Result(decrease.GroupUin, decrease.MemberUid, decrease.OperatorUid);
+                extraEvents.Add(decreaseEvent);
+                break;
+            }
             default:
             {
                 Console.WriteLine($"Unknown message type: {packetType}: {payload.Hex()}");
@@ -80,10 +98,11 @@ internal class PushMessageService : BaseService<PushMessageEvent>
     {
         PrivateMessage = 166,
         GroupMessage = 82,
-        GroupKickNotice = 34,
         GroupInviteNotice = 87,
         Event0x210 = 528,
         GroupAdminChangedNotice = 44,
-        GroupPokeNotice = 732
+        GroupPokeNotice = 732,
+        GroupMemberIncreaseNotice = 33,
+        GroupMemberDecreaseNotice = 34,
     }
 }

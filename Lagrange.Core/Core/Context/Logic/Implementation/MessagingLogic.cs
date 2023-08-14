@@ -14,6 +14,8 @@ namespace Lagrange.Core.Core.Context.Logic.Implementation;
 [EventSubscribe(typeof(SendMessageEvent))]
 [EventSubscribe(typeof(GroupSysInviteEvent))]
 [EventSubscribe(typeof(GroupSysAdminEvent))]
+[EventSubscribe(typeof(GroupSysIncreaseEvent))]
+[EventSubscribe(typeof(GroupSysDecreaseEvent))]
 [BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
 internal class MessagingLogic : LogicBase
 {
@@ -52,6 +54,24 @@ internal class MessagingLogic : LogicBase
                 uint adminUin = await Collection.Business.CachingLogic.ResolveUin(admin.GroupUin, admin.Uid) ?? 0;
                 var adminArgs = new GroupAdminChangedEvent(admin.GroupUin, adminUin, admin.IsPromoted);
                 Collection.Invoker.PostEvent(adminArgs);
+                break;
+            }
+            case GroupSysIncreaseEvent increase:
+            {
+                uint memberUin = await Collection.Business.CachingLogic.ForceResolveUint(increase.GroupUin, increase.MemberUid) ?? 0;
+                uint? invitorUin = null;
+                if (increase.InvitorUid != null) invitorUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.InvitorUid);
+                var increaseArgs = new GroupMemberIncreaseEvent(increase.GroupUin, memberUin, invitorUin);
+                Collection.Invoker.PostEvent(increaseArgs);
+                break;
+            }
+            case GroupSysDecreaseEvent decrease:
+            {
+                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.MemberUid) ?? 0;
+                uint? operatorUin = null;
+                if (decrease.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.OperatorUid);
+                var decreaseArgs = new GroupMemberDecreaseEvent(decrease.GroupUin, memberUin, operatorUin);
+                Collection.Invoker.PostEvent(decreaseArgs);
                 break;
             }
         }

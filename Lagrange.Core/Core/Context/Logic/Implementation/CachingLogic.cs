@@ -75,10 +75,20 @@ internal class CachingLogic : LogicBase
 
         return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
     }
-
-    public async Task CacheUid(uint groupUin)
+    
+    public async Task<uint?> ForceResolveUint(uint? groupUin, string friendUid)
     {
-        if (!_cachedGroups.Contains(groupUin))
+        if (_uinToUid.Count == 0) await ResolveFriendsUid();
+        if (groupUin == null) return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
+        
+        await CacheUid(groupUin.Value, true);
+
+        return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
+    }
+
+    public async Task CacheUid(uint groupUin, bool force = false)
+    {
+        if (!_cachedGroups.Contains(groupUin) || force)
         {
             Collection.Log.LogVerbose(Tag, $"Caching group members: {groupUin}");
             await ResolveMembersUid(groupUin);

@@ -22,6 +22,8 @@ public partial class EventInvoker : IDisposable
         RegisterEvent((GroupMessageEvent e) => OnGroupMessageReceived?.Invoke(context, e));
         RegisterEvent((TempMessageEvent e) => OnTempMessageReceived?.Invoke(context, e));
         RegisterEvent((GroupAdminChangedEvent e) => OnGroupAdminChangedEvent?.Invoke(context, e));
+        RegisterEvent((GroupMemberIncreaseEvent e) => OnGroupMemberIncreaseEvent?.Invoke(context, e));
+        RegisterEvent((GroupMemberDecreaseEvent e) => OnGroupMemberDecreaseEvent?.Invoke(context, e));
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
