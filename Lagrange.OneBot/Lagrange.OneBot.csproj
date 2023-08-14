@@ -17,8 +17,5 @@
       <ProjectReference Include="..\Lagrange.Core\Lagrange.Core.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Core\Service\" />
-    </ItemGroup>
 
 </Project>

@@ -1,3 +1,6 @@
+using System.Text.Json;
+using Lagrange.Core.Common;
+using Lagrange.Core.Common.Interface;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,6 +23,41 @@ public sealed class LagrangeAppBuilder
     public LagrangeAppBuilder ConfigureConfiguration(string path, bool optional = false, bool reloadOnChange = false)
     {
         Configuration.AddJsonFile(path, optional, reloadOnChange);
+        return this;
+    }
+
+    public LagrangeAppBuilder ConfigureBots()
+    {
+        string keystorePath = Configuration["ConfigPath:Keystore"] ?? "keystore.json";
+        string deviceInfoPath = Configuration["ConfigPath:DeviceInfo"] ?? "device.json";
+        
+        bool isSuccess = Enum.TryParse<Protocols>(Configuration["Account:Protocol"], out var protocol);
+        var config = new BotConfig
+        {
+            Protocol = isSuccess ? protocol : Protocols.Linux,
+            AutoReconnect = bool.Parse(Configuration["Account:AutoReconnect"] ?? "true"),
+            UseIPv6Network = bool.Parse(Configuration["Account:UseIPv6Network"] ?? "false"),
+            GetOptimumServer = bool.Parse(Configuration["Account:GetOptimumServer"] ?? "true")
+        };
+
+        BotKeystore keystore;
+        if (!File.Exists(keystorePath))
+        {
+            keystore = Configuration["Account:Uin"] is { } uin && Configuration["Account:Password"] is { } password 
+                    ? new BotKeystore(uint.Parse(uin), password) 
+                    : new BotKeystore();
+        }
+        else
+        {
+            keystore = JsonSerializer.Deserialize<BotKeystore>(File.ReadAllText(keystorePath)) ?? new BotKeystore();
+        }
+
+        var deviceInfo = !File.Exists(deviceInfoPath) 
+                ? new BotDeviceInfo() 
+                : JsonSerializer.Deserialize<BotDeviceInfo>(File.ReadAllText(deviceInfoPath)) ?? new BotDeviceInfo();
+
+        Services.AddSingleton(BotFactory.Create(config, deviceInfo, keystore));
+        
         return this;
     }
 
