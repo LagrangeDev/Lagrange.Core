@@ -78,7 +78,7 @@ internal partial class ServiceContext : ContextBase
                     result.AddRange(extraPackets.Select(extra => new SsoPacket(attribute.PacketType, attribute.Command, (uint)_sequenceProvider.GetNewSequence(), extra)));
                 }
                 
-                Collection.Log.LogVerbose(Tag, $"Outgoing SSOFrame: {attribute.Command}");
+                Collection.Log.LogDebug(Tag, $"Outgoing SSOFrame: {attribute.Command}");
             }
         }
 
@@ -106,7 +106,7 @@ internal partial class ServiceContext : ContextBase
             if (@event != null) result.Add(@event);
             if (extraEvents != null) result.AddRange(extraEvents);
             
-            Collection.Log.LogVerbose(Tag, $"Incoming SSOFrame: {packet.Command}");
+            Collection.Log.LogDebug(Tag, $"Incoming SSOFrame: {packet.Command}");
         }
         
         return result;
