@@ -9,7 +9,12 @@ internal static class QrCodeHelper
     {
         var writer = new BarcodeWriterGeneric
                      {
-                         Format = BarcodeFormat.QR_CODE, Options = new QrCodeEncodingOptions { Width = 33, Height = 33, Margin = 1 }
+                         Format = BarcodeFormat.QR_CODE, Options = new QrCodeEncodingOptions
+                         {
+                             Margin = 1,
+                             QrCompact = true,
+                             Hints = {  }
+                         },
                      };
         
         var points = writer.Encode(text);

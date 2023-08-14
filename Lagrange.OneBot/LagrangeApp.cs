@@ -47,7 +47,7 @@ public class LagrangeApp : IHost
             var qrCode = await Instance.FetchQrCode();
             if (qrCode != null)
             {
-                QrCodeHelper.Output(Instance.ContextCollection.Keystore.Session.QrString ?? "");
+                QrCodeHelper.Output(Instance.ContextCollection.Keystore.Session.QrUrl ?? "");
                 await Instance.LoginByQrCode();
             }
         }

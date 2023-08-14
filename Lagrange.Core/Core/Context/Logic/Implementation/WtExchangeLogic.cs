@@ -71,6 +71,7 @@ internal class WtExchangeLogic : LogicBase
             var @event = (TransEmpEvent)result[0];
             Collection.Keystore.Session.QrString = @event.QrSig;
             Collection.Keystore.Session.QrSign = @event.Signature;
+            Collection.Keystore.Session.QrUrl = @event.Url;
             
             Collection.Log.LogInfo(Tag, $"QrCode Fetched, Expiration: {@event.Expiration} seconds");
             return @event.QrCode;
