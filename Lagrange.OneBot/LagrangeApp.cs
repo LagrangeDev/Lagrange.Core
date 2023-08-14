@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Utility;
@@ -41,6 +42,15 @@ public class LagrangeApp : IHost
             LogLevel.Fatal => Microsoft.Extensions.Logging.LogLevel.Error,
             _ => Microsoft.Extensions.Logging.LogLevel.Error
         }, args.ToString());
+
+        Instance.Invoker.OnBotOnlineEvent += (_, args) =>
+        {
+            var keystore = Instance.UpdateKeystore();
+            Logger.LogInformation($"Bot Online: {keystore.Uin}");
+            string json = JsonSerializer.Serialize(keystore, new JsonSerializerOptions { WriteIndented = true });
+            
+            File.WriteAllText(Configuration["ConfigPath:Keystore"] ?? "keystore.json", json);
+        };
 
         if (Configuration.GetValue<uint>("Account:Uin") == 0)
         {
