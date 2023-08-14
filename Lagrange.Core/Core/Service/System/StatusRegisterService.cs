@@ -23,18 +23,18 @@ internal class StatusRegisterService : BaseService<StatusRegisterEvent>
             Type = 0,
             CurrentVersion = appInfo.CurrentVersion,
             Field4 = 0,
-            Field5 = 2052,
+            LocaleId = 2052,
             Online = new OnlineOsInfo
             {
                 User = device.DeviceName,
                 Os = appInfo.Kernel,
                 OsVer = device.SystemKernel,
-                Field4 = "",
+                VendorName = "",
                 OsLower = appInfo.Kernel.ToLower(),
             },
-            Field7 = 0,
-            Field8 = 0,
-            Field9 = 1,
+            SetMute = 0,
+            RegisterVendorType = 0,
+            RegType = 1,
         };
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, packet);

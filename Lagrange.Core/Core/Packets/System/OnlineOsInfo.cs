@@ -14,7 +14,7 @@ internal class OnlineOsInfo
 	
 	[ProtoMember(3)] public string OsVer { get; set; }
 	
-	[ProtoMember(4)] public string? Field4 { get; set; }
+	[ProtoMember(4)] public string? VendorName { get; set; }
 	
 	[ProtoMember(5)] public string OsLower { get; set; }
 }

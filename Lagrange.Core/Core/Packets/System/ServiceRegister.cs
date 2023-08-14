@@ -16,13 +16,13 @@ internal class ServiceRegister
     
     [ProtoMember(4)] public int? Field4 { get; set; }
     
-    [ProtoMember(5)] public int? Field5 { get; set; } // 2052
+    [ProtoMember(5)] public int? LocaleId { get; set; } // 2052
     
     [ProtoMember(6)] public OnlineOsInfo? Online { get; set; }
     
-    [ProtoMember(7)] public int? Field7 { get; set; }
+    [ProtoMember(7)] public int? SetMute { get; set; }
     
-    [ProtoMember(8)] public int? Field8 { get; set; }
+    [ProtoMember(8)] public int? RegisterVendorType { get; set; }
     
-    [ProtoMember(9)] public int? Field9 { get; set; }
+    [ProtoMember(9)] public int? RegType { get; set; }
 }
