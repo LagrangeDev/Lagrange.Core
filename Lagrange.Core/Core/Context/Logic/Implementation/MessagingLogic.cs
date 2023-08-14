@@ -13,6 +13,7 @@ namespace Lagrange.Core.Core.Context.Logic.Implementation;
 [EventSubscribe(typeof(PushMessageEvent))]
 [EventSubscribe(typeof(SendMessageEvent))]
 [EventSubscribe(typeof(GroupSysInviteEvent))]
+[EventSubscribe(typeof(GroupSysAdminEvent))]
 [BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
 internal class MessagingLogic : LogicBase
 {
@@ -44,6 +45,13 @@ internal class MessagingLogic : LogicBase
                 uint invitorUin = await Collection.Business.CachingLogic.ResolveUin(null, invite.InvitorUid) ?? 0;
                 var inviteArgs = new GroupInvitationEvent(invite.GroupUin, invitorUin);
                 Collection.Invoker.PostEvent(inviteArgs);
+                break;
+            }
+            case GroupSysAdminEvent admin:
+            {
+                uint adminUin = await Collection.Business.CachingLogic.ResolveUin(admin.GroupUin, admin.Uid) ?? 0;
+                var adminArgs = new GroupAdminChangedEvent(admin.GroupUin, adminUin, admin.IsPromoted);
+                Collection.Invoker.PostEvent(adminArgs);
                 break;
             }
         }

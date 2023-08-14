@@ -11,6 +11,8 @@ using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
+// ReSharper disable InconsistentNaming
+
 namespace Lagrange.Core.Core.Service.Message;
 
 [EventSubscribe(typeof(PushMessageEvent))]
@@ -43,6 +45,28 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 extraEvents.Add(inviteEvent);
                 break;
             }
+            case PkgType.GroupAdminChangedNotice:
+            {
+                if (message.Message.Body?.MsgContent == null) return false;
+                
+                var admin = Serializer.Deserialize<GroupAdmin>(message.Message.Body.MsgContent.AsSpan());
+                bool enabled; string uid;
+                if (admin.Body.ExtraEnable != null)
+                {
+                    enabled = true;
+                    uid = admin.Body.ExtraEnable.AdminUid;
+                }
+                else if (admin.Body.ExtraDisable != null)
+                {
+                    enabled = false;
+                    uid = admin.Body.ExtraDisable.AdminUid;
+                }
+                else return false;
+                
+                var adminEvent = GroupSysAdminEvent.Result(admin.GroupUin, uid, enabled);
+                extraEvents.Add(adminEvent);
+                break;
+            }
             default:
             {
                 Console.WriteLine($"Unknown message type: {packetType}: {payload.Hex()}");
@@ -58,8 +82,8 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         GroupMessage = 82,
         GroupKickNotice = 34,
         GroupInviteNotice = 87,
-        GroupCardChangeNotice = 528,
-        GroupAdminPromoteNotice = 44,
+        Event0x210 = 528,
+        GroupAdminChangedNotice = 44,
         GroupPokeNotice = 732
     }
 }
