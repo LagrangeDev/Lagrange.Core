@@ -60,7 +60,6 @@ internal class FetchMembersService : BaseService<FetchMembersEvent>
                                DateTimeOffset.FromUnixTimeSeconds(member.JoinTimestamp).DateTime,
                                DateTimeOffset.FromUnixTimeSeconds(member.LastMsgTimestamp).DateTime)).ToList();
         
-        Console.WriteLine(payload.Hex());
         output = FetchMembersEvent.Result(members);
         extraEvents = null;
         return true;

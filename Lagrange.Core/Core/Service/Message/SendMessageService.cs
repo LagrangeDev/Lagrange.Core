@@ -34,7 +34,6 @@ internal class SendMessageService : BaseService<SendMessageEvent>
         out SendMessageEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
-        Console.WriteLine(payload.Hex());
         
         var response = Serializer.Deserialize<SendMessageResponse>(payload.AsSpan());
         var result = new MessageResult

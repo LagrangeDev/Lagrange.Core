@@ -28,8 +28,6 @@ internal class Login : WtLoginBase
             .WriteUshort(InternalCommand, false)
             .WritePacket(TlvPacker.Pack(ConstructTlvs));
         
-        Console.WriteLine(packet.ToArray().Hex());
-        
         return packet;
     }
 
