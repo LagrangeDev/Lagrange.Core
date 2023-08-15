@@ -50,7 +50,7 @@ internal class OperationLogic : LogicBase
         return ((SendMessageEvent)events[0]).MsgResult;
     }
 
-    public async Task<bool> MuteGroupMember(uint groupUin, uint targetUin, int duration)
+    public async Task<bool> MuteGroupMember(uint groupUin, uint targetUin, uint duration)
     {
         string? uid = await Collection.Business.CachingLogic.ResolveUid(groupUin, targetUin);
         if (uid == null) return false;

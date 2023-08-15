@@ -2,7 +2,7 @@ namespace Lagrange.Core.Common.Interface.Api;
 
 public static class GroupExt
 {
-    public static Task<bool> MuteGroupMember(this BotContext bot, uint groupUin, uint targetUin, int duration)
+    public static Task<bool> MuteGroupMember(this BotContext bot, uint groupUin, uint targetUin, uint duration)
         => bot.ContextCollection.Business.OperationLogic.MuteGroupMember(groupUin, targetUin, duration);
     
     public static Task<bool> MuteGroupGlobal(this BotContext bot, uint groupUin, bool isMute)
