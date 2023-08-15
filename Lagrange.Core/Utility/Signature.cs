@@ -72,7 +72,7 @@ internal static class Signature
             string response = Http.GetAsync(Url, payload).GetAwaiter().GetResult();
             var json = JsonSerializer.Deserialize<JsonObject>(response);
 
-            return json?["value"]?["sign"]?.ToJsonString()[1..^1].UnHex() ?? new byte[20];
+            return json?["value"]?["sign"]?.ToString().UnHex() ?? new byte[20];
         }
         catch (Exception)
         {
