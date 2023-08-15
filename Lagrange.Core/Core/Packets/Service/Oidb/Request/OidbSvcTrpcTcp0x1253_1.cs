@@ -24,5 +24,5 @@ internal class OidbSvcTrpcTcp0x1253_1Body
 {
     [ProtoMember(1)] public string TargetUid { get; set; }
     
-    [ProtoMember(2)] public int Duration { get; set; }
+    [ProtoMember(2)] public uint Duration { get; set; }
 }
