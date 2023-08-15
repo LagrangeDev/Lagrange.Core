@@ -39,7 +39,7 @@ internal class FetchCookieService : BaseService<FetchCookieEvent>
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x102A_0Response>>(payload.AsSpan());
         var cookies = packet.Body.Urls.Select(x => Encoding.UTF8.GetString(x.Value)).ToList();
         
-        output = FetchCookieEvent.Result((int)packet.Field3, cookies);
+        output = FetchCookieEvent.Result((int)packet.ErrorCode, cookies);
         extraEvents = null;
         return true;
     }

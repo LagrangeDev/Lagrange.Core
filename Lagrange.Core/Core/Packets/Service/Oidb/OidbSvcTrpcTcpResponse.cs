@@ -12,7 +12,7 @@ internal class OidbSvcTrpcTcpResponse<T>
     
     [ProtoMember(2)] public uint SubCommand { get; set; }
     
-    [ProtoMember(3)] public uint Field3 { get; set; }
+    [ProtoMember(3)] public uint ErrorCode { get; set; }
     
     [ProtoMember(4)] public T Body { get; set; }
     
