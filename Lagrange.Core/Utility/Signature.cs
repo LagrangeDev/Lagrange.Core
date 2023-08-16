@@ -29,6 +29,7 @@ internal static class Signature
         "trpc.login.ecdh.EcdhService.SsoNTLoginPasswordLoginUnusualDevice",
         "OidbSvcTrpcTcp.0x11ec_1",
         "OidbSvcTrpcTcp.0x758_1", // create group
+        "OidbSvcTrpcTcp.0x7c1_1",
         "OidbSvcTrpcTcp.0x7c2_5", // request friend
         "OidbSvcTrpcTcp.0x10db_1",
         "OidbSvcTrpcTcp.0x8a1_7", // request group

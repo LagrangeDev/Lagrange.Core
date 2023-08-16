@@ -28,4 +28,7 @@ public static class OperationExt
     
     public static Task<bool> RecallGroupMessage(this BotContext bot, MessageChain chain)
         => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(chain);
+    
+    public static Task<bool> RequestFriend(this BotContext bot, uint targetUin, string message = "", string question = "")
+        => bot.ContextCollection.Business.OperationLogic.RequestFriend(targetUin, message, question);
 }

@@ -112,6 +112,22 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((RecallGroupMessageEvent)events[0]).ResultCode == 0;
     }
 
+    public async Task<bool> RequestFriend(uint targetUin, string message, string question)
+    {
+        var requestFriendSearchEvent = RequestFriendSearchEvent.Create(targetUin);
+        var searchEvents = await Collection.Business.SendEvent(requestFriendSearchEvent);
+        if (searchEvents.Count == 0) return false;
+        await Task.Delay(5000);
+        
+        var requestFriendSettingEvent = RequestFriendSettingEvent.Create(targetUin);
+        var settingEvents = await Collection.Business.SendEvent(requestFriendSettingEvent);
+        if (settingEvents.Count == 0) return false;
+        
+        var requestFriendEvent = RequestFriendEvent.Create(targetUin, message, question);
+        var events = await Collection.Business.SendEvent(requestFriendEvent);
+        return events.Count != 0 && ((RequestFriendEvent)events[0]).ResultCode == 0;
+    }
+
 
     private static int CalculateBkn(string sKey) => 
         (int)sKey.Aggregate<char, long>(5381, (current, t) => current + (current << 5) + t) & int.MaxValue;
