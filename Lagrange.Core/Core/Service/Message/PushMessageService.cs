@@ -100,8 +100,8 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         GroupMessage = 82,
         GroupInviteNotice = 87,
         Event0x210 = 528,
+        Event0x2DC = 732,
         GroupAdminChangedNotice = 44,
-        GroupPokeNotice = 732,
         GroupMemberIncreaseNotice = 33,
         GroupMemberDecreaseNotice = 34,
     }
