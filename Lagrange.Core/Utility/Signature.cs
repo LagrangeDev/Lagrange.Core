@@ -28,13 +28,13 @@ internal static class Signature
         "trpc.login.ecdh.EcdhService.SsoNTLoginEasyLoginUnusualDevice",
         "trpc.login.ecdh.EcdhService.SsoNTLoginPasswordLoginUnusualDevice",
         "OidbSvcTrpcTcp.0x11ec_1",
-        "OidbSvcTrpcTcp.0x758_1",
-        "OidbSvcTrpcTcp.0x7c2_5",
+        "OidbSvcTrpcTcp.0x758_1", // create group
+        "OidbSvcTrpcTcp.0x7c2_5", // request friend
         "OidbSvcTrpcTcp.0x10db_1",
-        "OidbSvcTrpcTcp.0x8a1_7",
+        "OidbSvcTrpcTcp.0x8a1_7", // request group
         "OidbSvcTrpcTcp.0x89a_0",
         "OidbSvcTrpcTcp.0x89a_15",
-        "OidbSvcTrpcTcp.0x88d_0",
+        "OidbSvcTrpcTcp.0x88d_0", // fetch group detail
         "OidbSvcTrpcTcp.0x88d_14",
         "OidbSvcTrpcTcp.0x112a_1",
         "OidbSvcTrpcTcp.0x587_74",
@@ -52,6 +52,8 @@ internal static class Signature
         "OidbSvcTrpcTcp.0xf67_1",
         "OidbSvcTrpcTcp.0xf67_5"
     };
+    
+    public static bool IsSignOperation(string cmd) => WhiteListCommand.Contains(cmd);
 
     /// <summary>
     /// Get O3Signature

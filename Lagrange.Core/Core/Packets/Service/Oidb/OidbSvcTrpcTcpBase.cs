@@ -1,6 +1,7 @@
 using System.Reflection;
 using Lagrange.Core.Core.Packets.Service.Oidb.Generics;
 using Lagrange.Core.Core.Packets.Service.Oidb.Request;
+using Lagrange.Core.Utility;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
@@ -47,7 +48,7 @@ internal class OidbSvcTrpcTcpBase<T> where T : class
         Command = command;
         SubCommand = subCommand;
         Body = body;
-        Reserved = 0; // const
+        Reserved = Convert.ToInt32(Signature.IsSignOperation($"OidbSvcTrpcTcp.0x{command:x}_{subCommand}"));
         Lafter = isLafter ? new OidbLafter() : null;
     }
 }
