@@ -37,7 +37,7 @@ internal static class SsoPacker
         writer.Barrier(typeof(uint), () => new BinaryPacket() // Barrier is used to calculate the length of the packet header only
             .WriteUint(packet.Sequence, false) // sequence
             .WriteByte(32)
-            .WriteUint((uint)appInfo.UnknownIdentifier, false) // appId
+            .WriteUint((uint)appInfo.SsoIdentifier, false) // appId
             .WriteBytes("000804020000000000000000000000".UnHex().AsSpan())
             .WriteBytes(keystore.Session.Tgt, Prefix.Uint32 | Prefix.WithPrefix)
             .WriteString(packet.Command, Prefix.Uint32 | Prefix.WithPrefix)

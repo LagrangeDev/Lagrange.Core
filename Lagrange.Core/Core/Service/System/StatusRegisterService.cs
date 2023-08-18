@@ -30,7 +30,7 @@ internal class StatusRegisterService : BaseService<StatusRegisterEvent>
                 Os = appInfo.Kernel,
                 OsVer = device.SystemKernel,
                 VendorName = "",
-                OsLower = appInfo.Kernel.ToLower(),
+                OsLower = appInfo.VendorOs,
             },
             SetMute = 0,
             RegisterVendorType = 0,
