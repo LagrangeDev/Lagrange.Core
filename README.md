@@ -13,7 +13,7 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 ## Features List
 | Protocol | Support | Login                     | Support | Messages         | Support    | Operations        | Support    | Events                 | Support |
 |----------|---------|---------------------------|---------|:-----------------|:-----------|:------------------|:-----------|:-----------------------|:--------|
-| Windows  | 🔴      | QrCode                    | 🟢      | Images           | 🟡         | ~~Poke~~          | 🔴         | Captcha                | 🟢      |
+| Windows  | 🟢      | QrCode                    | 🟢      | Images           | 🟡         | ~~Poke~~          | 🔴         | Captcha                | 🟢      |
 | macOS    | 🔴      | Password                  | 🟢      | Text / At        | 🟢         | Recall            | 🟡         | BotOnline              | 🟢      |
 | Linux    | 🟢      | EasyLogin                 | 🟢      | Records          | 🔴         | Leave Group       | 🔴         | BotOffline             | 🟢      |
 |          |         | UnusalDevice<br/>Password | 🔴      | QFace            | 🟢         | ~~Special Title~~ | 🔴         | Message                | 🟢      |
@@ -32,3 +32,5 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 ~~- [ ] Signature Service is currently not established, so the login tend to be failed and return code may be 45, you can establish your own sign service by rewriting the `Signature` static class.~~
 
 Thanks KonataDev/TheSnowfield for Provision of Signature API
+
+- Signature of Windows and macOS is missing, you need to figure out by your self
