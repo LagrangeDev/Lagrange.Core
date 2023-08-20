@@ -19,7 +19,7 @@ internal class GeneralFlags
     
     [ProtoMember(6)] public int LongTextFlag { get; set; }
     
-    [ProtoMember(7)] public string LongTextResId { get; set; }
+    [ProtoMember(7)] public string? LongTextResId { get; set; }
     
     [ProtoMember(8)] public int GroupType { get; set; }
     

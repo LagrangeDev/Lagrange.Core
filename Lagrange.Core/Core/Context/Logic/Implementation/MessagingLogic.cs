@@ -101,6 +101,19 @@ internal class MessagingLogic : LogicBase
                 var result = (FileDownloadEvent)results[0];
             }
         }
+        if (chain.HasTypeOf<MultiMsgEntity>())
+        {
+            var multi = chain.GetEntity<MultiMsgEntity>();
+            if (multi?.ResId == null) return;
+            
+            var @event = MultiMsgDownloadEvent.Create(chain.Uid ?? "", multi.ResId);
+            var results = await Collection.Business.SendEvent(@event);
+            if (results.Count != 0)
+            {
+                var result = (MultiMsgDownloadEvent)results[0];
+                multi.Chains.AddRange((IEnumerable<MessageChain>?)result.Chains ?? Array.Empty<MessageChain>());
+            }
+        }
     }
     private async Task ResolveChainUid(MessageChain chain)
     {
