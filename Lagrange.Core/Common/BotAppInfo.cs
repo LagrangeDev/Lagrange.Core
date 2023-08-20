@@ -103,14 +103,14 @@ public class BotAppInfo
         VendorOs = "win32",
 
         BaseVersion = "9.9.1-15489",
-        CurrentVersion = "9.9.1-15489",
-        BuildVersion = 15489,
+        CurrentVersion = "9.9.2-15962",
+        BuildVersion = 15962,
         PtVersion = "2.0.0",
         MiscBitmap = 32764,
         PtOsVersion = 23,
         PackageName = "com.tencent.qq",
         WtLoginSdk = "nt.wtlogin.0.0.1",
-        PackageSign = "V1_WIN_NQ_9.9.1-15489_RDM_B",
+        PackageSign = "V1_WIN_NQ_9.9.2-15962_RDM_B",
         
         SsoIdentifier = 68432128,
         AppId = 1600001604,
