@@ -22,11 +22,11 @@ internal class MultiMsgDownloadService : BaseService<MultiMsgDownloadEvent>
         {
             Info = new RecvLongMsgInfo
             {
-                Uid = new RecvLongMsgUid { Uid = input.Uid },
+                Uid = new LongMsgUid { Uid = input.Uid },
                 ResId = input.ResId,
                 Acquire = true
             },
-            Settings = new RecvLongMsgSettings
+            Settings = new LongMsgSettings
             {
                 Field1 = 2,
                 Field2 = 0,

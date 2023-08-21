@@ -21,5 +21,9 @@ internal class ContentHead
     
     [ProtoMember(7)] public long? Type { get; set; }
     
+    [ProtoMember(8)] public uint? Field8 { get; set; }
+
+    [ProtoMember(9)] public uint? Field9 { get; set; }
+    
     [ProtoMember(12)] public long? NewId { get; set; }
 }

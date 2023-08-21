@@ -10,13 +10,13 @@ internal class RecvLongMsgReq
 {
     [ProtoMember(1)] public RecvLongMsgInfo? Info { get; set; }
     
-    [ProtoMember(15)] public RecvLongMsgSettings? Settings { get; set; }
+    [ProtoMember(15)] public LongMsgSettings? Settings { get; set; }
 }
 
 [ProtoContract]
 internal class RecvLongMsgInfo
 {
-    [ProtoMember(1)] public RecvLongMsgUid? Uid { get; set; }
+    [ProtoMember(1)] public LongMsgUid? Uid { get; set; }
     
     [ProtoMember(2)] public string? ResId { get; set; }
     
@@ -24,13 +24,13 @@ internal class RecvLongMsgInfo
 }
 
 [ProtoContract]
-internal class RecvLongMsgUid
+internal class LongMsgUid
 {
     [ProtoMember(2)] public string? Uid { get; set; }
 }
 
 [ProtoContract]
-internal class RecvLongMsgSettings
+internal class LongMsgSettings
 {
     [ProtoMember(1)] public uint Field1 { get; set; } // 2
     

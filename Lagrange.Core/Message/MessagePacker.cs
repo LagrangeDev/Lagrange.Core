@@ -6,7 +6,9 @@ using Lagrange.Core.Core.Packets.Message.Element;
 using Lagrange.Core.Core.Packets.Message.Routing;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Utility.Extension;
+using ContentHead = Lagrange.Core.Core.Packets.Message.ContentHead;
 using MessageControl = Lagrange.Core.Core.Packets.Message.MessageControl;
+using PushMsgBody = Lagrange.Core.Core.Packets.Message.PushMsgBody;
 
 namespace Lagrange.Core.Message;
 
@@ -68,22 +70,43 @@ internal class MessagePacker
             {
                 message.Body.RichText?.Elems.AddRange(entity.PackElement());
                 
-                var msgContent = entity.PackMessageContent();
-                if (msgContent is not null)
-                {
-                    if (message.Body.MsgContent is not null) throw new InvalidOperationException("Message content is not null, conflicting with the message entity.");
+                if (entity.PackMessageContent() is not { } content) continue;
+                if (message.Body.MsgContent is not null) throw new InvalidOperationException("Message content is not null, conflicting with the message entity.");
                     
-                    using var stream = new MemoryStream();
-                    Serializer.Serialize(stream, msgContent);
-                    message.Body.MsgContent = stream.ToArray();
-                }
+                using var stream = new MemoryStream();
+                Serializer.Serialize(stream, content);
+                message.Body.MsgContent = stream.ToArray();
             }
         }
 
         return message;
     }
     
-    public static MessageChain Parse(Core.Packets.Message.PushMsgBody message)
+    public PushMsgBody BuildFake(MessageChain chain)
+    {
+        var message = BuildFakePacketBase(chain);
+
+        foreach (var entity in chain)
+        {
+            entity.SetSelfUid(_selfUid);
+            
+            if (message.Body != null)
+            {
+                message.Body.RichText?.Elems.AddRange(entity.PackElement());
+
+                if (entity.PackMessageContent() is not { } content) continue;
+                if (message.Body.MsgContent is not null) throw new InvalidOperationException("Message content is not null, conflicting with the message entity.");
+                    
+                using var stream = new MemoryStream();
+                Serializer.Serialize(stream, content);
+                message.Body.MsgContent = stream.ToArray();
+            }
+        }
+
+        return message;
+    }
+    
+    public static MessageChain Parse(PushMsgBody message)
     {
         var chain = ParseChain(message);
 
@@ -145,7 +168,7 @@ internal class MessagePacker
                 Uid = chain.Uid
             }
         },
-        ContentHead = new Core.Packets.Message.ContentHead
+        ContentHead = new ContentHead
         {
             PkgNum = 1, // regarded as the const
             PkgIndex = 0,
@@ -156,8 +179,34 @@ internal class MessagePacker
         Rand = (uint)Random.Shared.Next(100000000, int.MaxValue),
         Ctrl = chain.IsGroup ? null : new MessageControl { MsgFlag = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() }
     };
+
+    private static PushMsgBody BuildFakePacketBase(MessageChain chain) => new()
+    {
+        ResponseHead = new Core.Packets.Message.ResponseHead
+        {
+            FromUid = chain.SelfUid,
+            ToUid = chain.Uid,
+            Grp = !chain.IsGroup ? null : new ResponseGrp // for consistency of code so inverted condition
+            {
+                GroupUin = chain.GroupUin ?? 0
+            }
+        },
+        ContentHead = new ContentHead
+        {
+            PkgNum = (uint)(chain.IsGroup ? 82 : 529),
+            PkgIndex = chain.IsGroup ? null : 4,
+            DivSeq = chain.IsGroup ? null : 4,
+            MsgId = (uint)Random.Shared.Next(100000000, int.MaxValue),
+            Sequence = Random.Shared.Next(1000000, 9999999),
+            Timestamp = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            Type = 1,
+            Field8 = 0,
+            Field9 = 0
+        },
+        Body = new Core.Packets.Message.MessageBody { RichText = new RichText { Elems = new List<Elem>() } }
+    };
     
-    private static MessageChain ParseChain(Core.Packets.Message.PushMsgBody message)
+    private static MessageChain ParseChain(PushMsgBody message)
     {
         return message.ResponseHead.Grp == null
             ? new MessageChain(message.ResponseHead.FromUin,message.ResponseHead.ToUid ?? string.Empty ,message.ResponseHead.FromUid ?? string.Empty)

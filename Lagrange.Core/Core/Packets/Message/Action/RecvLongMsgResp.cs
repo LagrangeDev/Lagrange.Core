@@ -9,7 +9,7 @@ internal class RecvLongMsgResp
 {
     [ProtoMember(1)] public RecvLongMsgResult Result { get; set; }
     
-    [ProtoMember(15)] public RecvLongMsgSettings Settings { get; set; }
+    [ProtoMember(15)] public LongMsgSettings Settings { get; set; }
 }
 
 [ProtoContract]
