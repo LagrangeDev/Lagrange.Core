@@ -2,7 +2,7 @@ using System.Text.Json;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core;
-using Lagrange.OneBot.Core.Entity.Meta;
+using Lagrange.OneBot.Core.Message;
 using Lagrange.OneBot.Utility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,11 +25,15 @@ public class LagrangeApp : IHost
     public BotContext Instance => Services.GetRequiredService<BotContext>();
     
     public ILagrangeWebService WebService => Services.GetRequiredService<ILagrangeWebService>();
+
+    public MessageConverter Converter { get; set; }
     
     internal LagrangeApp(IHost host)
     {
         _hostApp = host;
         Logger = Services.GetRequiredService<ILogger<LagrangeApp>>();
+        
+        Converter = new MessageConverter(Instance, WebService);
     }
 
     public async Task StartAsync(CancellationToken cancellationToken = new())
@@ -55,9 +59,6 @@ public class LagrangeApp : IHost
             string json = JsonSerializer.Serialize(keystore, new JsonSerializerOptions { WriteIndented = true });
             
             await File.WriteAllTextAsync(Configuration["ConfigPath:Keystore"] ?? "keystore.json", json, cancellationToken);
-            
-            var lifecycle = new OneBotLifecycle(keystore.Uin, "enable");
-            await WebService.SendJsonAsync(lifecycle, cancellationToken);
         };
         
         await WebService.StartAsync(cancellationToken);
@@ -94,6 +95,7 @@ public class LagrangeApp : IHost
         
         Instance.Dispose();
         
+        await WebService.StopAsync(cancellationToken);
         await _hostApp.StopAsync(cancellationToken);
     }
     

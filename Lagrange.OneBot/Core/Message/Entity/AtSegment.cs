@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 
 namespace Lagrange.OneBot.Core.Message.Entity;
@@ -11,11 +12,16 @@ public partial class AtSegment
     [JsonPropertyName("qq")] public string At { get; set; }
 }
 
-public partial class AtSegment : IOneBotSegment<MentionEntity>
+public partial class AtSegment : ISegment
 {
-    string IOneBotSegment<MentionEntity>.Type => "at";
+    string ISegment.Type => "at";
 
-    public MentionEntity ToEntity() => new("", uint.Parse(At));
+    public IMessageEntity ToEntity() => new MentionEntity("", uint.Parse(At));
 
-    public ISegment FromMessageEntity(MentionEntity entity) => new AtSegment(entity.Uin);
+    public ISegment FromMessageEntity(IMessageEntity entity)
+    {
+        if (entity is not MentionEntity mentionEntity) throw new ArgumentException("Invalid entity type.");
+        
+        return new AtSegment(mentionEntity.Uin);
+    }
 }

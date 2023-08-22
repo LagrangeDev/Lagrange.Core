@@ -13,7 +13,7 @@ public abstract class OneBotEntityBase
     
     protected OneBotEntityBase(uint selfId, string postType)
     {
-        Time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        Time = DateTimeOffset.Now.ToUnixTimeSeconds();
         SelfId = selfId;
         PostType = postType;
     }

@@ -9,7 +9,7 @@ using Timer = System.Threading.Timer;
 
 namespace Lagrange.OneBot.Core.Service;
 
-public class ReverseWSService : ILagrangeWebService
+public sealed class ReverseWSService : ILagrangeWebService
 {
     private readonly ClientWebSocket _socket;
 
