@@ -43,7 +43,7 @@ internal class GroupMuteMemberService : BaseService<GroupMuteMemberEvent>
         var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x1253_1Response>>(payload.AsSpan());
         
-        output = GroupMuteMemberEvent.Result(packet.Body.Success == "success" ? 0 : 1);
+        output = GroupMuteMemberEvent.Result((int)packet.ErrorCode);
         extraEvents = null;
         return true;
     }

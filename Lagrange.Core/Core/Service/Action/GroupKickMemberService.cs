@@ -40,7 +40,7 @@ internal class GroupKickMemberService : BaseService<GroupKickMemberEvent>
         var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x8A0_1Response>>(payload.AsSpan());
         
-        output = GroupKickMemberEvent.Result(packet.Body.ErrorMsg == null ? 0 : -1);
+        output = GroupKickMemberEvent.Result((int)packet.ErrorCode);
         extraEvents = null;
         return true;
     }

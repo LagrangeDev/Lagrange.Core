@@ -42,7 +42,7 @@ internal class GroupMuteGlobalService : BaseService<GroupMuteGlobalEvent>
         var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x89A_0Response>>(payload.AsSpan());
         
-        output = GroupMuteGlobalEvent.Result(packet.Body.ErorMsg == null ? 0 : -1);
+        output = GroupMuteGlobalEvent.Result((int)(packet.ErrorCode));
         extraEvents = null;
         return true;
     }
