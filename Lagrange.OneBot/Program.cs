@@ -12,7 +12,8 @@ internal abstract class Program
         
         var hostBuilder = new LagrangeAppBuilder(args)
             .ConfigureConfiguration("appsettings.json", false, true)
-            .ConfigureBots();
+            .ConfigureBots()
+            .ConfigureOneBot();
         
         hostBuilder.Build().Run();
     }

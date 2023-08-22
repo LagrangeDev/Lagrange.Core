@@ -1,4 +1,4 @@
-namespace Lagrange.OneBot.Core.Entity;
+namespace Lagrange.OneBot.Core;
 
 public class MessageConverter
 {

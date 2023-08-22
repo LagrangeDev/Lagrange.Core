@@ -1,6 +1,8 @@
 using System.Text.Json;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
+using Lagrange.OneBot.Core;
+using Lagrange.OneBot.Core.Entity.Meta;
 using Lagrange.OneBot.Utility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +24,8 @@ public class LagrangeApp : IHost
     
     public BotContext Instance => Services.GetRequiredService<BotContext>();
     
+    public ILagrangeWebService WebService => Services.GetRequiredService<ILagrangeWebService>();
+    
     internal LagrangeApp(IHost host)
     {
         _hostApp = host;
@@ -30,6 +34,7 @@ public class LagrangeApp : IHost
 
     public async Task StartAsync(CancellationToken cancellationToken = new())
     {
+        await _hostApp.StartAsync(cancellationToken);
         Logger.LogInformation("Lagrange.OneBot Implementation has started");
         Logger.LogInformation($"Protocol: {Configuration.GetValue<string>("Protocol")} | {Instance.ContextCollection.AppInfo.CurrentVersion}");
         
@@ -43,15 +48,20 @@ public class LagrangeApp : IHost
             _ => Microsoft.Extensions.Logging.LogLevel.Error
         }, args.ToString());
 
-        Instance.Invoker.OnBotOnlineEvent += (_, args) =>
+        Instance.Invoker.OnBotOnlineEvent += async (_, args) =>
         {
             var keystore = Instance.UpdateKeystore();
             Logger.LogInformation($"Bot Online: {keystore.Uin}");
             string json = JsonSerializer.Serialize(keystore, new JsonSerializerOptions { WriteIndented = true });
             
-            File.WriteAllText(Configuration["ConfigPath:Keystore"] ?? "keystore.json", json);
+            await File.WriteAllTextAsync(Configuration["ConfigPath:Keystore"] ?? "keystore.json", json, cancellationToken);
+            
+            var lifecycle = new OneBotLifecycle(keystore.Uin, "enable");
+            await WebService.SendJsonAsync(lifecycle, cancellationToken);
         };
-
+        
+        await WebService.StartAsync(cancellationToken);
+        
         if (Configuration.GetValue<uint>("Account:Uin") == 0)
         {
             var qrCode = await Instance.FetchQrCode();
@@ -76,8 +86,6 @@ public class LagrangeApp : IHost
             
             await Instance.LoginByPassword();
         }
-        
-        await _hostApp.StartAsync(cancellationToken);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken = new())
