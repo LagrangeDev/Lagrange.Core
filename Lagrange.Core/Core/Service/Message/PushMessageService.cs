@@ -30,7 +30,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         extraEvents = new List<ProtocolEvent>();
         switch (packetType)
         {
-            case PkgType.PrivateMessage or PkgType.GroupMessage:
+            case PkgType.PrivateMessage or PkgType.GroupMessage or PkgType.PrivateFileMessage:
             {
                 var chain = MessagePacker.Parse(message.Message);
                 output = PushMessageEvent.Create(chain);
@@ -97,6 +97,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
     private enum PkgType
     {
         PrivateMessage = 166,
+        PrivateFileMessage = 529,
         GroupMessage = 82,
         GroupInviteNotice = 87,
         Event0x210 = 528,

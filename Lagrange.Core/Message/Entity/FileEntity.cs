@@ -20,6 +20,8 @@ public class FileEntity : IMessageEntity
     
     public byte[] FileMd5 { get; internal set; }
     
+    public string? FileUrl { get; internal set; }
+    
     internal string? FileUuid { get; set; }
     
     internal string? FileHash { get; set; }
@@ -90,5 +92,5 @@ public class FileEntity : IMessageEntity
             : null;
     }
 
-    public string ToPreviewString() => $"[File] {FileName} ({FileSize})";
+    public string ToPreviewString() => $"[File] {FileName} ({FileSize}): {FileUrl ?? "failed to receive file url"}";
 }

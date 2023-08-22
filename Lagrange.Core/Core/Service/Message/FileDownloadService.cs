@@ -1,12 +1,13 @@
+using System.Text;
 using Lagrange.Core.Common;
 using Lagrange.Core.Core.Event.Protocol;
 using Lagrange.Core.Core.Event.Protocol.Message;
 using Lagrange.Core.Core.Packets;
 using Lagrange.Core.Core.Packets.Service.Oidb;
 using Lagrange.Core.Core.Packets.Service.Oidb.Request;
+using Lagrange.Core.Core.Packets.Service.Oidb.Response;
 using Lagrange.Core.Core.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
-using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
 namespace Lagrange.Core.Core.Service.Message;
@@ -43,7 +44,16 @@ internal class FileDownloadService : BaseService<FileDownloadEvent>
     protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out FileDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        Console.WriteLine(input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix).Hex());
-        return base.Parse(input, keystore, appInfo, device, out output, out extraEvents);
+        var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xE37_1200Response>>(payload.AsSpan());
+        
+        var urlBuilder = new StringBuilder()
+            .Append("http://")
+            .Append(packet.Body.Body.Result.Server).Append(':').Append(packet.Body.Body.Result.Port)
+            .Append(packet.Body.Body.Result.Url).Append("&isthumb=0");
+
+        output = FileDownloadEvent.Result((int)packet.ErrorCode, urlBuilder.ToString());
+        extraEvents = null;
+        return true;
     }
 }

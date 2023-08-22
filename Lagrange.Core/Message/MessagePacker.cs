@@ -133,7 +133,7 @@ internal class MessagePacker
             }
         }
 
-        if (message.Body is { MsgContent: not null, RichText: null }) // if RichText is not null, it means that the message is from Tencent's SSO server
+        if (message.Body is { MsgContent: not null })
         {
             foreach (var factory in MsgFactory)
             {

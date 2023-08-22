@@ -99,6 +99,7 @@ internal class MessagingLogic : LogicBase
             if (results.Count != 0)
             {
                 var result = (FileDownloadEvent)results[0];
+                file.FileUrl = result.FileUrl;
             }
         }
         if (chain.HasTypeOf<MultiMsgEntity>())
