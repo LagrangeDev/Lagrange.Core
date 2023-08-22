@@ -20,7 +20,7 @@ internal class RequestFriendSearchService : BaseService<RequestFriendSearchEvent
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x972_6>(new OidbSvcTrpcTcp0x972_6
         {
-            TargetUin = input.TargetUin,
+            TargetUin = input.TargetUin.ToString(),
             Settings = new OidbSvcTrpcTcp0x972_6Settings
             {
                 Field4 = 25,
