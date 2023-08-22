@@ -1,6 +1,6 @@
 using ProtoBuf;
 
-namespace Lagrange.Core.Core.Packets.Service.Oidb.Resopnse;
+namespace Lagrange.Core.Core.Packets.Service.Oidb.Response;
 
 // ReSharper disable InconsistentNaming
 

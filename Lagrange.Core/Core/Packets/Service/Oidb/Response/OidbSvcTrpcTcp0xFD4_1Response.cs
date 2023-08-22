@@ -1,7 +1,7 @@
 using Lagrange.Core.Core.Packets.Service.Oidb.Generics;
 using ProtoBuf;
 
-namespace Lagrange.Core.Core.Packets.Service.Oidb.Resopnse;
+namespace Lagrange.Core.Core.Packets.Service.Oidb.Response;
 
 // ReSharper disable InconsistentNaming
 #pragma warning disable CS8618
