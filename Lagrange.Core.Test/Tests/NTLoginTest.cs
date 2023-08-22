@@ -39,19 +39,27 @@ public class NTLoginTest
             Console.WriteLine(@event.ToString());
             WtLoginTest.SaveKeystore(bot.UpdateKeystore());
         };
+        
+        bot.Invoker.OnBotCaptchaEvent += (context, @event) =>
+        {
+            Console.WriteLine(@event.ToString());
+            var captcha = Console.ReadLine();
+            var randStr = Console.ReadLine();
+            if (captcha != null && randStr != null) bot.SubmitCaptcha(captcha, randStr);
+        };
+        
+        bot.Invoker.OnGroupInvitationReceived += async (context, @event) =>
+        {
+            Console.WriteLine(@event.ToString());
+        };
 
         await bot.LoginByPassword();
 
-        var cookies = await bot.FetchCookies(new List<string> { "qun.qq.com" });
-        Console.WriteLine(cookies[0]);
-        Console.WriteLine(bot.GetCsrfToken());
-
-        var friends = await bot.FetchFriends();
-        
-        await bot.GetHighwayAddress();
-
-        var friendChain = MessageBuilder.Friend(1925648680);
-        friendChain.Text("This is the friend message sent by Lagrange.Core");
+        var friendChain = MessageBuilder.Group(411240674)
+                .Text("This is the friend message sent by Lagrange.Core")
+                .Mention(1925648680);
         await bot.SendMessage(friendChain.Build());
+
+        await Task.Delay(1000);
     }
 }

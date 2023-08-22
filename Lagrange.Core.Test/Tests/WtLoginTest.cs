@@ -11,7 +11,7 @@ public class WtLoginTest
     public async Task FetchQrCode()
     {
         var deviceInfo = GetDeviceInfo();
-        var keyStore = LoadKeystore() ?? throw new Exception();
+        var keyStore = LoadKeystore() ?? new BotKeystore();
         
         var bot = BotFactory.Create(new BotConfig 
         {
@@ -23,6 +23,7 @@ public class WtLoginTest
 
         bot.Invoker.OnBotLogEvent += (context, @event) =>
         {
+            Utility.Console.ChangeColorByTitle(@event.Level);
             Console.WriteLine(@event.ToString());
         };
         
