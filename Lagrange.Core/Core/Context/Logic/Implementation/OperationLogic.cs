@@ -22,19 +22,11 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 ? ((FetchCookieEvent)events[0]).Cookies : new List<string>();
     }
 
-    public async Task<List<BotFriend>> FetchFriends()
-    {
-        var fetchFriendsEvent = FetchFriendsEvent.Create();
-        var events = await Collection.Business.SendEvent(fetchFriendsEvent);
-        return events.Count != 0 ? ((FetchFriendsEvent)events[0]).Friends : new List<BotFriend>();
-    }
-    
-    public async Task<List<BotGroupMember>> FetchMembers(uint groupUin)
-    {
-        var fetchFriendsEvent = FetchMembersEvent.Create(groupUin);
-        var events = await Collection.Business.SendEvent(fetchFriendsEvent);
-        return events.Count != 0 ? ((FetchMembersEvent)events[0]).Members : new List<BotGroupMember>();
-    }
+    public async Task<List<BotFriend>> FetchFriends(bool refreshCache = false) => 
+            await Collection.Business.CachingLogic.GetCachedFriends(refreshCache);
+
+    public async Task<List<BotGroupMember>> FetchMembers(uint groupUin, bool refreshCache = false) => 
+            await Collection.Business.CachingLogic.GetCachedMembers(groupUin, refreshCache);
     
     public async Task<List<BotGroup>> FetchGroups(bool refreshCache)
     {
