@@ -4,7 +4,7 @@ using Lagrange.Core.Core.Event.Protocol.Action;
 using Lagrange.Core.Core.Packets;
 using Lagrange.Core.Core.Packets.Service.Oidb;
 using Lagrange.Core.Core.Packets.Service.Oidb.Request;
-using Lagrange.Core.Core.Packets.Service.Oidb.Resopnse;
+using Lagrange.Core.Core.Packets.Service.Oidb.Response;
 using Lagrange.Core.Core.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
 using ProtoBuf.Meta;
