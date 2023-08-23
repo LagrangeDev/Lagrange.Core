@@ -58,5 +58,5 @@ internal partial class EcdhImpl
         }
     };
     
-    private readonly record struct EcdhInfo(EllipticCurve Curve, CryptId Id, byte[] PubKey, byte[] SubPubKey);
+    private readonly record struct EcdhInfo(EllipticCurve Curve, CryptId Id, byte[] PubKey);
 }
