@@ -38,6 +38,14 @@ public sealed class MessageBuilder
         
         return this;
     }
+
+    public MessageBuilder Forward(MessageChain target)
+    {
+        var forwardEntity = new ForwardEntity(target);
+        _chain.Add(forwardEntity);
+        
+        return this;
+    }
     
     public MessageChain Build() => _chain;
 }
