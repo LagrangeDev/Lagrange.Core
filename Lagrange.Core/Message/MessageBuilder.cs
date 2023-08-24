@@ -14,7 +14,10 @@ public sealed class MessageBuilder
     public static MessageBuilder Friend(uint friendUin) => new(new MessageChain(friendUin, "", "")); // automatically set selfUid and friendUid by MessagingLogic
 
     public static MessageBuilder Group(uint groupUin) => new(new MessageChain(groupUin));
-
+    
+    public static MessageBuilder FakeGroup(uint groupUin, uint memberUin) => 
+            new(new MessageChain(groupUin, memberUin, (uint)Random.Shared.Next(1000000, 9999999)));
+    
     public MessageBuilder Text(string text)
     {
         var textEntity = new TextEntity(text);
@@ -43,6 +46,14 @@ public sealed class MessageBuilder
     {
         var forwardEntity = new ForwardEntity(target);
         _chain.Add(forwardEntity);
+        
+        return this;
+    }
+    
+    public MessageBuilder MultiMsg(uint? groupUin = null, params MessageBuilder[] msg)
+    {
+        var multiMsgEntity = new MultiMsgEntity(groupUin, msg.Select(x => x.Build()).ToList());
+        _chain.Add(multiMsgEntity);
         
         return this;
     }

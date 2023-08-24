@@ -10,6 +10,7 @@ public static class GZip
         using var outputStream = new MemoryStream();
         var gzipStream = new GZipStream(inputStream, CompressionMode.Decompress);
         gzipStream.CopyTo(outputStream);
+        gzipStream.Close();
         return outputStream.ToArray();
     }
     
@@ -19,6 +20,7 @@ public static class GZip
         using var outputStream = new MemoryStream();
         var gzipStream = new GZipStream(outputStream, CompressionMode.Compress);
         inputStream.CopyTo(gzipStream);
+        gzipStream.Close();
         return outputStream.ToArray();
     }
 }

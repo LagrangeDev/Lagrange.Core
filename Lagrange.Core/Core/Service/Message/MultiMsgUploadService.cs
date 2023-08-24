@@ -1,5 +1,7 @@
 using Lagrange.Core.Common;
+using Lagrange.Core.Core.Event.Protocol;
 using Lagrange.Core.Core.Event.Protocol.Message;
+using Lagrange.Core.Core.Packets;
 using Lagrange.Core.Core.Packets.Message.Action;
 using Lagrange.Core.Core.Service.Abstraction;
 using Lagrange.Core.Message;
@@ -19,7 +21,7 @@ internal class MultiMsgUploadService : BaseService<MultiMsgUploadEvent>
         if (input.Chains == null) throw new ArgumentNullException(nameof(input.Chains));
         
         var msgPacker = new MessagePacker(keystore.Uid ?? "");
-        var msgBody = input.Chains.Select(chain => msgPacker.BuildFake(chain)).ToList();
+        var msgBody = input.Chains.Select(msgPacker.BuildFake).ToList();
         var longMsgResult = new LongMsgResult
         {
             Action = new LongMsgAction
@@ -38,7 +40,8 @@ internal class MultiMsgUploadService : BaseService<MultiMsgUploadEvent>
             Info = new SendLongMsgInfo
             {
                 Type = 3,
-                Uid = new LongMsgUid { Uid = keystore.Uid },
+                Uid = new LongMsgUid { Uid = input.GroupUin.ToString() ?? keystore.Uid },
+                GroupUin = input.GroupUin,
                 Payload = deflate
             },
             Settings = new LongMsgSettings
@@ -55,6 +58,17 @@ internal class MultiMsgUploadService : BaseService<MultiMsgUploadEvent>
         output = new BinaryPacket(stream);
         
         extraPackets = null;
+        return true;
+    }
+
+    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+        out MultiMsgUploadEvent output, out List<ProtocolEvent>? extraEvents)
+    {
+        var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
+        var packet = Serializer.Deserialize<SendLongMsgResp>(payload.AsSpan());
+        
+        output = MultiMsgUploadEvent.Result(0, packet.Result.ResId);
+        extraEvents = null;
         return true;
     }
 }

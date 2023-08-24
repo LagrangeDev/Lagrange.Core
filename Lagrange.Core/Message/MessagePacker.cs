@@ -6,6 +6,7 @@ using Lagrange.Core.Core.Packets.Message.Element;
 using Lagrange.Core.Core.Packets.Message.Routing;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Utility.Extension;
+using Lagrange.Core.Utility.Generator;
 using ContentHead = Lagrange.Core.Core.Packets.Message.ContentHead;
 using MessageControl = Lagrange.Core.Core.Packets.Message.MessageControl;
 using PushMsgBody = Lagrange.Core.Core.Packets.Message.PushMsgBody;
@@ -188,7 +189,12 @@ internal class MessagePacker
             ToUid = chain.Uid,
             Grp = !chain.IsGroup ? null : new ResponseGrp // for consistency of code so inverted condition
             {
-                GroupUin = chain.GroupUin ?? 0
+                GroupUin = chain.GroupUin ?? 0,
+                MemberName = chain.GroupMemberInfo?.MemberCard ?? ""
+            },
+            Forward = new ResponseForward
+            {
+                FriendName = chain.FriendInfo?.Nickname
             }
         },
         ContentHead = new ContentHead
@@ -201,7 +207,13 @@ internal class MessagePacker
             Timestamp = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             Type = 1,
             Field8 = 0,
-            Field9 = 0
+            Field9 = 0,
+            Forward = new ForwardHead
+            {
+                Field3 = chain.IsGroup ? null : 2,
+                UnknownBase64 = Convert.ToBase64String(ByteGen.GenRandomBytes(32)),
+                Avatar = $"https://q1.qlogo.cn/g?b=qq&nk={chain.GroupMemberInfo?.Uin ?? chain.FriendInfo?.Uin}&s=640"
+            }
         },
         Body = new Core.Packets.Message.MessageBody { RichText = new RichText { Elems = new List<Elem>() } }
     };

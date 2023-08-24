@@ -4,7 +4,7 @@ namespace Lagrange.Core.Core.Event.Protocol.Message;
 
 internal class MultiMsgUploadEvent : ProtocolEvent
 {
-    public string? Uid { get; }
+    public uint? GroupUin { get; }
     
     public string? ResId { get; }
     
@@ -15,13 +15,13 @@ internal class MultiMsgUploadEvent : ProtocolEvent
         ResId = resId;
     }
     
-    private MultiMsgUploadEvent(string uid, List<MessageChain> chains) : base(true)
+    private MultiMsgUploadEvent(uint? groupUin, List<MessageChain> chains) : base(true)
     {
-        Uid = uid;
+        GroupUin = groupUin;
         Chains = chains;
     }
     
-    public MultiMsgUploadEvent Create(string uid, List<MessageChain> chains) => new(uid, chains);
+    public static MultiMsgUploadEvent Create(uint? groupUin, List<MessageChain> chains) => new(groupUin, chains);
     
-    public MultiMsgUploadEvent Result(int resultCode, string resId) => new(resultCode, resId);
+    public static MultiMsgUploadEvent Result(int resultCode, string resId) => new(resultCode, resId);
 }

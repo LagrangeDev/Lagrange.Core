@@ -18,5 +18,7 @@ internal class ResponseHead
     
     [ProtoMember(6)] public string? ToUid { get; set; }
     
+    [ProtoMember(7)] public ResponseForward? Forward { get; set; }
+    
     [ProtoMember(8)] public ResponseGrp? Grp { get; set; }
 }

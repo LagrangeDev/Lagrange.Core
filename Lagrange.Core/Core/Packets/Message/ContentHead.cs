@@ -1,3 +1,4 @@
+using Lagrange.Core.Core.Packets.Message.Routing;
 using ProtoBuf;
 
 #pragma warning disable CS8618
@@ -26,4 +27,6 @@ internal class ContentHead
     [ProtoMember(9)] public uint? Field9 { get; set; }
     
     [ProtoMember(12)] public long? NewId { get; set; }
+    
+    [ProtoMember(15)] public ForwardHead? Forward { get; set; }
 }
