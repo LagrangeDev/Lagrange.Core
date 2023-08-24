@@ -39,5 +39,5 @@ jobs:
 
       - name: Push generated package to GitHub registry and NuGet
         run: |
-          nuget push .\Lagrange.Core\bin\Release\*.nupkg -Source github -SkipDuplicate
+          nuget push .\Lagrange.Core\bin\Release\*.nupkg -Source github -SkipDuplicate --api-key ${{ secrets.GIT_TOKEN }}
           nuget push .\Lagrange.Core\bin\Release\*.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate -ApiKey ${{ secrets.NUGETAPIKEY }}
