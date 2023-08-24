@@ -35,7 +35,7 @@ jobs:
 
       - name: Add private GitHub registry to NuGet
         run: |
-          nuget sources add -name github -Source https://nuget.pkg.github.com/Linwenxuan05/index.json -Username Linwenxuan05 -Password ${{ secrets.GITHUB_TOKEN }}
+          nuget sources add -name github -Source https://nuget.pkg.github.com/Lagrange.Core/index.json -Username Linwenxuan05 -Password ${{ secrets.GIT_TOKEN }}
 
       - name: Push generated package to GitHub registry and NuGet
         run: |
