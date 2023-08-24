@@ -44,9 +44,9 @@ internal class SocketContext : ContextBase, IClientListener
         return await _tcpClient.Connect(ServerUri.Host, ServerUri.Port);
     }
     
-    public async Task<bool> Reconnect()
+    private async Task<bool> Reconnect()
     {
-        if (ServerUri != null)
+        if (ServerUri != null && !_tcpClient.Connected)
         {
             bool reconnect = await _tcpClient.Connect(ServerUri.Host, ServerUri.Port);
             if (reconnect)
@@ -73,15 +73,22 @@ internal class SocketContext : ContextBase, IClientListener
 
     public void OnDisconnect()
     {
-        if (_config.AutoReconnect) _ = Reconnect();
+        Collection.Log.LogFatal(Tag, "Socket Disconnected, Scheduling Reconnect");
+        
+        if (_config.AutoReconnect)
+        {
+            Collection.Scheduler.Interval("Reconnect", 10 * 1000, async () =>
+            {
+                if (await Reconnect()) Collection.Scheduler.Cancel("Reconnect");
+            });
+        }
     }
 
     public void OnSocketError(Exception e)
     {
-        if (e.GetType() == typeof(SocketException))
-        {
-            if (((SocketException)e).SocketErrorCode == SocketError.TimedOut) OnDisconnect();
-        }
+        Collection.Log.LogFatal(Tag, $"Socket Error: {e.Message}");
+        _tcpClient.Disconnect();
+        if (!_tcpClient.Connected) OnDisconnect();
     }
 
     private static readonly Uri[] HardCodeIPv6Uris = 
