@@ -30,7 +30,8 @@ internal class MessagingLogic : LogicBase
             case PushMessageEvent push:
             {
                 if (push.Chain.Count == 0) return;
-                await ResolveAdditionalPackets(push.Chain);
+                await ResolveAdditional(push.Chain);
+                await ResolveChainMetadata(push.Chain);
 
                 var chain = push.Chain;
                 Collection.Log.LogVerbose(Tag, chain.ToPreviewString());
@@ -87,7 +88,7 @@ internal class MessagingLogic : LogicBase
         }
     }
 
-    private async Task ResolveAdditionalPackets(MessageChain chain)
+    private async Task ResolveAdditional(MessageChain chain)
     {
         if (chain.HasTypeOf<FileEntity>())
         {
@@ -116,6 +117,7 @@ internal class MessagingLogic : LogicBase
             }
         }
     }
+    
     private async Task ResolveChainUid(MessageChain chain)
     {
         foreach (var entity in chain)
@@ -126,6 +128,20 @@ internal class MessagingLogic : LogicBase
                     mention.Uid = await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
                     break;
             }
+        }
+    }
+
+    private async Task ResolveChainMetadata(MessageChain chain)
+    {
+        if (chain is { IsGroup: true, GroupUin: not null })
+        {
+            var groups = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
+            chain.GroupMemberInfo = groups.FirstOrDefault(x => x.Uin == chain.FriendUin);
+        }
+        else
+        {
+            var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
+            chain.FriendInfo = friends.FirstOrDefault(x => x.Uin == chain.FriendUin);
         }
     }
 }

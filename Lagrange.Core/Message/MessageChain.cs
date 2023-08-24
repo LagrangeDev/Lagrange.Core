@@ -1,4 +1,5 @@
 using System.Text;
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Core.Packets.Message.Element;
 
 namespace Lagrange.Core.Message;
@@ -8,6 +9,12 @@ public sealed class MessageChain : List<IMessageEntity>
     public uint? GroupUin { get; }
     
     public uint FriendUin { get; }
+    
+    public BotFriend? FriendInfo { get; internal set; }
+    
+    public BotGroupMember? GroupMemberInfo { get; internal set; }
+
+    #region Internal Properties
 
     internal uint Sequence { get; }
     
@@ -18,6 +25,8 @@ public sealed class MessageChain : List<IMessageEntity>
     internal bool IsGroup { get; }
     
     internal List<Elem> Elements { get; }
+
+    #endregion
 
     internal MessageChain(uint friendUin, string selfUid, string friendUid)
     {
