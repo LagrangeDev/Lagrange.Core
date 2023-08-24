@@ -57,6 +57,14 @@ public sealed class MessageBuilder
         
         return this;
     }
+
+    public MessageBuilder Xml(string xml)
+    {
+        var xmlEntity = new XmlEntity(xml);
+        _chain.Add(xmlEntity);
+        
+        return this;
+    }
     
     public MessageChain Build() => _chain;
 }

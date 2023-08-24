@@ -15,8 +15,6 @@ public class XmlEntity : IMessageEntity
     
     public XmlEntity(string xml) => Xml = xml;
     
-    public XmlEntity(XmlNode xml) => Xml = xml.OuterXml;
-
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
         return new Elem[]
