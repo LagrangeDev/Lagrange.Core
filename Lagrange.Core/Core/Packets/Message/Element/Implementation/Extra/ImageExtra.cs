@@ -9,5 +9,5 @@ namespace Lagrange.Core.Core.Packets.Message.Element.Implementation.Extra;
 [ProtoContract]
 internal class ImageExtra
 {
-    
+    [ProtoMember(85)] public uint Field85 { get; set; } // 1
 }

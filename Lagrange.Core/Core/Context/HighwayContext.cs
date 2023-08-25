@@ -1,7 +1,6 @@
-using System.Collections.Concurrent;
+using System.Text;
 using Lagrange.Core.Common;
-using Lagrange.Core.Core.Network;
-using Lagrange.Core.Core.Packets;
+using Lagrange.Core.Core.Event.Protocol.System;
 using Lagrange.Core.Core.Packets.Service.Highway;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
@@ -15,17 +14,21 @@ namespace Lagrange.Core.Core.Context;
 internal class HighwayContext : ContextBase
 {
     private readonly HttpClient _client;
+
+    private Dictionary<uint, List<Uri>>? _highwayUrls;
+    private byte[]? _sigSession;
     
     public HighwayContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device)
         : base(collection, keystore, appInfo, device)
     {
-        _client = new HttpClient
+        var handler = new HttpClientHandler
         {
-            DefaultRequestHeaders =
-            {
-                { "Accept-Encoding", "identity" },
-            }
+            ServerCertificateCustomValidationCallback = (_, _, _, _) => true,
         };
+        
+        _client = new HttpClient(handler);
+        _client.DefaultRequestHeaders.Add("Accept-Encoding", "identity");
+        _client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2)");
     }
 
     public async Task<bool> EchoAsync(Uri uri, uint seq)
@@ -56,9 +59,40 @@ internal class HighwayContext : ContextBase
         }
     }
 
-    public async Task<bool> UploadSrcByStream(int commonId, uint uin, byte[] upKey, BinaryPacket data, long fileSize, byte[] md5)
+    public async Task<bool> UploadSrcByStreamAsync(int commonId, uint uin, Stream data, byte[] md5, byte[]? extendInfo = null)
     {
-        return false;
+        if (_highwayUrls is null) await FetchHttpConnUri();
+        
+        bool success = true;
+        var upBlocks = new List<UpBlock>();
+        var uri = _highwayUrls?[(uint)commonId][0] ?? throw new InvalidOperationException("No highway url");
+
+        long fileSize = data.Length;
+        int sequence = 1;
+        int offset = 0;
+        int chunkSize = fileSize is >= 1024 and <= 1048575 ? 8192 : 1024 * 1024;
+
+        while (data.Position < data.Length)
+        {
+            var buffer = new byte[Math.Min(chunkSize, fileSize - offset)];
+            int payload = await data.ReadAsync(buffer.AsMemory());
+            var reqBody = new UpBlock(commonId, uin, Interlocked.Increment(ref sequence),
+                                      (ulong)fileSize, (ulong)offset, md5, buffer, extendInfo, 
+                                      (ulong)DateTimeOffset.Now.ToUnixTimeMilliseconds());
+            upBlocks.Add(reqBody);
+            offset = (int)data.Position;
+
+            if (upBlocks.Count >= 32 || data.Position == data.Length)
+            {
+                var tasks = upBlocks.Select(x => SendUpBlockAsync(x, uri)).ToArray();
+                var results = await Task.WhenAll(tasks);
+                success &= results.All(x => x);
+                
+                upBlocks.Clear();
+            }
+        }
+
+        return success;
     }
 
     private async Task<bool> SendUpBlockAsync(UpBlock upBlock, Uri server)
@@ -69,22 +103,17 @@ internal class HighwayContext : ContextBase
             Uin = upBlock.Uin.ToString(),
             Command = "PicUp.DataUp",
             Seq = (uint)upBlock.Sequence,
-            RetryTimes = 0,
             AppId = (uint)AppInfo.SubAppId,
-            DataFlag = 4096,
             CommandId = (uint)upBlock.CommandId,
-            LocaleId = 2052
         };
         var segHead = new SegHead
         {
             Filesize = upBlock.FileSize,
             DataOffset = upBlock.Offset,
             DataLength = (uint)upBlock.Block.Length,
-            ServiceTicket = upBlock.UpKey,
+            ServiceTicket = _sigSession ?? throw new InvalidOperationException("No login sig"),
             Md5 = (await upBlock.Block.Md5Async()).UnHex(),
             FileMd5 = upBlock.FileMd5,
-            CachePort = 0,
-            CacheAddr = 0
         };
         
         var highwayHead = new ReqDataHighwayHead
@@ -93,13 +122,13 @@ internal class HighwayContext : ContextBase
             MsgSegHead = segHead,
             BytesReqExtendInfo = upBlock.ExtendInfo,
             Timestamp = upBlock.Timestamp,
-            MsgLoginSigHead = upBlock.LoginSig
         };
 
         bool isEnd = upBlock.Offset + (ulong)upBlock.Block.Length == upBlock.FileSize;
-        await SendPacketAsync(highwayHead, new BinaryPacket(upBlock.Block),  server, isEnd);
+        var payload = await SendPacketAsync(highwayHead, new BinaryPacket(upBlock.Block),  server, isEnd);
+        var (respHead, resp) = ParsePacket(payload);
 
-        return true;
+        return respHead.ErrorCode == 0;
     }
 
     private Task<BinaryPacket> SendPacketAsync(ReqDataHighwayHead head, BinaryPacket buffer, Uri server, bool end = true)
@@ -109,8 +138,8 @@ internal class HighwayContext : ContextBase
         
         var writer = new BinaryPacket()
                 .WriteByte(0x28) // packet start
-                .WriteInt((int)stream.Length)
-                .WriteInt((int)buffer.Length)
+                .WriteInt((int)stream.Length, false)
+                .WriteInt((int)buffer.Length, false)
                 .WriteBytes(stream.ToArray())
                 .WritePacket(buffer)
                 .WriteByte(0x29); // packet end
@@ -122,8 +151,8 @@ internal class HighwayContext : ContextBase
     {
         if (packet.ReadByte() == 0x28)
         {
-            int headLength = packet.ReadInt();
-            int bodyLength = packet.ReadInt();
+            int headLength = packet.ReadInt(false);
+            int bodyLength = packet.ReadInt(false);
             var head = Serializer.Deserialize<RespDataHighwayHead>(packet.ReadBytes(headLength).AsSpan());
             var body = packet.ReadPacket(bodyLength);
             
@@ -142,24 +171,33 @@ internal class HighwayContext : ContextBase
             Headers =
             {
                 { "Connection" , end ? "close" : "keep-alive" },
-                { "Content-Type", "application/x-www-form-urlencoded" },
             }
         };
         var response = await _client.SendAsync(request);
         var data = await response.Content.ReadAsByteArrayAsync();
         return new BinaryPacket(data);
     }
+
+    private async Task FetchHttpConnUri()
+    {
+        var highwayUrlEvent = HighwayUrlEvent.Create();
+        var results = await Collection.Business.SendEvent(highwayUrlEvent);
+        if (results.Count != 0)
+        {
+            var result = (HighwayUrlEvent)results[0];
+            _highwayUrls = result.HighwayUrls;
+            _sigSession = result.SigSession;
+        }
+    }
     
-    private record UpBlock(
+    private record struct UpBlock(
         int CommandId, 
         uint Uin,
         int Sequence, 
         ulong FileSize,
         ulong Offset, 
         byte[] FileMd5,
-        byte[] UpKey,
         byte[] Block, 
         byte[]? ExtendInfo = null,
-        ulong Timestamp = 0, 
-        LoginSigHead? LoginSig = null);
+        ulong Timestamp = 0);
 }

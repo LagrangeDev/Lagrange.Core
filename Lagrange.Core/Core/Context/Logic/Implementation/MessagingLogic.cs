@@ -7,6 +7,7 @@ using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Core.Event;
 using Lagrange.Core.Core.Event.EventArg;
 using Lagrange.Core.Core.Event.Protocol.Notify;
+using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Core.Context.Logic.Implementation;
 
@@ -83,7 +84,8 @@ internal class MessagingLogic : LogicBase
         switch (e)
         {
             case SendMessageEvent send: // resolve Uin to Uid
-                await ResolveChainUid(send.Chain); 
+                await ResolveChainMetadata(send.Chain);
+                await ResolveChainUid(send.Chain);
                 break;
         }
     }
@@ -144,13 +146,24 @@ internal class MessagingLogic : LogicBase
                 }
                 case ImageEntity image:
                 {
-                    var imageUploadEvent = ImageUploadEvent.Create(image.ImageStream, Collection.Keystore.Uid ?? "");
+                    string uid = await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin) ?? throw new Exception($"Failed to resolve Uid for Uin {chain.FriendUin}");
+                    var imageUploadEvent = ImageUploadEvent.Create(image.ImageStream, uid);
                     var results = await Collection.Business.SendEvent(imageUploadEvent);
                     if (results.Count != 0)
                     {
                         var result = (ImageUploadEvent)results[0];
+                        bool hwSuccess = await Collection.Highway.UploadSrcByStreamAsync(21, Collection.Keystore.Uin, image.ImageStream, imageUploadEvent.FileMd5.UnHex());
+                        if (!hwSuccess)
+                        {
+                            Collection.Log.LogFatal(Tag, "Failed to upload image to highway");
+                            continue;
+                        }
+                        
                         image.CommonAdditional = result.CommonAdditional;
                         image.ImageInfo = result.ImageInfo;
+                        
+                        var successEvent = ImageUploadSuccessEvent.Create(uid, result.CommonAdditional);
+                        _ = await Collection.Business.SendEvent(successEvent);
                     }
                     break;
                 }

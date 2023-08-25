@@ -18,7 +18,7 @@ internal class OidbSvcTrpcTcp0x11C5_100
 [ProtoContract]
 internal class OidbSvcTrpcTcp0x11C5_100Body1
 {
-    [ProtoMember(1)] public OidbTwoNumber Field1 { get; set; } // 1, 100
+    [ProtoMember(1)] public OidbTwoNumber Command { get; set; } // 1, 100
     
     [ProtoMember(2)] public OidbSvcTrpcTcp0x11C5_100Body1Field2 Field2 { get; set; }
     

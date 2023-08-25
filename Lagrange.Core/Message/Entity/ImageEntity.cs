@@ -1,6 +1,8 @@
 using System.Numerics;
 using Lagrange.Core.Core.Packets.Message.Element;
 using Lagrange.Core.Core.Packets.Message.Element.Implementation;
+using Lagrange.Core.Core.Packets.Message.Element.Implementation.Extra;
+using ProtoBuf;
 
 namespace Lagrange.Core.Message.Entity;
 
@@ -44,6 +46,10 @@ public class ImageEntity : IMessageEntity
     {
         ImageStream?.Close();
         ImageStream?.Dispose();
+
+        var stream = new MemoryStream();
+        var imageExtra = new ImageExtra { Field85 = 1 };
+        Serializer.Serialize(stream, imageExtra);
         
         return new Elem[]
         {
@@ -59,6 +65,10 @@ public class ImageEntity : IMessageEntity
             new()
             {
                 NotOnlineImage = ImageInfo
+            },
+            new()
+            {
+                GeneralFlags = new GeneralFlags { PbReserve = stream.ToArray() }
             }
         };
     }

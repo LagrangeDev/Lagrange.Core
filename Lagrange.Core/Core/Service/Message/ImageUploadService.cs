@@ -39,7 +39,7 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
         {
             Body1 = new OidbSvcTrpcTcp0x11C5_100Body1
             {
-                Field1 = new OidbTwoNumber { Number1 = 1, Number2 = 100 },
+                Command = new OidbTwoNumber { Number1 = 1, Number2 = 100 },
                 Field2 = new OidbSvcTrpcTcp0x11C5_100Body1Field2
                 {
                     Field101 = 2,
@@ -95,7 +95,7 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
         var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x11C5_100Response>>(payload.AsSpan());
         
-        output = ImageUploadEvent.Result(0, packet.Body.Data.CommonAdditional, packet.Body.Data.ImageInfo);
+        output = ImageUploadEvent.Result(0, packet.Body.Data.HighwayTicket, packet.Body.Data.CommonAdditional, packet.Body.Data.ImageInfo);
         extraEvents = null;
         return true;
     }

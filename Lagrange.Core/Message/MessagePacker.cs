@@ -156,7 +156,7 @@ internal class MessagePacker
         {
             C2C = chain.IsGroup ? null : new C2C
             {
-                Uid = chain.Uid,
+                Uid = chain.FriendInfo?.Uid,
                 Uin = chain.FriendUin
             },
             Grp = !chain.IsGroup ? null : new Grp // for consistency of code so inverted condition

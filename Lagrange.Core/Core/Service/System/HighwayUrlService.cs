@@ -59,11 +59,11 @@ internal class HighwayUrlService : BaseService<HighwayUrlEvent>
             foreach (var serverAddr in serverInfo.ServerAddrs)
             {
                 var ip = BitConverter.GetBytes(serverAddr.Ip);
-                servers[type].Add(new Uri($"https://{ip[0]}.{ip[1]}.{ip[2]}.{ip[3]}:{serverAddr.Port}"));
+                servers[type].Add(new Uri($"https://{ip[0]}.{ip[1]}.{ip[2]}.{ip[3]}:{serverAddr.Port}/cgi-bin/httpconn?htcmd=0x6FF0087&uin={keystore.Uin}"));
             }
         }
         
-        output = HighwayUrlEvent.Result(0, servers);
+        output = HighwayUrlEvent.Result(0, packet.HttpConn.SigSession, servers);
         extraEvents = null;
         return true;
     }

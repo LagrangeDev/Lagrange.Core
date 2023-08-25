@@ -16,11 +16,13 @@ internal class ImageUploadEvent : ProtocolEvent
     
     public string FileSha1 { get; }
     
+    public string Ticket { get; }
+    
     public byte[] CommonAdditional { get; } // Field 6 in Response
     
     public NotOnlineImage ImageInfo { get; } // Field 8 in Response
 
-    protected ImageUploadEvent(Stream stream, string targetUid) : base(true)
+    private ImageUploadEvent(Stream stream, string targetUid) : base(true)
     {
         Stream = stream;
         TargetUid = targetUid;
@@ -29,14 +31,15 @@ internal class ImageUploadEvent : ProtocolEvent
         FileSha1 = stream.Sha1(true);
     }
     
-    protected ImageUploadEvent(int resultCode, byte[] commonAdditional, NotOnlineImage image) : base(resultCode)
+    private ImageUploadEvent(int resultCode, string ticket, byte[] commonAdditional, NotOnlineImage image) : base(resultCode)
     {
+        Ticket = ticket;
         CommonAdditional = commonAdditional;
         ImageInfo = image;
     }
     
     public static ImageUploadEvent Create(Stream stream, string targetUid) => new(stream, targetUid);
 
-    public static ImageUploadEvent Result(int resultCode, byte[] commonAdditional, NotOnlineImage image) 
-        => new(resultCode, commonAdditional, image);
+    public static ImageUploadEvent Result(int resultCode, string ticket, byte[] commonAdditional, NotOnlineImage image) 
+        => new(resultCode, ticket, commonAdditional, image);
 }
