@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Reflection;
 using Lagrange.Core.Common;
 using Lagrange.Core.Core.Event.Protocol;
@@ -110,5 +111,21 @@ internal partial class ServiceContext : ContextBase
         }
         
         return result;
+    }
+    
+    private class SequenceProvider
+    {
+        private readonly ConcurrentDictionary<string, int> _sessionSequence = new();
+        
+        private int _sequence = Random.Shared.Next(5000000, 9900000);
+
+        public int GetNewSequence()
+        {
+            Interlocked.CompareExchange(ref _sequence, 5000000, 9900000);
+            return Interlocked.Increment(ref _sequence);
+        }
+        
+        public int RegisterSession(string sessionId) => 
+                _sessionSequence.GetOrAdd(sessionId, _ => GetNewSequence());
     }
 }
