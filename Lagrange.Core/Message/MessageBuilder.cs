@@ -66,5 +66,21 @@ public sealed class MessageBuilder
         return this;
     }
     
+    public MessageBuilder Image(string filePath)
+    {
+        var imageEntity = new ImageEntity(filePath);
+        _chain.Add(imageEntity);
+        
+        return this;
+    }
+    
+    public MessageBuilder Image(byte[] file)
+    {
+        var imageEntity = new ImageEntity(file);
+        _chain.Add(imageEntity);
+        
+        return this;
+    }
+    
     public MessageChain Build() => _chain;
 }

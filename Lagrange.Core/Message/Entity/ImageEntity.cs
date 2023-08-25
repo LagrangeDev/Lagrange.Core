@@ -20,25 +20,45 @@ public class ImageEntity : IMessageEntity
     
     public string ImageUrl { get; set; } = string.Empty;
     
+    internal Stream? ImageStream { get; set; }
+    
+    internal byte[]? CommonAdditional { get; set; }
+    
+    internal NotOnlineImage? ImageInfo { get; set; }
+    
     public ImageEntity() { }
+    
+    public ImageEntity(string filePath)
+    {
+        FilePath = filePath;
+        ImageStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+    }
+
+    public ImageEntity(byte[] file)
+    {
+        FilePath = "";
+        ImageStream = new MemoryStream(file);
+    }
     
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
+        ImageStream?.Close();
+        ImageStream?.Dispose();
+        
         return new Elem[]
         {
             new()
             {
                 CommonElem = new CommonElem
                 {
-                    
+                    ServiceType = 48,
+                    PbElem = CommonAdditional ?? Array.Empty<byte>(),
+                    BusinessType = 10
                 }
             },
             new()
             {
-                NotOnlineImage = new NotOnlineImage
-                {
-                    
-                }
+                NotOnlineImage = ImageInfo
             }
         };
     }

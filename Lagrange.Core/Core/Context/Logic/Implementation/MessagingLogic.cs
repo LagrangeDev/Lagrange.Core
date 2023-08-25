@@ -125,9 +125,12 @@ internal class MessagingLogic : LogicBase
             switch (entity)
             {
                 case MentionEntity mention:
+                {
                     mention.Uid = await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
                     break;
+                }
                 case MultiMsgEntity multiMsg:
+                {
                     foreach (var multi in multiMsg.Chains) await ResolveChainMetadata(multi);
 
                     var multiMsgEvent = MultiMsgUploadEvent.Create(multiMsg.GroupUin, multiMsg.Chains);
@@ -138,6 +141,19 @@ internal class MessagingLogic : LogicBase
                         multiMsg.ResId = result.ResId;
                     }
                     break;
+                }
+                case ImageEntity image:
+                {
+                    var imageUploadEvent = ImageUploadEvent.Create(image.ImageStream, Collection.Keystore.Uid ?? "");
+                    var results = await Collection.Business.SendEvent(imageUploadEvent);
+                    if (results.Count != 0)
+                    {
+                        var result = (ImageUploadEvent)results[0];
+                        image.CommonAdditional = result.CommonAdditional;
+                        image.ImageInfo = result.ImageInfo;
+                    }
+                    break;
+                }
             }
         }
     }
