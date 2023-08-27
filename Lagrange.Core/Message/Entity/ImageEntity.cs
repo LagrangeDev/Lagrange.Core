@@ -101,7 +101,7 @@ public class ImageEntity : IMessageEntity
                 Origin = 1,
                 ThumbWidth = 0,
                 ThumbHeight = 0,
-                PbReserve = new CustomFaceExtra { Field1 = 1 }
+                PbReserve = new CustomFaceExtra { Field1 = 0 }
             }
         };
         

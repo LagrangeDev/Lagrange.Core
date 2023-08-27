@@ -17,13 +17,13 @@ internal class DataHighwayHead
     
     [ProtoMember(6)] public uint AppId { get; set; }
     
-    [ProtoMember(7)] public uint DataFlag { get; set; }
+    // [ProtoMember(7)] public uint DataFlag { get; set; }
     
     [ProtoMember(8)] public uint CommandId { get; set; }
     
     [ProtoMember(9)] public byte[]? BuildVer { get; set; }
     
-    [ProtoMember(10)] public uint LocaleId { get; set; }
+    // [ProtoMember(10)] public uint LocaleId { get; set; }
     
-    [ProtoMember(11)] public uint EnvId { get; set; }
+    // [ProtoMember(11)] public uint EnvId { get; set; }
 }

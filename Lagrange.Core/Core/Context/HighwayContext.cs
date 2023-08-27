@@ -1,10 +1,8 @@
-using System.Text;
 using Lagrange.Core.Common;
-using Lagrange.Core.Core.Event.Protocol.System;
 using Lagrange.Core.Core.Packets.Service.Highway;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
-using ProtoBuf;
+using ProtoBuf.Meta;
 
 namespace Lagrange.Core.Core.Context;
 
@@ -15,6 +13,13 @@ internal class HighwayContext : ContextBase
 {
     private readonly HttpClient _client;
     private uint _sequence;
+    private static readonly RuntimeTypeModel Serializer;
+
+    static HighwayContext()
+    {
+        Serializer = RuntimeTypeModel.Create();
+        Serializer.UseImplicitZeroDefaults = false;
+    }
     
     public HighwayContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device)
         : base(collection, keystore, appInfo, device)
@@ -28,7 +33,7 @@ internal class HighwayContext : ContextBase
         _client.DefaultRequestHeaders.Add("Accept-Encoding", "identity");
         _client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2)");
 
-        _sequence = 10000;
+        _sequence = 0;
     }
 
     public async Task<bool> EchoAsync()
@@ -44,9 +49,7 @@ internal class HighwayContext : ContextBase
                 Command = "PicUp.Echo",
                 Seq = Interlocked.Increment(ref _sequence),
                 AppId = (uint)AppInfo.SubAppId,
-                DataFlag = 4096,
-                CommandId = 0,
-                LocaleId = 2052
+                CommandId = 0
             }
         };
 
@@ -72,6 +75,7 @@ internal class HighwayContext : ContextBase
         int offset = 0;
         int chunkSize = fileSize is >= 1024 and <= 1048575 ? 8192 : 1024 * 1024;
         data.Seek(0, SeekOrigin.Begin);
+        int concurrent = commonId == 2 ? 1 : 8;
 
         while (offset < fileSize)
         {
@@ -81,7 +85,7 @@ internal class HighwayContext : ContextBase
             upBlocks.Add(reqBody);
             offset += payload;
 
-            if (upBlocks.Count >= 8 || data.Position == data.Length)
+            if (upBlocks.Count >= concurrent || data.Position == data.Length)
             {
                 var tasks = upBlocks.Select(x => SendUpBlockAsync(x, uri)).ToArray();
                 var results = await Task.WhenAll(tasks);
