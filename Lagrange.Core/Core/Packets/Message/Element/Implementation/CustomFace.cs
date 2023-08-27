@@ -1,3 +1,4 @@
+using Lagrange.Core.Core.Packets.Message.Element.Implementation.Extra;
 using ProtoBuf;
 
 // ReSharper disable InconsistentNaming
@@ -20,11 +21,11 @@ internal class CustomFace
     
     [ProtoMember(6)] public byte[] OldData { get; set; }
     
-    [ProtoMember(7)] public int FileId { get; set; }
+    [ProtoMember(7)] public uint FileId { get; set; }
     
-    [ProtoMember(8)] public int ServerIp { get; set; }
+    [ProtoMember(8)] public int? ServerIp { get; set; }
     
-    [ProtoMember(9)] public int ServerPort { get; set; }
+    [ProtoMember(9)] public int? ServerPort { get; set; }
     
     [ProtoMember(10)] public int FileType { get; set; }
     
@@ -56,13 +57,13 @@ internal class CustomFace
     
     [ProtoMember(24)] public int Source { get; set; }
     
-    [ProtoMember(25)] public int Size { get; set; }
+    [ProtoMember(25)] public uint Size { get; set; }
     
     [ProtoMember(26)] public int Origin { get; set; }
     
-    [ProtoMember(27)] public int ThumbWidth { get; set; }
+    [ProtoMember(27)] public int? ThumbWidth { get; set; }
     
-    [ProtoMember(28)] public int ThumbHeight { get; set; }
+    [ProtoMember(28)] public int? ThumbHeight { get; set; }
     
     [ProtoMember(29)] public int ShowLen { get; set; }
     
@@ -74,5 +75,5 @@ internal class CustomFace
     
     [ProtoMember(33)] public int X400Height { get; set; }
     
-    [ProtoMember(34)] public byte[] PbReserve { get; set; }
+    [ProtoMember(34)] public CustomFaceExtra? PbReserve { get; set; }
 }

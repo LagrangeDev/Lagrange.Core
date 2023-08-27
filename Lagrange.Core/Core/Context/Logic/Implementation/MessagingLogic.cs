@@ -146,21 +146,23 @@ internal class MessagingLogic : LogicBase
                 }
                 case ImageEntity image:
                 {
-                    string uid = await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin) ?? throw new Exception($"Failed to resolve Uid for Uin {chain.FriendUin}");
-                    var requestTicketEvent = ImageUploadEvent.Create(image.ImageStream, uid);
-                    var ticketResults = await Collection.Business.SendEvent(requestTicketEvent);
-                    if (ticketResults.Count != 0)
+                    if (!chain.IsGroup)
                     {
-                        var ticketResult = (ImageUploadEvent)ticketResults[0];
-                        if (!ticketResult.IsExist)
+                        string uid = await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin) ?? throw new Exception($"Failed to resolve Uid for Uin {chain.FriendUin}");
+                        var @event = ImageUploadEvent.Create(image.ImageStream, uid);
+                        var results = await Collection.Business.SendEvent(@event);
+                        if (results.Count != 0)
                         {
-                            bool hwSuccess = await Collection.Highway.UploadSrcByStreamAsync(1, Collection.Keystore.Uin, image.ImageStream, ticketResult.Ticket, requestTicketEvent.FileMd5.UnHex());
-                            if (!hwSuccess)
+                            var ticketResult = (ImageUploadEvent)results[0];
+                            if (!ticketResult.IsExist)
                             {
-                                Collection.Log.LogFatal(Tag, "Failed to upload image to highway");
-                                continue;
+                                bool hwSuccess = await Collection.Highway.UploadSrcByStreamAsync(1, Collection.Keystore.Uin, image.ImageStream, ticketResult.Ticket, @event.FileMd5.UnHex());
+                                if (!hwSuccess)
+                                {
+                                    Collection.Log.LogFatal(Tag, "Failed to upload image to highway");
+                                    continue;
+                                }
                             }
-                        }
 
                         image.ImageStream = requestTicketEvent.Stream;
                         image.Path = ticketResult.ServerPath;

@@ -1,6 +1,7 @@
 using System.Numerics;
 using Lagrange.Core.Core.Packets.Message.Element;
 using Lagrange.Core.Core.Packets.Message.Element.Implementation;
+using Lagrange.Core.Core.Packets.Message.Element.Implementation.Extra;
 using Lagrange.Core.Utility;
 using Lagrange.Core.Utility.Extension;
 
@@ -25,6 +26,8 @@ public class ImageEntity : IMessageEntity
     internal Stream? ImageStream { get; set; }
 
     internal string? Path { get; set; }
+    
+    internal uint FileId { get; set; }
     
     public ImageEntity() { }
     
@@ -65,26 +68,44 @@ public class ImageEntity : IMessageEntity
         ImageStream?.Close();
         ImageStream?.Dispose();
         
-        Path ??= "";
-        return new Elem[]
+        var targetElem = Path != null ? new Elem
         {
-            new()
+            NotOnlineImage = new NotOnlineImage
             {
-                NotOnlineImage = new NotOnlineImage
-                {
-                    FilePath = md5 + imageExt,
-                    FileLen = fileLen,
-                    DownloadPath = Path,
-                    ImgType = 1001,
-                    PicMd5 = md5.UnHex(),
-                    PicHeight = (uint)size.Y,
-                    PicWidth = (uint)size.X,
-                    ResId = Path,
-                    Original = 1, // true
-                    PbRes = new NotOnlineImage.PbReserve { Field1 = 0 }
-                }
+                FilePath = md5 + imageExt,
+                FileLen = fileLen,
+                DownloadPath = Path,
+                ImgType = 1001,
+                PicMd5 = md5.UnHex(),
+                PicHeight = (uint)size.Y,
+                PicWidth = (uint)size.X,
+                ResId = Path,
+                Original = 1, // true
+                PbRes = new NotOnlineImage.PbReserve { Field1 = 0 }
+            }
+        } : new Elem
+        {
+            CustomFace = new CustomFace
+            {
+                FilePath = $"{{{$"{md5[..8]}-{md5.Substring(8, 4)}-{md5.Substring(12, 4)}-{md5.Substring(16, 4)}-{md5.Substring(20, 12)}".ToUpper()}}}{imageExt}",
+                FileId = FileId,
+                ServerIp = 0,
+                ServerPort = 0,
+                FileType = 1001,
+                Useful = 1,
+                Md5 = md5.UnHex(),
+                ImageType = 1001,
+                Width = (int)size.X,
+                Height = (int)size.Y,
+                Size = fileLen,
+                Origin = 1,
+                ThumbWidth = 0,
+                ThumbHeight = 0,
+                PbReserve = new CustomFaceExtra { Field1 = 1 }
             }
         };
+        
+        return new[] { targetElem };
     }
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
@@ -107,7 +128,7 @@ public class ImageEntity : IMessageEntity
             {
                 PictureSize = new Vector2(target.Width, target.Height),
                 FilePath = target.FilePath,
-                ImageSize = (uint)target.Size,
+                ImageSize = target.Size,
                 ImageUrl = $"{LegacyBaseUrl}{target.OrigUrl}"
             };
         }
