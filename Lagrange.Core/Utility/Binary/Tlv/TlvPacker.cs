@@ -84,17 +84,20 @@ internal class TlvPacker
     
     public static TlvPacket Pack(TlvBody tlv, ushort cmd) => new(cmd, tlv);
 
-    public static TlvBody ReadTlvBody(ushort cmd, BinaryPacket packet)
+    public static TlvBody? ReadTlvBody(ushort cmd, BinaryPacket packet)
     {
-        if (!TlvResps.TryGetValue(cmd, out var type)) type = Tlvs[cmd];
-        
-        if (type.GetCustomAttribute<ProtoContractAttribute>() != null)
+        if (TlvResps.TryGetValue(cmd, out var type))
         {
-            using var stream = new MemoryStream(packet.ToArray());
-            return (TlvBody)Serializer.Deserialize(type, stream);
+            if (type.GetCustomAttribute<ProtoContractAttribute>() != null)
+            {
+                using var stream = new MemoryStream(packet.ToArray());
+                return (TlvBody)Serializer.Deserialize(type, stream);
+            }
+
+            return (TlvBody)packet.Deserialize(type);
         }
 
-        return (TlvBody)packet.Deserialize(type);
+        return null;
     }
 
     public static TlvBody ReadTlvBodyQrCode(ushort cmd, BinaryPacket packet)
@@ -122,7 +125,7 @@ internal class TlvPacker
 
             var packet = payload.ReadPacket(length);
             var tlvBody = isQrCode ? ReadTlvBodyQrCode(cmd, packet) : ReadTlvBody(cmd, packet);
-            tlvs[cmd] = tlvBody;
+            if (tlvBody != null) tlvs[cmd] = tlvBody;
         }
 
         return tlvs;
