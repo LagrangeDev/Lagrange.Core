@@ -1,10 +1,10 @@
-using Lagrange.Core.Core.Packets.Message.Element.Implementation;
 using Lagrange.Core.Utility.Extension;
+
 #pragma warning disable CS8618
 
 namespace Lagrange.Core.Core.Event.Protocol.Message;
 
-internal class ImageRequestTicketEvent : ProtocolEvent
+internal class ImageUploadEvent : ProtocolEvent
 {
     public Stream Stream { get; }
     
@@ -20,7 +20,7 @@ internal class ImageRequestTicketEvent : ProtocolEvent
     
     public string ServerPath { get; }
     
-    private ImageRequestTicketEvent(Stream stream, string targetUid) : base(true)
+    private ImageUploadEvent(Stream stream, string targetUid) : base(true)
     {
         Stream = stream;
         TargetUid = targetUid;
@@ -28,15 +28,15 @@ internal class ImageRequestTicketEvent : ProtocolEvent
         FileMd5 = stream.Md5(true);
     }
     
-    private ImageRequestTicketEvent(int resultCode, string ticket, bool isExist, string serverPath) : base(resultCode)
+    private ImageUploadEvent(int resultCode, string ticket, bool isExist, string serverPath) : base(resultCode)
     {
         IsExist = isExist;
         Ticket = ticket;
         ServerPath = serverPath;
     }
     
-    public static ImageRequestTicketEvent Create(Stream stream, string targetUid) => new(stream, targetUid);
+    public static ImageUploadEvent Create(Stream stream, string targetUid) => new(stream, targetUid);
     
-    public static ImageRequestTicketEvent Result(int resultCode, string ticket, bool isExist, string imagePath) 
+    public static ImageUploadEvent Result(int resultCode, string ticket, bool isExist, string imagePath) 
         => new(resultCode, ticket, isExist, imagePath);
 }

@@ -2,7 +2,6 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Core.Event.Protocol;
 using Lagrange.Core.Core.Event.Protocol.Message;
 using Lagrange.Core.Core.Packets;
-using Lagrange.Core.Core.Packets.Message.Element.Implementation;
 using Lagrange.Core.Core.Packets.Service.Highway;
 using Lagrange.Core.Core.Service.Abstraction;
 using Lagrange.Core.Utility;
@@ -12,11 +11,11 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Core.Service.Message;
 
-[EventSubscribe(typeof(ImageRequestTicketEvent))]
+[EventSubscribe(typeof(ImageUploadEvent))]
 [Service("LongConn.OffPicUp")]
-internal class ImageRequestTicketService : BaseService<ImageRequestTicketEvent>
+internal class ImageUploadService : BaseService<ImageUploadEvent>
 {
-    protected override bool Build(ImageRequestTicketEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Build(ImageUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
         input.Stream.Seek(0, SeekOrigin.Begin);
@@ -69,15 +68,15 @@ internal class ImageRequestTicketService : BaseService<ImageRequestTicketEvent>
     }
 
     protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out ImageRequestTicketEvent output, out List<ProtocolEvent>? extraEvents)
+        out ImageUploadEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
         var packet = Serializer.Deserialize<OffPicUp<OffPicUpResponse>>(payload.AsSpan());
         
-        output = ImageRequestTicketEvent.Result((int)(packet.Info?.Result ?? 1),
-                                                packet.Info?.UpUkey?.Hex(true) ?? "", 
-                                                packet.Info?.FileExit ?? false, 
-                                                packet.Info?.UpResid ?? "");
+        output = ImageUploadEvent.Result((int)(packet.Info?.Result ?? 1),
+                                         packet.Info?.UpUkey?.Hex(true) ?? "", 
+                                         packet.Info?.FileExit ?? false, 
+                                         packet.Info?.UpResid ?? "");
         extraEvents = null;
         return true;
     }

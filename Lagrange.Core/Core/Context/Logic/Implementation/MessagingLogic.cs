@@ -147,11 +147,11 @@ internal class MessagingLogic : LogicBase
                 case ImageEntity image:
                 {
                     string uid = await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin) ?? throw new Exception($"Failed to resolve Uid for Uin {chain.FriendUin}");
-                    var requestTicketEvent = ImageRequestTicketEvent.Create(image.ImageStream, uid);
+                    var requestTicketEvent = ImageUploadEvent.Create(image.ImageStream, uid);
                     var ticketResults = await Collection.Business.SendEvent(requestTicketEvent);
                     if (ticketResults.Count != 0)
                     {
-                        var ticketResult = (ImageRequestTicketEvent)ticketResults[0];
+                        var ticketResult = (ImageUploadEvent)ticketResults[0];
                         if (!ticketResult.IsExist)
                         {
                             bool hwSuccess = await Collection.Highway.UploadSrcByStreamAsync(1, Collection.Keystore.Uin, image.ImageStream, ticketResult.Ticket, requestTicketEvent.FileMd5.UnHex());
