@@ -1,8 +1,8 @@
 using System.Numerics;
 using Lagrange.Core.Core.Packets.Message.Element;
 using Lagrange.Core.Core.Packets.Message.Element.Implementation;
-using Lagrange.Core.Core.Packets.Message.Element.Implementation.Extra;
-using ProtoBuf;
+using Lagrange.Core.Utility;
+using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Message.Entity;
 
@@ -23,10 +23,8 @@ public class ImageEntity : IMessageEntity
     public string ImageUrl { get; set; } = string.Empty;
     
     internal Stream? ImageStream { get; set; }
-    
-    internal byte[]? CommonAdditional { get; set; }
-    
-    internal NotOnlineImage? ImageInfo { get; set; }
+
+    internal string? Path { get; set; }
     
     public ImageEntity() { }
     
@@ -44,31 +42,47 @@ public class ImageEntity : IMessageEntity
     
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
+        if (ImageStream is null) throw new NullReferenceException(nameof(ImageStream));
+        ImageStream.Seek(0, SeekOrigin.Begin);
+        var buffer = new byte[1024]; // parse image header
+        int _ = ImageStream.Read(buffer.AsSpan());
+        var type = ImageResolver.Resolve(buffer, out var size);
+        
+        string imageExt = type switch
+        {
+            ImageFormat.Jpeg => ".jpg",
+            ImageFormat.Png => ".png",
+            ImageFormat.Gif => ".gif",
+            ImageFormat.Webp => ".webp",
+            ImageFormat.Bmp => ".bmp",
+            ImageFormat.Tiff => ".tiff",
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+
+        string md5 = ImageStream.Md5(true);
+        uint fileLen = (uint)ImageStream.Length;
+
         ImageStream?.Close();
         ImageStream?.Dispose();
-
-        var stream = new MemoryStream();
-        var imageExtra = new ImageExtra { Field85 = 1 };
-        Serializer.Serialize(stream, imageExtra);
         
+        Path ??= "";
         return new Elem[]
         {
             new()
             {
-                CommonElem = new CommonElem
+                NotOnlineImage = new NotOnlineImage
                 {
-                    ServiceType = 48,
-                    PbElem = CommonAdditional ?? Array.Empty<byte>(),
-                    BusinessType = 10
+                    FilePath = md5 + imageExt,
+                    FileLen = fileLen,
+                    DownloadPath = Path,
+                    ImgType = 1001,
+                    PicMd5 = md5.UnHex(),
+                    PicHeight = (uint)size.Y,
+                    PicWidth = (uint)size.X,
+                    ResId = Path,
+                    Original = 1, // true
+                    PbRes = new NotOnlineImage.PbReserve { Field1 = 0 }
                 }
-            },
-            new()
-            {
-                NotOnlineImage = ImageInfo
-            },
-            new()
-            {
-                GeneralFlags = new GeneralFlags { PbReserve = stream.ToArray() }
             }
         };
     }

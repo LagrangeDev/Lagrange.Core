@@ -147,23 +147,23 @@ internal class MessagingLogic : LogicBase
                 case ImageEntity image:
                 {
                     string uid = await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin) ?? throw new Exception($"Failed to resolve Uid for Uin {chain.FriendUin}");
-                    var imageUploadEvent = ImageUploadEvent.Create(image.ImageStream, uid);
-                    var results = await Collection.Business.SendEvent(imageUploadEvent);
-                    if (results.Count != 0)
+                    var requestTicketEvent = ImageRequestTicketEvent.Create(image.ImageStream, uid);
+                    var ticketResults = await Collection.Business.SendEvent(requestTicketEvent);
+                    if (ticketResults.Count != 0)
                     {
-                        var result = (ImageUploadEvent)results[0];
-                        bool hwSuccess = await Collection.Highway.UploadSrcByStreamAsync(21, Collection.Keystore.Uin, image.ImageStream, imageUploadEvent.FileMd5.UnHex());
-                        if (!hwSuccess)
+                        var ticketResult = (ImageRequestTicketEvent)ticketResults[0];
+                        if (!ticketResult.IsExist)
                         {
-                            Collection.Log.LogFatal(Tag, "Failed to upload image to highway");
-                            continue;
+                            bool hwSuccess = await Collection.Highway.UploadSrcByStreamAsync(1, Collection.Keystore.Uin, image.ImageStream, ticketResult.Ticket, requestTicketEvent.FileMd5.UnHex());
+                            if (!hwSuccess)
+                            {
+                                Collection.Log.LogFatal(Tag, "Failed to upload image to highway");
+                                continue;
+                            }
                         }
-                        
-                        image.CommonAdditional = result.CommonAdditional;
-                        image.ImageInfo = result.ImageInfo;
-                        
-                        var successEvent = ImageUploadSuccessEvent.Create(uid, result.CommonAdditional);
-                        _ = await Collection.Business.SendEvent(successEvent);
+
+                        image.ImageStream = requestTicketEvent.Stream;
+                        image.Path = ticketResult.ServerPath;
                     }
                     break;
                 }

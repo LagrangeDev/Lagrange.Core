@@ -66,7 +66,7 @@ public sealed class LagrangeAppBuilder
     
     public LagrangeAppBuilder ConfigureOneBot()
     {
-        Services.AddSingleton<ILagrangeWebService, HttpPostService>();
+        Services.AddSingleton<ILagrangeWebService, ReverseWSService>();
         return this;
     }
 

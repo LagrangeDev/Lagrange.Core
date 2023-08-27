@@ -14,9 +14,7 @@ namespace Lagrange.Core.Core.Context;
 internal class HighwayContext : ContextBase
 {
     private readonly HttpClient _client;
-
-    private Dictionary<uint, List<Uri>>? _highwayUrls;
-    private byte[]? _sigSession;
+    private uint _sequence;
     
     public HighwayContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device)
         : base(collection, keystore, appInfo, device)
@@ -29,10 +27,14 @@ internal class HighwayContext : ContextBase
         _client = new HttpClient(handler);
         _client.DefaultRequestHeaders.Add("Accept-Encoding", "identity");
         _client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2)");
+
+        _sequence = 10000;
     }
 
-    public async Task<bool> EchoAsync(Uri uri, uint seq)
+    public async Task<bool> EchoAsync()
     {
+        var uri = new Uri("https://sslv6.htdata.qq.com:443/cgi-bin/httpconn?htcmd=0x6FF0087&uin=1925648680");
+        
         var head = new ReqDataHighwayHead
         {
             MsgBaseHead = new DataHighwayHead
@@ -40,7 +42,7 @@ internal class HighwayContext : ContextBase
                 Version = 1, // isOpenUpEnable 2 else 1
                 Uin = Keystore.Uin.ToString(),
                 Command = "PicUp.Echo",
-                Seq = seq,
+                Seq = Interlocked.Increment(ref _sequence),
                 AppId = (uint)AppInfo.SubAppId,
                 DataFlag = 4096,
                 CommandId = 0,
@@ -50,8 +52,9 @@ internal class HighwayContext : ContextBase
 
         try
         {
-            await SendPacketAsync(head, new BinaryPacket(), uri);
-            return true;
+            var payload = await SendPacketAsync(head, new BinaryPacket(),  uri);
+            var (parsedHead, _) = ParsePacket(payload);
+            return parsedHead.ErrorCode == 0;
         }
         catch (Exception)
         {
@@ -59,30 +62,26 @@ internal class HighwayContext : ContextBase
         }
     }
 
-    public async Task<bool> UploadSrcByStreamAsync(int commonId, uint uin, Stream data, byte[] md5, byte[]? extendInfo = null)
+    public async Task<bool> UploadSrcByStreamAsync(int commonId, uint uin, Stream data, string ticket, byte[] md5, byte[]? extendInfo = null)
     {
-        if (_highwayUrls is null) await FetchHttpConnUri();
-        
         bool success = true;
         var upBlocks = new List<UpBlock>();
-        var uri = _highwayUrls?[(uint)commonId][0] ?? throw new InvalidOperationException("No highway url");
+        var uri = new Uri("https://sslv6.htdata.qq.com:443/cgi-bin/httpconn?htcmd=0x6FF0087&uin=1925648680");
 
         long fileSize = data.Length;
-        int sequence = 1;
         int offset = 0;
         int chunkSize = fileSize is >= 1024 and <= 1048575 ? 8192 : 1024 * 1024;
+        data.Seek(0, SeekOrigin.Begin);
 
-        while (data.Position < data.Length)
+        while (offset < fileSize)
         {
             var buffer = new byte[Math.Min(chunkSize, fileSize - offset)];
             int payload = await data.ReadAsync(buffer.AsMemory());
-            var reqBody = new UpBlock(commonId, uin, Interlocked.Increment(ref sequence),
-                                      (ulong)fileSize, (ulong)offset, md5, buffer, extendInfo, 
-                                      (ulong)DateTimeOffset.Now.ToUnixTimeMilliseconds());
+            var reqBody = new UpBlock(commonId, uin, Interlocked.Increment(ref _sequence), (ulong)fileSize, (ulong)offset, ticket, md5, buffer, extendInfo);
             upBlocks.Add(reqBody);
-            offset = (int)data.Position;
+            offset += payload;
 
-            if (upBlocks.Count >= 32 || data.Position == data.Length)
+            if (upBlocks.Count >= 8 || data.Position == data.Length)
             {
                 var tasks = upBlocks.Select(x => SendUpBlockAsync(x, uri)).ToArray();
                 var results = await Task.WhenAll(tasks);
@@ -102,7 +101,7 @@ internal class HighwayContext : ContextBase
             Version = 1,
             Uin = upBlock.Uin.ToString(),
             Command = "PicUp.DataUp",
-            Seq = (uint)upBlock.Sequence,
+            Seq = upBlock.Sequence,
             AppId = (uint)AppInfo.SubAppId,
             CommandId = (uint)upBlock.CommandId,
         };
@@ -111,7 +110,7 @@ internal class HighwayContext : ContextBase
             Filesize = upBlock.FileSize,
             DataOffset = upBlock.Offset,
             DataLength = (uint)upBlock.Block.Length,
-            ServiceTicket = _sigSession ?? throw new InvalidOperationException("No login sig"),
+            ServiceTicket = upBlock.Ticket,
             Md5 = (await upBlock.Block.Md5Async()).UnHex(),
             FileMd5 = upBlock.FileMd5,
         };
@@ -127,6 +126,8 @@ internal class HighwayContext : ContextBase
         bool isEnd = upBlock.Offset + (ulong)upBlock.Block.Length == upBlock.FileSize;
         var payload = await SendPacketAsync(highwayHead, new BinaryPacket(upBlock.Block),  server, isEnd);
         var (respHead, resp) = ParsePacket(payload);
+        
+        Console.WriteLine($"Block Result: {respHead.ErrorCode} | {respHead.MsgSegHead?.RetCode} | {respHead.BytesRspExtendInfo?.Hex()}");
 
         return respHead.ErrorCode == 0;
     }
@@ -177,25 +178,14 @@ internal class HighwayContext : ContextBase
         var data = await response.Content.ReadAsByteArrayAsync();
         return new BinaryPacket(data);
     }
-
-    private async Task FetchHttpConnUri()
-    {
-        var highwayUrlEvent = HighwayUrlEvent.Create();
-        var results = await Collection.Business.SendEvent(highwayUrlEvent);
-        if (results.Count != 0)
-        {
-            var result = (HighwayUrlEvent)results[0];
-            _highwayUrls = result.HighwayUrls;
-            _sigSession = result.SigSession;
-        }
-    }
     
     private record struct UpBlock(
         int CommandId, 
         uint Uin,
-        int Sequence, 
+        uint Sequence, 
         ulong FileSize,
         ulong Offset, 
+        string Ticket,
         byte[] FileMd5,
         byte[] Block, 
         byte[]? ExtendInfo = null,
