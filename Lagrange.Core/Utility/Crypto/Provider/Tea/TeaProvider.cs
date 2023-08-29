@@ -2,139 +2,138 @@ using System.Runtime.CompilerServices;
 
 namespace Lagrange.Core.Utility.Crypto.Provider.Tea;
 
-internal static class TeaProvider
+internal static unsafe class TeaProvider
 {
     private const long Delta = 2654435769L; // 0x9E3779B9, Fibonacci's hashing constant.
     
     private const long SumMax = (Delta << 4) & uint.MaxValue; // 0x9E3779B9 * 16 = 0x3C6EF35F, max sum value.
-    
-    public static byte[] Encrypt(byte[] data, byte[] key)
-    {
-        if (key.Length < 16) throw new Exception();
 
+    public static byte[] Encrypt(Span<byte> data, Span<byte> key)
+    {
+        var keyStruct = new Key(key);
         int inputLength = data.Length;
         int fill = ((8 - ((inputLength + 10) & 7)) & 7) + 2;
         int length = fill + inputLength + 8;
-
-        byte[] plain = new byte[length];
-        byte[] cipher = new byte[length];
-        byte[] plainXorPrev = new byte[8];
-        byte[] tempCipher = new byte[8];
-        plain[0] = (byte)(RandomByte(248) | (fill - 2));
-        for (int i = 1; i <= fill; ++i) plain[i] = RandomByte();
-
-        Buffer.BlockCopy(data, 0, plain, fill + 1, inputLength);
-        for (int i = 0; i < length; i += 8)
+        
+        var cipher = new byte[length];
+        cipher[0] = (byte)(RandomByte(248) | (fill - 2));
+        for (int i = 1; i <= fill; ++i) cipher[i] = RandomByte();
+        
+        fixed (byte* dataPtr = cipher, rawPtr = data)
         {
-            byte[] plainXor = Xor8(plain, tempCipher, i);
-            tempCipher = Xor8(EnCipher(plainXor, key), plainXorPrev);
-            plainXorPrev = plainXor;
-            Buffer.BlockCopy(tempCipher, 0, cipher, i, 8);
-        }
+            Buffer.MemoryCopy(rawPtr, dataPtr + fill + 1, inputLength, inputLength);
 
+            byte* plainXorPrev = stackalloc byte[8];
+            byte* tempCipher = stackalloc byte[8];
+            byte* plainXor = stackalloc byte[8];
+            byte* encipher = stackalloc byte[8];
+
+            for (int i = 0; i < length; i += 8)
+            {
+                *(long*)plainXor = *(long*)(dataPtr + i) ^ *(long*)(tempCipher);
+
+                long sum = 0;
+                long y = ReadUInt32(plainXor, 0);
+                long z = ReadUInt32(plainXor, 4);
+                for (int j = 0; j < 16; ++j)
+                {
+                    sum += Delta;
+                    sum &= uint.MaxValue;
+                    y += ((z << 4) + keyStruct.A) ^ (z + sum) ^ ((z >> 5) + keyStruct.B);
+                    y &= uint.MaxValue;
+                    z += ((y << 4) + keyStruct.C) ^ (y + sum) ^ ((y >> 5) + keyStruct.D);
+                    z &= uint.MaxValue;
+                }
+                
+                WriteUInt32(encipher, 0, (uint)y);
+                WriteUInt32(encipher, 4, (uint)z);
+                
+                *(long*)tempCipher = *(long*)(encipher) ^ *(long*)(plainXorPrev); // Xor8(EnCipher(plainXor, key), plainXorPrev);
+                *(long*)(plainXorPrev) = *(long*)(plainXor); // write data back to plainXorPrev
+                
+                *(long*)(dataPtr + i) = *(long*)(tempCipher); // write data back to cipher
+            }
+        }
+        
         return cipher;
     }
-    
-    public static byte[] Decrypt(byte[] data, byte[] key)
-    {
-        if (key.Length < 16) throw new Exception();
 
+    public static byte[] Decrypt(Span<byte> data, Span<byte> key)
+    {
+        var keyStruct = new Key(key);
         int length = data.Length;
         if ((length & 7) != 0 || (length >> 4) == 0) throw new Exception("Invalid cipher data length.");
+        
+        var plain = new byte[length];
+        byte* plainSub = stackalloc byte[8];
+        byte* plainXor = stackalloc byte[8];
 
-        byte[] plain = new byte[length];
-        byte[] plainSub = new byte[8];
-        for (int i = 0; i < length; i += 8) // Decrypt data.
+        fixed (byte* rawPtr = data, dataPtr = plain)
         {
-            plainSub = DeCipher(Xor8(data, plainSub, i), key);
-            Buffer.BlockCopy(Xor8(plainSub, data, 0, i - 8), 0, plain, i, 8);
+            for (int i = 0; i < length; i += 8) // Decrypt data.
+            {
+                *(long*)plainXor = *(long*)(rawPtr + i) ^ *(long*)(plainSub);
+                
+                long sum = SumMax;
+                long y = ReadUInt32(plainXor, 0);
+                long z = ReadUInt32(plainXor, 4);
+                for (int j = 0; j < 16; ++j)
+                {
+                    z -= ((y << 4) + keyStruct.C) ^ (y + sum) ^ ((y >> 5) + keyStruct.D);
+                    z &= uint.MaxValue;
+                    y -= ((z << 4) + keyStruct.A) ^ (z + sum) ^ ((z >> 5) + keyStruct.B);
+                    y &= uint.MaxValue;
+                    sum -= Delta;
+                    sum &= uint.MaxValue;
+                }
+                
+                WriteUInt32(plainSub, 0, (uint)y);
+                WriteUInt32(plainSub, 4, (uint)z);
+                
+                *(long*)(dataPtr + i) = *(long*)(plainSub) ^ *(long*)(rawPtr + i - 8);
+            }
+            
+            for (int i = length - 7; i < length; ++i) // Verify that the last 7 bytes are 0.
+            {
+                if (plain[i] != 0) throw new Exception("Verification failed.");
+            }
+            int from = (plain[0] & 7) + 3;  // Extract valid data.
+            // return plain.AsSpan(from, length - from - 7);
+            return plain[from..(length - 7)];
         }
-
-        for (int i = length - 7; i < length; ++i) // Verify that the last 7 bytes are 0.
-        {
-            if (plain[i] != 0) throw new Exception("Verification failed.");
-        }
-
-        int from = (plain[0] & 7) + 3;  // Extract valid data.
-        byte[] output = new byte[length - from - 7];
-        Buffer.BlockCopy(plain, from, output, 0, output.Length);
-        return output;
     }
 
-    private static byte[] EnCipher(byte[] data, byte[] key)
+    private readonly struct Key
     {
-        byte[] array = new byte[8];
-        long sum = 0;
-        long y = ReadUInt32(data, 0);
-        long z = ReadUInt32(data, 4);
-        long a = ReadUInt32(key, 0);
-        long b = ReadUInt32(key, 4);
-        long c = ReadUInt32(key, 8);
-        long d = ReadUInt32(key, 12);
-        for (int i = 0; i < 16; ++i)
-        {
-            sum += Delta;
-            sum &= uint.MaxValue;
-            y += ((z << 4) + a) ^ (z + sum) ^ ((z >> 5) + b);
-            y &= uint.MaxValue;
-            z += ((y << 4) + c) ^ (y + sum) ^ ((y >> 5) + d);
-            z &= uint.MaxValue;
-        }
+        public readonly uint A;
+        public readonly uint B;
+        public readonly uint C;
+        public readonly uint D;
 
-        WriteUInt32(array, 0, (uint)y);
-        WriteUInt32(array, 4, (uint)z);
-        return array;
-    }
-    
-    private static byte[] DeCipher(byte[] data, byte[] key, long index = 0)
-    {
-        byte[] array = new byte[8];
-        long sum = SumMax;
-        long y = ReadUInt32(data, (int)index);
-        long z = ReadUInt32(data, (int)index + 4);
-        long a = ReadUInt32(key, 0);
-        long b = ReadUInt32(key, 4);
-        long c = ReadUInt32(key, 8);
-        long d = ReadUInt32(key, 12);
-        for (int i = 0; i < 16; ++i)
+        public Key(Span<byte> rawKey)
         {
-            z -= ((y << 4) + c) ^ (y + sum) ^ ((y >> 5) + d);
-            z &= uint.MaxValue;
-            y -= ((z << 4) + a) ^ (z + sum) ^ ((z >> 5) + b);
-            y &= uint.MaxValue;
-            sum -= Delta;
-            sum &= uint.MaxValue;
+            fixed (byte* rawKeyPtr = rawKey)
+            {
+                A = ReadUInt32(rawKeyPtr, 0);
+                B = ReadUInt32(rawKeyPtr, 4);
+                C = ReadUInt32(rawKeyPtr, 8);
+                D = ReadUInt32(rawKeyPtr, 12);
+            }
         }
-
-        WriteUInt32(array, 0, (uint)y);
-        WriteUInt32(array, 4, (uint)z);
-        return array;
     }
-    
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe byte[] Xor8(byte[] a, byte[] b, int ai = 0, int bi = 0)
+    private static uint ReadUInt32(byte* data, int index) => (uint)(data[index] << 24 | data[index + 1] << 16 | data[index + 2] << 8 | data[index + 3]);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void WriteUInt32(byte* data, int index, uint value)
     {
-        if (bi < 0) return a;
-
-        byte[] r = new byte[8];
-        fixed (byte* ap = a, bp = b, rp = r) *(long*)rp = *(long*)(ap + ai) ^ *(long*)(bp + bi);
-
-        return r;
+        data[index] = (byte)(value >> 24);
+        data[index + 1] = (byte)(value >> 16);
+        data[index + 2] = (byte)(value >> 8);
+        data[index + 3] = (byte)value;
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static byte RandomByte(int max = byte.MaxValue) => (byte) (Random.Shared.Next() & max);
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void WriteUInt32(byte[] data, int index, uint value)
-    {
-        for (int i = 0; i < 4; ++i) data[index + i] = (byte)(value >> (24 - i * 8));
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe uint ReadUInt32(byte[] data, int index)
-    {
-        fixed (byte* dp = data) return (uint)(dp[index] << 24 | dp[index + 1] << 16 | dp[index + 2] << 8 | dp[index + 3]);
-    }
 }
