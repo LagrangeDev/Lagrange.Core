@@ -124,7 +124,7 @@ internal class CachingLogic : LogicBase
         var events = await Collection.Business.SendEvent(fetchFriendsEvent);
         var friends = events.Count != 0 ? ((FetchFriendsEvent)events[0]).Friends : new List<BotFriend>();
         
-        foreach (var friend in friends) _uinToUid.Add(friend.Uin, friend.Uid);
+        foreach (var friend in friends) _uinToUid.TryAdd(friend.Uin, friend.Uid);
         _cachedFriends.AddRange(friends);
     }
 

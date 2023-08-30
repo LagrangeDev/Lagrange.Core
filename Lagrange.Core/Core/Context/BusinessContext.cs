@@ -139,6 +139,7 @@ internal class BusinessContext : ContextBase
             {
                 Collection.Log.LogFatal(Tag, $"Error occurred while handling event {@event.GetType().Name}");
                 Collection.Log.LogFatal(Tag, e.Message);
+                if (e.StackTrace != null) Collection.Log.LogFatal(Tag, e.StackTrace);
             }
         }
         
