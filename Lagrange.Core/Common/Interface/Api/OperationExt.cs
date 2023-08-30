@@ -16,9 +16,6 @@ public static class OperationExt
 
     public static Task<List<string>> FetchCookies(this BotContext bot, List<string> domains)
         => bot.ContextCollection.Business.OperationLogic.GetCookies(domains);
-    
-    public static int GetCsrfToken(this BotContext bot)
-        => bot.ContextCollection.Business.OperationLogic.GetCsrfToken();
 
     public static Task<MessageResult> SendMessage(this BotContext bot, MessageChain chain)
         => bot.ContextCollection.Business.OperationLogic.SendMessage(chain);
@@ -31,4 +28,7 @@ public static class OperationExt
     
     public static Task<bool> RequestFriend(this BotContext bot, uint targetUin, string message = "", string question = "")
         => bot.ContextCollection.Business.OperationLogic.RequestFriend(targetUin, message, question);
+    
+    public static Task<string?> GetClientKey(this BotContext bot)
+        => bot.ContextCollection.Business.OperationLogic.GetClientKey();
 }

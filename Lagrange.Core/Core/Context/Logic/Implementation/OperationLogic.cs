@@ -119,10 +119,12 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(requestFriendEvent);
         return events.Count != 0 && ((RequestFriendEvent)events[0]).ResultCode == 0;
     }
-
-
-    private static int CalculateBkn(string sKey) => 
-        (int)sKey.Aggregate<char, long>(5381, (current, t) => current + (current << 5) + t) & int.MaxValue;
     
-    public int GetCsrfToken() => CalculateBkn(Encoding.ASCII.GetString(Collection.Keystore.Session.D2Key));
+    public async Task<string?> GetClientKey()
+    {
+        var clientKeyEvent = FetchClientKeyEvent.Create();
+        var events = await Collection.Business.SendEvent(clientKeyEvent);
+        if (events.Count == 0) return null;
+        return ((FetchClientKeyEvent)events[0]).ClientKey;
+    }
 }
