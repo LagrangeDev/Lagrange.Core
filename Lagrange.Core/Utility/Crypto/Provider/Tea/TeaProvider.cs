@@ -98,17 +98,16 @@ internal static unsafe class TeaProvider
                 if (plain[i] != 0) throw new Exception("Verification failed.");
             }
             int from = (plain[0] & 7) + 3;  // Extract valid data.
-            // return plain.AsSpan(from, length - from - 7);
             return plain[from..(length - 7)];
         }
     }
 
     private readonly struct Key
     {
-        public readonly uint A;
-        public readonly uint B;
-        public readonly uint C;
-        public readonly uint D;
+        public uint A { get; }
+        public uint B { get; }
+        public uint C { get; }
+        public uint D { get; }
 
         public Key(Span<byte> rawKey)
         {
