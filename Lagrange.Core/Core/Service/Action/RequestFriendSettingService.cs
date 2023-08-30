@@ -29,7 +29,7 @@ internal class RequestFriendSettingService : BaseService<RequestFriendSettingEve
         
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, packet);
-        output = new BinaryPacket(stream.ToArray());
+        output = new BinaryPacket(stream);
         
         extraPackets = null;
         return true;

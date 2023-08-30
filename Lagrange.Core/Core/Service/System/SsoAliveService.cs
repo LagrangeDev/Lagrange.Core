@@ -21,7 +21,7 @@ internal class SsoAliveService : BaseService<SsoAliveEvent>
         var packet = new NTSsoHeartBeat { Type = 1 };
         Serializer.Serialize(stream, packet);
         
-        output = new BinaryPacket(stream.ToArray());
+        output = new BinaryPacket(stream);
         extraPackets = null;
         return true;
     }
