@@ -62,6 +62,7 @@ public class ImageEntity : IMessageEntity
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
 
+        ImageStream.Seek(0, SeekOrigin.Begin);
         string md5 = ImageStream.Md5(true);
         uint fileLen = (uint)ImageStream.Length;
 
