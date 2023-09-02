@@ -30,6 +30,8 @@ public class BotGroupMember
     public DateTime JoinTime { get; set; }
     
     public DateTime LastMsgTime { get; set; }
+
+    public string Avatar => $"https://q1.qlogo.cn/g?b=qq&nk={Uin}&s=640";
 }
 
 public enum GroupMemberPermission : uint

@@ -11,4 +11,6 @@ public class BotGroup
     public uint GroupUin { get; }
     
     public string GroupName { get; }
+
+    public string Avatar => $"https://p.qlogo.cn/gh/{GroupUin}/{GroupUin}/0/";
 }
