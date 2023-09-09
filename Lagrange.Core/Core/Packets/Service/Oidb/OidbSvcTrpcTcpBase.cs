@@ -41,14 +41,14 @@ internal class OidbSvcTrpcTcpBase<T> where T : class
     
     [ProtoMember(12)] public int Reserved { get; set; }
     
-    public OidbSvcTrpcTcpBase(T body, bool isLafter = false)
+    public OidbSvcTrpcTcpBase(T body, bool isLafter = false, bool isUid = false)
     {
         var (command, subCommand) = OidbReference[typeof(T)];
         
         Command = command;
         SubCommand = subCommand;
         Body = body;
-        Reserved = Convert.ToInt32(Signature.IsSignOperation($"OidbSvcTrpcTcp.0x{command:x}_{subCommand}"));
+        Reserved = Convert.ToInt32(isUid);
         Lafter = isLafter ? new OidbLafter() : null;
     }
 }
