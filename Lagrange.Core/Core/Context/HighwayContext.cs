@@ -11,6 +11,8 @@ namespace Lagrange.Core.Core.Context;
 /// </summary>
 internal class HighwayContext : ContextBase
 {
+    private const string Tag = nameof(HighwayContext);
+    
     private readonly HttpClient _client;
     private uint _sequence;
     private static readonly RuntimeTypeModel Serializer;
@@ -36,9 +38,9 @@ internal class HighwayContext : ContextBase
         _sequence = 0;
     }
 
-    public async Task<bool> EchoAsync()
+    public async Task<bool> EchoAsync(uint uin)
     {
-        var uri = new Uri("https://sslv6.htdata.qq.com:443/cgi-bin/httpconn?htcmd=0x6FF0087&uin=114514");
+        var uri = new Uri($"https://sslv6.htdata.qq.com:443/cgi-bin/httpconn?htcmd=0x6FF0087&uin={uin}");
         
         var head = new ReqDataHighwayHead
         {
@@ -69,14 +71,14 @@ internal class HighwayContext : ContextBase
     {
         bool success = true;
         var upBlocks = new List<UpBlock>();
-        var uri = new Uri("https://sslv6.htdata.qq.com:443/cgi-bin/httpconn?htcmd=0x6FF0087&uin=114514");
+        var uri = new Uri($"https://sslv6.htdata.qq.com:443/cgi-bin/httpconn?htcmd=0x6FF0087&uin={uin}");
 
         long fileSize = data.Length;
         int offset = 0;
         int chunkSize = fileSize is >= 1024 and <= 1048575 ? 8192 : 1024 * 1024;
-        data.Seek(0, SeekOrigin.Begin);
         int concurrent = commonId == 2 ? 1 : 8;
 
+        data.Seek(0, SeekOrigin.Begin);
         while (offset < fileSize)
         {
             var buffer = new byte[Math.Min(chunkSize, fileSize - offset)];
@@ -130,8 +132,8 @@ internal class HighwayContext : ContextBase
         bool isEnd = upBlock.Offset + (ulong)upBlock.Block.Length == upBlock.FileSize;
         var payload = await SendPacketAsync(highwayHead, new BinaryPacket(upBlock.Block),  server, isEnd);
         var (respHead, resp) = ParsePacket(payload);
-        
-        Console.WriteLine($"Block Result: {respHead.ErrorCode} | {respHead.MsgSegHead?.RetCode} | {respHead.BytesRspExtendInfo?.Hex()}");
+
+        Collection.Log.LogDebug(Tag, $"Highway Block Result: {respHead.ErrorCode} | {respHead.MsgSegHead?.RetCode} | {respHead.BytesRspExtendInfo?.Hex()} | {resp.ToArray().Hex()}");
 
         return respHead.ErrorCode == 0;
     }
