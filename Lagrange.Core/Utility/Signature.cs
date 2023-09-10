@@ -54,8 +54,6 @@ internal static class Signature
         "OidbSvcTrpcTcp.0xf67_5"
     };
     
-    public static bool IsSignOperation(string cmd) => WhiteListCommand.Contains(cmd);
-
     /// <summary>
     /// Get O3Signature
     /// </summary>
