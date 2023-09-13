@@ -28,9 +28,7 @@ public class BotAppInfo
     
     /// <summary>Or Known as QUA</summary>
     public string PackageSign { get; private set; }
-    
-    public int SsoIdentifier { get; private set; }
-    
+
     public int AppId { get; private set; }
     
     /// <summary>Or known as pubId in tencent log</summary>
@@ -59,8 +57,6 @@ public class BotAppInfo
         PackageName = "com.tencent.qq",
         WtLoginSdk = "nt.wtlogin.0.0.1",
         PackageSign = "V1_LNX_NQ_3.1.2-13107_RDM_B",
-        
-        SsoIdentifier = 70644224,
         AppId = 1600001615,
         SubAppId = 537146866,
         AppIdQrCode = 13697054,
@@ -85,8 +81,6 @@ public class BotAppInfo
         PackageName = "com.tencent.qq",
         WtLoginSdk = "nt.wtlogin.0.0.1",
         PackageSign = "V1_MAC_NQ_6.9.17-12118_RDM_B",
-        
-        SsoIdentifier = 71205120,
         AppId = 1600001602,
         SubAppId = 537138182,
         AppIdQrCode = 537138182,
@@ -111,8 +105,6 @@ public class BotAppInfo
         PackageName = "com.tencent.qq",
         WtLoginSdk = "nt.wtlogin.0.0.1",
         PackageSign = "V1_WIN_NQ_9.9.2-15962_RDM_B",
-        
-        SsoIdentifier = 68432128,
         AppId = 1600001604,
         SubAppId = 537138217,
         AppIdQrCode = 537138217,

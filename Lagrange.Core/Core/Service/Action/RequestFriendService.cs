@@ -41,7 +41,7 @@ internal class RequestFriendService : BaseService<RequestFriendEvent>
             Answer = input.Question,
             Field28 = 1,
             Field29 = 1
-        });
+        }, false, true);
 
         var stream = new MemoryStream();
         Serializer.Serialize(stream, packet);

@@ -20,11 +20,14 @@ internal static class SsoPacker
     {
         var writer = new BinaryPacket();
 
+        // var sign = Signature.GetWindowsSignature(packet.Command, packet.Sequence, packet.Payload.ToArray(), out var software, out var token);
         var sign = Signature.GetSignature(packet.Command, packet.Sequence, packet.Payload.ToArray());
         var signature = new NTDeviceSign
         {
             Sign = sign == null ? null : new Sign
             {
+                // S = software == null ? new Software { Ver = appInfo.PackageSign } : Serializer.Deserialize<Software>(new MemoryStream(software)),
+                // Token = token,
                 S = new Software { Ver = appInfo.PackageSign },
                 Signature = sign
             },
@@ -36,9 +39,8 @@ internal static class SsoPacker
         
         writer.Barrier(typeof(uint), () => new BinaryPacket() // Barrier is used to calculate the length of the packet header only
             .WriteUint(packet.Sequence, false) // sequence
-            .WriteByte(32)
-            .WriteUint((uint)appInfo.SsoIdentifier, false) // appId
-            .WriteBytes("000804020000000000000000000000".UnHex().AsSpan())
+            .WriteUint((uint)appInfo.SubAppId, false) // appId
+            .WriteBytes("00000804020000000000000000000000".UnHex().AsSpan())
             .WriteBytes(keystore.Session.Tgt, Prefix.Uint32 | Prefix.WithPrefix)
             .WriteString(packet.Command, Prefix.Uint32 | Prefix.WithPrefix)
             .WriteBytes(Array.Empty<byte>(), Prefix.Uint32 | Prefix.WithPrefix) // TODO: unknown
