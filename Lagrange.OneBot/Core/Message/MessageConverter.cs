@@ -1,6 +1,6 @@
 using System.Reflection;
 using Lagrange.Core;
-using Lagrange.Core.Core.Event.EventArg;
+using Lagrange.Core.Internal.Event.EventArg;
 
 namespace Lagrange.OneBot.Core.Message;
 

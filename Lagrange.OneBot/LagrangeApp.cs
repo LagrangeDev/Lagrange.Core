@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using LogLevel = Lagrange.Core.Core.Event.EventArg.LogLevel;
+using LogLevel = Lagrange.Core.Internal.Event.EventArg.LogLevel;
 
 namespace Lagrange.OneBot;
 
