@@ -1,6 +1,6 @@
 using System.Text;
 using Lagrange.Core.Common.Entity;
-using Lagrange.Core.Core.Packets.Message.Element;
+using Lagrange.Core.Internal.Packets.Message.Element;
 
 namespace Lagrange.Core.Message;
 

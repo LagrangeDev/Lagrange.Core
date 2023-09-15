@@ -1,15 +1,18 @@
 using System.Reflection;
+using Lagrange.Core.Internal.Packets.Message.C2C;
+using Lagrange.Core.Internal.Packets.Message.Component;
+using Lagrange.Core.Internal.Packets.Message.Element;
+using Lagrange.Core.Internal.Packets.Message.Routing;
 using ProtoBuf;
-using Lagrange.Core.Core.Packets.Message.C2C;
-using Lagrange.Core.Core.Packets.Message.Component;
-using Lagrange.Core.Core.Packets.Message.Element;
-using Lagrange.Core.Core.Packets.Message.Routing;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Generator;
-using ContentHead = Lagrange.Core.Core.Packets.Message.ContentHead;
-using MessageControl = Lagrange.Core.Core.Packets.Message.MessageControl;
-using PushMsgBody = Lagrange.Core.Core.Packets.Message.PushMsgBody;
+using ContentHead = Lagrange.Core.Internal.Packets.Message.ContentHead;
+using MessageBody = Lagrange.Core.Internal.Packets.Message.MessageBody;
+using MessageControl = Lagrange.Core.Internal.Packets.Message.MessageControl;
+using PushMsgBody = Lagrange.Core.Internal.Packets.Message.PushMsgBody;
+using ResponseHead = Lagrange.Core.Internal.Packets.Message.ResponseHead;
+using RoutingHead = Lagrange.Core.Internal.Packets.Message.RoutingHead;
 
 namespace Lagrange.Core.Message;
 
@@ -59,7 +62,7 @@ internal class MessagePacker
         _selfUid = selfUid;
     }
 
-    public Core.Packets.Message.Message Build(MessageChain chain)
+    public Internal.Packets.Message.Message Build(MessageChain chain)
     {
         var message = BuildPacketBase(chain);
 
@@ -150,9 +153,9 @@ internal class MessagePacker
         return chain;
     }
 
-    private static Core.Packets.Message.Message BuildPacketBase(MessageChain chain) => new()
+    private static Internal.Packets.Message.Message BuildPacketBase(MessageChain chain) => new()
     {
-        RoutingHead = new Core.Packets.Message.RoutingHead
+        RoutingHead = new RoutingHead
         {
             C2C = chain.IsGroup ? null : new C2C
             {
@@ -175,7 +178,7 @@ internal class MessagePacker
             PkgIndex = 0,
             DivSeq = 0
         },
-        Body = new Core.Packets.Message.MessageBody { RichText = new RichText { Elems = new List<Elem>() } },
+        Body = new MessageBody { RichText = new RichText { Elems = new List<Elem>() } },
         Seq = (uint)Random.Shared.Next(1000000, 9999999), // 草泥马开摆！
         Rand = (uint)Random.Shared.Next(100000000, int.MaxValue),
         Ctrl = chain.IsGroup ? null : new MessageControl { MsgFlag = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() }
@@ -183,7 +186,7 @@ internal class MessagePacker
 
     private static PushMsgBody BuildFakePacketBase(MessageChain chain) => new()
     {
-        ResponseHead = new Core.Packets.Message.ResponseHead
+        ResponseHead = new ResponseHead
         {
             FromUid = chain.SelfUid,
             ToUid = chain.Uid,
@@ -215,7 +218,7 @@ internal class MessagePacker
                 Avatar = $"https://q1.qlogo.cn/g?b=qq&nk={chain.GroupMemberInfo?.Uin ?? chain.FriendInfo?.Uin}&s=640"
             }
         },
-        Body = new Core.Packets.Message.MessageBody { RichText = new RichText { Elems = new List<Elem>() } }
+        Body = new MessageBody { RichText = new RichText { Elems = new List<Elem>() } }
     };
     
     private static MessageChain ParseChain(PushMsgBody message)

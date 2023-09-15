@@ -1,7 +1,7 @@
 using System.Numerics;
-using Lagrange.Core.Core.Packets.Message.Element;
-using Lagrange.Core.Core.Packets.Message.Element.Implementation;
-using Lagrange.Core.Core.Packets.Message.Element.Implementation.Extra;
+using Lagrange.Core.Internal.Packets.Message.Element;
+using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
+using Lagrange.Core.Internal.Packets.Message.Element.Implementation.Extra;
 using Lagrange.Core.Utility;
 using Lagrange.Core.Utility.Extension;
 

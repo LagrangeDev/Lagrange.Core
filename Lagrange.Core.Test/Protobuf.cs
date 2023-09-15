@@ -1,4 +1,4 @@
-using Lagrange.Core.Core.Packets.Login.Ecdh;
+using Lagrange.Core.Internal.Packets.Login.Ecdh;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 

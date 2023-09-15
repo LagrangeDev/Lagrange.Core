@@ -1,7 +1,6 @@
 using System.Text;
-using System.Xml;
-using Lagrange.Core.Core.Packets.Message.Element;
-using Lagrange.Core.Core.Packets.Message.Element.Implementation;
+using Lagrange.Core.Internal.Packets.Message.Element;
+using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Utility.Binary.Compression;
 
 namespace Lagrange.Core.Message.Entity;

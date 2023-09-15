@@ -1,5 +1,5 @@
-using Lagrange.Core.Core.Packets.Message.Component;
-using Lagrange.Core.Core.Packets.Message.Element;
+using Lagrange.Core.Internal.Packets.Message.Component;
+using Lagrange.Core.Internal.Packets.Message.Element;
 
 namespace Lagrange.Core.Message;
 

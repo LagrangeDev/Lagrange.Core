@@ -1,8 +1,8 @@
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using Lagrange.Core.Core.Packets.Message.Element;
-using Lagrange.Core.Core.Packets.Message.Element.Implementation;
+using Lagrange.Core.Internal.Packets.Message.Element;
+using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Utility.Binary.Compression;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 

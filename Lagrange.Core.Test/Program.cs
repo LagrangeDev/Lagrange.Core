@@ -1,10 +1,13 @@
 ﻿using Lagrange.Core.Test.Tests;
 
-// BenchmarkRunner.Run<ProtoBufTest>(new DebugBuildConfig());
-await new NTLoginTest().LoginByPassword();
-// await new WtLoginTest().FetchQrCode();
+namespace Lagrange.Core.Test;
 
-public class Test
+internal static class Program
 {
-    public string Name { get; set; } = "";
+    public static async Task Main(string[] args)
+    {
+        // BenchmarkRunner.Run<ProtoBufTest>(new DebugBuildConfig());
+        await new NTLoginTest().LoginByPassword();
+        // await new WtLoginTest().FetchQrCode();
+    }
 }

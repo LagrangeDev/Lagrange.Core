@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
-using Lagrange.Core.Core.Packets.Message.Component;
-using Lagrange.Core.Core.Packets.Message.Component.Extra;
-using Lagrange.Core.Core.Packets.Message.Element;
-using Lagrange.Core.Core.Packets.Message.Element.Implementation;
+using Lagrange.Core.Internal.Packets.Message.Component;
+using Lagrange.Core.Internal.Packets.Message.Component.Extra;
+using Lagrange.Core.Internal.Packets.Message.Element;
+using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;

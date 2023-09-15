@@ -28,19 +28,19 @@ public class NTLoginTest
             Protocol = Protocols.Linux
         }, deviceInfo, keyStore);
         
-        bot.Invoker.OnBotLogEvent += (context, @event) =>
+        bot.Invoker.OnBotLogEvent += (_, @event) =>
         {
             Utility.Console.ChangeColorByTitle(@event.Level);
             Console.WriteLine(@event.ToString());
         };
         
-        bot.Invoker.OnBotOnlineEvent += (context, @event) =>
+        bot.Invoker.OnBotOnlineEvent += (_, @event) =>
         {
             Console.WriteLine(@event.ToString());
             WtLoginTest.SaveKeystore(bot.UpdateKeystore());
         };
         
-        bot.Invoker.OnBotCaptchaEvent += (context, @event) =>
+        bot.Invoker.OnBotCaptchaEvent += (_, @event) =>
         {
             Console.WriteLine(@event.ToString());
             var captcha = Console.ReadLine();
@@ -48,7 +48,7 @@ public class NTLoginTest
             if (captcha != null && randStr != null) bot.SubmitCaptcha(captcha, randStr);
         };
         
-        bot.Invoker.OnGroupInvitationReceived += async (context, @event) =>
+        bot.Invoker.OnGroupInvitationReceived += async (_, @event) =>
         {
             Console.WriteLine(@event.ToString());
         };
