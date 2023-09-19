@@ -38,13 +38,15 @@ public static class ImageResolver
             return ImageFormat.Png;
         }
 
-        if (image[..4].SequenceEqual(new byte[] { 0x52, 0x49, 0x46, 0x46 })) // RIFF
+        if (image[..4].SequenceEqual(new byte[] { 0x52, 0x49, 0x46, 0x46 }) && image[8..12].SequenceEqual(new byte[] { 0x57, 0x45, 0x42, 0x50 })) // RIFF WEBP
         {
-            if (image[8..12].SequenceEqual(new byte[] { 0x57, 0x45, 0x42, 0x50 })) // WEBP
-            {
+            if (image[12..16].SequenceEqual(new byte[] { 0x56, 0x50, 0x38, 0x58 })) // VP8X
+                size = new Vector2(BitConverter.ToUInt16(image.AsSpan()[24..27]) + 1, BitConverter.ToUInt16(image.AsSpan()[27..30]) + 1);
+            else if (image[12..16].SequenceEqual(new byte[] { 0x56, 0x50, 0x38, 0x4C })) // VP8L
+                size = new Vector2((BitConverter.ToInt32(image.AsSpan()[21..25]) & 0x3FFF) + 1, ((BitConverter.ToInt32(image.AsSpan()[21..25]) & 0xFFFC000) >> 0x0E) + 1);
+            else // VP8 
                 size = new Vector2(BitConverter.ToUInt16(image.AsSpan()[26..28]), BitConverter.ToUInt16(image.AsSpan()[28..30]));
-                return ImageFormat.Webp;
-            }
+            return ImageFormat.Webp;
         }
         
         if (image[..2].SequenceEqual(new byte[] { 0x42, 0x4D })) // BMP
