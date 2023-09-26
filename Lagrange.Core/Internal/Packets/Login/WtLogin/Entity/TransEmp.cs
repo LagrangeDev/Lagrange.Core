@@ -42,10 +42,10 @@ internal abstract class TransEmp : WtLoginBase
                 .WriteUint(0, false)
                 .WriteUshort(0, false)
                 .WriteUint((uint)AppInfo.AppId, false)
-                .WritePacket(ConstructTransEmp()), false, true, 1);
+                .WritePacket(ConstructTransEmp()), false, true, 1); // addition is the packet start counted in
 
             return writer;
-        }, false, true, -13);
+        }, false, true, -13); // -13 is the length of zeros, which could be found at TransEmp31 and TransEmp12.ConstructTransEmp()
 
         return packet;
     }
