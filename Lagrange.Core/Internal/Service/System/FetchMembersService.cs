@@ -13,18 +13,18 @@ using ProtoBuf;
 namespace Lagrange.Core.Internal.Service.System;
 
 [EventSubscribe(typeof(FetchMembersEvent))]
-[Service("OidbSvcTrpcTcp.0xfe7_2")]
+[Service("OidbSvcTrpcTcp.0xfe7_3")]
 internal class FetchMembersService : BaseService<FetchMembersEvent>
 {
     protected override bool Build(FetchMembersEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
-        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE7_2>(new OidbSvcTrpcTcp0xFE7_2
+        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE7_3>(new OidbSvcTrpcTcp0xFE7_3
         {
             GroupUin = input.GroupUin,
             Field2 = 5,
             Field3 = 2,
-            Body = new OidbSvcTrpcScp0xFE7_2Body
+            Body = new OidbSvcTrpcScp0xFE7_3Body
             {
                 MemberName = true,
                 MemberCard = true,
@@ -32,7 +32,8 @@ internal class FetchMembersService : BaseService<FetchMembersEvent>
                 JoinTimestamp = true,
                 LastMsgTimestamp = true,
                 Permission = true,
-            }
+            },
+            Token = input.Token
         });
         
         using var stream = new MemoryStream();
@@ -59,7 +60,7 @@ internal class FetchMembersService : BaseService<FetchMembersEvent>
                                DateTimeOffset.FromUnixTimeSeconds(member.JoinTimestamp).DateTime,
                                DateTimeOffset.FromUnixTimeSeconds(member.LastMsgTimestamp).DateTime)).ToList();
         
-        output = FetchMembersEvent.Result(members);
+        output = FetchMembersEvent.Result(members, response.Body.Token);
         extraEvents = null;
         return true;
     }

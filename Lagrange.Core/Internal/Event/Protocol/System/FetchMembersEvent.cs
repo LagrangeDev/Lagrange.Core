@@ -7,19 +7,23 @@ internal class FetchMembersEvent : ProtocolEvent
     public uint GroupUin { get; }
     
     public List<BotGroupMember> Members { get; set; }
+    
+    public string? Token { get; }
 
-    private FetchMembersEvent(uint groupUin) : base(true)
+    private FetchMembersEvent(uint groupUin, string? token) : base(true)
     {
         GroupUin = groupUin;
         Members = new List<BotGroupMember>();
+        Token = token;
     }
     
-    private FetchMembersEvent(List<BotGroupMember> members) : base(0)
+    private FetchMembersEvent(List<BotGroupMember> members, string? token) : base(0)
     {
         Members = members;
+        Token = token;
     }
     
-    public static FetchMembersEvent Create(uint groupCode) => new(groupCode);
+    public static FetchMembersEvent Create(uint groupCode, string? token = null) => new(groupCode, token);
     
-    public static FetchMembersEvent Result(List<BotGroupMember> members) => new(members);
+    public static FetchMembersEvent Result(List<BotGroupMember> members, string? token) => new(members, token);
 }

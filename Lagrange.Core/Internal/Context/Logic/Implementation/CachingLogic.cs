@@ -132,9 +132,26 @@ internal class CachingLogic : LogicBase
     {
         var fetchFriendsEvent = FetchMembersEvent.Create(groupUin);
         var events = await Collection.Business.SendEvent(fetchFriendsEvent);
-        var members = events.Count != 0 ? ((FetchMembersEvent)events[0]).Members : new List<BotGroupMember>();
         
-        foreach (var member in members) _uinToUid.TryAdd(member.Uin, member.Uid);
-        _cachedGroupMembers[groupUin] = members;
+        if (events.Count != 0)
+        {
+            var @event = (FetchMembersEvent)events[0];
+            string? token = @event.Token;
+
+            while (token != null)
+            {
+                var next = FetchMembersEvent.Create(groupUin, token);
+                var results = await Collection.Business.SendEvent(next);
+                @event.Members.AddRange(((FetchMembersEvent)results[0]).Members);
+                token = ((FetchMembersEvent)results[0]).Token;
+            }
+
+            foreach (var member in @event.Members) _uinToUid.TryAdd(member.Uin, member.Uid);
+            _cachedGroupMembers[groupUin] = @event.Members;
+        }
+        else
+        {
+            _cachedGroupMembers[groupUin] = new List<BotGroupMember>();
+        }
     }
 }

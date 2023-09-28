@@ -9,8 +9,8 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 /// Fetch Group Member List
 /// </summary>
 [ProtoContract]
-[OidbSvcTrpcTcp(0xfe7, 2)]
-internal class OidbSvcTrpcTcp0xFE7_2
+[OidbSvcTrpcTcp(0xfe7, 3)]
+internal class OidbSvcTrpcTcp0xFE7_3
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
     
@@ -18,11 +18,13 @@ internal class OidbSvcTrpcTcp0xFE7_2
     
     [ProtoMember(3)] public uint Field3 { get; set; } // 2
     
-    [ProtoMember(4)] public OidbSvcTrpcScp0xFE7_2Body Body { get; set; }
+    [ProtoMember(4)] public OidbSvcTrpcScp0xFE7_3Body Body { get; set; }
+    
+    [ProtoMember(15)] public string? Token { get; set; }
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcScp0xFE7_2Body
+internal class OidbSvcTrpcScp0xFE7_3Body
 {
     [ProtoMember(10)] public bool MemberName { get; set; } // 1
     

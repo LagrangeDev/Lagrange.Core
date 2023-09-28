@@ -11,6 +11,14 @@ internal class OidbSvcTrpcTcp0xFE7_2Response
     [ProtoMember(1)] public uint GroupUin { get; set; }
     
     [ProtoMember(2)] public List<OidbSvcTrpcTcp0xFE7_2Member> Members { get; set; }
+    
+    [ProtoMember(3)] public uint Field3 { get; set; }
+    
+    [ProtoMember(5)] public uint MemberChangeSeq { get; set; }
+    
+    [ProtoMember(6)] public uint MemberCardChangeSeq { get; set; }
+    
+    [ProtoMember(15)] public string? Token { get; set; } // for the next page
 }
 
 [ProtoContract]
