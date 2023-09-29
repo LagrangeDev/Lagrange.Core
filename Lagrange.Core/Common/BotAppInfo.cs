@@ -41,6 +41,8 @@ public class BotAppInfo
     public uint MainSigMap { get; private set; }
     
     public ushort SubSigMap { get; private set; }
+    
+    public ushort NTLoginType { get; private set; }
 
     private static readonly BotAppInfo Linux = new()
     {
@@ -63,7 +65,8 @@ public class BotAppInfo
         AppClientVersion = 13172,
         
         MainSigMap = 169742560,
-        SubSigMap = 0
+        SubSigMap = 0,
+        NTLoginType = 1
     };
     
     private static readonly BotAppInfo MacOs = new()
@@ -82,12 +85,13 @@ public class BotAppInfo
         WtLoginSdk = "nt.wtlogin.0.0.1",
         PackageSign = "V1_MAC_NQ_6.9.20-17153_RDM_B",
         AppId = 1600001602,
-        SubAppId = 537138182,
-        AppIdQrCode = 537138182,
+        SubAppId = 537162356,
+        AppIdQrCode = 537162356,
         AppClientVersion = 13172,
         
         MainSigMap = 169742560,
-        SubSigMap = 0
+        SubSigMap = 0,
+        NTLoginType = 5
     };
     
     private static readonly BotAppInfo Windows = new()
@@ -111,7 +115,8 @@ public class BotAppInfo
         AppClientVersion = 13172,
         
         MainSigMap = 169742560,
-        SubSigMap = 0
+        SubSigMap = 0,
+        NTLoginType = 5
     };
     
     public static readonly Dictionary<Protocols, BotAppInfo> ProtocolToAppInfo = new()

@@ -23,7 +23,7 @@ internal static class SsoNTLoginCommon
                 {
                     Os = appInfo.Os,
                     DeviceName = device.DeviceName,
-                    Type = 1,
+                    Type = appInfo.NTLoginType,
                     Guid = device.Guid.ToByteArray()
                 },
                 Version = new SsoNTLoginVersion
