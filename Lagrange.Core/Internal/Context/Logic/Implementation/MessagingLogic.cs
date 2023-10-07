@@ -134,7 +134,11 @@ internal class MessagingLogic : LogicBase
                 }
                 case MultiMsgEntity multiMsg:
                 {
-                    foreach (var multi in multiMsg.Chains) await ResolveChainMetadata(multi);
+                    foreach (var multi in multiMsg.Chains)
+                    {
+                        await ResolveChainMetadata(multi);
+                        await UploadResources(multi);
+                    }
 
                     var multiMsgEvent = MultiMsgUploadEvent.Create(multiMsg.GroupUin, multiMsg.Chains);
                     var results = await Collection.Business.SendEvent(multiMsgEvent);
@@ -263,11 +267,6 @@ internal class MessagingLogic : LogicBase
                             image.FileId = ticketResult.FileId;
                         }
                     }
-                    break;
-                }
-                case MultiMsgEntity multiMsg:
-                {
-                    foreach (var multiMsgChain in multiMsg.Chains) await UploadResources(multiMsgChain);
                     break;
                 }
             }
