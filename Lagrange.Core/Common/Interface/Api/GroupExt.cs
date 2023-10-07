@@ -1,3 +1,5 @@
+using Lagrange.Core.Common.Entity;
+
 namespace Lagrange.Core.Common.Interface.Api;
 
 public static class GroupExt
@@ -16,4 +18,13 @@ public static class GroupExt
     
     public static Task<bool> RenameGroupMember(this BotContext bot, uint groupUin, uint targetUin, string targetName)
         => bot.ContextCollection.Business.OperationLogic.RenameGroupMember(groupUin, targetUin, targetName);
+
+    public static Task<ulong> FetchGroupFSSpace(this BotContext bot, uint groupUin)
+        => bot.ContextCollection.Business.OperationLogic.FetchGroupFSSpace(groupUin);
+    
+    public static Task<uint> FetchGroupFSCount(this BotContext bot, uint groupUin)
+        => bot.ContextCollection.Business.OperationLogic.FetchGroupFSCount(groupUin);
+
+    public static Task<List<BotFileEntry>> FetchGroupFSList(this BotContext bot, uint groupUin, string targetDirectory = "/", uint startIndex = 0)
+        => bot.ContextCollection.Business.OperationLogic.FetchGroupFSList(groupUin, targetDirectory, startIndex);
 }

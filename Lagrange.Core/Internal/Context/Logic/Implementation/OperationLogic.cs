@@ -88,6 +88,27 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupSetAdminEvent)events[0]).ResultCode == 0;
     }
 
+    public async Task<ulong> FetchGroupFSSpace(uint groupUin)
+    {
+        var groupFSSpaceEvent = GroupFSSpaceEvent.Create(groupUin);
+        var events = await Collection.Business.SendEvent(groupFSSpaceEvent);
+        return ((GroupFSSpaceEvent)events[0]).TotalSpace - ((GroupFSSpaceEvent)events[0]).UsedSpace;
+    }
+    
+    public async Task<uint> FetchGroupFSCount(uint groupUin)
+    {
+        var groupFSSpaceEvent = GroupFSCountEvent.Create(groupUin);
+        var events = await Collection.Business.SendEvent(groupFSSpaceEvent);
+        return ((GroupFSCountEvent)events[0]).FileCount;
+    }
+    
+    public async Task<List<BotFileEntry>> FetchGroupFSList(uint groupUin, string targetDirectory, uint startIndex)
+    {
+        var groupFSListEvent = GroupFSListEvent.Create(groupUin, targetDirectory, startIndex);
+        var events = await Collection.Business.SendEvent(groupFSListEvent);
+        return ((GroupFSListEvent)events[0]).FileEntries;
+    }
+
     public async Task<bool> GetHighwayAddress()
     {
         var highwayUrlEvent = HighwayUrlEvent.Create();
