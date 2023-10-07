@@ -5,6 +5,7 @@ using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Binary.Compression;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Generator;
+using Lagrange.Core.Utility.Sign;
 using ProtoBuf;
 using static Lagrange.Core.Utility.Binary.BinaryPacket;
 using BitConverter = Lagrange.Core.Utility.Binary.BitConverter;
@@ -16,19 +17,17 @@ internal static class SsoPacker
     /// <summary>
     /// Build Protocol 12 SSO packet
     /// </summary>
-    public static BinaryPacket Build(SsoPacket packet, BotAppInfo appInfo, BotDeviceInfo device, BotKeystore keystore)
+    public static BinaryPacket Build(SsoPacket packet, BotAppInfo appInfo, BotDeviceInfo device, BotKeystore keystore, SignProvider signProvider)
     {
         var writer = new BinaryPacket();
 
-        // var sign = Signature.GetWindowsSignature(packet.Command, packet.Sequence, packet.Payload.ToArray(), out var software, out var token);
-        var sign = Signature.GetSignature(packet.Command, packet.Sequence, packet.Payload.ToArray());
+        var sign = signProvider.Sign(packet.Command, packet.Sequence, packet.Payload.ToArray(), out var software, out var token);
         var signature = new NTDeviceSign
         {
             Sign = sign == null ? null : new Sign
             {
-                // S = software == null ? new Software { Ver = appInfo.PackageSign } : Serializer.Deserialize<Software>(new MemoryStream(software)),
-                // Token = token,
-                S = new Software { Ver = appInfo.PackageSign },
+                S = software == null ? new Software { Ver = appInfo.PackageSign } : Serializer.Deserialize<Software>(new MemoryStream(software)),
+                Token = token,
                 Signature = sign
             },
             Trace = StringGen.GenerateTrace(),

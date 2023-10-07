@@ -1,19 +1,10 @@
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using Lagrange.Core.Utility.Extension;
-using Lagrange.Core.Utility.Network;
+namespace Lagrange.Core.Utility.Sign;
 
-#pragma warning disable CS8618
-
-namespace Lagrange.Core.Utility;
-
-internal static class Signature
+internal abstract class SignProvider
 {
-    private const string Url = "http://cn-chengdu.qwqq.moe:20747/api/sign";
+    protected bool Available = true;
     
-    private static bool _available = true;
-    
-    private static readonly string[] WhiteListCommand =
+    protected static readonly string[] WhiteListCommand =
     {
         "trpc.o3.ecdh_access.EcdhAccess.SsoEstablishShareKey",
         "trpc.o3.ecdh_access.EcdhAccess.SsoSecureAccess",
@@ -54,32 +45,5 @@ internal static class Signature
         "OidbSvcTrpcTcp.0xf67_5"
     };
     
-    /// <summary>
-    /// Get O3Signature
-    /// </summary>
-    public static byte[]? GetSignature(string cmd, uint seq, byte[] body)
-    {
-        if (!WhiteListCommand.Contains(cmd)) return null;
-        if (!_available || string.IsNullOrEmpty(Url)) return new byte[20]; // Dummy signature
-
-        try
-        {
-            var payload = new Dictionary<string, string>
-            {
-                { "cmd", cmd },
-                { "seq", seq.ToString() },
-                { "src", body.Hex() },
-            };
-            string response = Http.GetAsync(Url, payload).GetAwaiter().GetResult();
-            var json = JsonSerializer.Deserialize<JsonObject>(response);
-
-            return json?["value"]?["sign"]?.ToString().UnHex() ?? new byte[20];
-        }
-        catch (Exception)
-        {
-            _available = false;
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(Signature)}] Failed to get signature, using dummy signature");
-            return new byte[20]; // Dummy signature
-        }
-    }
+    public abstract byte[]? Sign(string cmd, uint seq, byte[] body, out byte[]? ver, out string? token);
 }

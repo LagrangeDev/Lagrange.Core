@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Utility.Binary;
+using Lagrange.Core.Utility.Sign;
+
 #pragma warning disable CS4014
 
 namespace Lagrange.Core.Internal.Context;
@@ -13,11 +15,20 @@ namespace Lagrange.Core.Internal.Context;
 /// </summary>
 internal class PacketContext : ContextBase
 {
+    private readonly SignProvider _signProvider;
+    
     private readonly ConcurrentDictionary<uint, TaskCompletionSource<SsoPacket>> _pendingTasks;
     
     public PacketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device) 
         : base(collection, keystore, appInfo, device)
     {
+        _signProvider = appInfo.Os switch
+        {
+            "Windows" => new WindowsSigner(),
+            "Mac" => new MacSigner(),
+            "Linux" => new LinuxSigner(),
+            _ => throw new Exception("Unknown System Found")
+        };
         _pendingTasks = new ConcurrentDictionary<uint, TaskCompletionSource<SsoPacket>>();
     }
     
@@ -33,7 +44,7 @@ internal class PacketContext : ContextBase
         {
             case 12:
             {
-                var sso = SsoPacker.Build(packet, AppInfo, DeviceInfo, Keystore);
+                var sso = SsoPacker.Build(packet, AppInfo, DeviceInfo, Keystore, _signProvider);
                 var service = ServicePacker.BuildProtocol12(sso, Keystore);
                 bool _ = Collection.Socket.Send(service.ToArray()).Result;
                 break;
@@ -58,7 +69,7 @@ internal class PacketContext : ContextBase
         {
             case 12:
             {
-                var sso = SsoPacker.Build(packet, AppInfo, DeviceInfo, Keystore);
+                var sso = SsoPacker.Build(packet, AppInfo, DeviceInfo, Keystore, _signProvider);
                 var service = ServicePacker.BuildProtocol12(sso, Keystore);
                 return await Collection.Socket.Send(service.ToArray());
             }
