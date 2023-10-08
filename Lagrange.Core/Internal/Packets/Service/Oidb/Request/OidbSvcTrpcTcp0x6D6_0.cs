@@ -6,7 +6,7 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 // ReSharper disable InconsistentNaming
 
 /// <summary>
-/// Group File Operation
+/// Group File Upload
 /// </summary>
 [ProtoContract]
 [OidbSvcTrpcTcp(0x6d6, 0)]

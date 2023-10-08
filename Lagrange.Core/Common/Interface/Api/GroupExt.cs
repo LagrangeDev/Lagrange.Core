@@ -27,4 +27,10 @@ public static class GroupExt
 
     public static Task<List<IBotFSEntry>> FetchGroupFSList(this BotContext bot, uint groupUin, string targetDirectory = "/", uint startIndex = 0)
         => bot.ContextCollection.Business.OperationLogic.FetchGroupFSList(groupUin, targetDirectory, startIndex);
+
+    public static Task<string> FetchGroupFSDownload(this BotContext bot, uint groupUin, string fileId)
+        => bot.ContextCollection.Business.OperationLogic.FetchGroupFSDownload(groupUin, fileId);
+
+    public static Task<bool> GroupFSMove(this BotContext bot, uint groupUin, string fileId, string parentDirectory, string targetDirectory)
+        => bot.ContextCollection.Business.OperationLogic.GroupFSMove(groupUin, fileId, parentDirectory, targetDirectory);
 }
