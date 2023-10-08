@@ -14,7 +14,7 @@ internal class LinuxSigner : SignProvider
         ver = null;
         token = null;
         if (!WhiteListCommand.Contains(cmd)) return null;
-        if (Available || string.IsNullOrEmpty(Url)) return new byte[20]; // Dummy signature
+        if (!Available || string.IsNullOrEmpty(Url)) return new byte[20]; // Dummy signature
 
         try
         {
