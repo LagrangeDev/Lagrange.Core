@@ -54,7 +54,29 @@ internal class OidbSvcTrpcTcp0x6D8_1ResponseItem
 {
     [ProtoMember(1)] public uint Type { get; set; }
     
+    [ProtoMember(2)] public OidbSvcTrpcTcp0x6D8_1ResponseFolderInfo FolderInfo { get; set; }
+    
     [ProtoMember(3)] public OidbSvcTrpcTcp0x6D8_1ResponseFileInfo FileInfo { get; set; }
+}
+
+[ProtoContract]
+internal class OidbSvcTrpcTcp0x6D8_1ResponseFolderInfo
+{
+    [ProtoMember(1)] public string FolderId { get; set; }
+    
+    [ProtoMember(2)] public string ParentDirectoryId { get; set; }
+    
+    [ProtoMember(3)] public string FolderName { get; set; }
+    
+    [ProtoMember(4)] public uint CreateTime { get; set; }
+    
+    [ProtoMember(5)] public uint ModifiedTime { get; set; }
+    
+    [ProtoMember(6)] public uint CreatorUin { get; set; }
+    
+    [ProtoMember(7)] public string CreatorName { get; set; }
+    
+    [ProtoMember(8)] public uint TotalFileCount { get; set; }
 }
 
 [ProtoContract]

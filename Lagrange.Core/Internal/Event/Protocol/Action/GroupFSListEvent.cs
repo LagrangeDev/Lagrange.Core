@@ -10,7 +10,7 @@ internal class GroupFSListEvent : GroupFSViewEvent
     
     public uint StartIndex { get; set; }
     
-    public List<BotFileEntry> FileEntries { get; set; }
+    public List<IBotFSEntry> FileEntries { get; set; }
 
     private GroupFSListEvent(uint groupUin, string targetDirectory, uint startIndex) : base(groupUin)
     {
@@ -18,7 +18,7 @@ internal class GroupFSListEvent : GroupFSViewEvent
         StartIndex = startIndex;
     }
 
-    private GroupFSListEvent(int resultCode, List<BotFileEntry> fileEntries) : base(resultCode)
+    private GroupFSListEvent(int resultCode, List<IBotFSEntry> fileEntries) : base(resultCode)
     {
         FileEntries = fileEntries;
     }
@@ -26,6 +26,6 @@ internal class GroupFSListEvent : GroupFSViewEvent
     public static GroupFSListEvent Create(uint groupUin, string targetDirectory, uint startIndex) 
         => new(groupUin, targetDirectory, startIndex);
 
-    public static GroupFSListEvent Result(int resultCode, List<BotFileEntry> fileEntries) 
+    public static GroupFSListEvent Result(int resultCode, List<IBotFSEntry> fileEntries) 
         => new(resultCode, fileEntries);
 }

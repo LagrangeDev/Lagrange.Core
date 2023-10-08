@@ -1,6 +1,6 @@
 namespace Lagrange.Core.Common.Entity;
 
-public class BotFileEntry
+public class BotFileEntry : IBotFSEntry
 {
     internal string FileId { get; }
     

@@ -102,11 +102,25 @@ internal class OperationLogic : LogicBase
         return ((GroupFSCountEvent)events[0]).FileCount;
     }
     
-    public async Task<List<BotFileEntry>> FetchGroupFSList(uint groupUin, string targetDirectory, uint startIndex)
+    public async Task<List<IBotFSEntry>> FetchGroupFSList(uint groupUin, string targetDirectory, uint startIndex)
     {
         var groupFSListEvent = GroupFSListEvent.Create(groupUin, targetDirectory, startIndex);
         var events = await Collection.Business.SendEvent(groupFSListEvent);
         return ((GroupFSListEvent)events[0]).FileEntries;
+    }
+
+    public async Task<string> FetchGroupFSDownload(uint groupUin, string fileId)
+    {
+        var groupFSDownloadEvent = GroupFSDownloadEvent.Create(groupUin, fileId);
+        var events = await Collection.Business.SendEvent(groupFSDownloadEvent);
+        return $"{((GroupFSDownloadEvent)events[0]).FileUrl}{fileId}";
+    }
+
+    public async Task<bool> GroupFSMove(uint groupUin, string fileId, string parentDirectory, string targetDirectory)
+    {
+        var groupFSMoveEvent = GroupFSMoveEvent.Create(groupUin, fileId, parentDirectory, targetDirectory);
+        var events = await Collection.Business.SendEvent(groupFSMoveEvent); 
+        return events.Count != 0 && ((GroupFSMoveEvent)events[0]).ResultCode == 0;
     }
 
     public async Task<bool> GetHighwayAddress()
