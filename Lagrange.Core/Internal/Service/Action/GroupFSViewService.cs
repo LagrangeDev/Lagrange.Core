@@ -92,23 +92,20 @@ internal class GroupFSViewService : BaseService<GroupFSViewEvent>
             output = GroupFSListEvent.Result((int)packet.ErrorCode, fileEntries);
             return true;
         }
-        else if (packet.Body.Count != null)
+
+        if (packet.Body.Count != null)
         {
             var count = packet.Body.Count;
             output = GroupFSCountEvent.Result((int)packet.ErrorCode, count.FileCount, count.LimitCount, count.IsFull);
             return true;
         }
-        else if (packet.Body.Space != null)
+        if (packet.Body.Space != null)
         {
             var space = packet.Body.Space;
             output = GroupFSSpaceEvent.Result((int)packet.ErrorCode, space.TotalSpace, space.UsedSpace);
             return true;
         }
-        else
-        {
-            throw new Exception($"Invalid Packet is given to {nameof(GroupFSViewService)}");
-        }
         
-        return base.Parse(input, keystore, appInfo, device, out output, out extraEvents);
+        throw new Exception($"Invalid Packet is given to {nameof(GroupFSViewService)}");
     }
 }
