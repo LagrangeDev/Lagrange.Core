@@ -71,7 +71,7 @@ internal class HighwayContext : ContextBase
     {
         bool success = true;
         var upBlocks = new List<UpBlock>();
-        var uri = new Uri($"https://sslv6.htdata.qq.com:443/cgi-bin/httpconn?htcmd=0x6FF0087&uin={uin}");
+        var uri = new Uri($"http://htdata3.qq.com:80/cgi-bin/httpconn?htcmd=0x6FF0087&uin={uin}");
 
         long fileSize = data.Length;
         int offset = 0;
