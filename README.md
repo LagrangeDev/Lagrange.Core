@@ -5,6 +5,7 @@
 [![Core](https://img.shields.io/badge/Lagrange-Core-blue)](#)
 [![C#](https://img.shields.io/badge/.NET-%207-blue)](#)
 [![License](https://img.shields.io/static/v1?label=LICENSE&message=MIT&color=lightrey)](#)
+[![QQ](https://img.shields.io/static/v1?label=QQGroup&message=348981074&color=red)](#)
 
 An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 
