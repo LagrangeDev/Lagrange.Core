@@ -72,22 +72,12 @@ internal class CachingLogic : LogicBase
         return _uinToUid.TryGetValue(friendUin, out var uid) ? uid : null;
     }
     
-    public async Task<uint?> ResolveUin(uint? groupUin, string friendUid)
+    public async Task<uint?> ResolveUin(uint? groupUin, string friendUid, bool force = false)
     {
         if (_uinToUid.Count == 0) await ResolveFriendsUid();
         if (groupUin == null) return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
         
-        await CacheUid(groupUin.Value);
-
-        return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
-    }
-    
-    public async Task<uint?> ForceResolveUint(uint? groupUin, string friendUid)
-    {
-        if (_uinToUid.Count == 0) await ResolveFriendsUid();
-        if (groupUin == null) return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
-        
-        await CacheUid(groupUin.Value, true);
+        await CacheUid(groupUin.Value, force);
 
         return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
     }

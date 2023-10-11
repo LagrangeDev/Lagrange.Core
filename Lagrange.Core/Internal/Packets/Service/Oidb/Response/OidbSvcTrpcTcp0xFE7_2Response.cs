@@ -42,7 +42,7 @@ internal class OidbSvcTrpcTcp0xFE7_2Member
 [ProtoContract]
 internal class OidbSvcTrpcTcp0xFE7_2Uin
 {
-    [ProtoMember(1)] public string Uid { get; set; }
+    [ProtoMember(2)] public string Uid { get; set; }
     
     [ProtoMember(4)] public uint Uin { get; set; }
 }

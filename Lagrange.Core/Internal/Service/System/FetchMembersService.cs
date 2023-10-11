@@ -8,6 +8,7 @@ using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Response;
 using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
+using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.System;
@@ -48,6 +49,7 @@ internal class FetchMembersService : BaseService<FetchMembersEvent>
         out FetchMembersEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
+        Console.WriteLine(payload.Hex());
         var response = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xFE7_2Response>>(payload.AsSpan());
 
         var members = response.Body.Members.Select(member => 

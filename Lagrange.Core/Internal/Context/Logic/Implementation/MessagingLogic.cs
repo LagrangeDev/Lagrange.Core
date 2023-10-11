@@ -60,7 +60,7 @@ internal class MessagingLogic : LogicBase
             }
             case GroupSysIncreaseEvent increase:
             {
-                uint memberUin = await Collection.Business.CachingLogic.ForceResolveUint(increase.GroupUin, increase.MemberUid) ?? 0;
+                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.MemberUid, true) ?? 0;
                 uint? invitorUin = null;
                 if (increase.InvitorUid != null) invitorUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.InvitorUid);
                 var increaseArgs = new GroupMemberIncreaseEvent(increase.GroupUin, memberUin, invitorUin);
