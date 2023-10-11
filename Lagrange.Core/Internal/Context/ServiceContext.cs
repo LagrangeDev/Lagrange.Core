@@ -4,7 +4,6 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Service;
-using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 
@@ -92,15 +91,16 @@ internal partial class ServiceContext : ContextBase
     public List<ProtocolEvent> ResolveEventByPacket(SsoPacket packet)
     {
         var result = new List<ProtocolEvent>();
+        var payload = packet.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
+        
         if (!_services.TryGetValue(packet.Command, out var service))
         {
             Collection.Log.LogWarning(Tag, $"Unsupported SSOFrame Received: {packet.Command}");
-            var payload = packet.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
             Collection.Log.LogDebug(Tag, $"Unsuccessful SSOFrame Payload: {payload.Hex()}");
             return result; // 没找到 滚蛋吧
         }
 
-        bool success = service.Parse(packet, Keystore, AppInfo, DeviceInfo, out var @event, out var extraEvents);
+        bool success = service.Parse(payload, Keystore, AppInfo, DeviceInfo, out var @event, out var extraEvents);
 
         if (success)
         {
@@ -109,6 +109,7 @@ internal partial class ServiceContext : ContextBase
             
             Collection.Log.LogDebug(Tag, $"Incoming SSOFrame: {packet.Command}");
         }
+        packet.Dispose();
         
         return result;
     }

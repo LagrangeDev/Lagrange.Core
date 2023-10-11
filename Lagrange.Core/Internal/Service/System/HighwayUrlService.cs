@@ -1,9 +1,7 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.System;
-using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Packets.Action.HttpConn;
-using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
@@ -44,11 +42,10 @@ internal class HighwayUrlService : BaseService<HighwayUrlEvent>
         return true;
     }
 
-    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out HighwayUrlEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
-        var packet = Serializer.Deserialize<HttpConn0x6ff_501Response>(payload.AsSpan());
+        var packet = Serializer.Deserialize<HttpConn0x6ff_501Response>(input.AsSpan());
         
         var servers = new Dictionary<uint, List<Uri>>();
         foreach (var serverInfo in packet.HttpConn.ServerInfos)

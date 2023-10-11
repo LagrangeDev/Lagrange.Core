@@ -1,4 +1,4 @@
-namespace Lagrange.Core.Internal.Event.Protocol.Login.Ecdh;
+namespace Lagrange.Core.Internal.Event.Protocol.Login;
 
 internal class KeyExchangeEvent : ProtocolEvent
 {

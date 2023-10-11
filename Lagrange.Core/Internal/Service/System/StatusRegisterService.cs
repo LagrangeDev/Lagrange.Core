@@ -1,9 +1,7 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.System;
-using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Packets.System;
-using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
@@ -44,11 +42,10 @@ internal class StatusRegisterService : BaseService<StatusRegisterEvent>
         return true;
     }
 
-    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out StatusRegisterEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
-        var response = Serializer.Deserialize<ServiceRegisterResponse>(payload.AsSpan());
+        var response = Serializer.Deserialize<ServiceRegisterResponse>(input.AsSpan());
 
         output = StatusRegisterEvent.Result(response.Message ?? "OK");
         extraEvents = null;

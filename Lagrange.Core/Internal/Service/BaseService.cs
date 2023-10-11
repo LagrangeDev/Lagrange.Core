@@ -3,11 +3,11 @@ using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Utility.Binary;
 
-namespace Lagrange.Core.Internal.Service.Abstraction;
+namespace Lagrange.Core.Internal.Service;
 
 internal class BaseService<TEvent> : IService where TEvent : ProtocolEvent
 {
-    protected virtual bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected virtual bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out TEvent output, out List<ProtocolEvent>? extraEvents)
     {
         extraEvents = null;
@@ -21,7 +21,7 @@ internal class BaseService<TEvent> : IService where TEvent : ProtocolEvent
         return (output = null!) != null;
     }
 
-    bool IService.Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    bool IService.Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out ProtocolEvent? output, out List<ProtocolEvent>? extraEvents)
     {
         bool result = Parse(input, keystore, appInfo, device, out var @event, out extraEvents);

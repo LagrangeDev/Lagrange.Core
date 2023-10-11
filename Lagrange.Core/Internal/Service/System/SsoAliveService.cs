@@ -1,9 +1,7 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.System;
-using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Packets.System;
-using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
 using ProtoBuf;
 
@@ -25,7 +23,7 @@ internal class SsoAliveService : BaseService<SsoAliveEvent>
         return true;
     }
 
-    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out SsoAliveEvent output, out List<ProtocolEvent>? extraEvents)
     {
         output = SsoAliveEvent.Result();

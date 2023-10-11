@@ -1,11 +1,10 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.Login;
-using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Packets.Login.WtLogin.Entity;
 using Lagrange.Core.Internal.Packets.Tlv;
-using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
+using BitConverter = Lagrange.Core.Utility.Binary.BitConverter;
 
 namespace Lagrange.Core.Internal.Service.Login;
 
@@ -13,11 +12,11 @@ namespace Lagrange.Core.Internal.Service.Login;
 [Service("wtlogin.trans_emp")]
 internal class TransEmpService : BaseService<TransEmpEvent>
 {
-    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out TransEmpEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = input.Payload;
-        var packet = TransEmp.DeserializeBody(keystore, payload, out ushort command);
+        var payload = BitConverter.GetBytes(input.Length, false).Concat(input).ToArray();
+        var packet = TransEmp.DeserializeBody(keystore, new BinaryPacket(payload), out ushort command);
         
         if (command == 0x31)
         {

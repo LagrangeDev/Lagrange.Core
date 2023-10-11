@@ -1,9 +1,7 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.Message;
-using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Packets.Service.Highway;
-using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Utility;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
@@ -67,11 +65,10 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
         return true;
     }
 
-    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out ImageGroupUploadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
-        var packet = Serializer.Deserialize<GroupPicUp<GroupPicUpResponse>>(payload.AsSpan());
+        var packet = Serializer.Deserialize<GroupPicUp<GroupPicUpResponse>>(input.AsSpan());
         
         output = ImageGroupUploadEvent.Result((int)(packet.Body?.Result ?? 1),
                                               packet.Body?.UpUkey?.Hex(true) ?? "",

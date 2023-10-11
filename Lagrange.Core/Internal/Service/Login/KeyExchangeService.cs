@@ -1,17 +1,15 @@
 using System.Security.Cryptography;
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event.Protocol;
-using Lagrange.Core.Internal.Event.Protocol.Login.Ecdh;
-using Lagrange.Core.Internal.Packets;
+using Lagrange.Core.Internal.Event.Protocol.Login;
 using Lagrange.Core.Internal.Packets.Login.Ecdh;
 using Lagrange.Core.Internal.Packets.Login.Ecdh.Plain;
-using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Crypto;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
-namespace Lagrange.Core.Internal.Service.Login.Ecdh;
+namespace Lagrange.Core.Internal.Service.Login;
 
 [EventSubscribe(typeof(KeyExchangeEvent))]
 [Service("trpc.login.ecdh.EcdhService.SsoKeyExchange")]
@@ -22,20 +20,18 @@ internal class KeyExchangeService : BaseService<KeyExchangeEvent>
     protected override bool Build(KeyExchangeEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
-        var packet = BuildPacket(keystore, device);
-        using var stream = new MemoryStream();
-        Serializer.Serialize(stream, packet);
+        var stream = new MemoryStream();
+        Serializer.Serialize(stream, BuildPacket(keystore, device));
         output = new BinaryPacket(stream);
         
         extraPackets = null;
         return true;
     }
 
-    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out KeyExchangeEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
-        var response = Serializer.Deserialize<SsoKeyExchangeResponse>(payload.AsSpan());
+        var response = Serializer.Deserialize<SsoKeyExchangeResponse>(input.AsSpan());
 
         var shareKey = keystore.PrimeImpl.GenerateShared(response.PublicKey, false);
         var gcmDecrypted = new AesGcmImpl().Decrypt(response.GcmEncrypted, shareKey);

@@ -2,7 +2,7 @@ using Lagrange.Core.Utility.Binary;
 
 namespace Lagrange.Core.Internal.Packets;
 
-internal class SsoPacket
+internal class SsoPacket : IDisposable
 {
     public byte PacketType { get; set; }
     
@@ -19,4 +19,6 @@ internal class SsoPacket
         Sequence = sequence;
         Payload = payload;
     }
+
+    public void Dispose() => Payload.Dispose();
 }

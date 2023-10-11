@@ -1,11 +1,9 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.Login;
-using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Packets.Login.NTLogin;
 using Lagrange.Core.Internal.Packets.Login.NTLogin.Plain;
 using Lagrange.Core.Internal.Packets.Login.NTLogin.Plain.Body;
-using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Crypto;
 using ProtoBuf;
@@ -26,13 +24,12 @@ internal class UnusualEasyLoginService : BaseService<UnusualEasyLoginEvent>
         return true;
     }
 
-    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out UnusualEasyLoginEvent output, out List<ProtocolEvent>? extraEvents)
     {
         if (keystore.Session.ExchangeKey == null) throw new InvalidOperationException("ExchangeKey is null");
         
-        var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
-        var encrypted = Serializer.Deserialize<SsoNTLoginEncryptedData>(payload.AsSpan());
+        var encrypted = Serializer.Deserialize<SsoNTLoginEncryptedData>(input.AsSpan());
 
         if (encrypted.GcmCalc != null)
         {

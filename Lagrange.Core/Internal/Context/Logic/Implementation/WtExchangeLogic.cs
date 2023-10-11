@@ -4,7 +4,6 @@ using Lagrange.Core.Internal.Context.Attributes;
 using Lagrange.Core.Internal.Event.EventArg;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.Login;
-using Lagrange.Core.Internal.Event.Protocol.Login.Ecdh;
 using Lagrange.Core.Internal.Event.Protocol.System;
 using Lagrange.Core.Internal.Packets.Login.NTLogin;
 using Lagrange.Core.Internal.Packets.Login.WtLogin.Entity;

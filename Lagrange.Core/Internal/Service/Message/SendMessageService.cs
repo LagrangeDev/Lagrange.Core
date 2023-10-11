@@ -1,9 +1,7 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.Message;
-using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Packets.Action;
-using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Binary;
 using ProtoBuf;
@@ -29,12 +27,10 @@ internal class SendMessageService : BaseService<SendMessageEvent>
         return true;
     }
 
-    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out SendMessageEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
-        
-        var response = Serializer.Deserialize<SendMessageResponse>(payload.AsSpan());
+        var response = Serializer.Deserialize<SendMessageResponse>(input.AsSpan());
         var result = new MessageResult
         {
             Result = (uint)response.Result,

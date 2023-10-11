@@ -1,11 +1,8 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.System;
-using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Packets.Service;
-using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
-using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.System;
@@ -38,11 +35,9 @@ internal class InfoSyncService : BaseService<InfoSyncEvent>
         return true;
     }
 
-    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out InfoSyncEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        Console.WriteLine($"InfoSyncService.Parse: {input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix ).Hex()}");
-        
         output = InfoSyncEvent.Result(0);
         extraEvents = null;
         return true;

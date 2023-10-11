@@ -3,11 +3,11 @@ using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Utility.Binary;
 
-namespace Lagrange.Core.Internal.Service.Abstraction;
+namespace Lagrange.Core.Internal.Service;
 
 internal interface IService
 {
-    public bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    public bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out ProtocolEvent? output, out List<ProtocolEvent>? extraEvents);
     
     public bool Build(ProtocolEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,

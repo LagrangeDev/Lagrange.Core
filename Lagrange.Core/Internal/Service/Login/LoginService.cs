@@ -1,10 +1,9 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.Login;
-using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Packets.Tlv;
-using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
+using BitConverter = Lagrange.Core.Utility.Binary.BitConverter;
 
 namespace Lagrange.Core.Internal.Service.Login;
 
@@ -12,10 +11,11 @@ namespace Lagrange.Core.Internal.Service.Login;
 [Service("wtlogin.login")]
 internal class LoginService : BaseService<LoginEvent>
 {
-    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out LoginEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var tlvs = Packets.Login.WtLogin.Entity.Login.Deserialize(input.Payload, keystore, out var state);
+        var payload = BitConverter.GetBytes(input.Length, false).Concat(input).ToArray();
+        var tlvs = Packets.Login.WtLogin.Entity.Login.Deserialize(new BinaryPacket(payload), keystore, out var state);
 
         if (state == Packets.Login.WtLogin.Entity.Login.State.Success)
         {
@@ -36,20 +36,18 @@ internal class LoginService : BaseService<LoginEvent>
             extraEvents = null;
             return true;
         }
-        else
+
+        if (tlvs.TryGetValue(0x146, out var tlv))
         {
-            if (tlvs.TryGetValue(0x146, out var tlv))
-            {
-                var tlv146 = (Tlv146)tlv;
-                output = LoginEvent.Result((int)state, tlv146.Tag, tlv146.Message);
-                extraEvents = null;
-                return true;
-            }
-            
-            output = LoginEvent.Result((int)state);
+            var tlv146 = (Tlv146)tlv;
+            output = LoginEvent.Result((int)state, tlv146.Tag, tlv146.Message);
             extraEvents = null;
             return true;
         }
+            
+        output = LoginEvent.Result((int)state);
+        extraEvents = null;
+        return true;
     }
 
     protected override bool Build(LoginEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 

@@ -1,11 +1,8 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.Action;
-using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
-using Lagrange.Core.Internal.Service.Abstraction;
-using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Binary;
 using ProtoBuf;
 
@@ -39,11 +36,10 @@ internal class GroupFSMoveService : BaseService<GroupFSMoveEvent>
         return true;
     }
 
-    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, out GroupFSMoveEvent output,
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, out GroupFSMoveEvent output,
         out List<ProtocolEvent>? extraEvents)
     {
-        var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
-        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<byte[]>>(payload.AsSpan());
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<byte[]>>(input.AsSpan());
         
         output = GroupFSMoveEvent.Result((int)packet.ErrorCode);
         extraEvents = null;

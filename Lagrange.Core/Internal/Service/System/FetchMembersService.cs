@@ -2,13 +2,10 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.System;
-using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Response;
-using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Utility.Binary;
-using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.System;
@@ -45,12 +42,10 @@ internal class FetchMembersService : BaseService<FetchMembersEvent>
         return true;
     }
 
-    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out FetchMembersEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
-        Console.WriteLine(payload.Hex());
-        var response = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xFE7_2Response>>(payload.AsSpan());
+        var response = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xFE7_2Response>>(input.AsSpan());
 
         var members = response.Body.Members.Select(member => 
             new BotGroupMember(member.Uin.Uin,

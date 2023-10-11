@@ -1,11 +1,9 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.Action;
-using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Response;
-using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Binary;
 using ProtoBuf;
@@ -38,11 +36,10 @@ internal class GroupFSDownloadService : BaseService<GroupFSDownloadEvent>
         return true;
     }
 
-    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out GroupFSDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
-        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTco0x6D6Response>>(payload.AsSpan());
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTco0x6D6Response>>(input.AsSpan());
         var download = packet.Body.Download;
 
         string url = $"https://{download.DownloadIp}:443/ftn_handler/{download.DownloadUrl.Hex(true)}/?fname=";

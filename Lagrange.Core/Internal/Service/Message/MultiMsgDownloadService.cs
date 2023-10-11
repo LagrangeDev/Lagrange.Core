@@ -1,9 +1,7 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.Message;
-using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Packets.Message.Action;
-using Lagrange.Core.Internal.Service.Abstraction;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Binary.Compression;
@@ -43,11 +41,10 @@ internal class MultiMsgDownloadService : BaseService<MultiMsgDownloadEvent>
         return true;
     }
 
-    protected override bool Parse(SsoPacket input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out MultiMsgDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = input.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
-        var packet = Serializer.Deserialize<RecvLongMsgResp>(payload.AsSpan());
+        var packet = Serializer.Deserialize<RecvLongMsgResp>(input.AsSpan());
         var inflate = GZip.Inflate(packet.Result.Payload);
         var result = Serializer.Deserialize<LongMsgResult>(inflate.AsSpan());
 
