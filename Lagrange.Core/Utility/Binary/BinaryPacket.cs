@@ -7,7 +7,7 @@ namespace Lagrange.Core.Utility.Binary;
 /// Binary Writer, Inspired by <see cref="System.IO.BinaryWriter"/>
 /// <para>Provide only Sync Apis</para>
 /// </summary>
-internal partial class BinaryPacket
+internal partial class BinaryPacket : IDisposable
 {
     private readonly MemoryStream _stream;
     
@@ -295,4 +295,10 @@ internal partial class BinaryPacket
     public bool IsAvailable(int length) => _stream.Length - _stream.Position >= length;
 
     public byte[] ToArray() => _stream.ToArray();
+
+    public void Dispose()
+    {
+        _stream.Dispose();
+        _reader.Dispose();
+    }
 }
