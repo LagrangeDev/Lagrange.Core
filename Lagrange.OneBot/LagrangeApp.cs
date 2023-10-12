@@ -3,6 +3,7 @@ using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core.Message;
 using Lagrange.OneBot.Core.Network;
+using Lagrange.OneBot.Core.Operation;
 using Lagrange.OneBot.Utility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,14 +27,17 @@ public class LagrangeApp : IHost
     
     public ILagrangeWebService WebService => Services.GetRequiredService<ILagrangeWebService>();
 
-    public MessageService Service { get; set; }
+    public MessageService MessageService { get; set; }
+    
+    public OperationService OperationService { get; set; }
     
     internal LagrangeApp(IHost host)
     {
         _hostApp = host;
         Logger = Services.GetRequiredService<ILogger<LagrangeApp>>();
         
-        Service = new MessageService(Instance, WebService);
+        MessageService = new MessageService(Instance, WebService);
+        OperationService = new OperationService(Instance, WebService);
     }
 
     public async Task StartAsync(CancellationToken cancellationToken = new())

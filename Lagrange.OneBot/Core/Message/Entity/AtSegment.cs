@@ -16,6 +16,11 @@ public partial class AtSegment(uint at)
 public partial class AtSegment : ISegment
 {
     public IMessageEntity ToEntity() => new MentionEntity("", uint.Parse(At));
+    
+    public void Build(MessageBuilder builder, ISegment segment)
+    {
+        if (segment is AtSegment atSegment) builder.Mention(uint.Parse(atSegment.At));
+    }
 
     public ISegment FromEntity(IMessageEntity entity)
     {

@@ -16,7 +16,9 @@ public partial class ImageSegment(string url)
 public partial class ImageSegment : ISegment
 {
     public IMessageEntity ToEntity() => new ImageEntity(url);
-
+    
+    public void Build(MessageBuilder builder, ISegment segment) => throw new NotImplementedException();
+    
     public ISegment FromEntity(IMessageEntity entity)
     {
         if (entity is not ImageEntity imageEntity) throw new ArgumentException("Invalid entity type.");

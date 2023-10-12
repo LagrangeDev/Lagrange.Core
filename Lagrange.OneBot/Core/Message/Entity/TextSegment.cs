@@ -17,6 +17,11 @@ public partial class TextSegment : ISegment
 {
     public IMessageEntity ToEntity() => new TextEntity(Text);
 
+    public void Build(MessageBuilder builder, ISegment segment)
+    {
+        if (segment is TextSegment textSegment) builder.Text(textSegment.Text);
+    }
+    
     public ISegment FromEntity(IMessageEntity entity)
     {
         if (entity is not TextEntity textEntity) throw new ArgumentException("Invalid entity type.");

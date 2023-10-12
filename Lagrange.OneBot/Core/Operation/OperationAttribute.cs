@@ -1,7 +1,7 @@
 namespace Lagrange.OneBot.Core.Operation;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class OneBotOperationAttribute(string api)
+public class OperationAttribute(string api) : Attribute
 {
     public string Api => api;
 }

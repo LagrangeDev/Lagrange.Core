@@ -16,7 +16,12 @@ public partial class FaceSegment(int id)
 public partial class FaceSegment : ISegment
 {
     public IMessageEntity ToEntity() => new FaceEntity(ushort.Parse(Id), false);
-
+    
+    public void Build(MessageBuilder builder, ISegment segment)
+    {
+        if (segment is FaceSegment faceSegment) builder.Face(ushort.Parse(faceSegment.Id));
+    }
+    
     public ISegment FromEntity(IMessageEntity entity)
     {
         if (entity is not FaceEntity faceEntity) throw new ArgumentException("Invalid entity type.");
