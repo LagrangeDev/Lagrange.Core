@@ -3,12 +3,7 @@ using System.Text.Json.Serialization;
 namespace Lagrange.OneBot.Core.Entity.Meta;
 
 [Serializable]
-public abstract class OneBotMeta : OneBotEntityBase
+public abstract class OneBotMeta(uint selfId, string metaEventType) : OneBotEntityBase(selfId, "meta_event")
 {
-    [JsonPropertyName("meta_event_type")] public string MetaEventType { get; set; }
-    
-    protected OneBotMeta(uint selfId, string metaEventType) : base(selfId, "meta_event")
-    {
-        MetaEventType = metaEventType;
-    }
+    [JsonPropertyName("meta_event_type")] public string MetaEventType { get; set; } = metaEventType;
 }

@@ -26,14 +26,14 @@ public class LagrangeApp : IHost
     
     public ILagrangeWebService WebService => Services.GetRequiredService<ILagrangeWebService>();
 
-    public MessageConverter Converter { get; set; }
+    public MessageService Service { get; set; }
     
     internal LagrangeApp(IHost host)
     {
         _hostApp = host;
         Logger = Services.GetRequiredService<ILogger<LagrangeApp>>();
         
-        Converter = new MessageConverter(Instance, WebService);
+        Service = new MessageService(Instance, WebService);
     }
 
     public async Task StartAsync(CancellationToken cancellationToken = new())

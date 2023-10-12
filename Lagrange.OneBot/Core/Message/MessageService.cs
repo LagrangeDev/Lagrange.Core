@@ -1,0 +1,82 @@
+using System.Reflection;
+using Lagrange.Core;
+using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Internal.Event.EventArg;
+using Lagrange.Core.Message;
+using Lagrange.Core.Utility.Extension;
+using Lagrange.OneBot.Core.Entity.Message;
+
+namespace Lagrange.OneBot.Core.Message;
+
+/// <summary>
+/// The class that converts the OneBot message to/from MessageEntity of Lagrange.Core
+/// </summary>
+public sealed class MessageService
+{
+    private readonly ILagrangeWebService _service;
+    public Dictionary<Type, (string, ISegment)> EntityToSegment { get; set; }
+    
+    public MessageService(BotContext bot, ILagrangeWebService service)
+    {
+        _service = service;
+        var invoker = bot.Invoker;
+        
+        invoker.OnFriendMessageReceived += OnFriendMessageReceived;
+        invoker.OnGroupMessageReceived += OnGroupMessageReceived;
+        invoker.OnTempMessageReceived += OnTempMessageReceived;
+
+        EntityToSegment = new Dictionary<Type, (string, ISegment)>();
+        foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
+        {
+            var attribute = type.GetCustomAttribute<SegmentSubscriberAttribute>();
+            if (attribute != null)
+            {
+                EntityToSegment[attribute.Entity] = (attribute.Type, (ISegment)type.CreateInstance(false));
+            }
+        }
+    }
+    
+    private void OnFriendMessageReceived(BotContext bot, FriendMessageEvent e)
+    {
+        var request = new OneBotPrivateMsg(bot.UpdateKeystore().Uin)
+        {
+            MessageId = 0,
+            UserId = e.Chain.FriendUin,
+            GroupSender = new OneBotSender
+            {
+                
+            },
+            Message = Convert(e.Chain)
+        };
+
+        _service.SendJsonAsync(request);
+    }
+    
+    private void OnGroupMessageReceived(BotContext bot, GroupMessageEvent e)
+    {
+        var request = new OneBotGroupMsg(bot.UpdateKeystore().Uin, e.Chain.GroupUin ?? 0,Convert(e.Chain),
+            e.Chain.GroupMemberInfo ?? throw new Exception("Group member not found"));
+        
+        _service.SendJsonAsync(request);
+    }
+    
+    private void OnTempMessageReceived(BotContext bot, TempMessageEvent e)
+    {
+        // TODO: Implement temp msg
+    }
+
+    private List<OneBotSegment> Convert(IEnumerable<IMessageEntity> entities)
+    {
+        var result = new List<OneBotSegment>();
+
+        foreach (var entity in entities)
+        {
+            if (EntityToSegment.TryGetValue(entity.GetType(), out var instance))
+            {
+                result.Add(new OneBotSegment(instance.Item1, instance.Item2.FromEntity(entity)));
+            }
+        }
+
+        return result;
+    }
+}

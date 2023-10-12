@@ -5,20 +5,19 @@ using Lagrange.Core.Message.Entity;
 namespace Lagrange.OneBot.Core.Message.Entity;
 
 [Serializable]
-public partial class FaceSegment
+public partial class FaceSegment(int id)
 {
-    public FaceSegment(int id) => Id = id.ToString();
-
-    [JsonPropertyName("id")] public string Id { get; set; }
+    public FaceSegment() : this(0) { }
+    
+    [JsonPropertyName("id")] public string Id { get; set; } = id.ToString();
 }
 
+[SegmentSubscriber(typeof(FaceSegment), "face")]
 public partial class FaceSegment : ISegment
 {
-    string ISegment.Type => "face";
-
     public IMessageEntity ToEntity() => new FaceEntity(ushort.Parse(Id), false);
 
-    public ISegment FromMessageEntity(IMessageEntity entity)
+    public ISegment FromEntity(IMessageEntity entity)
     {
         if (entity is not FaceEntity faceEntity) throw new ArgumentException("Invalid entity type.");
 

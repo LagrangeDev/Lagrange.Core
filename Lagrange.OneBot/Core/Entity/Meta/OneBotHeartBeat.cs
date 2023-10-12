@@ -3,15 +3,9 @@ using System.Text.Json.Serialization;
 namespace Lagrange.OneBot.Core.Entity.Meta;
 
 [Serializable]
-public class OneBotHeartBeat : OneBotMeta
+public class OneBotHeartBeat(uint selfId, int interval, object status) : OneBotMeta(selfId, "heartbeat")
 {
-    [JsonPropertyName("interval")] public int Interval { get; set; }
-    
-    [JsonPropertyName("status")] public object Status { get; set; }
-    
-    public OneBotHeartBeat(uint selfId, int interval, object status) : base(selfId, "heartbeat")
-    {
-        Interval = interval;
-        Status = status;
-    }
+    [JsonPropertyName("interval")] public int Interval { get; set; } = interval;
+
+    [JsonPropertyName("status")] public object Status { get; set; } = status;
 }

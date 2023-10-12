@@ -1,4 +1,5 @@
 using System.Net.WebSockets;
+using System.Text;
 using System.Text.Json;
 using Lagrange.OneBot.Core.Entity.Meta;
 using Microsoft.Extensions.Configuration;
@@ -30,10 +31,13 @@ public sealed class ReverseWSService : ILagrangeWebService
         {
             var socket = new ClientWebSocket();
             
+            SetRequestHeader(socket, new Dictionary<string, string>
+            {
+                { "X-Client-Role", "Universal" },
+                { "X-Self-ID", _config.GetValue<uint>("Account:Uin").ToString() },
+                { "User-Agent", Constant.OneBotImpl }
+            });
             socket.Options.KeepAliveInterval = TimeSpan.FromSeconds(5);
-            socket.Options.SetRequestHeader("X-Client-Role", "Universal");
-            socket.Options.SetRequestHeader("X-Self-ID", _config.GetValue<uint>("Account:Uin").ToString());
-            socket.Options.SetRequestHeader("User-Agent", Constant.OneBotImpl);
             if (_config["AccessToken"] != null) socket.Options.SetRequestHeader("Authorization", $"Bearer {_config["AccessToken"]}");
             
             return socket;
@@ -61,14 +65,23 @@ public sealed class ReverseWSService : ILagrangeWebService
     public Task SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
     {
         var payload = JsonSerializer.SerializeToUtf8Bytes(json);
+        Console.WriteLine(Encoding.UTF8.GetString(payload));
         return _socket.SendInstant(payload);
     }
 
     private void OnHeartbeat(object? sender)
     {
         var status = new OneBotStatus(true, true);
-        var heartBeat = new OneBotHeartBeat(_config.GetValue<uint>("Account:Uin"), _config.GetValue<int>("Implementation:ReverseWebSocket:HeartBeatInterval"), status);
+        var heartBeat = new OneBotHeartBeat(
+            _config.GetValue<uint>("Account:Uin"), 
+            _config.GetValue<int>("Implementation:ReverseWebSocket:HeartBeatInterval"), 
+            status);
         
         SendJsonAsync(heartBeat);
+    }
+
+    private static void SetRequestHeader(ClientWebSocket webSocket, Dictionary<string, string> headers)
+    {
+        foreach (var (key, value) in headers) webSocket.Options.SetRequestHeader(key, value);
     }
 }
