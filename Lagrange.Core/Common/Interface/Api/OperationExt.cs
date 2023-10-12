@@ -5,11 +5,11 @@ namespace Lagrange.Core.Common.Interface.Api;
 
 public static class OperationExt
 {
-    public static Task<List<BotFriend>> FetchFriends(this BotContext bot) 
-        => bot.ContextCollection.Business.OperationLogic.FetchFriends();
+    public static Task<List<BotFriend>> FetchFriends(this BotContext bot, bool refreshCache = false) 
+        => bot.ContextCollection.Business.OperationLogic.FetchFriends(refreshCache);
     
-    public static Task<List<BotGroupMember>> FetchMembers(this BotContext bot, uint groupUin)
-        => bot.ContextCollection.Business.OperationLogic.FetchMembers(groupUin);
+    public static Task<List<BotGroupMember>> FetchMembers(this BotContext bot, uint groupUin, bool refreshCache = false)
+        => bot.ContextCollection.Business.OperationLogic.FetchMembers(groupUin, refreshCache);
     
     public static Task<List<BotGroup>> FetchGroups(this BotContext bot, bool refreshCache = false)
         => bot.ContextCollection.Business.OperationLogic.FetchGroups(refreshCache);
