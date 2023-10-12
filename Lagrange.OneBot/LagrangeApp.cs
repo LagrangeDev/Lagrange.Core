@@ -1,8 +1,8 @@
 using System.Text.Json;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
-using Lagrange.OneBot.Core;
 using Lagrange.OneBot.Core.Message;
+using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Utility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

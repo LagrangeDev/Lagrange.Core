@@ -5,6 +5,7 @@ using Lagrange.Core.Internal.Event.EventArg;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Message;
+using Lagrange.OneBot.Core.Network;
 
 namespace Lagrange.OneBot.Core.Message;
 
@@ -14,7 +15,7 @@ namespace Lagrange.OneBot.Core.Message;
 public sealed class MessageService
 {
     private readonly ILagrangeWebService _service;
-    public Dictionary<Type, (string, ISegment)> EntityToSegment { get; set; }
+    private readonly Dictionary<Type, (string, ISegment)> _entityToSegment;
     
     public MessageService(BotContext bot, ILagrangeWebService service)
     {
@@ -25,13 +26,13 @@ public sealed class MessageService
         invoker.OnGroupMessageReceived += OnGroupMessageReceived;
         invoker.OnTempMessageReceived += OnTempMessageReceived;
 
-        EntityToSegment = new Dictionary<Type, (string, ISegment)>();
+        _entityToSegment = new Dictionary<Type, (string, ISegment)>();
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var attribute = type.GetCustomAttribute<SegmentSubscriberAttribute>();
             if (attribute != null)
             {
-                EntityToSegment[attribute.Entity] = (attribute.Type, (ISegment)type.CreateInstance(false));
+                _entityToSegment[attribute.Entity] = (attribute.Type, (ISegment)type.CreateInstance(false));
             }
         }
     }
@@ -71,7 +72,7 @@ public sealed class MessageService
 
         foreach (var entity in entities)
         {
-            if (EntityToSegment.TryGetValue(entity.GetType(), out var instance))
+            if (_entityToSegment.TryGetValue(entity.GetType(), out var instance))
             {
                 result.Add(new OneBotSegment(instance.Item1, instance.Item2.FromEntity(entity)));
             }

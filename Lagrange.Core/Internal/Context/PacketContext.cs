@@ -46,13 +46,13 @@ internal class PacketContext : ContextBase
             {
                 var sso = SsoPacker.Build(packet, AppInfo, DeviceInfo, Keystore, _signProvider);
                 var service = ServicePacker.BuildProtocol12(sso, Keystore);
-                bool _ = Collection.Socket.Send(service.ToArray()).Result;
+                bool _ = Collection.Socket.Send(service.ToArray()).GetAwaiter().GetResult();
                 break;
             }
             case 13:
             {
                 var service = ServicePacker.BuildProtocol13(packet.Payload, Keystore, packet.Command, packet.Sequence);
-                bool _ = Collection.Socket.Send(service.ToArray()).Result;
+                bool _ = Collection.Socket.Send(service.ToArray()).GetAwaiter().GetResult();
                 break;
             }
         }
