@@ -149,53 +149,6 @@ internal class MessagingLogic : LogicBase
                     }
                     break;
                 }
-                case ImageEntity image:
-                {
-                    if (!chain.IsGroup)
-                    {
-                        string uid = await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin) ?? throw new Exception($"Failed to resolve Uid for Uin {chain.FriendUin}");
-                        var @event = ImageUploadEvent.Create(image.ImageStream, uid);
-                        var results = await Collection.Business.SendEvent(@event);
-                        if (results.Count != 0)
-                        {
-                            var ticketResult = (ImageUploadEvent)results[0];
-                            if (!ticketResult.IsExist)
-                            {
-                                bool hwSuccess = await Collection.Highway.UploadSrcByStreamAsync(1, Collection.Keystore.Uin, image.ImageStream, ticketResult.Ticket, @event.FileMd5.UnHex());
-                                if (!hwSuccess)
-                                {
-                                    Collection.Log.LogFatal(Tag, "Failed to upload image to highway");
-                                    continue;
-                                }
-                            }
-
-                            image.ImageStream = @event.Stream;
-                            image.Path = ticketResult.ServerPath;
-                        }
-                    }
-                    else
-                    {
-                        var @event = ImageGroupUploadEvent.Create(image.ImageStream, chain.GroupUin ?? throw new Exception());
-                        var results = await Collection.Business.SendEvent(@event);
-                        if (results.Count != 0)
-                        {
-                            var ticketResult = (ImageGroupUploadEvent)results[0];
-                            if (!ticketResult.IsExist)
-                            {
-                                bool hwSuccess = await Collection.Highway.UploadSrcByStreamAsync(2, Collection.Keystore.Uin, image.ImageStream, ticketResult.Ticket, @event.FileMd5.UnHex());
-                                if (!hwSuccess)
-                                {
-                                    Collection.Log.LogFatal(Tag, "Failed to upload image to highway");
-                                    continue;
-                                }
-                            }
-
-                            image.ImageStream = @event.Stream;
-                            image.FileId = ticketResult.FileId;
-                        }
-                    }
-                    break;
-                }
             }
         }
     }
