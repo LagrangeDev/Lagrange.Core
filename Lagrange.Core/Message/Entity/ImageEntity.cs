@@ -4,11 +4,14 @@ using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation.Extra;
 using Lagrange.Core.Utility;
 using Lagrange.Core.Utility.Extension;
+using ProtoBuf;
+using ImageExtra = Lagrange.Core.Internal.Packets.Message.Component.Extra.ImageExtra;
 
 namespace Lagrange.Core.Message.Entity;
 
 [MessageElement(typeof(NotOnlineImage))]
 [MessageElement(typeof(CustomFace))]
+[MessageElement(typeof(CommonElem))]
 public class ImageEntity : IMessageEntity
 {
     private const string BaseUrl = "https://multimedia.nt.qq.com.cn";
@@ -122,15 +125,31 @@ public class ImageEntity : IMessageEntity
                 ImageUrl = $"{BaseUrl}{target.OrigUrl}"
             };
         }
+        
         if (elems.CustomFace is not null)
         {
             var target = elems.CustomFace;
+            if (target.OrigUrl.StartsWith("&rkey=")) return null; // NTQQ's shit
+            
             return new ImageEntity
             {
                 PictureSize = new Vector2(target.Width, target.Height),
                 FilePath = target.FilePath,
                 ImageSize = target.Size,
                 ImageUrl = $"{LegacyBaseUrl}{target.OrigUrl}"
+            };
+        }
+
+        if (elems.CommonElem is { ServiceType: 48 })
+        {
+            var extra = Serializer.Deserialize<ImageExtra>(elems.CommonElem.PbElem.AsSpan());
+            
+            return new ImageEntity
+            {
+                PictureSize = new Vector2(extra.Metadata.File.FileInfo.PicWidth, extra.Metadata.File.FileInfo.PicHeight),
+                FilePath = extra.Metadata.File.FileInfo.FilePath,
+                ImageSize = (uint)extra.Metadata.File.FileInfo.FileSize,
+                ImageUrl = $"https://{extra.Metadata.Urls.Domain}{extra.Metadata.Urls.Suffix}{extra.Credential.Resp.GroupKey?.RKey ?? extra.Credential.Resp.FriendKey?.RKey}"
             };
         }
         
