@@ -7,8 +7,10 @@ namespace Lagrange.OneBot.Core.Message.Entity;
 [Serializable]
 public partial class ImageSegment(string url)
 {
-    public ImageSegment() : this("") { }
-    
+    private readonly HttpClient _client = new();
+
+    public ImageSegment() : this("") => _client = new HttpClient();
+
     [JsonPropertyName("file")] public string Url { get; set; } = url;
 }
 
@@ -17,8 +19,14 @@ public partial class ImageSegment : ISegment
 {
     public IMessageEntity ToEntity() => new ImageEntity(url);
     
-    public void Build(MessageBuilder builder, ISegment segment) => throw new NotImplementedException();
-    
+    public void Build(MessageBuilder builder, ISegment segment)
+    {
+        if (segment is ImageSegment imageSegment)
+        {
+            if (imageSegment.Url != "") builder.Image(_client.GetAsync(imageSegment.Url).Result.Content.ReadAsByteArrayAsync().Result);
+        }
+    }
+
     public ISegment FromEntity(IMessageEntity entity)
     {
         if (entity is not ImageEntity imageEntity) throw new ArgumentException("Invalid entity type.");
