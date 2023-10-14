@@ -59,13 +59,13 @@ public sealed class LagrangeAppBuilder
         BotDeviceInfo deviceInfo;
         if (!File.Exists(deviceInfoPath))
         {
-            deviceInfo = new BotDeviceInfo();
+            deviceInfo = BotDeviceInfo.GenerateInfo();
             string json = JsonSerializer.Serialize(deviceInfo);
             File.WriteAllText(deviceInfoPath, json);
         }
         else
         {
-            deviceInfo = JsonSerializer.Deserialize<BotDeviceInfo>(File.ReadAllText(deviceInfoPath)) ?? new BotDeviceInfo();
+            deviceInfo = JsonSerializer.Deserialize<BotDeviceInfo>(File.ReadAllText(deviceInfoPath)) ?? BotDeviceInfo.GenerateInfo();
         }
 
         Services.AddSingleton(BotFactory.Create(config, deviceInfo, keystore));
