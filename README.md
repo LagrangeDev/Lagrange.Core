@@ -53,7 +53,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | Message Segement| Support   |
 | ------------ | ------------|
 | [Text]       |    🟢        |
-| [Face]       |    🔴        |
+| [Face]       |    🟢        |
 | [Image]      |    🟢        |
 | [Record]     |    🔴        |
 | [Video]      |    🔴        |

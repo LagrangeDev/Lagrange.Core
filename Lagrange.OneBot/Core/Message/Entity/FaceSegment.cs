@@ -12,7 +12,7 @@ public partial class FaceSegment(int id)
     [JsonPropertyName("id")] public string Id { get; set; } = id.ToString();
 }
 
-[SegmentSubscriber(typeof(FaceSegment), "face")]
+[SegmentSubscriber(typeof(FaceEntity), "face")]
 public partial class FaceSegment : ISegment
 {
     public IMessageEntity ToEntity() => new FaceEntity(ushort.Parse(Id), false);
