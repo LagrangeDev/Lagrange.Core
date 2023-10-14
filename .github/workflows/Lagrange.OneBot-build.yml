@@ -1,0 +1,43 @@
+name: Lagrange.OneBot Build
+
+on:
+  push:
+    paths:
+      - "**.cs"
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "**.cs"
+
+  workflow_dispatch:
+
+jobs:
+  Build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        runtimeIdentifier: [ win-x64, win-x86, linux-x64, linux-arm, linux-arm64, osx-x64, osx-arm64 ]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Build Lagrange.OneBot
+        shell: powershell
+        run: |
+          dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeContentInSingleFile=true -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }}
+
+      - name: Upload binary files(${{ matrix.runtimeIdentifier }})
+        uses: actions/upload-artifact@v3
+        with:
+          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}
+          path: Lagrange.OneBot/bin/Debug/net7.0/${{ matrix.runtimeIdentifier }}/publish
