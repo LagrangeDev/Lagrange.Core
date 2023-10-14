@@ -18,6 +18,12 @@ public static class GroupExt
     
     public static Task<bool> RenameGroupMember(this BotContext bot, uint groupUin, uint targetUin, string targetName)
         => bot.ContextCollection.Business.OperationLogic.RenameGroupMember(groupUin, targetUin, targetName);
+    
+    public static Task<bool> RenameGroup(this BotContext bot, uint groupUin, string targetName)
+        => bot.ContextCollection.Business.OperationLogic.RenameGroup(groupUin, targetName);
+    
+    public static Task<bool> RemarkGroup(this BotContext bot, uint groupUin, string targetRemark)
+        => bot.ContextCollection.Business.OperationLogic.RenameGroup(groupUin, targetRemark);
 
     public static Task<ulong> FetchGroupFSSpace(this BotContext bot, uint groupUin)
         => bot.ContextCollection.Business.OperationLogic.FetchGroupFSSpace(groupUin);

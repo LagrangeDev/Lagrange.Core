@@ -88,6 +88,21 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupSetAdminEvent)events[0]).ResultCode == 0;
     }
 
+    public async Task<bool> RenameGroup(uint groupUin, string targetName)
+    {
+        var renameGroupEvent = GroupRenameEvent.Create(groupUin, targetName);
+        var events = await Collection.Business.SendEvent(renameGroupEvent);
+        return events.Count != 0 && ((GroupRenameEvent)events[0]).ResultCode == 0;
+    }
+    
+    public async Task<bool> RemarkGroup(uint groupUin, string targetRemark)
+    {
+        var renameGroupEvent = GroupRemarkEvent.Create(groupUin, targetRemark);
+        var events = await Collection.Business.SendEvent(renameGroupEvent);
+        return events.Count != 0 && ((GroupRemarkEvent)events[0]).ResultCode == 0;
+    }
+
+
     public async Task<ulong> FetchGroupFSSpace(uint groupUin)
     {
         var groupFSSpaceEvent = GroupFSSpaceEvent.Create(groupUin);

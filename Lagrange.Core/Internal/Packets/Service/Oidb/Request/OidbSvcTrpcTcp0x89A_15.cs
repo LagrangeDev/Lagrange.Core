@@ -17,6 +17,7 @@ internal class OidbSvcTrpcTcp0x89A_15
     [ProtoMember(2)] public OidbSvcTrpcTcp0x89A_15Body Body { get; set; }
 }
 
+[ProtoContract]
 internal class OidbSvcTrpcTcp0x89A_15Body
 {
     [ProtoMember(3)] public string TargetName { get; set; }
