@@ -23,7 +23,7 @@ public static class GroupExt
         => bot.ContextCollection.Business.OperationLogic.RenameGroup(groupUin, targetName);
     
     public static Task<bool> RemarkGroup(this BotContext bot, uint groupUin, string targetRemark)
-        => bot.ContextCollection.Business.OperationLogic.RenameGroup(groupUin, targetRemark);
+        => bot.ContextCollection.Business.OperationLogic.RemarkGroup(groupUin, targetRemark);
 
     public static Task<ulong> FetchGroupFSSpace(this BotContext bot, uint groupUin)
         => bot.ContextCollection.Business.OperationLogic.FetchGroupFSSpace(groupUin);
