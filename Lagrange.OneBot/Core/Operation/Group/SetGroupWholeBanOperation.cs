@@ -4,7 +4,7 @@ using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core.Entity.Action;
 
-namespace Lagrange.OneBot.Core.Operation.Message;
+namespace Lagrange.OneBot.Core.Operation.Group;
 
 [Operation("set_group_whole_ban")]
 public class SetGroupWholeBanOperation : IOperation

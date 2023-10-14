@@ -3,7 +3,7 @@ using Lagrange.Core;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Action.Response;
 
-namespace Lagrange.OneBot.Core.Operation.Message;
+namespace Lagrange.OneBot.Core.Operation.Info;
 
 [Operation("get_login_info")]
 public class GetLoginInfoOperation : IOperation
