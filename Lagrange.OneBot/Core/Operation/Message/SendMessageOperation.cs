@@ -27,12 +27,12 @@ public sealed class SendMessageOperation : IOperation
         }
     }
     
-    public OneBotResult HandleOperation(string echo, BotContext context, JsonObject? payload)
+    public async Task<OneBotResult> HandleOperation(string echo, BotContext context, JsonObject? payload)
     {
         var message = payload.Deserialize<OneBotMessage>();
         if (message != null)
         {
-            context.SendMessage(ParseChain(message).Build());
+            await context.SendMessage(ParseChain(message).Build());
             return new OneBotResult(new OneBotMessageResponse(0), 0, "ok", echo);
         }
 

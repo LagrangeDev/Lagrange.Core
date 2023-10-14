@@ -6,5 +6,5 @@ namespace Lagrange.OneBot.Core.Operation;
 
 public interface IOperation
 {
-    public OneBotResult HandleOperation(string echo, BotContext context, JsonObject? payload);
+    public Task<OneBotResult> HandleOperation(string echo, BotContext context, JsonObject? payload);
 }
