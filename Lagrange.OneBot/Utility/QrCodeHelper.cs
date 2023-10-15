@@ -1,5 +1,4 @@
-using ZXing;
-using ZXing.QrCode;
+using Net.Codecrete.QrCodeGenerator;
 
 namespace Lagrange.OneBot.Utility;
 
@@ -7,31 +6,25 @@ internal static class QrCodeHelper
 {
     internal static void Output(string text)
     {
-        var writer = new BarcodeWriterGeneric
-                     {
-                         Format = BarcodeFormat.QR_CODE, Options = new QrCodeEncodingOptions
-                         {
-                             Margin = 1,
-                             QrCompact = true,
-                             Hints = {  }
-                         },
-                     };
+        var qrCode = QrCode.EncodeText(text, QrCode.Ecc.Low);
         
-        var points = writer.Encode(text);
-
-        for (var i = 0; i < points.Width; i++)
+        for (var y = 0; y < qrCode.Size + 2; y += 2)
         {
-            for (var j = 0; j < points.Height; j++)
+            for (var x = 0; x < qrCode.Size + 2; ++x)
             {
-                var color = points[i, j] ? ConsoleColor.Black : ConsoleColor.White;
+                Console.ForegroundColor = qrCode.GetModule(x - 1, y - 1)
+                    ? ConsoleColor.Black
+                    : ConsoleColor.White;
 
-                Console.BackgroundColor = color;
-                Console.ForegroundColor = color;
-                Console.Write("  ");
-                Console.ResetColor();
+                Console.BackgroundColor = qrCode.GetModule(x - 1, y) || y > qrCode.Size
+                    ? ConsoleColor.Black
+                    : ConsoleColor.White;
+
+                Console.Write("▀");
             }
-
-            Console.WriteLine();
+            Console.Write("\n");
         }
+        
+        Console.ResetColor();
     }
 }
