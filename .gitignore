@@ -4,3 +4,4 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 Lagrange.Core/Utility/Crypto/Provider/Dandelion/*.cs
+.vscode/settings.json

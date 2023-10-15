@@ -11,7 +11,7 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 
 </div>
 
-## Disclaimer:
+## Disclaimer
 
 The Lagrange.Core project, including its developers, contributors, and affiliated individuals or entities, hereby explicitly disclaim any association with, support for, or endorsement of any form of illegal behavior. This disclaimer extends to any use or application of the Lagrange.Core project that may be contrary to local, national, or international laws, regulations, or ethical guidelines.
 
@@ -26,6 +26,7 @@ By using or accessing Lagrange.Core, the user acknowledges and agrees to release
 Please use Lagrange.Core responsibly and in accordance with the law.
 
 ## Features List
+
 | Protocol | Support | Login                     | Support | Messages         | Support    | Operations        | Support    | Events                 | Support |
 |----------|---------|---------------------------|---------|:-----------------|:-----------|:------------------|:-----------|:-----------------------|:--------|
 | Windows  | 🟢      | QrCode                    | 🟢      | Images           | 🟢         | ~~Poke~~          | 🔴         | Captcha                | 🟢      |
@@ -225,6 +226,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 </Details>
 
 ## Known Problem
+
 ~~- [ ] Signature Service is currently not established, so the login tend to be failed and return code may be 45, you can establish your own sign service by rewriting the `Signature` static class.~~
 
 Thanks KonataDev/TheSnowfield for Provision of Signature API
