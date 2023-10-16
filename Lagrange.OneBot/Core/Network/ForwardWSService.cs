@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Meta;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -11,9 +12,9 @@ using Timer = System.Threading.Timer;
 
 namespace Lagrange.OneBot.Core.Network;
 
-public sealed class ForwardWebSocketService : ILagrangeWebService
+public sealed class ForwardWSService : ILagrangeWebService
 {
-    public event EventHandler<string> OnMessageReceived = delegate { };
+    public event EventHandler<MsgRecvEventArgs> OnMessageReceived = delegate { };
 
     private readonly WebsocketServer _server;
 
@@ -27,7 +28,7 @@ public sealed class ForwardWebSocketService : ILagrangeWebService
 
     private static readonly Encoding _utf8 = new UTF8Encoding(false);
 
-    public ForwardWebSocketService(IConfiguration config, ILogger<LagrangeApp> logger)
+    public ForwardWSService(IConfiguration config, ILogger<LagrangeApp> logger)
     {
         _config = config;
         _logger = logger;
@@ -63,7 +64,18 @@ public sealed class ForwardWebSocketService : ILagrangeWebService
     public async Task SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
     {
         var payload = JsonSerializer.Serialize(json);
-        await _server.BroadcastToAllConnectionsAsync(payload, cancellationToken);
+
+        if (json is OneBotResult oneBotResult)
+        {
+            var connection = _server.Connections.FirstOrDefault(
+                (c) => c.ConnectionId == oneBotResult.Identifier
+            );
+
+            if (connection is not null)
+                await _server.SendToConnectionAsync(payload, connection);
+        }
+        else
+            await _server.BroadcastToAllConnectionsAsync(payload, cancellationToken);
     }
 
     private void OnHeartbeat(object? sender)
@@ -99,7 +111,7 @@ public sealed class ForwardWebSocketService : ILagrangeWebService
         if (e.MessageEventType == MessageEventType.Receive)
         {
             string text = _utf8.GetString(e.Bytes);
-            OnMessageReceived.Invoke(this, e.Message ?? "");
+            OnMessageReceived.Invoke(this, new(e.Message ?? "", e.Connection.ConnectionId));
         }
     }
 }

@@ -18,25 +18,30 @@ public sealed class OperationService
         _bot = bot;
         _service = service;
         _operations = new Dictionary<string, IOperation>();
-        
+
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var attribute = type.GetCustomAttribute<OperationAttribute>();
-            if (attribute != null) _operations[attribute.Api] = (IOperation)type.CreateInstance(false);
+            if (attribute != null)
+                _operations[attribute.Api] = (IOperation)type.CreateInstance(false);
         }
 
         service.OnMessageReceived += HandleOperation;
     }
 
-    private void HandleOperation(object? sender, string data)
+    private async void HandleOperation(object? sender, MsgRecvEventArgs e)
     {
-        var action = JsonSerializer.Deserialize<OneBotAction>(data);
-            
+        var action = JsonSerializer.Deserialize<OneBotAction>(e.Data);
+
         if (action != null)
         {
             var handler = _operations[action.Action];
-            var result = handler.HandleOperation(action.Echo, _bot, action.Params);
-            _service.SendJsonAsync(result);
+            var result = await handler.HandleOperation(action.Echo, _bot, action.Params);
+
+            if (!string.IsNullOrEmpty(e.Identifier)) // add an identifier for ForwardWSService
+                result.Identifier = e.Identifier;
+
+            await _service.SendJsonAsync(result);
         }
         else
         {

@@ -10,7 +10,7 @@ namespace Lagrange.OneBot.Core.Network;
 
 public sealed class ReverseWSService : ILagrangeWebService
 {
-    public event EventHandler<string> OnMessageReceived = delegate { };
+    public event EventHandler<MsgRecvEventArgs> OnMessageReceived = delegate { };
 
     private readonly WebsocketClient _websocketClient;
 
@@ -47,7 +47,8 @@ public sealed class ReverseWSService : ILagrangeWebService
                 requestHeaders: headers
             )
         );
-        _websocketClient.MessageEvent += (_, e) => OnMessageReceived.Invoke(this, e.Message ?? "");
+        _websocketClient.MessageEvent += (_, e) =>
+            OnMessageReceived.Invoke(this, new(e.Message ?? "", null));
 
         _timer = new Timer(OnHeartbeat, null, int.MaxValue, ws.GetValue<int>("HeartBeatInterval"));
     }

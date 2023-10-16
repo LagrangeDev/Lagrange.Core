@@ -2,9 +2,9 @@
 
 # Lagrange.Core
 
-[![Core](https://img.shields.io/badge/Lagrange-Core-blue)](#)
-[![C#](https://img.shields.io/badge/.NET-%207-blue)](#)
-[![License](https://img.shields.io/static/v1?label=LICENSE&message=MIT&color=lightrey)](#)
+[![Core](https://img.shields.io/badge/Lagrange-Core-blue)](https://github.com/Linwenxuan05/Lagrange.Core/tree/main/Lagrange.Core)
+[![C#](https://img.shields.io/badge/.NET-%207-blue)](https://dotnet.microsoft.com/zh-cn/download/dotnet/7.0)
+[![License](https://img.shields.io/static/v1?label=LICENSE&message=MIT&color=lightrey)](https://github.com/Linwenxuan05/Lagrange.Core/blob/main/LICENSE)
 [![QQ](https://img.shields.io/static/v1?label=QQGroup&message=348981074&color=red)](#)
 
 An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
@@ -27,22 +27,22 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 ## Features List
 
-| Protocol | Support | Login                     | Support | Messages         | Support    | Operations        | Support    | Events                 | Support |
-|----------|---------|---------------------------|---------|:-----------------|:-----------|:------------------|:-----------|:-----------------------|:--------|
-| Windows  | 🟢      | QrCode                    | 🟢      | Images           | 🟢         | ~~Poke~~          | 🔴         | Captcha                | 🟢      |
-| macOS    | 🟢      | Password                  | 🟢      | Text / At        | 🟢         | Recall            | 🟡         | BotOnline              | 🟢      |
-| Linux    | 🟢      | EasyLogin                 | 🟢      | ~~Records~~      | 🔴         | Leave Group       | 🔴         | BotOffline             | 🟢      |
-|          |         | UnusalDevice<br/>Password | 🔴      | QFace            | 🟢         | ~~Special Title~~ | 🔴         | Message                | 🟢      |
-|          |         | UnusalDevice<br/>Easy     | 🟢      | Json             | 🟡         | Kick Member       | 🟢         | ~~Poke~~               | 🔴      |
-|          |         | NewDeviceVerify           | 🔴      | Xml              | 🟢         | Mute Member       | 🟢         | MessageRecall          | 🔴      |
-|          |         |                           |         | Forward          | 🟢         | Set Admin         | 🟢         | GroupMemberDecrease    | 🟢      |
-|          |         |                           |         | Video            | 🔴         | Friend Request    | 🔴         | GroupMemberIncrease    | 🟢      |
-|          |         |                           |         | ~~Flash Image~~  | 🔴         | Group Request     | 🔴         | GroupPromoteAdmin      | 🟢      |
-|          |         |                           |         | Reply            | 🟢         | ~~Voice Call~~    | 🔴         | GroupInvite            | 🟢      |
-|          |         |                           |         | File             | 🟡         | Client Key        | 🟢         | GroupRequestJoin       | 🔴      |
-|          |         |                           |         |                  |            | Cookies           | 🟢         | FriendRequest          | 🔴      |
-|          |         |                           |         |                  |            | Send Message      | 🟢         | ~~FriendTyping~~       | 🔴      |
-|          |         |                           |         |                  |            |                   |            | ~~FriendVoiceCall~~    | 🔴      |
+| Protocol | Support | Login                     | Support | Messages        | Support | Operations        | Support | Events              | Support |
+| -------- | :-----: | ------------------------- | :-----: | :-------------- | :-----: | :---------------- | :-----: | :------------------ | :-----: |
+| Windows  |    🟢    | QrCode                    |    🟢    | Images          |    🟢    | ~~Poke~~          |    🔴    | Captcha             |    🟢    |
+| macOS    |    🟢    | Password                  |    🟢    | Text / At       |    🟢    | Recall            |    🟡    | BotOnline           |    🟢    |
+| Linux    |    🟢    | EasyLogin                 |    🟢    | ~~Records~~     |    🔴    | Leave Group       |    🔴    | BotOffline          |    🟢    |
+|          |         | UnusalDevice<br/>Password |    🔴    | QFace           |    🟢    | ~~Special Title~~ |    🔴    | Message             |    🟢    |
+|          |         | UnusalDevice<br/>Easy     |    🟢    | Json            |    🟡    | Kick Member       |    🟢    | ~~Poke~~            |    🔴    |
+|          |         | NewDeviceVerify           |    🔴    | Xml             |    🟢    | Mute Member       |    🟢    | MessageRecall       |    🔴    |
+|          |         |                           |         | Forward         |    🟢    | Set Admin         |    🟢    | GroupMemberDecrease |    🟢    |
+|          |         |                           |         | Video           |    🔴    | Friend Request    |    🔴    | GroupMemberIncrease |    🟢    |
+|          |         |                           |         | ~~Flash Image~~ |    🔴    | Group Request     |    🔴    | GroupPromoteAdmin   |    🟢    |
+|          |         |                           |         | Reply           |    🟢    | ~~Voice Call~~    |    🔴    | GroupInvite         |    🟢    |
+|          |         |                           |         | File            |    🟡    | Client Key        |    🟢    | GroupRequestJoin    |    🔴    |
+|          |         |                           |         |                 |         | Cookies           |    🟢    | FriendRequest       |    🔴    |
+|          |         |                           |         |                 |         | Send Message      |    🟢    | ~~FriendTyping~~    |    🔴    |
+|          |         |                           |         |                 |         |                   |         | ~~FriendVoiceCall~~ |    🔴    |
 
 ## OneBot-11
 
@@ -51,28 +51,28 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 <Details>
 <Summary>Message Segement</Summary>
 
-| Message Segement| Support   |
-| ------------ | ------------|
-| [Text]       |    🟢        |
-| [Face]       |    🟢        |
-| [Image]      |    🟢        |
-| [Record]     |    🔴        |
-| [Video]      |    🔴        |
-| [At]         |    🟢        |
-| [Rps]        |    🔴        |
-| [Dice]       |    🔴        |
-| [Shake]      |    🔴        |
-| [Poke]       |    🔴        |
-| [Anonymous]  |    🔴        |
-| [Share]      |    🔴        |
-| [Contact]    |    🔴        |
-| [Location]   |    🔴        |
-| [Music]      |    🔴        |
-| [Reply]      |    🔴        |
-| [Forward]    |    🔴        |
-| [Node]       |    🔴        |
-| [Xml]        |    🔴        |
-| [Json]       |    🔴        |
+| Message Segement | Support |
+| ---------------- | :-----: |
+| [Text]           |    🟢    |
+| [Face]           |    🟢    |
+| [Image]          |    🟢    |
+| [Record]         |    🔴    |
+| [Video]          |    🔴    |
+| [At]             |    🟢    |
+| [Rps]            |    🔴    |
+| [Dice]           |    🔴    |
+| [Shake]          |    🔴    |
+| [Poke]           |    🔴    |
+| [Anonymous]      |    🔴    |
+| [Share]          |    🔴    |
+| [Contact]        |    🔴    |
+| [Location]       |    🔴    |
+| [Music]          |    🔴    |
+| [Reply]          |    🔴    |
+| [Forward]        |    🔴    |
+| [Node]           |    🔴    |
+| [Xml]            |    🔴    |
+| [Json]           |    🔴    |
 
 [Text]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#qq-%E8%A1%A8%E6%83%85
 [Record]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E8%AF%AD%E9%9F%B3
@@ -100,46 +100,46 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 <Details>
 <Summary>API</Summary>
 
-| API                      | Support  |
-| ------------------------ | -------- |
-| [/send_private_msg]        |    🔴   |
-| [/send_group_msg]          |    🔴   |
-| [/send_msg]                |    🟢   |
-| [/delete_msg]              |    🔴   |
-| [/get_msg]                 |    🔴   |
-| [/get_forward_msg]         |    🔴   |
-| ~~[/send_like]~~           |    🔴   |
-| [/set_group_kick]          |    🟢   |
-| [/set_group_ban]           |    🟢   |
-| [/set_group_anonymous_ban] |    🔴   |
-| [/set_group_whole_ban]     |    🟢   |
-| [/set_group_admin]         |    🟢   |
-| [/set_group_anonymous]     |    🔴   |
-| [/set_group_card]          |     🟢  |
-| [/set_group_name]          |    🟢   |
-| [/set_group_leave]         |    🔴   |
-| [/set_group_special_title] |    🔴   |
-| [/set_friend_add_request]  |    🔴   |
-| [/set_group_add_request]   |    🔴   |
-| [/get_login_info]          |    🟢   |
-| [/get_stranger_info]       |    🔴   |
-| [/get_friend_list]         |    🔴   |
-| [/get_group_info]          |    🟢   |
-| [/get_group_list]          |    🟢   |
-| [/get_group_member_info]   |    🔴   |
-| [/get_group_member_list]   |    🔴   |
-| [/get_group_honor_info]    |    🔴   |
-| [/get_cookies]             |    🔴   |
-| [/get_csrf_token]          |    🔴   |
-| [/get_credentials]         |    🔴   |
-| [/get_record]              |    🔴   |
-| [/get_image]               |    🔴   |
-| [/can_send_image]          |    🔴   |
-| [/can_send_record]         |    🔴   |
-| [/get_status]              |    🔴   |
-| [/get_version_info]        |    🟢   |
-| [/set_restart]             |    🔴   |
-| [/clean_cache]             |    🔴   |
+| API                        | Support |
+| -------------------------- | :-----: |
+| [/send_private_msg]        |    🔴    |
+| [/send_group_msg]          |    🔴    |
+| [/send_msg]                |    🟢    |
+| [/delete_msg]              |    🔴    |
+| [/get_msg]                 |    🔴    |
+| [/get_forward_msg]         |    🔴    |
+| ~~[/send_like]~~           |    🔴    |
+| [/set_group_kick]          |    🟢    |
+| [/set_group_ban]           |    🟢    |
+| [/set_group_anonymous_ban] |    🔴    |
+| [/set_group_whole_ban]     |    🟢    |
+| [/set_group_admin]         |    🟢    |
+| [/set_group_anonymous]     |    🔴    |
+| [/set_group_card]          |    🟢    |
+| [/set_group_name]          |    🟢    |
+| [/set_group_leave]         |    🔴    |
+| [/set_group_special_title] |    🔴    |
+| [/set_friend_add_request]  |    🔴    |
+| [/set_group_add_request]   |    🔴    |
+| [/get_login_info]          |    🟢    |
+| [/get_stranger_info]       |    🔴    |
+| [/get_friend_list]         |    🔴    |
+| [/get_group_info]          |    🟢    |
+| [/get_group_list]          |    🟢    |
+| [/get_group_member_info]   |    🔴    |
+| [/get_group_member_list]   |    🔴    |
+| [/get_group_honor_info]    |    🔴    |
+| [/get_cookies]             |    🔴    |
+| [/get_csrf_token]          |    🔴    |
+| [/get_credentials]         |    🔴    |
+| [/get_record]              |    🔴    |
+| [/get_image]               |    🔴    |
+| [/can_send_image]          |    🔴    |
+| [/can_send_record]         |    🔴    |
+| [/get_status]              |    🔴    |
+| [/get_version_info]        |    🟢    |
+| [/set_restart]             |    🔴    |
+| [/clean_cache]             |    🔴    |
 
 [/send_private_msg]: https://github.com/botuniverse/onebot-11/blob/master/api/public.md#send_private_msg-%E5%8F%91%E9%80%81%E7%A7%81%E8%81%8A%E6%B6%88%E6%81%AF
 [/send_group_msg]: https://github.com/botuniverse/onebot-11/blob/master/api/public.md#send_group_msg-%E5%8F%91%E9%80%81%E7%BE%A4%E6%B6%88%E6%81%AF 
@@ -185,25 +185,25 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 <Details>
 <Summary>Event</Summary>
 
-| PostType| EventName                    | Support  |
-| --------| -----------------------------|----------|
-| Message | [Private Message]            |   🔴    |
-| Message | [Group Message]              |   🟢    |
-| Notice |  [Group File Upload]          |   🔴    |
-| Notice | [Group Admin Change]          |   🔴    |
-| Notice | [Group Member Decrease]       |   🔴    |
-| Notice | [Group Member Increase]       |   🔴    |
-| Notice | [Group Mute]                  |   🔴    |
-| Notice | [Friend Add]                  |   🔴    |
-| Notice | [Group Recall Message]        |   🔴    |
-| Notice | [Friend Recall Message]       |   🔴    |
-| Notice | [Group Poke]                  |   🔴    |
-| Notice | [Group red envelope luck king]|   🔴    |
-| Notice | [Group Member Honor Changed]  |   🔴    |
-| Request| [Add Friend Request]         |   🔴    |
-| Request| [Group Request/Invitations]  |   🔴    |
-| Meta   | [LifeCycle]                   |   🟢    |
-| Meta   | [Heartbeat]                   |   🟢    |
+| PostType | EventName                      | Support |
+| -------- | ------------------------------ | :-----: |
+| Message  | [Private Message]              |    🔴    |
+| Message  | [Group Message]                |    🟢    |
+| Notice   | [Group File Upload]            |    🔴    |
+| Notice   | [Group Admin Change]           |    🔴    |
+| Notice   | [Group Member Decrease]        |    🔴    |
+| Notice   | [Group Member Increase]        |    🔴    |
+| Notice   | [Group Mute]                   |    🔴    |
+| Notice   | [Friend Add]                   |    🔴    |
+| Notice   | [Group Recall Message]         |    🔴    |
+| Notice   | [Friend Recall Message]        |    🔴    |
+| Notice   | [Group Poke]                   |    🔴    |
+| Notice   | [Group red envelope luck king] |    🔴    |
+| Notice   | [Group Member Honor Changed]   |    🔴    |
+| Request  | [Add Friend Request]           |    🔴    |
+| Request  | [Group Request/Invitations]    |    🔴    |
+| Meta     | [LifeCycle]                    |    🟢    |
+| Meta     | [Heartbeat]                    |    🟢    |
 
 [Private Message]: https://github.com/botuniverse/onebot-11/blob/master/event/message.md#%E7%A7%81%E8%81%8A%E6%B6%88%E6%81%AF
 [Group Message]: https://github.com/botuniverse/onebot-11/blob/master/event/message.md#%E7%BE%A4%E6%B6%88%E6%81%AF
@@ -222,6 +222,23 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 [Group Request/Invitations]: https://github.com/botuniverse/onebot-11/blob/master/event/request.md#%E5%8A%A0%E7%BE%A4%E8%AF%B7%E6%B1%82%E9%82%80%E8%AF%B7
 [LifeCycle]: https://github.com/botuniverse/onebot-11/blob/master/event/meta.md#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F
 [Heartbeat]: https://github.com/botuniverse/onebot-11/blob/master/event/meta.md#%E5%BF%83%E8%B7%B3
+
+</Details>
+
+<Details>
+<Summary>Communication</Summary>
+
+| CommunicationType  | Support |
+| ------------------ | :-----: |
+| [Http]             |    🔴    |
+| [Http-Post]        |    🟢    |
+| [ForwardWebSocket] |    🟢    |
+| [ReverseWebSocket] |    🟢    |
+
+[Http]: https://github.com/botuniverse/onebot-11/blob/master/communication/http.md
+[Http-Post]: https://github.com/botuniverse/onebot-11/blob/master/communication/http-post.md
+[ForwardWebSocket]: https://github.com/botuniverse/onebot-11/blob/master/communication/ws.md
+[ReverseWebSocket]: https://github.com/botuniverse/onebot-11/blob/master/communication/ws-reverse.md
 
 </Details>
 
