@@ -1,7 +1,9 @@
+using System.Text;
 using System.Text.Json;
 using Lagrange.OneBot.Core.Entity.Meta;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using PHS.Networking.Enums;
 using WebsocketsSimple.Server;
 using WebsocketsSimple.Server.Events.Args;
 using WebsocketsSimple.Server.Models;
@@ -23,6 +25,8 @@ public sealed class ForwardWebSocketService : ILagrangeWebService
 
     private readonly bool _shouldAuthenticate;
 
+    private static readonly Encoding _utf8 = new UTF8Encoding(false);
+
     public ForwardWebSocketService(IConfiguration config, ILogger<LagrangeApp> logger)
     {
         _config = config;
@@ -31,30 +35,14 @@ public sealed class ForwardWebSocketService : ILagrangeWebService
         var ws = _config.GetSection("Implementation").GetSection("ForwardWebSocket");
 
         _timer = new Timer(OnHeartbeat, null, int.MaxValue, ws.GetValue<int>("HeartBeatInterval"));
-        _shouldAuthenticate = string.IsNullOrEmpty(ws["Authorization"]);
+        _shouldAuthenticate = !string.IsNullOrEmpty(ws["Authorization"]);
 
         _server = new WebsocketServer(new ParamsWSServer(ws.GetValue<int>("Port")));
-        _server.MessageEvent += (_, e) => OnMessageReceived.Invoke(this, e.Message ?? "");
-        // todo: realize sending return packets
+        _server.MessageEvent += OnMessage;
+        // todo: realize sending return packets to specific clients
 
         if (_shouldAuthenticate)
-            _server.ConnectionEvent += (_, e) => OnConnectionEvent(e);
-    }
-
-    private void OnConnectionEvent(WSConnectionServerEventArgs e)
-    {
-        if (
-            _shouldAuthenticate
-            && e.ConnectionEventType == PHS.Networking.Enums.ConnectionEventType.Connected
-            && (
-                e.RequestHeaders is null
-                || !e.RequestHeaders.TryGetValue("Authorization", out string? authorization)
-                || authorization != _config["Implementation:ForwardWebSocket:Authorization"]
-            )
-        )
-        {
-            e.Connection.Websocket.Abort();
-        }
+            _server.ConnectionEvent += OnConnection;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -74,8 +62,8 @@ public sealed class ForwardWebSocketService : ILagrangeWebService
 
     public async Task SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
     {
-        var payload = JsonSerializer.SerializeToUtf8Bytes(json);
-        await _server.BroadcastToAllConnectionsAsync(payload);
+        var payload = JsonSerializer.Serialize(json);
+        await _server.BroadcastToAllConnectionsAsync(payload, cancellationToken);
     }
 
     private void OnHeartbeat(object? sender)
@@ -88,5 +76,30 @@ public sealed class ForwardWebSocketService : ILagrangeWebService
         );
 
         SendJsonAsync(heartBeat).GetAwaiter().GetResult();
+    }
+
+    private void OnConnection(object sender, WSConnectionServerEventArgs e)
+    {
+        if (
+            _shouldAuthenticate
+            && e.ConnectionEventType == ConnectionEventType.Connected
+            && (
+                e.RequestHeaders is null
+                || !e.RequestHeaders.TryGetValue("Authorization", out string? authorization)
+                || authorization != _config["Implementation:ForwardWebSocket:Authorization"]
+            )
+        )
+        {
+            e.Connection.Websocket.Abort();
+        }
+    }
+
+    private void OnMessage(object sender, WSMessageServerEventArgs e)
+    {
+        if (e.MessageEventType == MessageEventType.Receive)
+        {
+            string text = _utf8.GetString(e.Bytes);
+            OnMessageReceived.Invoke(this, e.Message ?? "");
+        }
     }
 }
