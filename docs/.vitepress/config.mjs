@@ -71,8 +71,9 @@ export default defineConfig({
   base: "/Lagrange.Core",
   title: "Lagrange",
   description: "基于 QQNT 协议的高效率机器人库",
+  head: [['link', { rel: 'icon', href: '/Lagrange.Core/favicon.ico' }]],
   themeConfig: {
-    // https://vitepress.dev/reference/default-theme-config
+    logo: '/public/apple-touch-icon.png',
     nav: [
       { text: '文档', link: findFirst(sidebarItemsDocs) },
       { text: 'API 参考', link: findFirst(sidebarItemsApi) }
