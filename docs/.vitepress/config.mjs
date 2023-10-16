@@ -27,12 +27,6 @@ function docsToItems(dirnames) {
 
 const sidebarItemsDocs = docsToItems(['docs'])
 
-
-const toc = readFileSync(path.join(rootpath, 'api', 'toc.yml'), 'utf8')
-
-const apiObj = YAML.parse(toc)
-
-
 function tocToItems(arr) {
   if (arr.length > 1 && !arr[0].href) {
     return tocToItems([{ ...arr[0], items: arr.slice(1) }])
@@ -51,15 +45,30 @@ function tocToItems(arr) {
   })
 }
 
+let apiObj;
+try {
+  const toc = readFileSync(path.join(rootpath, 'api', 'toc.yml'), 'utf8')
+  apiObj = YAML.parse(toc)
+} catch (err) {
+  console.warn("未找到API文档")
+  apiObj = []
+}
+
 const sidebarItemsApi = tocToItems(apiObj)
 
-
 function findFirst(items) {
-  return items[0]?.link || findFirst(items[0].items) || '/'
+  if (items.length > 0) {
+    if (items[0].link) {
+      return items[0].link
+    }
+    return findFirst(items[0].items)
+  }
+  return '/'
 }
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  base: "/Lagrange.Core",
   title: "Lagrange",
   description: "基于 QQNT 协议的高效率机器人库",
   themeConfig: {
