@@ -4,3 +4,10 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 Lagrange.Core/Utility/Crypto/Provider/Dandelion/*.cs
+
+.DS_Store
+.vscode/
+docs/node_modules
+docs/.vitepress/dist
+docs/.vitepress/cache
+docs/api
