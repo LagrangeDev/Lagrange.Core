@@ -9,6 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lagrange.Core.Test", "Lagra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lagrange.OneBot", "Lagrange.OneBot\Lagrange.OneBot.csproj", "{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "SolutionItem", "{ACE96E15-65D1-471B-913A-A1014F0D003E}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		LICENSE = LICENSE
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
