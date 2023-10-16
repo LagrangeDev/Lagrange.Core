@@ -102,6 +102,12 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupRemarkEvent)events[0]).ResultCode == 0;
     }
 
+    public async Task<bool> LeaveGroup(uint groupUin)
+    {
+        var leaveGroupEvent = GroupLeaveEvent.Create(groupUin);
+        var events = await Collection.Business.SendEvent(leaveGroupEvent);
+        return events.Count != 0 && ((GroupLeaveEvent)events[0]).ResultCode == 0;
+    }
 
     public async Task<ulong> FetchGroupFSSpace(uint groupUin)
     {

@@ -47,6 +47,9 @@ public static class GroupExt
     
     public static Task<bool> RemarkGroup(this BotContext bot, uint groupUin, string targetRemark)
         => bot.ContextCollection.Business.OperationLogic.RemarkGroup(groupUin, targetRemark);
+    
+    public static Task<bool> LeaveGroup(this BotContext bot, uint groupUin)
+        => bot.ContextCollection.Business.OperationLogic.LeaveGroup(groupUin);
 
     #region Group File System
 
