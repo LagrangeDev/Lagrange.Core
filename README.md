@@ -270,7 +270,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
             "Host": "127.0.0.1",
             "Port": 8080,
             "Suffix": "/onebot/v11/ws",
-            "ReconnectInterval": 30,
+            "ReconnectInterval": 3000,
             "HeartBeatInterval": 5000
         },
         "Http": {
