@@ -25,18 +25,18 @@ public sealed class OperationService
             if (attribute != null) _operations[attribute.Api] = (IOperation)type.CreateInstance(false);
         }
 
-        service.OnMessageReceived += HandleOperation;
+        service.OnMessageReceived += async (_, s) => await HandleOperation(s);
     }
 
-    private void HandleOperation(object? sender, string data)
+    private async Task HandleOperation(string data)
     {
         var action = JsonSerializer.Deserialize<OneBotAction>(data);
             
         if (action != null)
         {
             var handler = _operations[action.Action];
-            var result = handler.HandleOperation(action.Echo, _bot, action.Params);
-            _service.SendJsonAsync(result);
+            var result = await handler.HandleOperation(action.Echo, _bot, action.Params);
+            await _service.SendJsonAsync(result);
         }
         else
         {
