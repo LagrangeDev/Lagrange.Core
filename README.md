@@ -31,7 +31,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | -------- | :-----: | ------------------------- | :-----: | :-------------- | :-----: | :---------------- | :-----: | :------------------ | :-----: |
 | Windows  |    🟢    | QrCode                    |    🟢    | Images          |    🟢    | ~~Poke~~          |    🔴    | Captcha             |    🟢    |
 | macOS    |    🟢    | Password                  |    🟢    | Text / At       |    🟢    | Recall            |    🟡    | BotOnline           |    🟢    |
-| Linux    |    🟢    | EasyLogin                 |    🟢    | ~~Records~~     |    🔴    | Leave Group       |    🔴    | BotOffline          |    🟢    |
+| Linux    |    🟢    | EasyLogin                 |    🟢    | ~~Records~~     |    🔴    | Leave Group       |    🟢    | BotOffline          |    🟢    |
 |          |         | UnusalDevice<br/>Password |    🔴    | QFace           |    🟢    | ~~Special Title~~ |    🔴    | Message             |    🟢    |
 |          |         | UnusalDevice<br/>Easy     |    🟢    | Json            |    🟡    | Kick Member       |    🟢    | ~~Poke~~            |    🔴    |
 |          |         | NewDeviceVerify           |    🔴    | Xml             |    🟢    | Mute Member       |    🟢    | MessageRecall       |    🔴    |
@@ -44,9 +44,9 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 |          |         |                           |         |                 |         | Send Message      |    🟢    | ~~FriendTyping~~    |    🔴    |
 |          |         |                           |         |                 |         |                   |         | ~~FriendVoiceCall~~ |    🔴    |
 
-## OneBot-11
+## Lagrange.OneBot
 
-### Implementation
+### Implementation - OneBot v11
 
 <Details>
 <Summary>Message Segement</Summary>
@@ -101,45 +101,45 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 <Summary>API</Summary>
 
 | API                        | Support |
-| -------------------------- | :-----: |
-| [/send_private_msg]        |    🔴    |
-| [/send_group_msg]          |    🔴    |
-| [/send_msg]                |    🟢    |
-| [/delete_msg]              |    🔴    |
-| [/get_msg]                 |    🔴    |
-| [/get_forward_msg]         |    🔴    |
-| ~~[/send_like]~~           |    🔴    |
-| [/set_group_kick]          |    🟢    |
-| [/set_group_ban]           |    🟢    |
-| [/set_group_anonymous_ban] |    🔴    |
-| [/set_group_whole_ban]     |    🟢    |
-| [/set_group_admin]         |    🟢    |
-| [/set_group_anonymous]     |    🔴    |
-| [/set_group_card]          |    🟢    |
-| [/set_group_name]          |    🟢    |
-| [/set_group_leave]         |    🔴    |
-| [/set_group_special_title] |    🔴    |
-| [/set_friend_add_request]  |    🔴    |
-| [/set_group_add_request]   |    🔴    |
-| [/get_login_info]          |    🟢    |
-| [/get_stranger_info]       |    🔴    |
-| [/get_friend_list]         |    🔴    |
-| [/get_group_info]          |    🟢    |
-| [/get_group_list]          |    🟢    |
-| [/get_group_member_info]   |    🔴    |
-| [/get_group_member_list]   |    🔴    |
-| [/get_group_honor_info]    |    🔴    |
-| [/get_cookies]             |    🔴    |
-| [/get_csrf_token]          |    🔴    |
-| [/get_credentials]         |    🔴    |
-| [/get_record]              |    🔴    |
-| [/get_image]               |    🔴    |
-| [/can_send_image]          |    🔴    |
-| [/can_send_record]         |    🔴    |
-| [/get_status]              |    🔴    |
-| [/get_version_info]        |    🟢    |
-| [/set_restart]             |    🔴    |
-| [/clean_cache]             |    🔴    |
+| -------------------------- | ------- |
+| [/send_private_msg]        | 🔴       |
+| [/send_group_msg]          | 🔴       |
+| [/send_msg]                | 🟢       |
+| [/delete_msg]              | 🔴       |
+| [/get_msg]                 | 🔴       |
+| [/get_forward_msg]         | 🔴       |
+| ~~[/send_like]~~           | 🔴       |
+| [/set_group_kick]          | 🟢       |
+| [/set_group_ban]           | 🟢       |
+| [/set_group_anonymous_ban] | 🔴       |
+| [/set_group_whole_ban]     | 🟢       |
+| [/set_group_admin]         | 🟢       |
+| [/set_group_anonymous]     | 🔴       |
+| [/set_group_card]          | 🟢       |
+| [/set_group_name]          | 🟢       |
+| [/set_group_leave]         | 🟢       |
+| [/set_group_special_title] | 🔴       |
+| [/set_friend_add_request]  | 🔴       |
+| [/set_group_add_request]   | 🔴       |
+| [/get_login_info]          | 🟢       |
+| [/get_stranger_info]       | 🔴       |
+| [/get_friend_list]         | 🔴       |
+| [/get_group_info]          | 🟢       |
+| [/get_group_list]          | 🟢       |
+| [/get_group_member_info]   | 🔴       |
+| [/get_group_member_list]   | 🔴       |
+| [/get_group_honor_info]    | 🔴       |
+| [/get_cookies]             | 🔴       |
+| [/get_csrf_token]          | 🔴       |
+| [/get_credentials]         | 🔴       |
+| [/get_record]              | 🔴       |
+| [/get_image]               | 🔴       |
+| [/can_send_image]          | 🔴       |
+| [/can_send_record]         | 🔴       |
+| [/get_status]              | 🔴       |
+| [/get_version_info]        | 🟢       |
+| [/set_restart]             | 🔴       |
+| [/clean_cache]             | 🔴       |
 
 [/send_private_msg]: https://github.com/botuniverse/onebot-11/blob/master/api/public.md#send_private_msg-%E5%8F%91%E9%80%81%E7%A7%81%E8%81%8A%E6%B6%88%E6%81%AF
 [/send_group_msg]: https://github.com/botuniverse/onebot-11/blob/master/api/public.md#send_group_msg-%E5%8F%91%E9%80%81%E7%BE%A4%E6%B6%88%E6%81%AF 
@@ -241,6 +241,57 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 [ReverseWebSocket]: https://github.com/botuniverse/onebot-11/blob/master/communication/ws-reverse.md
 
 </Details>
+
+#### appsettings.json Example
+
+```json
+{
+    "Logging": {
+        "LogLevel": {
+            "Default": "Trace",
+            "Microsoft": "Warning",
+            "Microsoft.Hosting.Lifetime": "Information"
+        }
+    },
+    "AccessToken": "",
+    "Account": {
+        "Uin": 0,
+        "Password": "",
+        "Protocol": "Linux",
+        "AutoReconnect": true,
+        "GetOptimumServer": true
+    },
+    "Implementation": {
+        "ForwardWebSocket": {
+            "Host": "",
+            "Port": 0,
+            "HeartBeatIntetval": 0
+        },
+        "ReverseWebSocket": {
+            "Host": "127.0.0.1",
+            "Port": 8080,
+            "Suffix": "/onebot/v11/ws",
+            "ReconnectInterval": 0,
+            "HeartBeatInterval": 5000
+        },
+        "Http": {
+            "Host": "",
+            "Port": 0,
+            "EventEnabled": false
+        },
+        "HttpPost": {
+            "Host": "127.0.0.1",
+            "Port": 8080,
+            "Suffix": "/onebot/v11/http",
+            "Timeout": 0
+        }
+    }
+}
+```
+
+- Create a file named 'appsettings.json' under Lagrange.OneBot executable directory 
+- As the Uin is 0 here, this indicates that QRCode login is used
+- After the QRCode Login, write Uin back to perform EasyLogin
 
 ## Known Problem
 

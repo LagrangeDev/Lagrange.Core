@@ -26,10 +26,10 @@ public sealed class OperationService
                 _operations[attribute.Api] = (IOperation)type.CreateInstance(false);
         }
 
-        service.OnMessageReceived += HandleOperation;
+        service.OnMessageReceived += async (_, s) => await HandleOperation(s);
     }
 
-    private async void HandleOperation(object? sender, MsgRecvEventArgs e)
+    private async Task HandleOperation(object? sender, MsgRecvEventArgs e)
     {
         var action = JsonSerializer.Deserialize<OneBotAction>(e.Data);
 
