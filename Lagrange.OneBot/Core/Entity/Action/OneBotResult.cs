@@ -5,18 +5,13 @@ namespace Lagrange.OneBot.Core.Entity.Action;
 [Serializable]
 public class OneBotResult(object? data, int retCode, string status, string echo)
 {
-    [JsonPropertyName("status")]
-    public string Status { get; set; } = status;
+    [JsonPropertyName("status")] public string Status { get; set; } = status;
 
-    [JsonPropertyName("retcode")]
-    public int RetCode { get; set; } = retCode;
+    [JsonPropertyName("retcode")] public int RetCode { get; set; } = retCode;
 
-    [JsonPropertyName("data")]
-    public object? Data { get; set; } = data;
+    [JsonPropertyName("data")] public object? Data { get; set; } = data;
 
-    [JsonPropertyName("echo")]
-    public string Echo { get; set; } = echo;
+    [JsonPropertyName("echo")] public string Echo { get; set; } = echo;
 
-    [JsonIgnore]
-    public string? Identifier { get; internal set; }
+    [JsonIgnore] public string? Identifier { get; internal set; }
 }

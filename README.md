@@ -270,7 +270,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
             "Host": "127.0.0.1",
             "Port": 8080,
             "Suffix": "/onebot/v11/ws",
-            "ReconnectInterval": 0,
+            "ReconnectInterval": 30,
             "HeartBeatInterval": 5000
         },
         "Http": {
@@ -288,7 +288,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 }
 ```
 
-- Create a file named 'appsettings.json' under Lagrange.OneBot executable directory 
+- Create a file named 'appsettings.json' under Lagrange.OneBot executable directory
 - As the Uin is 0 here, this indicates that QRCode login is used
 - After the QRCode Login, write Uin back to perform EasyLogin
 

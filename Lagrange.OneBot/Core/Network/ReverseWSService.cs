@@ -44,6 +44,7 @@ public sealed class ReverseWSService : ILagrangeWebService
                 false,
                 string.Empty,
                 ws["Suffix"],
+                keepAliveIntervalSec: ws.GetValue<int>("ReconnectInterval") / 1000,
                 requestHeaders: headers
             )
         );

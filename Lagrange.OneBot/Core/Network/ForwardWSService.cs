@@ -40,7 +40,6 @@ public sealed class ForwardWSService : ILagrangeWebService
 
         _server = new WebsocketServer(new ParamsWSServer(ws.GetValue<int>("Port")));
         _server.MessageEvent += OnMessage;
-        // todo: realize sending return packets to specific clients
 
         if (_shouldAuthenticate)
             _server.ConnectionEvent += OnConnection;
