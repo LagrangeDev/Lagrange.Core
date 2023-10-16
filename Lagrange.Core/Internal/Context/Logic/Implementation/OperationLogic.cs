@@ -137,14 +137,7 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(groupFSMoveEvent); 
         return events.Count != 0 && ((GroupFSMoveEvent)events[0]).ResultCode == 0;
     }
-
-    public async Task<bool> GetHighwayAddress()
-    {
-        var highwayUrlEvent = HighwayUrlEvent.Create();
-        var events = await Collection.Business.SendEvent(highwayUrlEvent);
-        return events.Count != 0 && ((HighwayUrlEvent)events[0]).ResultCode == 0;
-    }
-
+    
     public async Task<bool> RecallGroupMessage(uint groupUin, MessageResult result)
     {
         if (result.Sequence == null) return false;
