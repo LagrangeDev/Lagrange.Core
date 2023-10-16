@@ -43,9 +43,9 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 |          |         |                           |         |                  |            | Send Message      | 🟢         | ~~FriendTyping~~       | 🔴      |
 |          |         |                           |         |                  |            |                   |            | ~~FriendVoiceCall~~    | 🔴      |
 
-## OneBot-11
+## Lagrange.OneBot
 
-### Implementation
+### Implementation - OneBot v11
 
 <Details>
 <Summary>Message Segement</Summary>
@@ -223,6 +223,55 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 [Heartbeat]: https://github.com/botuniverse/onebot-11/blob/master/event/meta.md#%E5%BF%83%E8%B7%B3
 
 </Details>
+
+#### appsettings.json Example
+```C#
+{
+    "Logging": {
+        "LogLevel": {
+            "Default": "Trace",
+            "Microsoft": "Warning",
+            "Microsoft.Hosting.Lifetime": "Information"
+        }
+    },
+    "AccessToken": "",
+    "Account": {
+        "Uin": 0,
+        "Password": "",
+        "Protocol": "Linux",
+        "AutoReconnect": true,
+        "GetOptimumServer": true
+    },
+    "Implementation": {
+        "ForwardWebSocket": {
+            "Host": "",
+            "Port": 0,
+            "HeartBeatIntetval": 0
+        },
+        "ReverseWebSocket": {
+            "Host": "127.0.0.1",
+            "Port": 8080,
+            "Suffix": "/onebot/v11/ws",
+            "ReconnectInterval": 0,
+            "HeartBeatInterval": 5000
+        },
+        "Http": {
+            "Host": "",
+            "Port": 0,
+            "EventEnabled": false
+        },
+        "HttpPost": {
+            "Host": "127.0.0.1",
+            "Port": 8080,
+            "Suffix": "/onebot/v11/http",
+            "Timeout": 0
+        }
+    }
+}
+```
+- Create a file named 'appsettings.json' under Lagrange.OneBot executable directory 
+- As the Uin is 0 here, this indicates that QRCode login is used
+- After the QRCode Login, write Uin back to perform EasyLogin
 
 ## Known Problem
 ~~- [ ] Signature Service is currently not established, so the login tend to be failed and return code may be 45, you can establish your own sign service by rewriting the `Signature` static class.~~
