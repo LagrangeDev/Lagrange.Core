@@ -13,12 +13,11 @@
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
       <PackageReference Include="WebsocketsSimple.Client" Version="7.0.7" />
       <PackageReference Include="WebsocketsSimple.Server" Version="7.0.7" />
-      <PackageReference Include="ZXing.Net" Version="0.16.9" />
+      <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="1.6.1" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Lagrange.Core\Lagrange.Core.csproj" />
     </ItemGroup>
-
 
 </Project>
