@@ -36,7 +36,7 @@ public sealed class ForwardWSService : ILagrangeWebService
         var ws = _config.GetSection("Implementation").GetSection("ForwardWebSocket");
 
         _timer = new Timer(OnHeartbeat, null, int.MaxValue, ws.GetValue<int>("HeartBeatInterval"));
-        _shouldAuthenticate = !string.IsNullOrEmpty(ws["Authorization"]);
+        _shouldAuthenticate = !string.IsNullOrEmpty(_config["AccessToken"]);
 
         _server = new WebsocketServer(new ParamsWSServer(ws.GetValue<int>("Port")));
         _server.MessageEvent += OnMessage;
@@ -98,7 +98,7 @@ public sealed class ForwardWSService : ILagrangeWebService
             && (
                 e.RequestHeaders is null
                 || !e.RequestHeaders.TryGetValue("Authorization", out string? authorization)
-                || authorization != _config["Implementation:ForwardWebSocket:Authorization"]
+                || authorization != $"Bearer {_config["AccessToken"]}"
             )
         )
         {

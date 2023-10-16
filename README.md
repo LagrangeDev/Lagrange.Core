@@ -263,9 +263,8 @@ Please use Lagrange.Core responsibly and in accordance with the law.
     },
     "Implementation": {
         "ForwardWebSocket": {
-            "Host": "",
-            "Port": 0,
-            "HeartBeatIntetval": 0
+            "Port": 8081,
+            "HeartBeatIntetval": 5000
         },
         "ReverseWebSocket": {
             "Host": "127.0.0.1",
