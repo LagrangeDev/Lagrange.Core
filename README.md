@@ -116,7 +116,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [/set_group_anonymous]     |    🔴   |
 | [/set_group_card]          |     🟢  |
 | [/set_group_name]          |    🟢   |
-| [/set_group_leave]         |    🔴   |
+| [/set_group_leave]         |    🟢   |
 | [/set_group_special_title] |    🔴   |
 | [/set_friend_add_request]  |    🔴   |
 | [/set_group_add_request]   |    🔴   |
