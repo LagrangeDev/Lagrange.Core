@@ -8,6 +8,10 @@ public class BotContext : IDisposable
 {
     public readonly EventInvoker Invoker;
 
+    public uint BotUin => ContextCollection.Keystore.Uin;
+
+    public string? BotName => ContextCollection.Keystore.Info?.Name;
+
     internal readonly Utility.TaskScheduler Scheduler;
     
     internal readonly ContextCollection ContextCollection;
