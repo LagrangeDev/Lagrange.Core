@@ -1,6 +1,12 @@
+# .net build artiifacts
 bin/
 obj/
 /packages/
+
 riderModule.iml
 /_ReSharper.Caches/
 Lagrange.Core/Utility/Crypto/Provider/Dandelion/*.cs
+
+# rider files
+.idea/
+*.DotSettings.user
