@@ -65,7 +65,7 @@ try {
 
 const sidebarItemsApi = tocToItems(apiObj)
 
-console.log(JSON.stringify(sidebarItemsApi))
+// console.log(JSON.stringify(sidebarItemsApi))
 
 function findFirst(items) {
   if (items.length > 0) {
