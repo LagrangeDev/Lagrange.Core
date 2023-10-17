@@ -7,9 +7,9 @@ public static class BotExt
     /// <summary>
     /// Fetch the qrcode for QRCode Login
     /// </summary>
-    /// <returns>the byte of QRCode, usually in the form of PNG</returns>
-    public static async Task<byte[]?> FetchQrCode(this BotContext bot)
-        => await bot.ContextCollection.Business.WtExchangeLogic.FetchQrCode();
+    /// <returns>return url and qrcode image in PNG format</returns>
+    public static Task<(string Url, byte[] QrCode)?> FetchQrCode(this BotContext bot)
+        => bot.ContextCollection.Business.WtExchangeLogic.FetchQrCode();
     
     /// <summary>
     /// Use this method to login by QrCode, you should call <see cref="FetchQrCode"/> first
@@ -20,8 +20,8 @@ public static class BotExt
     /// <summary>
     /// Use this method to login by password, EasyLogin may be preformed if there is sig in <see cref="BotKeystore"/>
     /// </summary>
-    public static async Task<bool> LoginByPassword(this BotContext bot)
-        => await bot.ContextCollection.Business.WtExchangeLogic.LoginByPassword();
+    public static Task<bool> LoginByPassword(this BotContext bot)
+        => bot.ContextCollection.Business.WtExchangeLogic.LoginByPassword();
     
     /// <summary>
     /// Submit the captcha of the url given by the <see cref="EventInvoker.OnBotCaptchaEvent"/>
