@@ -1,7 +1,7 @@
 namespace Lagrange.Core.Message;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class MessageElementAttribute : Attribute
+internal class MessageElementAttribute : Attribute
 {
     public Type Element { get; }
     

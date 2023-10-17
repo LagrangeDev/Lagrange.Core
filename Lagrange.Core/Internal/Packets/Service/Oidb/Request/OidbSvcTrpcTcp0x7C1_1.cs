@@ -6,7 +6,7 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 
 [ProtoContract]
 [OidbSvcTrpcTcp(0x7c1, 1)]
-public class OidbSvcTrpcTcp0x7C1_1
+internal class OidbSvcTrpcTcp0x7C1_1
 {
     [ProtoMember(1)] public uint Field1 { get; set; } // 1
     

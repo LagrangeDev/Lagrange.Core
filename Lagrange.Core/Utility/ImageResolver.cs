@@ -3,7 +3,7 @@ using BitConverter = Lagrange.Core.Utility.Binary.BitConverter;
 
 namespace Lagrange.Core.Utility;
 
-public static class ImageResolver
+internal static class ImageResolver
 {
     public static ImageFormat Resolve(byte[] image, out Vector2 size)
     {
@@ -66,7 +66,7 @@ public static class ImageResolver
     }
 }
 
-public enum ImageFormat
+internal enum ImageFormat
 {
     Unknown,
     Png,

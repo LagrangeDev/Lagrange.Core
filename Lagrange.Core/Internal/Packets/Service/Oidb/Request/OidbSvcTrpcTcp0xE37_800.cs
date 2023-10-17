@@ -9,7 +9,7 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 /// </summary>
 [ProtoContract]
 [OidbSvcTrpcTcp(0xE37, 800)]
-public class OidbSvcTrpcTcp0xE37_800
+internal class OidbSvcTrpcTcp0xE37_800
 {
     [ProtoMember(1)] public uint SubCommand => 800;
     
@@ -25,7 +25,7 @@ public class OidbSvcTrpcTcp0xE37_800
 }
 
 [ProtoContract]
-public class OidbSvcTrpcTcp0xE37_800Body
+internal class OidbSvcTrpcTcp0xE37_800Body
 {
     [ProtoMember(10)] public string SenderUid { get; set; }
     

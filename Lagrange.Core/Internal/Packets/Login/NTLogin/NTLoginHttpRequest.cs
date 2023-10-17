@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Lagrange.Core.Internal.Packets.Login.NTLogin;
 
-public class NTLoginHttpRequest
+internal class NTLoginHttpRequest
 {
     [JsonPropertyName("appid")] public long Appid { get; set; }
 

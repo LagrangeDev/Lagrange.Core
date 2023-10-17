@@ -2,7 +2,7 @@ using System.IO.Compression;
 
 namespace Lagrange.Core.Utility.Binary.Compression;
 
-public static class GZip
+internal static class GZip
 {
     public static byte[] Inflate(byte[] input)
     {

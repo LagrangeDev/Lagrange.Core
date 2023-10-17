@@ -3,7 +3,7 @@ using ProtoBuf;
 namespace Lagrange.Core.Internal.Packets.Action.HttpConn;
 
 [ProtoContract]
-public class ServerAddr
+internal class ServerAddr
 {
     [ProtoMember(1)] public uint Type { get; set; }
     

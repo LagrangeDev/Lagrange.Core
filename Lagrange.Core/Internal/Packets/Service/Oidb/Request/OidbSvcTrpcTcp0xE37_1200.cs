@@ -24,7 +24,7 @@ internal class OidbSvcTrpcTcp0xE37_1200
 }
 
 [ProtoContract]
-public class OidbSvcTrpcTcp0xE37_1200Body
+internal class OidbSvcTrpcTcp0xE37_1200Body
 {
     [ProtoMember(10)] public string ReceiverUid { get; set; }
     

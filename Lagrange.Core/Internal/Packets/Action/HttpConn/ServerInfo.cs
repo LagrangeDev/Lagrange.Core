@@ -5,7 +5,7 @@ namespace Lagrange.Core.Internal.Packets.Action.HttpConn;
 #pragma warning disable CS8618
 
 [ProtoContract]
-public class ServerInfo
+internal class ServerInfo
 {
     [ProtoMember(1)] public uint ServiceType { get; set; }
     

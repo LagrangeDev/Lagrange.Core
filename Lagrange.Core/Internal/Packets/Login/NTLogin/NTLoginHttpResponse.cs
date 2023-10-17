@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Lagrange.Core.Internal.Packets.Login.NTLogin;
 
-public class NTLoginHttpResponse
+internal class NTLoginHttpResponse
 {
     [JsonPropertyName("retCode")] public int RetCode { get; set; }
 
