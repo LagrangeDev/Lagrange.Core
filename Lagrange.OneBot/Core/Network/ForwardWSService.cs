@@ -14,6 +14,8 @@ namespace Lagrange.OneBot.Core.Network;
 
 public sealed class ForwardWSService : ILagrangeWebService
 {
+    private const string Tag = nameof(ForwardWSService);
+
     public event EventHandler<MsgRecvEventArgs> OnMessageReceived = delegate { };
 
     private readonly WebsocketServer _server;
@@ -71,7 +73,14 @@ public sealed class ForwardWSService : ILagrangeWebService
             );
 
             if (connection is not null)
+            {
+                _logger.LogTrace($"[{Tag}] Send to {connection.ConnectionId}: {payload}");
                 await _server.SendToConnectionAsync(payload, connection);
+            }
+            else
+                _logger.LogWarning(
+                    $"[{Tag}] Fail to send to {oneBotResult.Identifier} because the connection has been aborted."
+                );
         }
         else
             await _server.BroadcastToAllConnectionsAsync(payload, cancellationToken);
@@ -89,7 +98,7 @@ public sealed class ForwardWSService : ILagrangeWebService
         SendJsonAsync(heartBeat).GetAwaiter().GetResult();
     }
 
-    private void OnConnection(object sender, WSConnectionServerEventArgs e)
+    private async void OnConnection(object sender, WSConnectionServerEventArgs e)
     {
         if (
             _shouldAuthenticate
@@ -101,7 +110,7 @@ public sealed class ForwardWSService : ILagrangeWebService
             )
         )
         {
-            e.Connection.Websocket.Abort();
+            await _server.DisconnectConnectionAsync(e.Connection);
         }
     }
 
@@ -110,6 +119,7 @@ public sealed class ForwardWSService : ILagrangeWebService
         if (e.MessageEventType == MessageEventType.Receive)
         {
             string text = _utf8.GetString(e.Bytes);
+            _logger.LogTrace($"[{Tag}] Receive from {e.Connection.ConnectionId}: {text}");
             OnMessageReceived.Invoke(this, new(e.Message ?? "", e.Connection.ConnectionId));
         }
     }
