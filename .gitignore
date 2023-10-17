@@ -14,3 +14,9 @@ Lagrange.Core/Utility/Crypto/Provider/Dandelion/*.cs
 riderModule.iml
 /_ReSharper.Caches/
 
+.DS_Store
+
+docs/node_modules
+docs/.vitepress/dist
+docs/.vitepress/cache
+docs/api

@@ -1,0 +1,25 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [
+            "Lagrange.Core/Lagrange.Core.csproj"
+          ],
+          "src": "../"
+        }
+      ],
+      "dest": "api",
+      "output": ".",
+      "outputFormat": "markdown",
+      "includePrivateMembers": false,
+      "disableGitFeatures": false,
+      "disableDefaultFilter": false,
+      "noRestore": false,
+      "namespaceLayout": "flattened",
+      "memberLayout": "samePage",
+      "EnumSortOrder": "alphabetic",
+      "allowCompilationErrors": false
+    }
+  ]
+}
