@@ -10,6 +10,8 @@ public class OneBotResult(object? data, int retCode, string status, string echo)
     [JsonPropertyName("retcode")] public int RetCode { get; set; } = retCode;
 
     [JsonPropertyName("data")] public object? Data { get; set; } = data;
-    
+
     [JsonPropertyName("echo")] public string Echo { get; set; } = echo;
+
+    [JsonIgnore] public string? Identifier { get; internal set; }
 }
