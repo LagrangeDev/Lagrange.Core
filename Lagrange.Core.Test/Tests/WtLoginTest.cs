@@ -36,7 +36,7 @@ public class WtLoginTest
         var qrCode = await bot.FetchQrCode();
         if (qrCode != null)
         {
-            await File.WriteAllBytesAsync("qr.png", qrCode);
+            await File.WriteAllBytesAsync("qr.png", qrCode.Value.QrCode);
             await bot.LoginByQrCode();
         }
     }

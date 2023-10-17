@@ -1,12 +1,21 @@
+# .net build artiifacts
 bin/
 obj/
 /packages/
-riderModule.iml
-/_ReSharper.Caches/
+
 Lagrange.Core/Utility/Crypto/Provider/Dandelion/*.cs
 
-.DS_Store
+# vscode files
 .vscode/
+
+# rider files
+.idea/
+*.DotSettings.user
+riderModule.iml
+/_ReSharper.Caches/
+
+.DS_Store
+
 docs/node_modules
 docs/.vitepress/dist
 docs/.vitepress/cache

@@ -10,7 +10,9 @@ namespace Lagrange.OneBot.Core.Network;
 
 public sealed class ReverseWSService : ILagrangeWebService
 {
-    public event EventHandler<string> OnMessageReceived = delegate { };
+    private const string Tag = nameof(ReverseWSService);
+    
+    public event EventHandler<MsgRecvEventArgs> OnMessageReceived = delegate { };
     
     private readonly WebsocketClient _socket;
 
@@ -45,7 +47,11 @@ public sealed class ReverseWSService : ILagrangeWebService
         });
         
         _timer = new Timer(OnHeartbeat, null, int.MaxValue, config.GetValue<int>("Implementation:ReverseWebSocket:HeartBeatInterval"));
-        _socket.MessageReceived.Subscribe(resp => OnMessageReceived.Invoke(this, resp.Text ?? ""));
+        _socket.MessageReceived.Subscribe(resp =>
+        {
+            _logger.LogTrace($"[{Tag}] Receive: {resp.Text}");
+            OnMessageReceived.Invoke(this, new MsgRecvEventArgs(resp.Text ?? ""));
+        });
     }
     
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -66,7 +72,9 @@ public sealed class ReverseWSService : ILagrangeWebService
     
     public Task SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
     {
-        var payload = JsonSerializer.SerializeToUtf8Bytes(json);
+        string payload = JsonSerializer.Serialize(json);
+        
+        _logger.LogTrace($"[{Tag}] Send: {payload}");
         return _socket.SendInstant(payload);
     }
 

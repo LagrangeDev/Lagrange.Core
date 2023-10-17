@@ -56,7 +56,7 @@ internal class WtExchangeLogic : LogicBase
     /// <para>1. resolve wtlogin.trans_emp CMD0x31 packet</para>
     /// <para>2. Schedule wtlogin.trans_emp CMD0x12 Task</para>
     /// </summary>
-    public async Task<byte[]?> FetchQrCode()
+    public async Task<(string, byte[])?> FetchQrCode()
     {
         Collection.Log.LogInfo(Tag, "Connecting Servers...");
         if (!await Collection.Socket.Connect()) return null;
@@ -73,7 +73,7 @@ internal class WtExchangeLogic : LogicBase
             Collection.Keystore.Session.QrUrl = @event.Url;
             
             Collection.Log.LogInfo(Tag, $"QrCode Fetched, Expiration: {@event.Expiration} seconds");
-            return @event.QrCode;
+            return (@event.Url, @event.QrCode);
         }
         return null;
     }

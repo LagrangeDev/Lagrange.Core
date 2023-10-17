@@ -81,6 +81,12 @@ public sealed class MessageBuilder
         
         return this;
     }
+
+    public MessageBuilder Add(IMessageEntity entity)
+    {
+        _chain.Add(entity);
+        return this;
+    }
     
     public MessageChain Build() => _chain;
 }
