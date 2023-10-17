@@ -8,7 +8,7 @@ namespace Lagrange.OneBot.Core.Network;
 
 public sealed class HttpPostService : ILagrangeWebService
 {
-    public event EventHandler<string>? OnMessageReceived = delegate { };
+    public event EventHandler<MsgRecvEventArgs>? OnMessageReceived = delegate { };
     
     private readonly HttpClient _client;
     

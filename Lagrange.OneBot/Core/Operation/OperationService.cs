@@ -25,7 +25,7 @@ public sealed class OperationService
             if (attribute != null) _operations[attribute.Api] = (IOperation)type.CreateInstance(false);
         }
 
-        service.OnMessageReceived += async (_, s) => await HandleOperation(s);
+        service.OnMessageReceived += async (_, e) => await HandleOperation(e.Data);
     }
 
     private async Task HandleOperation(string data)
