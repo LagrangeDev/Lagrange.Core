@@ -18,24 +18,29 @@ public sealed class OperationService
         _bot = bot;
         _service = service;
         _operations = new Dictionary<string, IOperation>();
-        
+
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var attribute = type.GetCustomAttribute<OperationAttribute>();
-            if (attribute != null) _operations[attribute.Api] = (IOperation)type.CreateInstance(false);
+            if (attribute != null)
+                _operations[attribute.Api] = (IOperation)type.CreateInstance(false);
         }
 
-        service.OnMessageReceived += async (_, e) => await HandleOperation(e.Data);
+        service.OnMessageReceived += async (_, e) => await HandleOperation(e);
     }
 
-    private async Task HandleOperation(string data)
+    private async Task HandleOperation(MsgRecvEventArgs e)
     {
-        var action = JsonSerializer.Deserialize<OneBotAction>(data);
-            
+        var action = JsonSerializer.Deserialize<OneBotAction>(e.Data);
+
         if (action != null)
         {
             var handler = _operations[action.Action];
             var result = await handler.HandleOperation(action.Echo, _bot, action.Params);
+
+            if (!string.IsNullOrEmpty(e.Identifier))
+                result.Identifier = e.Identifier;
+
             await _service.SendJsonAsync(result);
         }
         else

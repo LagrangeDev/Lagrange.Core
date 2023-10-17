@@ -1,10 +1,7 @@
 using System.Text.Json;
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface;
-using Lagrange.OneBot.Core;
-using Lagrange.OneBot.Core.Message;
 using Lagrange.OneBot.Core.Network;
-using Lagrange.OneBot.Core.Operation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -76,6 +73,7 @@ public sealed class LagrangeAppBuilder
     public LagrangeAppBuilder ConfigureOneBot()
     {
         Services.AddSingleton<ILagrangeWebService, ReverseWSService>();
+        Services.AddSingleton<ILagrangeWebService, ForwardWSService>();
         return this;
     }
 
