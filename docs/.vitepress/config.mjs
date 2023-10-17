@@ -28,10 +28,19 @@ function docsToItems(dirnames) {
 const sidebarItemsDocs = docsToItems(['docs'])
 
 function tocToItems(arr) {
-  if (arr.length > 1 && !arr[0].href) {
-    return tocToItems([{ ...arr[0], items: arr.slice(1) }])
-  }
-  return arr.map(obj => {
+  const [head, tail] = arr.reduce(([head, tail], x) => {
+    if (!x.href) {
+      return [[...head, tail], x]
+    }
+    if (tail.name) {
+      return [head, { ...tail, items: [...(tail.items || []), x] }]
+    }
+    return [[...head, x], {}]
+  }, [[], {}])
+
+  const foldArr = [...head, tail]
+
+  return foldArr.map(obj => {
     let item = {
       text: obj.name,
     }
@@ -55,6 +64,8 @@ try {
 }
 
 const sidebarItemsApi = tocToItems(apiObj)
+
+console.log(JSON.stringify(sidebarItemsApi))
 
 function findFirst(items) {
   if (items.length > 0) {
