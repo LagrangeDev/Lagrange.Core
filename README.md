@@ -3,8 +3,11 @@
 # Lagrange.Core
 
 [![Core](https://img.shields.io/badge/Lagrange-Core-blue)](#)
-[![C#](https://img.shields.io/badge/.NET-%207-blue)](#)
-[![License](https://img.shields.io/static/v1?label=LICENSE&message=MIT&color=lightrey)](#)
+[![OneBot](https://img.shields.io/badge/Lagrange-OneBot-blue)](#)
+[![C#](https://img.shields.io/badge/Core-%20.NET_6-blue)](#)
+[![C#](https://img.shields.io/badge/OneBot-%20.NET_7-blue)](#)
+
+[![License](https://img.shields.io/static/v1?label=LICENSE&message=GPL-3.0&color=lightrey)](#)
 [![QQ](https://img.shields.io/static/v1?label=QQGroup&message=348981074&color=red)](#)
 
 An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
