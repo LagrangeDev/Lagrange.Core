@@ -21,26 +21,23 @@ public partial class ImageSegment : ISegment
     
     public void Build(MessageBuilder builder, ISegment segment)
     {
-        if (segment is ImageSegment imageSegment)
+        if (segment is ImageSegment imageSegment and not { Url: "" })
         {
-            if (imageSegment is not { Url: "" })
+            if (imageSegment.Url.StartsWith("http"))
             {
-                if (imageSegment.Url.StartsWith("http"))
-                {
-                    builder.Image(_client.GetAsync(imageSegment.Url).Result.Content.ReadAsByteArrayAsync().Result);
-                }
+                builder.Image(_client.GetAsync(imageSegment.Url).Result.Content.ReadAsByteArrayAsync().Result);
+            }
                 
-                if (imageSegment.Url.StartsWith("file"))
-                {
-                    string path = imageSegment.Url.Replace("file:///", "");
-                    builder.Image(File.ReadAllBytes(path));
-                }
+            if (imageSegment.Url.StartsWith("file"))
+            {
+                string path = imageSegment.Url.Replace("file:///", "");
+                builder.Image(File.ReadAllBytes(path));
+            }
                 
-                if (imageSegment.Url.StartsWith("base64"))
-                {
-                    string base64 = imageSegment.Url.Replace("base64://", "");
-                    builder.Image(Convert.FromBase64String(base64));
-                }
+            if (imageSegment.Url.StartsWith("base64"))
+            {
+                string base64 = imageSegment.Url.Replace("base64://", "");
+                builder.Image(Convert.FromBase64String(base64));
             }
         }
     }
