@@ -35,9 +35,9 @@ public class LagrangeApp : IHost
     {
         _hostApp = host;
         Logger = Services.GetRequiredService<ILogger<LagrangeApp>>();
-        
-        MessageService = new MessageService(Instance, WebService);
-        OperationService = new OperationService(Instance, WebService);
+
+        MessageService = Services.GetRequiredService<MessageService>();
+        OperationService = Services.GetRequiredService<OperationService>();
     }
 
     public async Task StartAsync(CancellationToken cancellationToken = new())

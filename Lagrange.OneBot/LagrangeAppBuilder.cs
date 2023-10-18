@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface;
-using Lagrange.OneBot.Core;
 using Lagrange.OneBot.Core.Message;
 using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Core.Operation;
@@ -75,7 +74,11 @@ public sealed class LagrangeAppBuilder
     
     public LagrangeAppBuilder ConfigureOneBot()
     {
+        Services.AddSingleton<ContextBase, LiteDbContext>();
         Services.AddSingleton<ILagrangeWebService, ReverseWSService>();
+
+        Services.AddSingleton<MessageService>();
+        Services.AddSingleton<OperationService>();
         return this;
     }
 
