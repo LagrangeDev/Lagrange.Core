@@ -4,6 +4,7 @@ using Lagrange.Core.Common.Interface;
 using Lagrange.OneBot.Core.Message;
 using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Core.Operation;
+using Lagrange.OneBot.Database;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

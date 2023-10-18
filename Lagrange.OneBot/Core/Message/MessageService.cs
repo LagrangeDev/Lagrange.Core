@@ -6,6 +6,7 @@ using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Message;
 using Lagrange.OneBot.Core.Network;
+using Lagrange.OneBot.Database;
 
 namespace Lagrange.OneBot.Core.Message;
 
@@ -15,11 +16,14 @@ namespace Lagrange.OneBot.Core.Message;
 public sealed class MessageService
 {
     private readonly ILagrangeWebService _service;
+    private readonly ContextBase _context;
     private readonly Dictionary<Type, (string, ISegment)> _entityToSegment;
     
-    public MessageService(BotContext bot, ILagrangeWebService service)
+    public MessageService(BotContext bot, ILagrangeWebService service, ContextBase context)
     {
         _service = service;
+        _context = context;
+        
         var invoker = bot.Invoker;
         
         invoker.OnFriendMessageReceived += OnFriendMessageReceived;
