@@ -67,8 +67,11 @@ public class LagrangeApp : IHost
         
         await WebService.StartAsync(cancellationToken);
         
-        if (Configuration.GetValue<uint>("Account:Uin") == 0)
+        if (Configuration["Account:Password"] == null || Configuration["Account:Password"] == "" || 
+            Instance.ContextCollection.Keystore.Session.TempPassword == null)
         {
+            Logger.LogInformation("Session expired or Password not filled in, try to login by QrCode");
+            
             var qrCode = await Instance.FetchQrCode();
             if (qrCode != null)
             {

@@ -292,7 +292,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 ```
 
 - Create a file named 'appsettings.json' under Lagrange.OneBot executable directory
-- As the Uin is 0 here, this indicates that QRCode login is used
+- As the Password is empty here, this indicates that QRCode login is used
 - After the QRCode Login, write Uin back to perform EasyLogin
 
 ## Known Problem
