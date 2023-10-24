@@ -8,7 +8,7 @@
 [![C#](https://img.shields.io/badge/OneBot-%20.NET_7-blue)](#)
 
 [![License](https://img.shields.io/static/v1?label=LICENSE&message=GPL-3.0&color=lightrey)](#)
-[![QQ](https://img.shields.io/static/v1?label=QQGroup&message=348981074&color=red)](#)
+[![Telegram](https://img.shields.io/static/v1?label=Telegram&message=https://t.me/6HNTeJO0JqtlNmRl&color=red)](#)
 
 An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 
@@ -299,6 +299,8 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 ~~- [ ] Signature Service is currently not established, so the login tend to be failed and return code may be 45, you can establish your own sign service by rewriting the `Signature` static class.~~
 
-Thanks KonataDev/TheSnowfield for Provision of Signature API
+~~Thanks KonataDev/TheSnowfield for Provision of Signature API~~
+
+Signature API is now not provided, you may need to find it somewhere and inherit `SignProvider` class for `CustomSignProvider` in  `BotConfig`
 
 - Signature of Windows and macOS is missing, you need to figure out by your self

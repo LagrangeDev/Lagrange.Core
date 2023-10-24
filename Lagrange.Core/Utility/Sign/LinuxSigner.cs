@@ -7,7 +7,7 @@ namespace Lagrange.Core.Utility.Sign;
 
 internal class LinuxSigner : SignProvider
 {
-    private const string Url = "https://sign.konata.dev";
+    private const string Url = "";
     
     public override byte[]? Sign(string cmd, uint seq, byte[] body, out byte[]? ver, out string? token)
     {
