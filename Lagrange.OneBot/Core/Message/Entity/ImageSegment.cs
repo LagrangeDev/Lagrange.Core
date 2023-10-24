@@ -30,7 +30,7 @@ public partial class ImageSegment : ISegment
                 
             if (imageSegment.Url.StartsWith("file"))
             {
-                string path = imageSegment.Url.Replace("file:///", "");
+                string path = imageSegment.Url.Replace("file://", "");
                 builder.Image(File.ReadAllBytes(path));
             }
                 
