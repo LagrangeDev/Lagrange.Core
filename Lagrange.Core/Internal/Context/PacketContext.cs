@@ -15,14 +15,14 @@ namespace Lagrange.Core.Internal.Context;
 /// </summary>
 internal class PacketContext : ContextBase
 {
-    private readonly SignProvider _signProvider;
+    internal SignProvider SignProvider { private get; set; }
     
     private readonly ConcurrentDictionary<uint, TaskCompletionSource<SsoPacket>> _pendingTasks;
     
     public PacketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, BotConfig config) 
         : base(collection, keystore, appInfo, device)
     {
-        _signProvider = config.CustomSignProvider ?? appInfo.Os switch
+        SignProvider = config.CustomSignProvider ?? appInfo.Os switch
         {
             "Windows" => new WindowsSigner(),
             "Mac" => new MacSigner(),
@@ -44,7 +44,7 @@ internal class PacketContext : ContextBase
         {
             case 12:
             {
-                var sso = SsoPacker.Build(packet, AppInfo, DeviceInfo, Keystore, _signProvider);
+                var sso = SsoPacker.Build(packet, AppInfo, DeviceInfo, Keystore, SignProvider);
                 var service = ServicePacker.BuildProtocol12(sso, Keystore);
                 bool _ = Collection.Socket.Send(service.ToArray()).GetAwaiter().GetResult();
                 break;
@@ -69,7 +69,7 @@ internal class PacketContext : ContextBase
         {
             case 12:
             {
-                var sso = SsoPacker.Build(packet, AppInfo, DeviceInfo, Keystore, _signProvider);
+                var sso = SsoPacker.Build(packet, AppInfo, DeviceInfo, Keystore, SignProvider);
                 var service = ServicePacker.BuildProtocol12(sso, Keystore);
                 return await Collection.Socket.Send(service.ToArray());
             }
