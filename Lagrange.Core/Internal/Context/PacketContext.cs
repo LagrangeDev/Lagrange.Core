@@ -22,7 +22,7 @@ internal class PacketContext : ContextBase
     public PacketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device) 
         : base(collection, keystore, appInfo, device)
     {
-        _signProvider = appInfo.Os switch
+        _signProvider = Collection.Config.CustomSignProvider ?? appInfo.Os switch
         {
             "Windows" => new WindowsSigner(),
             "Mac" => new MacSigner(),

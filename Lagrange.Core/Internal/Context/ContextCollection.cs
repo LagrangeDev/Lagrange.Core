@@ -16,6 +16,7 @@ internal class ContextCollection
     public BotKeystore Keystore { get; }
     public BotAppInfo AppInfo { get; }
     public BotDeviceInfo Device { get; }
+    public BotConfig Config { get; }
     
     public TaskScheduler Scheduler { get; }
     public EventInvoker Invoker { get; }

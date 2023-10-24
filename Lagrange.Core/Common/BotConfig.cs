@@ -1,3 +1,5 @@
+using Lagrange.Core.Utility.Sign;
+
 namespace Lagrange.Core.Common;
 
 /// <summary>
@@ -25,6 +27,11 @@ public class BotConfig
     /// Get optimum server from Tencent MSF server, set to false to use hardcode server
     /// </summary>
     public bool GetOptimumServer { get; set; } = true;
+
+    /// <summary>
+    /// Custom Sign Provider
+    /// </summary>
+    public SignProvider? CustomSignProvider { get; set; } = null;
 }
 
 /// <summary>

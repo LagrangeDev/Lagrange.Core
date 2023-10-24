@@ -1,6 +1,6 @@
 namespace Lagrange.Core.Utility.Sign;
 
-internal abstract class SignProvider
+public abstract class SignProvider
 {
     protected bool Available = true;
     
