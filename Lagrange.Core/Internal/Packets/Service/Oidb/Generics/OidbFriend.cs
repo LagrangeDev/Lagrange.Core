@@ -10,5 +10,5 @@ internal class OidbFriend
     
     [ProtoMember(3)] public uint Uin { get; set; }
     
-    [ProtoMember(10001)] public OidbFriendAdditional Additional { get; set; }
+    [ProtoMember(10001)] public List<OidbFriendAdditional> Additional { get; set; }
 }

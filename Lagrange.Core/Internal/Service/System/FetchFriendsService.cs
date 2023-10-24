@@ -7,6 +7,7 @@ using Lagrange.Core.Internal.Packets.Service.Oidb.Generics;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Response;
 using Lagrange.Core.Utility.Binary;
+using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.System;
@@ -50,7 +51,8 @@ internal class FetchFriendsService : BaseService<FetchFriendsEvent>
         var friends = new List<BotFriend>();
         foreach (var raw in packet.Body.Friends)
         {
-            var properties = Property(raw.Additional.Layer1.Properties);
+            var additional = raw.Additional.First(x => x.Type == 1);
+            var properties = Property(additional.Layer1.Properties);
             friends.Add(new BotFriend(raw.Uin, raw.Uid, properties[20002], properties[103], properties[102]));
         }
 
