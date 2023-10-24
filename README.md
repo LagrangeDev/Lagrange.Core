@@ -8,7 +8,7 @@
 [![C#](https://img.shields.io/badge/OneBot-%20.NET_7-blue)](#)
 
 [![License](https://img.shields.io/static/v1?label=LICENSE&message=GPL-3.0&color=lightrey)](#)
-[![Telegram](https://img.shields.io/static/v1?label=Telegram&message=https://t.me/6HNTeJO0JqtlNmRl&color=red)](#)
+[![Telegram](https://img.shields.io/static/v1?label=Telegram&message=https://t.me/+6HNTeJO0JqtlNmRl&color=red)](#)
 
 An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 
