@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Utility.Sign;
 using Lagrange.OneBot.Core.Message;
 using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Core.Operation;
@@ -44,7 +45,9 @@ public class LagrangeApp : IHost
     {
         await _hostApp.StartAsync(cancellationToken);
         Logger.LogInformation("Lagrange.OneBot Implementation has started");
-        Logger.LogInformation($"Protocol: {Configuration.GetValue<string>("Protocol")} | {Instance.ContextCollection.AppInfo.CurrentVersion}");
+        Logger.LogInformation($"Protocol: {Configuration["Protocol"]} | {Instance.ContextCollection.AppInfo.CurrentVersion}");
+
+        Instance.ContextCollection.Packet.SignProvider = Services.GetRequiredService<SignProvider>();
         
         Instance.Invoker.OnBotLogEvent += (_, args) => Logger.Log(args.Level switch
         {
@@ -71,11 +74,10 @@ public class LagrangeApp : IHost
             Instance.ContextCollection.Keystore.Session.TempPassword == null)
         {
             Logger.LogInformation("Session expired or Password not filled in, try to login by QrCode");
-            
-            var qrCode = await Instance.FetchQrCode();
-            if (qrCode != null)
+
+            if (await Instance.FetchQrCode() is { } qrCode)
             {
-                QrCodeHelper.Output(qrCode.Value.Url ?? "");
+                QrCodeHelper.Output(qrCode.Url ?? "");
                 await Instance.LoginByQrCode();
             }
         }
