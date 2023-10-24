@@ -19,10 +19,10 @@ internal class PacketContext : ContextBase
     
     private readonly ConcurrentDictionary<uint, TaskCompletionSource<SsoPacket>> _pendingTasks;
     
-    public PacketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device) 
+    public PacketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, BotConfig config) 
         : base(collection, keystore, appInfo, device)
     {
-        _signProvider = Collection.Config.CustomSignProvider ?? appInfo.Os switch
+        _signProvider = config.CustomSignProvider ?? appInfo.Os switch
         {
             "Windows" => new WindowsSigner(),
             "Mac" => new MacSigner(),
