@@ -77,11 +77,11 @@ public sealed class LagrangeAppBuilder
     
     public LagrangeAppBuilder ConfigureOneBot()
     {
-        if (Configuration.GetSection("Implementation:ReverseWebSocket").Value != null)
+        if (Configuration.GetSection("Implementation:ReverseWebSocket").Exists())
         {
             Services.AddSingleton<ILagrangeWebService, ReverseWSService>();
         }
-        else if (Configuration.GetSection("Implementation:ForwardWebSocket").Value != null)
+        else if (Configuration.GetSection("Implementation:ForwardWebSocket").Exists())
         {            
             Services.AddSingleton<ILagrangeWebService, ForwardWSService>();
         }
