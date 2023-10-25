@@ -105,8 +105,8 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 | API                        | Support |
 | -------------------------- | :-----: |
-| [/send_private_msg]        |    🔴    |
-| [/send_group_msg]          |    🔴    |
+| [/send_private_msg]        |    🟢    |
+| [/send_group_msg]          |    🟢    |
 | [/send_msg]                |    🟢    |
 | [/delete_msg]              |    🔴    |
 | [/get_msg]                 |    🔴    |
