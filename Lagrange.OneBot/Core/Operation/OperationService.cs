@@ -34,9 +34,13 @@ public sealed class OperationService
             
         if (action != null)
         {
-            var handler = _operations[action.Action];
-            var result = await handler.HandleOperation(action.Echo, _bot, action.Params);
-            await _service.SendJsonAsync(result);
+            bool supported = _operations.TryGetValue(action.Action, out var handler);
+            
+            if (supported && handler != null)
+            {
+                var result = await handler.HandleOperation(action.Echo, _bot, action.Params);
+                await _service.SendJsonAsync(result);
+            }
         }
         else
         {
