@@ -3,7 +3,7 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Utility.Sign;
 using Lagrange.OneBot.Core.Message;
-using Lagrange.OneBot.Core.Network;
+using Lagrange.OneBot.Core.Network.Service;
 using Lagrange.OneBot.Core.Operation;
 using Lagrange.OneBot.Database;
 using Lagrange.OneBot.Utility;
@@ -77,8 +77,16 @@ public sealed class LagrangeAppBuilder
     
     public LagrangeAppBuilder ConfigureOneBot()
     {
+        if (Configuration.GetSection("Implementation:ReverseWebSocket").Value != null)
+        {
+            Services.AddSingleton<ILagrangeWebService, ReverseWSService>();
+        }
+        else if (Configuration.GetSection("Implementation:ForwardWebSocket").Value != null)
+        {            
+            Services.AddSingleton<ILagrangeWebService, ForwardWSService>();
+        }
+        
         Services.AddSingleton<ContextBase, LiteDbContext>();
-        Services.AddSingleton<ILagrangeWebService, ReverseWSService>();
         Services.AddSingleton<SignProvider, OneBotSigner>();
 
         Services.AddSingleton<MessageService>();

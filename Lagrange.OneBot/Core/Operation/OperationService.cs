@@ -3,7 +3,7 @@ using System.Text.Json;
 using Lagrange.Core;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Action;
-using Lagrange.OneBot.Core.Network;
+using Lagrange.OneBot.Core.Network.Service;
 
 namespace Lagrange.OneBot.Core.Operation;
 

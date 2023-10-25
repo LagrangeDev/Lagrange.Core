@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Hosting;
 
-namespace Lagrange.OneBot.Core.Network;
+namespace Lagrange.OneBot.Core.Network.Service;
 
 public interface ILagrangeWebService : IHostedService
 {

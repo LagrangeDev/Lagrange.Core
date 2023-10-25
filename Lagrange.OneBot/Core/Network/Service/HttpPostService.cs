@@ -4,7 +4,7 @@ using Lagrange.OneBot.Core.Entity.Meta;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Lagrange.OneBot.Core.Network;
+namespace Lagrange.OneBot.Core.Network.Service;
 
 public sealed class HttpPostService : ILagrangeWebService
 {
