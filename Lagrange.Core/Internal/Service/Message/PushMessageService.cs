@@ -20,7 +20,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         out PushMessageEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var message = Serializer.Deserialize<PushMsg>(input.AsSpan());
-        var packetType = (PkgType)message.Message.ContentHead.PkgNum!;
+        var packetType = (PkgType)message.Message.ContentHead.Type;
         
         output = null!;
         extraEvents = new List<ProtocolEvent>();
@@ -97,7 +97,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
 
     public static void ProcessEvent0x2DC(byte[] payload, PushMsg msg)
     {
-        var pkgType = (Event0x2DCSubType)(msg.Message.ContentHead.PkgIndex ?? 0);
+        var pkgType = (Event0x2DCSubType)(msg.Message.ContentHead.SubType ?? 0);
         switch (pkgType)
         {
             case Event0x2DCSubType.GroupRecallNotice:

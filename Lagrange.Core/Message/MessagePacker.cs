@@ -174,8 +174,8 @@ internal class MessagePacker
         },
         ContentHead = new ContentHead
         {
-            PkgNum = 1, // regarded as the const
-            PkgIndex = 0,
+            Type = 1, // regarded as the const
+            SubType = 0,
             DivSeq = 0
         },
         Body = new MessageBody { RichText = new RichText { Elems = new List<Elem>() } },
@@ -202,13 +202,13 @@ internal class MessagePacker
         },
         ContentHead = new ContentHead
         {
-            PkgNum = (uint)(chain.IsGroup ? 82 : 529),
-            PkgIndex = chain.IsGroup ? null : 4,
+            Type = (uint)(chain.IsGroup ? 82 : 529),
+            SubType = chain.IsGroup ? null : 4,
             DivSeq = chain.IsGroup ? null : 4,
             MsgId = (uint)Random.Shared.Next(100000000, int.MaxValue),
             Sequence = Random.Shared.Next(1000000, 9999999),
             Timestamp = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-            Type = 1,
+            Field7 = 1,
             Field8 = 0,
             Field9 = 0,
             Forward = new ForwardHead
@@ -224,7 +224,16 @@ internal class MessagePacker
     private static MessageChain ParseChain(PushMsgBody message)
     {
         return message.ResponseHead.Grp == null
-            ? new MessageChain(message.ResponseHead.FromUin,message.ResponseHead.ToUid ?? string.Empty ,message.ResponseHead.FromUid ?? string.Empty)
-            : new MessageChain(message.ResponseHead.Grp.GroupUin, message.ResponseHead.FromUin, (uint)(message.ContentHead.Sequence ?? 0));
+            ? new MessageChain(
+                message.ResponseHead.FromUin,
+                message.ResponseHead.ToUid ?? string.Empty , 
+                message.ResponseHead.FromUid ?? string.Empty, 
+                message.ContentHead.NewId ?? 0)
+            
+            : new MessageChain(
+                message.ResponseHead.Grp.GroupUin, 
+                message.ResponseHead.FromUin, 
+                (uint)(message.ContentHead.Sequence ?? 0),
+                message.ContentHead.NewId ?? 0);
     }
 }
