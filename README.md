@@ -257,6 +257,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
         }
     },
     "AccessToken": "",
+    "SignServerUrl": "",
     "Account": {
         "Uin": 0,
         "Password": "",
