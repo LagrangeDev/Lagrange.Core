@@ -13,9 +13,9 @@ internal class SendMessageResponse
 	
 	[ProtoMember(10)] public uint Field10 { get; set; }
 	
-	[ProtoMember(11)] public uint? Sequence { get; set; }
+	[ProtoMember(11)] public uint? GroupSequence { get; set; }
 	
 	[ProtoMember(12)] public uint Timestamp2 { get; set; }
 	
-	[ProtoMember(14)] public uint Field14 { get; set; }
+	[ProtoMember(14)] public uint PrivateSequence { get; set; }
 }

@@ -34,7 +34,7 @@ internal class SendMessageService : BaseService<SendMessageEvent>
         var result = new MessageResult
         {
             Result = (uint)response.Result,
-            Sequence = response.Sequence,
+            Sequence = response.GroupSequence ?? response.PrivateSequence,
             Timestamp = response.Timestamp1,
         };
         
