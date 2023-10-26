@@ -10,12 +10,12 @@ namespace Lagrange.OneBot.Core.Operation.Message;
 [Operation("send_private_msg")]
 public sealed class SendPrivateMessageOperation : IOperation
 {
-    public async Task<OneBotResult> HandleOperation(string echo, BotContext context, JsonObject? payload)
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
     {
         if (payload.Deserialize<OneBotPrivateMessage>() is { } message)
         {
             await context.SendMessage(MessageCommon.ParseChain(message).Build());
-            return new OneBotResult(new OneBotMessageResponse(0), 0, "ok", echo);
+            return new OneBotResult(new OneBotMessageResponse(0), 0, "ok");
         }
 
         throw new Exception();

@@ -10,5 +10,5 @@ public class OneBotAction
     
     [JsonPropertyName("params")] public JsonObject? Params { get; set; }
 
-    [JsonPropertyName("echo")] public string Echo { get; set; } = "";
+    [JsonPropertyName("echo")] public JsonObject? Echo { get; set; } 
 }

@@ -9,14 +9,14 @@ namespace Lagrange.OneBot.Core.Operation.Group;
 [Operation("set_group_whole_ban")]
 public class SetGroupWholeBanOperation : IOperation
 {
-    public async Task<OneBotResult> HandleOperation(string echo, BotContext context, JsonObject? payload)
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
     {
         var message = payload.Deserialize<OneBotSetGroupWholeBan>();
 
         if (message != null)
         {
             bool _ = await context.MuteGroupGlobal(message.GroupId, message.Enable);
-            return new OneBotResult(null, 0, "ok", echo);
+            return new OneBotResult(null, 0, "ok");
         }
         
         throw new Exception();

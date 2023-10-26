@@ -9,14 +9,14 @@ namespace Lagrange.OneBot.Core.Operation.Group;
 [Operation("set_group_card")]
 public class SetGroupCardOperation : IOperation
 {
-    public async Task<OneBotResult> HandleOperation(string echo, BotContext context, JsonObject? payload)
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
     {
         var message = payload.Deserialize<OneBotSetGroupCard>();
 
         if (message != null)
         {
             bool _ = await context.RenameGroupMember(message.GroupId, message.UserId, message.Card);
-            return new OneBotResult(null, 0, "ok", echo);
+            return new OneBotResult(null, 0, "ok");
         }
 
         throw new Exception();

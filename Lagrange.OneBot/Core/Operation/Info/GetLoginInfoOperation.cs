@@ -8,10 +8,10 @@ namespace Lagrange.OneBot.Core.Operation.Info;
 [Operation("get_login_info")]
 public class GetLoginInfoOperation : IOperation
 {
-    public Task<OneBotResult> HandleOperation(string echo, BotContext context, JsonObject? payload)
+    public Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
     {
         var keystore = context.ContextCollection.Keystore;
         var result = new OneBotLoginInfoResponse(keystore.Uin, keystore.Info?.Name ?? "");
-        return Task.FromResult(new OneBotResult(result, 0, "ok", echo));
+        return Task.FromResult(new OneBotResult(result, 0, "ok"));
     }
 }

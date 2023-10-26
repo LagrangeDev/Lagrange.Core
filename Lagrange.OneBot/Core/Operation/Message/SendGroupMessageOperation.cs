@@ -10,12 +10,12 @@ namespace Lagrange.OneBot.Core.Operation.Message;
 [Operation("send_group_msg")]
 public sealed class SendGroupMessageOperation : IOperation
 {
-    public async Task<OneBotResult> HandleOperation(string echo, BotContext context, JsonObject? payload)
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
     {
         if (payload.Deserialize<OneBotGroupMessage>() is { } message)
         {
             await context.SendMessage(MessageCommon.ParseChain(message).Build());
-            return new OneBotResult(new OneBotMessageResponse(0), 0, "ok", echo);
+            return new OneBotResult(new OneBotMessageResponse(0), 0, "ok");
         }
 
         throw new Exception();
