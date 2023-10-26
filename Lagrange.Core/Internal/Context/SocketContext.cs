@@ -128,4 +128,9 @@ internal class SocketContext : ContextBase, IClientListener
 
         return result;
     }
+
+    public void Dispose()
+    {
+        _tcpClient.Disconnect();
+    }
 }

@@ -9,7 +9,7 @@ namespace Lagrange.Core.Internal.Context;
 /// <summary>
 /// <para>Provides BDH (Big-Data Highway) Operation</para>
 /// </summary>
-internal class HighwayContext : ContextBase
+internal class HighwayContext : ContextBase, IDisposable
 {
     private const string Tag = nameof(HighwayContext);
     
@@ -196,4 +196,9 @@ internal class HighwayContext : ContextBase
         byte[] Block, 
         byte[]? ExtendInfo = null,
         ulong Timestamp = 0);
+
+    public void Dispose()
+    {
+        _client.Dispose();
+    }
 }

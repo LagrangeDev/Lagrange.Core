@@ -39,7 +39,7 @@ public class BotContext : IDisposable
     
     public void Dispose()
     {
+        ContextCollection.Dispose();
         GC.SuppressFinalize(this);
-        Invoker.Dispose();
     }
 }

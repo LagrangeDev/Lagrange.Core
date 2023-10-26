@@ -4,7 +4,7 @@ using TaskScheduler = Lagrange.Core.Utility.TaskScheduler;
 
 namespace Lagrange.Core.Internal.Context;
 
-internal class ContextCollection
+internal class ContextCollection : IDisposable
 {
     public PacketContext Packet { get; }
     public SocketContext Socket { get; }
@@ -36,5 +36,13 @@ internal class ContextCollection
 
         Scheduler = scheduler;
         Invoker = invoker;
+    }
+
+    public void Dispose()
+    {
+        Socket.Dispose();
+        Highway.Dispose();
+        Invoker.Dispose();
+        Scheduler.Dispose();
     }
 }
