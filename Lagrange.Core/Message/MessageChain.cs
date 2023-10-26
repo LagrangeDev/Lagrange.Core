@@ -10,6 +10,8 @@ public sealed class MessageChain : List<IMessageEntity>
     
     public uint FriendUin { get; }
     
+    public ulong MessageId { get; }
+    
     public BotFriend? FriendInfo { get; internal set; }
     
     public BotGroupMember? GroupMemberInfo { get; internal set; }
@@ -28,13 +30,14 @@ public sealed class MessageChain : List<IMessageEntity>
 
     #endregion
 
-    internal MessageChain(uint friendUin, string selfUid, string friendUid)
+    internal MessageChain(uint friendUin, string selfUid, string friendUid, ulong messageId = 0)
     {
         GroupUin = null;
         FriendUin = friendUin;
         Sequence = 0; // unuseful at there
         SelfUid = selfUid;
         Uid = friendUid;
+        MessageId = messageId;
         IsGroup = false;
         Elements = new List<Elem>();
     }
@@ -48,12 +51,13 @@ public sealed class MessageChain : List<IMessageEntity>
         Elements = new List<Elem>();
     }
     
-    internal MessageChain(uint groupUin, uint friendUin, uint sequence)
+    internal MessageChain(uint groupUin, uint friendUin, uint sequence, ulong messageId = 0)
     {
         GroupUin = groupUin;
         FriendUin = friendUin;
         Sequence = sequence;
         Uid = null;
+        MessageId = messageId;
         IsGroup = true;
         Elements = new List<Elem>();
     }
