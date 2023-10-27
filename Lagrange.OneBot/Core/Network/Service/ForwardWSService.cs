@@ -33,6 +33,13 @@ public sealed class ForwardWSService : LagrangeWSService
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
+        uint port = Config.GetValue<uint?>("Implementation:ForwardWebSocket:Port") ?? throw new Exception("Port is not defined");
+        if (IsPortInUse(port))
+        {
+            Logger.LogCritical($"[{Tag}] The port {port} is in use, {Tag} failed to start");
+            return Task.CompletedTask;
+        }
+        
         return Task.Run(() =>
         {
             _server.Start(conn =>
