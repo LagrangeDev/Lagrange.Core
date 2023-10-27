@@ -26,12 +26,12 @@ public sealed class OperationService
             if (attribute != null) _operations[attribute.Api] = (IOperation)type.CreateInstance(false);
         }
 
-        service.OnMessageReceived += async (_, e) => await HandleOperation(e.Data);
+        service.OnMessageReceived += async (_, e) => await HandleOperation(e);
     }
 
-    private async Task HandleOperation(string data)
+    private async Task HandleOperation(MsgRecvEventArgs eventArgs)
     {
-        var action = JsonSerializer.Deserialize<OneBotAction>(data);
+        var action = JsonSerializer.Deserialize<OneBotAction>(eventArgs.Data);
 
         try
         {
@@ -44,11 +44,11 @@ public sealed class OperationService
                     var result = await handler.HandleOperation(_bot, action.Params);
                     result.Echo = action.Echo;
 
-                    await _service.SendJsonAsync(result);
+                    await _service.SendJsonAsync(result, eventArgs.Identifier);
                 }
                 else
                 {
-                    await _service.SendJsonAsync(new OneBotResult(null, 404, "failed"));
+                    await _service.SendJsonAsync(new OneBotResult(null, 404, "failed"), eventArgs.Identifier);
                 }
             }
             else
@@ -58,7 +58,7 @@ public sealed class OperationService
         }
         catch
         {
-            await _service.SendJsonAsync(new OneBotResult(null, 200, "failed"));
+            await _service.SendJsonAsync(new OneBotResult(null, 200, "failed"), eventArgs.Identifier);
         }
     }
 }

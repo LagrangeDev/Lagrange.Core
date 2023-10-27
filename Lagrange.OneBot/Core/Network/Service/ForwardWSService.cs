@@ -18,22 +18,21 @@ public sealed class ForwardWSService : LagrangeWSService
     
     private readonly Timer _timer;
 
-    public ForwardWSService(IConfiguration config, ILogger<LagrangeApp> logger) : base(config, logger)
+    public ForwardWSService(IConfiguration config, ILogger<LagrangeApp> logger, uint uin) : base(config, logger, uin)
     {
-        var ws = config.GetSection("Implementation").GetSection("ForwardWebSocket");
-        string url = $"ws://{ws["Host"]}:{ws["Port"]}";
+        string url = $"ws://{config["Host"]}:{config["Port"]}";
 
         _server = new WebSocketServer(url)
         {
             RestartAfterListenError = true
         };
         
-        _timer = new Timer(OnHeartbeat, null, 1, ws.GetValue<int>("HeartBeatInterval"));
+        _timer = new Timer(OnHeartbeat, null, 1, config.GetValue<int>("HeartBeatInterval"));
     }
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
-        uint port = Config.GetValue<uint?>("Implementation:ForwardWebSocket:Port") ?? throw new Exception("Port is not defined");
+        uint port = Config.GetValue<uint?>("Port") ?? throw new Exception("Port is not defined");
         if (IsPortInUse(port))
         {
             Logger.LogCritical($"[{Tag}] The port {port} is in use, {Tag} failed to start");
@@ -56,10 +55,10 @@ public sealed class ForwardWSService : LagrangeWSService
                 {
                     Logger.LogInformation($"[{Tag}]: Connected");
                     
-                    var lifecycle = new OneBotLifecycle(Config.GetValue<uint>("Account:Uin"), "connect");
+                    var lifecycle = new OneBotLifecycle(Uin, "connect");
                     SendJsonAsync(lifecycle, cancellationToken).GetAwaiter().GetResult();
                     
-                    _timer.Change(0, Config.GetValue<int>("Implementation:ForwardWebSocket:HeartBeatInterval"));
+                    _timer.Change(0, Config.GetValue<int>("HeartBeatInterval"));
                 };
 
                 conn.OnClose = () =>

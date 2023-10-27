@@ -4,19 +4,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Lagrange.OneBot.Core.Network.Service;
 
-public abstract class LagrangeWSService(IConfiguration config, ILogger<LagrangeApp> logger) : ILagrangeWebService
+public abstract class LagrangeWSService(IConfiguration config, ILogger<LagrangeApp> logger, uint uin) : ILagrangeWebService
 {
     protected readonly ILogger Logger = logger;
 
     protected readonly IConfiguration Config = config;
+
+    protected readonly uint Uin = uin;
     
     protected void OnHeartbeat(object? sender)
     {
         var status = new OneBotStatus(true, true);
-        var heartBeat = new OneBotHeartBeat(
-            Config.GetValue<uint>("Account:Uin"), 
-            Config.GetValue<int>("Implementation:ReverseWebSocket:HeartBeatInterval"), 
-            status);
+        var heartBeat = new OneBotHeartBeat(Uin, Config.GetValue<int>("HeartBeatInterval"), status);
         
         SendJsonAsync(heartBeat);
     }

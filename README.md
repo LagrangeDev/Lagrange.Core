@@ -256,7 +256,6 @@ Please use Lagrange.Core responsibly and in accordance with the law.
             "Microsoft.Hosting.Lifetime": "Information"
         }
     },
-    "AccessToken": "",
     "SignServerUrl": "",
     "Account": {
         "Uin": 0,
@@ -269,14 +268,16 @@ Please use Lagrange.Core responsibly and in accordance with the law.
         "ForwardWebSocket": {
             "Host": "127.0.0.1",
             "Port": 8081,
-            "HeartBeatInterval": 5000
+            "HeartBeatInterval": 5000,
+            "AccessToken": ""
         },
         "ReverseWebSocket": {
             "Host": "127.0.0.1",
             "Port": 8080,
             "Suffix": "/onebot/v11/ws",
             "ReconnectInterval": 5000,
-            "HeartBeatInterval": 5000
+            "HeartBeatInterval": 5000,
+            "AccessToken": ""
         },
         "Http": {
             "Host": "",
@@ -296,6 +297,30 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 - Create a file named 'appsettings.json' under Lagrange.OneBot executable directory
 - As the Password is empty here, this indicates that QRCode login is used
 - After the QRCode Login, write Uin back to perform EasyLogin
+- If you want a multi connection, remove the 'Implementation' Part and add
+```json
+{    "Implementations": [
+      {
+        "Type": "ReverseWebsocket",
+        "Host": "127.0.0.1",
+        "Port": 8080,
+        "Suffix": "/onebot/v11/ws",
+        "ReconnectInterval": 5000,
+        "HeartBeatInterval": 5000,
+        "AccessToken": ""
+      },
+      {
+        "Type": "ReverseWebsocket",
+        "Host": "127.0.0.1",
+        "Port": 8081,
+        "HeartBeatInterval": 5000,
+        "AccessToken": ""
+      }
+    ]
+}
+    
+  ```
+
 
 ## Known Problem
 

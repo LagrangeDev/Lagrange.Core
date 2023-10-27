@@ -17,10 +17,9 @@ public sealed class ReverseWSService : LagrangeWSService
     
     private readonly Timer _timer;
     
-    public ReverseWSService(IConfiguration config, ILogger<LagrangeApp> logger) : base(config, logger)
+    public ReverseWSService(IConfiguration config, ILogger<LagrangeApp> logger, uint uin) : base(config, logger, uin)
     {
-        var ws = Config.GetSection("Implementation").GetSection("ReverseWebSocket");
-        string url = $"ws://{ws["Host"]}:{ws["Port"]}{ws["Suffix"]}";
+        string url = $"ws://{config["Host"]}:{config["Port"]}{config["Suffix"]}";
 
         _socket = new WebsocketClient(new Uri(url), () =>
         {
@@ -33,12 +32,12 @@ public sealed class ReverseWSService : LagrangeWSService
                 { "User-Agent", Constant.OneBotImpl }
             });
             socket.Options.KeepAliveInterval = TimeSpan.FromSeconds(5);
-            if (Config["AccessToken"] != null) socket.Options.SetRequestHeader("Authorization", $"Bearer {Config["AccessToken"]}");
+            if (string.IsNullOrEmpty(config["AccessToken"])) socket.Options.SetRequestHeader("Authorization", $"Bearer {config["AccessToken"]}");
             
             return socket;
         });
         
-        _timer = new Timer(OnHeartbeat, null, -1, ws.GetValue<int>("HeartBeatInterval"));
+        _timer = new Timer(OnHeartbeat, null, -1, config.GetValue<int>("HeartBeatInterval"));
         _socket.MessageReceived.Subscribe(resp =>
         {
             Logger.LogTrace($"[{Tag}] Receive: {resp.Text}");
@@ -50,8 +49,10 @@ public sealed class ReverseWSService : LagrangeWSService
     {
         await _socket.Start();
         
-        var lifecycle = new OneBotLifecycle(Config.GetValue<uint>("Account:Uin"), "connect");
+        var lifecycle = new OneBotLifecycle(Uin, "connect");
         await SendJsonAsync(lifecycle, cancellationToken);
+
+        _timer.Change(0, Config.GetValue<int>("HeartBeatInterval"));
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)

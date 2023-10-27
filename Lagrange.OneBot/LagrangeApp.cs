@@ -3,7 +3,7 @@ using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Utility.Sign;
 using Lagrange.OneBot.Core.Message;
-using Lagrange.OneBot.Core.Network.Service;
+using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Core.Operation;
 using Lagrange.OneBot.Utility;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +26,7 @@ public class LagrangeApp : IHost
     
     public BotContext Instance => Services.GetRequiredService<BotContext>();
     
-    public ILagrangeWebService WebService => Services.GetRequiredService<ILagrangeWebService>();
+    public LagrangeWebSvcCollection WebService => Services.GetRequiredService<LagrangeWebSvcCollection>();
 
     public MessageService MessageService { get; set; }
     
