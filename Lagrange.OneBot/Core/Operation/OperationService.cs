@@ -31,22 +31,29 @@ public sealed class OperationService
     private async Task HandleOperation(string data)
     {
         var action = JsonSerializer.Deserialize<OneBotAction>(data);
-            
-        if (action != null)
+
+        try
         {
-            bool supported = _operations.TryGetValue(action.Action, out var handler);
-            
-            if (supported && handler != null)
+            if (action != null)
             {
-                var result = await handler.HandleOperation(_bot, action.Params);
-                result.Echo = action.Echo;
-                
-                await _service.SendJsonAsync(result);
+                bool supported = _operations.TryGetValue(action.Action, out var handler);
+
+                if (supported && handler != null)
+                {
+                    var result = await handler.HandleOperation(_bot, action.Params);
+                    result.Echo = action.Echo;
+
+                    await _service.SendJsonAsync(result);
+                }
+                else
+                {
+                    await _service.SendJsonAsync(new OneBotResult(null, 404, "failed"));
+                }
             }
-        }
-        else
-        {
-            throw new Exception("action deserialized failed");
+            else
+            {
+                throw new Exception("action deserialized failed");
+            }
         }
     }
 }
