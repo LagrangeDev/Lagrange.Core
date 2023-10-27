@@ -38,7 +38,7 @@ public sealed class ReverseWSService : LagrangeWSService
             return socket;
         });
         
-        _timer = new Timer(OnHeartbeat, null, int.MaxValue, ws.GetValue<int>("HeartBeatInterval"));
+        _timer = new Timer(OnHeartbeat, null, -1, ws.GetValue<int>("HeartBeatInterval"));
         _socket.MessageReceived.Subscribe(resp =>
         {
             Logger.LogTrace($"[{Tag}] Receive: {resp.Text}");

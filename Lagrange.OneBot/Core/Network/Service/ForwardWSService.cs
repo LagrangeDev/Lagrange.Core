@@ -28,7 +28,7 @@ public sealed class ForwardWSService : LagrangeWSService
             RestartAfterListenError = true
         };
         
-        _timer = new Timer(OnHeartbeat, null, int.MaxValue, ws.GetValue<int>("HeartBeatInterval"));
+        _timer = new Timer(OnHeartbeat, null, 1, ws.GetValue<int>("HeartBeatInterval"));
     }
 
     public override Task StartAsync(CancellationToken cancellationToken)
@@ -58,6 +58,13 @@ public sealed class ForwardWSService : LagrangeWSService
                     
                     var lifecycle = new OneBotLifecycle(Config.GetValue<uint>("Account:Uin"), "connect");
                     SendJsonAsync(lifecycle, cancellationToken).GetAwaiter().GetResult();
+                    
+                    _timer.Change(0, Config.GetValue<int>("Implementation:ForwardWebSocket:HeartBeatInterval"));
+                };
+
+                conn.OnClose = () =>
+                {
+                    Logger.LogWarning($"[{Tag}: Disconnected]");
                 };
             });
         }, cancellationToken);
