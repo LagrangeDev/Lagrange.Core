@@ -3,6 +3,7 @@ using System.Text.Json;
 using Lagrange.Core;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Action;
+using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Core.Network.Service;
 
 namespace Lagrange.OneBot.Core.Operation;
@@ -10,10 +11,10 @@ namespace Lagrange.OneBot.Core.Operation;
 public sealed class OperationService
 {
     private readonly BotContext _bot;
-    private readonly ILagrangeWebService _service;
+    private readonly LagrangeWebSvcCollection _service;
     private readonly Dictionary<string, IOperation> _operations;
 
-    public OperationService(BotContext bot, ILagrangeWebService service)
+    public OperationService(BotContext bot, LagrangeWebSvcCollection service)
     {
         _bot = bot;
         _service = service;
@@ -54,6 +55,10 @@ public sealed class OperationService
             {
                 throw new Exception("action deserialized failed");
             }
+        }
+        catch
+        {
+            await _service.SendJsonAsync(new OneBotResult(null, 200, "failed"));
         }
     }
 }
