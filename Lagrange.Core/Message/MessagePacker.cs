@@ -19,14 +19,12 @@ namespace Lagrange.Core.Message;
 /// <summary>
 /// Pack up message into the Protobuf <see cref="Message"/>
 /// </summary>
-internal class MessagePacker
+internal static class MessagePacker
 {
     private static readonly Dictionary<Type, List<PropertyInfo>> EntityToElem;
     private static readonly Dictionary<Type, IMessageEntity> Factory;
     private static readonly List<IMessageEntity> MsgFactory;
-
-    private readonly string _selfUid;
-
+    
     static MessagePacker()
     {
         EntityToElem = new Dictionary<Type, List<PropertyInfo>>();
@@ -56,19 +54,14 @@ internal class MessagePacker
 
         MsgFactory = assembly.GetImplementations<IMessageEntity>().Select(type => (IMessageEntity)type.CreateInstance()).ToList();
     }
-    
-    public MessagePacker(string selfUid)
-    {
-        _selfUid = selfUid;
-    }
 
-    public Internal.Packets.Message.Message Build(MessageChain chain)
+    public static Internal.Packets.Message.Message Build(MessageChain chain, string selfUid)
     {
         var message = BuildPacketBase(chain);
 
         foreach (var entity in chain)
         {
-            entity.SetSelfUid(_selfUid);
+            entity.SetSelfUid(selfUid);
             
             if (message.Body != null)
             {
@@ -86,13 +79,13 @@ internal class MessagePacker
         return message;
     }
     
-    public PushMsgBody BuildFake(MessageChain chain)
+    public static PushMsgBody BuildFake(MessageChain chain, string selfUid)
     {
         var message = BuildFakePacketBase(chain);
 
         foreach (var entity in chain)
         {
-            entity.SetSelfUid(_selfUid);
+            entity.SetSelfUid(selfUid);
             
             if (message.Body != null)
             {

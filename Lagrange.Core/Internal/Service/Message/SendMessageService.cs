@@ -15,8 +15,7 @@ internal class SendMessageService : BaseService<SendMessageEvent>
     protected override bool Build(SendMessageEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
-        var packer = new MessagePacker(keystore.Uid ?? throw new Exception("No UID found in keystore"));
-        var packet = packer.Build(input.Chain);
+        var packet = MessagePacker.Build(input.Chain, keystore.Uid ?? throw new Exception("No UID found in keystore"));
 
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, packet);

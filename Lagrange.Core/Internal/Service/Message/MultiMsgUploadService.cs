@@ -18,8 +18,7 @@ internal class MultiMsgUploadService : BaseService<MultiMsgUploadEvent>
     {
         if (input.Chains == null) throw new ArgumentNullException(nameof(input.Chains));
         
-        var msgPacker = new MessagePacker(keystore.Uid ?? "");
-        var msgBody = input.Chains.Select(msgPacker.BuildFake).ToList();
+        var msgBody = input.Chains.Select(x => MessagePacker.BuildFake(x, keystore.Uid ?? "")).ToList();
         var longMsgResult = new LongMsgResult
         {
             Action = new LongMsgAction
