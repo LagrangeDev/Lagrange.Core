@@ -29,14 +29,14 @@ public class LagrangeWebSvcCollection : Dictionary<string, ILagrangeWebService>,
                 };
 
                 if (service == null) logger.LogWarning($"[{Tag}]: unknown type of service of {section["Type"]} is configured, skipped");
-                else Add(new Guid().ToString(), service);
+                else Add(Guid.NewGuid().ToString(), service);
             }
         }
         else if (global.GetSection("Implementation").Exists())
         {
             logger.LogInformation($"[{Tag}]: Single Connection has been configured");
 
-            string identifier = new Guid().ToString();
+            string identifier = Guid.NewGuid().ToString();
             if (global.GetSection("Implementation:ReverseWebSocket").Exists())
             {
                 this[identifier] = new ReverseWSService(global.GetSection("Implementation:ReverseWebSocket"), logger, uin);
@@ -55,7 +55,7 @@ public class LagrangeWebSvcCollection : Dictionary<string, ILagrangeWebService>,
         {
             service.OnMessageReceived += (sender, args) =>
             {
-                OnMessageReceived.Invoke(sender, new MsgRecvEventArgs(identifier, args.Data));
+                OnMessageReceived.Invoke(sender, new MsgRecvEventArgs(args.Data, identifier));
             };
         }
     }
