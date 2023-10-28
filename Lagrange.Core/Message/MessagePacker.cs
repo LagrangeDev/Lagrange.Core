@@ -24,7 +24,6 @@ internal static class MessagePacker
 {
     private static readonly Dictionary<Type, List<PropertyInfo>> EntityToElem;
     private static readonly Dictionary<Type, IMessageEntity> Factory;
-    private static readonly List<IMessageEntity> MsgFactory;
     
     static MessagePacker()
     {
@@ -52,8 +51,6 @@ internal static class MessagePacker
 
             if (type.CreateInstance() is IMessageEntity factory) Factory[type] = factory;
         }
-
-        MsgFactory = assembly.GetImplementations<IMessageEntity>().Select(type => (IMessageEntity)type.CreateInstance()).ToList();
     }
 
     public static Internal.Packets.Message.Message Build(MessageChain chain, string selfUid)
