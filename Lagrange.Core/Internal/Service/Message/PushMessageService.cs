@@ -26,9 +26,15 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         extraEvents = new List<ProtocolEvent>();
         switch (packetType)
         {
-            case PkgType.PrivateMessage or PkgType.GroupMessage or PkgType.PrivateFileMessage:
+            case PkgType.PrivateMessage or PkgType.GroupMessage:
             {
                 var chain = MessagePacker.Parse(message.Message);
+                output = PushMessageEvent.Create(chain);
+                break;
+            }
+            case PkgType.PrivateFileMessage:
+            {
+                var chain = MessagePacker.ParsePrivateFile(message.Message);
                 output = PushMessageEvent.Create(chain);
                 break;
             }

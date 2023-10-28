@@ -1,6 +1,7 @@
 using System.Reflection;
 using Lagrange.Core.Internal.Packets.Message.C2C;
 using Lagrange.Core.Internal.Packets.Message.Component;
+using Lagrange.Core.Internal.Packets.Message.Component.Extra;
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Routing;
 using ProtoBuf;
@@ -115,35 +116,36 @@ internal static class MessagePacker
                 {
                     foreach (var expectElem in expectElems)
                     {
-                        var val = expectElem.GetValueByExpr(element);
-                        if (val != null)
+                        if (expectElem.GetValueByExpr(element) is not null && 
+                            Factory[entityType].UnpackElement(element) is { } entity)
                         {
-                            var entity = Factory[entityType].UnpackElement(element);
-                            if (entity != null)
-                            {
-                                chain.Add(entity);
-                                break;
-                            }
+                            chain.Add(entity);
+                            break;
                         }
                     }
                 }
             }
         }
 
-        if (message.Body is { MsgContent: not null })
+        return chain;
+    }
+
+    public static MessageChain ParsePrivateFile(PushMsgBody message)
+    {
+        if (message.Body?.MsgContent == null) throw new Exception();
+        
+        var chain = ParseChain(message);
+
+        var extra = Serializer.Deserialize<FileExtra>(message.Body.MsgContent.AsSpan());
+        var file = extra.File;
+
+        if ( file is { FileSize: not null, FileName: not null, FileMd5: not null, FileUuid: not null, FileHash: not null })
         {
-            foreach (var factory in MsgFactory)
-            {
-                var entity = factory.UnpackMessageContent(message.Body.MsgContent);
-                if (entity != null)
-                {
-                    chain.Add(entity);
-                    break;
-                }
-            }
+            chain.Add(new FileEntity((long)file.FileSize, file.FileName, file.FileMd5, file.FileUuid, file.FileHash));
+            return chain;
         }
 
-        return chain;
+        throw new Exception();
     }
 
     private static Internal.Packets.Message.Message BuildPacketBase(MessageChain chain) => new()

@@ -42,7 +42,7 @@ public class FileEntity : IMessageEntity
         FileName = Path.GetFileName(path);
     }
 
-    private FileEntity(long fileSize, string fileName, byte[] fileMd5, string fileUuid, string fileHash)
+    internal FileEntity(long fileSize, string fileName, byte[] fileMd5, string fileUuid, string fileHash)
     {
         FileSize = fileSize;
         FileName = fileName;
@@ -80,16 +80,6 @@ public class FileEntity : IMessageEntity
         }
 
         return null;
-    }
-
-    IMessageEntity? IMessageEntity.UnpackMessageContent(ReadOnlySpan<byte> content)
-    {
-        var extra = Serializer.Deserialize<FileExtra>(content);
-        var file = extra.File;
-        
-        return file is { FileSize: not null, FileName: not null, FileMd5: not null, FileUuid: not null, FileHash: not null }
-            ? new FileEntity((long)file.FileSize, file.FileName, file.FileMd5, file.FileUuid, file.FileHash) 
-            : null;
     }
 
     public string ToPreviewString() => $"[File] {FileName} ({FileSize}): {FileUrl ?? "failed to receive file url"}";
