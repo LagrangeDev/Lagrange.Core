@@ -1,5 +1,8 @@
+using System.Reflection;
 using Lagrange.Core.Common;
+using Lagrange.Core.Internal.Context.Uploader;
 using Lagrange.Core.Internal.Packets.Service.Highway;
+using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf.Meta;
@@ -12,6 +15,8 @@ namespace Lagrange.Core.Internal.Context;
 internal class HighwayContext : ContextBase, IDisposable
 {
     private const string Tag = nameof(HighwayContext);
+
+    private readonly Dictionary<Type, IHighwayUploader> _uploaders;
     
     private readonly HttpClient _client;
     private uint _sequence;
@@ -26,6 +31,13 @@ internal class HighwayContext : ContextBase, IDisposable
     public HighwayContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device)
         : base(collection, keystore, appInfo, device)
     {
+        _uploaders = new Dictionary<Type, IHighwayUploader>();
+        foreach (var impl in Assembly.GetExecutingAssembly().GetImplementations<IHighwayUploader>())
+        {
+            var attribute = impl.GetCustomAttribute<HighwayUploaderAttribute>();
+            if (attribute != null) _uploaders[attribute.Entity] = (IHighwayUploader)impl.CreateInstance(false);
+        }
+        
         var handler = new HttpClientHandler
         {
             ServerCertificateCustomValidationCallback = (_, _, _, _) => true,
@@ -64,6 +76,25 @@ internal class HighwayContext : ContextBase, IDisposable
         catch (Exception)
         {
             return false;
+        }
+    }
+
+    public async Task UploadResources(MessageChain chain)
+    {
+        foreach (var entity in chain)
+        {
+            if (_uploaders.TryGetValue(entity.GetType(), out var uploader))
+            {
+                try
+                {
+                    if (chain.IsGroup) await uploader.UploadGroup(Collection, chain, entity);
+                    else await uploader.UploadPrivate(Collection, chain, entity);
+                }
+                catch
+                {
+                    Collection.Log.LogFatal(Tag, $"Upload resources for {entity.GetType().Name} failed");
+                }
+            }
         }
     }
 
