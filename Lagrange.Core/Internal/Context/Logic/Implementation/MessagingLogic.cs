@@ -187,7 +187,7 @@ internal class MessagingLogic : LogicBase
                             var ticketResult = (ImageUploadEvent)results[0];
                             if (!ticketResult.IsExist)
                             {
-                                bool hwSuccess = await Collection.Highway.UploadSrcByStreamAsync(1, Collection.Keystore.Uin, image.ImageStream, ticketResult.Ticket, @event.FileMd5.UnHex());
+                                bool hwSuccess = await Collection.Highway.UploadSrcByStreamAsync(1, image.ImageStream, ticketResult.Ticket, @event.FileMd5.UnHex());
                                 if (!hwSuccess)
                                 {
                                     Collection.Log.LogFatal(Tag, "Failed to upload image to highway");
@@ -208,7 +208,7 @@ internal class MessagingLogic : LogicBase
                             var ticketResult = (ImageGroupUploadEvent)results[0];
                             if (!ticketResult.IsExist)
                             {
-                                bool hwSuccess = await Collection.Highway.UploadSrcByStreamAsync(2, Collection.Keystore.Uin, image.ImageStream, ticketResult.Ticket, @event.FileMd5.UnHex());
+                                bool hwSuccess = await Collection.Highway.UploadSrcByStreamAsync(2, image.ImageStream, ticketResult.Ticket, @event.FileMd5.UnHex());
                                 if (!hwSuccess)
                                 {
                                     Collection.Log.LogFatal(Tag, "Failed to upload image to highway");

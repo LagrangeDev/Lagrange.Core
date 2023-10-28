@@ -67,11 +67,11 @@ internal class HighwayContext : ContextBase, IDisposable
         }
     }
 
-    public async Task<bool> UploadSrcByStreamAsync(int commonId, uint uin, Stream data, string ticket, byte[] md5, byte[]? extendInfo = null)
+    public async Task<bool> UploadSrcByStreamAsync(int commonId, Stream data, string ticket, byte[] md5, byte[]? extendInfo = null)
     {
         bool success = true;
         var upBlocks = new List<UpBlock>();
-        var uri = new Uri($"http://htdata3.qq.com:80/cgi-bin/httpconn?htcmd=0x6FF0087&uin={uin}");
+        var uri = new Uri($"http://htdata3.qq.com:80/cgi-bin/httpconn?htcmd=0x6FF0087&uin={Collection.Keystore.Uin}");
 
         long fileSize = data.Length;
         int offset = 0;
@@ -83,7 +83,7 @@ internal class HighwayContext : ContextBase, IDisposable
         {
             var buffer = new byte[Math.Min(chunkSize, fileSize - offset)];
             int payload = await data.ReadAsync(buffer.AsMemory());
-            var reqBody = new UpBlock(commonId, uin, Interlocked.Increment(ref _sequence), (ulong)fileSize, (ulong)offset, ticket, md5, buffer, extendInfo);
+            var reqBody = new UpBlock(commonId, Collection.Keystore.Uin, Interlocked.Increment(ref _sequence), (ulong)fileSize, (ulong)offset, ticket, md5, buffer, extendInfo);
             upBlocks.Add(reqBody);
             offset += payload;
 
