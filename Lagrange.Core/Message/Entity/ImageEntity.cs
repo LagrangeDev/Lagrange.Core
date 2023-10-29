@@ -129,7 +129,7 @@ public class ImageEntity : IMessageEntity
         if (elems.CustomFace is not null)
         {
             var target = elems.CustomFace;
-            if (target.OrigUrl.StartsWith("&rkey=")) return null; // NTQQ's shit
+            if (target.OrigUrl.Contains("&rkey=")) return null; // NTQQ's shit
             
             return new ImageEntity
             {
