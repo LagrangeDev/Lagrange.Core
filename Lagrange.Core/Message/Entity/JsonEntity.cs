@@ -52,9 +52,9 @@ public class JsonEntity : IMessageEntity
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
-        if (elems.RichMsg is { ServiceId: 1, Template1: not null })
+        if (elems.RichMsg is { ServiceId: 1, Template1: not null } richMsg)
         {
-            var json = ZCompression.ZDecompress(elems.RichMsg.Template1[1..]);
+            var json = ZCompression.ZDecompress(richMsg.Template1[1..]);
             return new XmlEntity(Encoding.UTF8.GetString(json));
         }
 

@@ -21,7 +21,7 @@ public class TextEntity : IMessageEntity
     }
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems) => 
-        elems.Text is { Str: not null, Attr6Buf: null } ? new TextEntity(elems.Text.Str) : null;
+        elems.Text is { Str: not null, Attr6Buf: null } text ? new TextEntity(text.Str) : null;
 
     public string ToPreviewString()
     {

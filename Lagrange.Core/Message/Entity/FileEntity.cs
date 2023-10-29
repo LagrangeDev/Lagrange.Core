@@ -1,11 +1,9 @@
-using System.Security.Cryptography;
 using Lagrange.Core.Internal.Packets.Message.Component;
 using Lagrange.Core.Internal.Packets.Message.Component.Extra;
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
-using ProtoBuf;
 
 namespace Lagrange.Core.Message.Entity;
 
@@ -71,9 +69,9 @@ public class FileEntity : IMessageEntity
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
-        if (elems.TransElem?.ElemType == 24)
+        if (elems.TransElem is { ElemType: 24 } trans)
         {
-            var payload = new BinaryPacket(elems.TransElem.ElemValue);
+            var payload = new BinaryPacket(trans.ElemValue);
             payload.Skip(1);
             var protobuf = payload.ReadBytes(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
             Console.WriteLine(protobuf.Hex());

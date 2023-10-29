@@ -57,17 +57,15 @@ public class FaceEntity : IMessageEntity
 
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
-        if (elems.Face is { Old: not null })
+        if (elems.Face is { Old: not null } face)
         {
-            using var stream = new MemoryStream(elems.Face.Old);
-            ushort? faceId = (ushort?)elems.Face.Index;
+            ushort? faceId = (ushort?)face.Index;
             if (faceId != null) return new FaceEntity((ushort)faceId, false);
         }
 
-        if (elems.CommonElem is { PbElem: not null })
+        if (elems.CommonElem is { PbElem: not null } common)
         {
-            using var stream = new MemoryStream(elems.CommonElem.PbElem);
-            var qFace = Serializer.Deserialize<QFaceExtra>(stream);
+            var qFace = Serializer.Deserialize<QFaceExtra>(common.PbElem.AsSpan());
             
             ushort? faceId = (ushort?)qFace.FaceId;
             if (faceId != null) return new FaceEntity((ushort)faceId, true);

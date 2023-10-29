@@ -62,14 +62,13 @@ public class ForwardEntity : IMessageEntity
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
-        if (elems.SrcMsg != null)
+        if (elems.SrcMsg is { } srcMsg)
         {
-            var forward = new ForwardEntity
+            return new ForwardEntity
             {
-                Sequence = elems.SrcMsg.OrigSeqs?[0] ?? 0,
-                TargetUin = (uint)elems.SrcMsg.SenderUin,
+                Sequence = srcMsg.OrigSeqs?[0] ?? 0,
+                TargetUin = (uint)srcMsg.SenderUin,
             };
-            return forward;
         }
 
         return null;

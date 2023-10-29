@@ -82,7 +82,7 @@ public class MultiMsgEntity : IMessageEntity
     }
 
     IMessageEntity? IMessageEntity.UnpackElement(Elem elem) => 
-            elem.GeneralFlags is { LongTextResId: not null } ? new MultiMsgEntity(elem.GeneralFlags.LongTextResId) : null;
+            elem.GeneralFlags is { LongTextResId: not null } flags ? new MultiMsgEntity(flags.LongTextResId) : null;
 
     public string ToPreviewString() => $"[MultiMsgEntity] {Chains.Count} chains";
 

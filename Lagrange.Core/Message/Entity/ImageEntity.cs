@@ -114,35 +114,33 @@ public class ImageEntity : IMessageEntity
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
-        if (elems.NotOnlineImage is not null)
+        if (elems.NotOnlineImage is { } image)
         {
-            var target = elems.NotOnlineImage;
             return new ImageEntity
             {
-                PictureSize = new Vector2(target.PicWidth, target.PicHeight),
-                FilePath = target.FilePath,
-                ImageSize = target.FileLen,
-                ImageUrl = $"{BaseUrl}{target.OrigUrl}"
+                PictureSize = new Vector2(image.PicWidth, image.PicHeight),
+                FilePath = image.FilePath,
+                ImageSize = image.FileLen,
+                ImageUrl = $"{BaseUrl}{image.OrigUrl}"
             };
         }
         
-        if (elems.CustomFace is not null)
+        if (elems.CustomFace is { } face)
         {
-            var target = elems.CustomFace;
-            if (target.OrigUrl.Contains("&rkey=")) return null; // NTQQ's shit
+            if (face.OrigUrl.Contains("&rkey=")) return null; // NTQQ's shit
             
             return new ImageEntity
             {
-                PictureSize = new Vector2(target.Width, target.Height),
-                FilePath = target.FilePath,
-                ImageSize = target.Size,
-                ImageUrl = $"{LegacyBaseUrl}{target.OrigUrl}"
+                PictureSize = new Vector2(face.Width, face.Height),
+                FilePath = face.FilePath,
+                ImageSize = face.Size,
+                ImageUrl = $"{LegacyBaseUrl}{face.OrigUrl}"
             };
         }
 
-        if (elems.CommonElem is { ServiceType: 48 })
+        if (elems.CommonElem is { ServiceType: 48 } common)
         {
-            var extra = Serializer.Deserialize<ImageExtra>(elems.CommonElem.PbElem.AsSpan());
+            var extra = Serializer.Deserialize<ImageExtra>(common.PbElem.AsSpan());
             
             return new ImageEntity
             {
