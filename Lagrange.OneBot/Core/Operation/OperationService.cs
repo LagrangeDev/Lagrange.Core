@@ -16,7 +16,7 @@ public sealed class OperationService
     private readonly LagrangeWebSvcCollection _service;
     private readonly Dictionary<string, IOperation> _operations;
 
-    public OperationService(BotContext bot, Logger<LagrangeApp> logger, LagrangeWebSvcCollection service)
+    public OperationService(BotContext bot, ILogger<LagrangeApp> logger, LagrangeWebSvcCollection service)
     {
         _bot = bot;
         _logger = logger;
