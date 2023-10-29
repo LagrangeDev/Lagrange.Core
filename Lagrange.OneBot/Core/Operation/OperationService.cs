@@ -48,7 +48,9 @@ public sealed class OperationService
                 }
                 else
                 {
-                    await _service.SendJsonAsync(new OneBotResult(null, 404, "failed"), eventArgs.Identifier);
+                    var result = new OneBotResult(null, 404, "failed");
+                    result.Echo = action.Echo;
+                    await _service.SendJsonAsync(result, eventArgs.Identifier);
                 }
             }
             else
