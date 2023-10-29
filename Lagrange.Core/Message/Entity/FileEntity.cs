@@ -24,6 +24,8 @@ public class FileEntity : IMessageEntity
     
     internal string? FileHash { get; set; }
     
+    internal Stream? FileStream { get; set; }
+    
     public FileEntity()
     {
         FileName = "";
@@ -36,6 +38,14 @@ public class FileEntity : IMessageEntity
         FileMd5 = FileStream.Md5().UnHex();
         FileSize = FileStream.Length;
         FileName = Path.GetFileName(path);
+    }
+
+    public FileEntity(byte[] payload, string fileName)
+    {
+        FileStream = new MemoryStream(payload);
+        FileMd5 = payload.Md5().UnHex();
+        FileSize = payload.Length;
+        FileName = fileName;
     }
 
     internal FileEntity(long fileSize, string fileName, byte[] fileMd5, string fileUuid, string fileHash)
