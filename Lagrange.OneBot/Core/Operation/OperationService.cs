@@ -5,18 +5,21 @@ using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Core.Network.Service;
+using Microsoft.Extensions.Logging;
 
 namespace Lagrange.OneBot.Core.Operation;
 
 public sealed class OperationService
 {
     private readonly BotContext _bot;
+    private readonly ILogger _logger;
     private readonly LagrangeWebSvcCollection _service;
     private readonly Dictionary<string, IOperation> _operations;
 
-    public OperationService(BotContext bot, LagrangeWebSvcCollection service)
+    public OperationService(BotContext bot, Logger<LagrangeApp> logger, LagrangeWebSvcCollection service)
     {
         _bot = bot;
+        _logger = logger;
         _service = service;
         _operations = new Dictionary<string, IOperation>();
         
@@ -31,11 +34,9 @@ public sealed class OperationService
 
     private async Task HandleOperation(MsgRecvEventArgs eventArgs)
     {
-        var action = JsonSerializer.Deserialize<OneBotAction>(eventArgs.Data);
-
-        try
+        if (JsonSerializer.Deserialize<OneBotAction>(eventArgs.Data) is { } action)
         {
-            if (action != null)
+            try
             {
                 bool supported = _operations.TryGetValue(action.Action, out var handler);
 
@@ -48,17 +49,17 @@ public sealed class OperationService
                 }
                 else
                 {
-                    await _service.SendJsonAsync(new OneBotResult(null, 404, "failed"), eventArgs.Identifier);
+                    await _service.SendJsonAsync(new OneBotResult(null, 404, "failed") { Echo = action.Echo }, eventArgs.Identifier);
                 }
             }
-            else
+            catch
             {
-                throw new Exception("action deserialized failed");
+                await _service.SendJsonAsync(new OneBotResult(null, 200, "failed") { Echo = action.Echo }, eventArgs.Identifier);
             }
         }
-        catch
+        else
         {
-            await _service.SendJsonAsync(new OneBotResult(null, 200, "failed"), eventArgs.Identifier);
+            _logger.LogWarning($"Json Serialization failed for such action");
         }
     }
 }
