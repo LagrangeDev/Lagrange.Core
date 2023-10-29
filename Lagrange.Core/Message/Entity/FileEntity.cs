@@ -28,15 +28,13 @@ public class FileEntity : IMessageEntity
     {
         FileName = "";
         FileMd5 = Array.Empty<byte>();
-        
     }
     
     public FileEntity(string path)
     {
-        using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-        using var md5 = MD5.Create();
-        FileMd5 = md5.ComputeHash(stream);
-        FileSize = stream.Length;
+        FileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        FileMd5 = FileStream.Md5().UnHex();
+        FileSize = FileStream.Length;
         FileName = Path.GetFileName(path);
     }
 
