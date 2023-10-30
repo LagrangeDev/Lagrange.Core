@@ -38,20 +38,24 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 output = PushMessageEvent.Create(chain);
                 break;
             }
-            case PkgType.GroupInviteNotice:
+            case PkgType.GroupRequestJoinNotice when message.Message.Body?.MsgContent is { } content:
             {
-                if (message.Message.Body?.MsgContent == null) return false;
-                
-                var invite = Serializer.Deserialize<GroupInvite>(message.Message.Body.MsgContent.AsSpan());
+                break;
+            }
+            case PkgType.GroupRequestInvitationNotice when message.Message.Body?.MsgContent is { } content:
+            {
+                break;
+            }
+            case PkgType.GroupInviteNotice when message.Message.Body?.MsgContent is { } content:
+            {
+                var invite = Serializer.Deserialize<GroupInvite>(content.AsSpan());
                 var inviteEvent = GroupSysInviteEvent.Result(invite.GroupUin, invite.InvitorUid);
                 extraEvents.Add(inviteEvent);
                 break;
             }
-            case PkgType.GroupAdminChangedNotice:
+            case PkgType.GroupAdminChangedNotice when message.Message.Body?.MsgContent is { } content:
             {
-                if (message.Message.Body?.MsgContent == null) return false;
-                
-                var admin = Serializer.Deserialize<GroupAdmin>(message.Message.Body.MsgContent.AsSpan());
+                var admin = Serializer.Deserialize<GroupAdmin>(content.AsSpan());
                 bool enabled; string uid;
                 if (admin.Body.ExtraEnable != null)
                 {
@@ -63,28 +67,31 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                     enabled = false;
                     uid = admin.Body.ExtraDisable.AdminUid;
                 }
-                else return false;
+                else
+                {
+                    return false;
+                }
                 
-                var adminEvent = GroupSysAdminEvent.Result(admin.GroupUin, uid, enabled);
-                extraEvents.Add(adminEvent);
+                extraEvents.Add(GroupSysAdminEvent.Result(admin.GroupUin, uid, enabled));
                 break;
             }
-            case PkgType.GroupMemberIncreaseNotice:
+            case PkgType.GroupMemberIncreaseNotice when message.Message.Body?.MsgContent is { } content:
             {
-                if (message.Message.Body?.MsgContent == null) return false;
-                
-                var increase = Serializer.Deserialize<GroupChange>(message.Message.Body.MsgContent.AsSpan());
+                var increase = Serializer.Deserialize<GroupChange>(content.AsSpan());
                 var increaseEvent = GroupSysIncreaseEvent.Result(increase.GroupUin, increase.MemberUid, increase.OperatorUid);
                 extraEvents.Add(increaseEvent);
                 break;
             }
-            case PkgType.GroupMemberDecreaseNotice:
+            case PkgType.GroupMemberDecreaseNotice when message.Message.Body?.MsgContent is { } content:
             {
-                if (message.Message.Body?.MsgContent == null) return false;
-                
-                var decrease = Serializer.Deserialize<GroupChange>(message.Message.Body.MsgContent.AsSpan());
+                var decrease = Serializer.Deserialize<GroupChange>(content.AsSpan());
                 var decreaseEvent = GroupSysDecreaseEvent.Result(decrease.GroupUin, decrease.MemberUid, decrease.OperatorUid);
                 extraEvents.Add(decreaseEvent);
+                break;
+            }
+            case PkgType.Event0x210:
+            {
+                ProcessEvent0x210(input, message);
                 break;
             }
             case PkgType.Event0x2DC:
@@ -101,18 +108,34 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         return true;
     }
 
-    public static void ProcessEvent0x2DC(byte[] payload, PushMsg msg)
+    private static void ProcessEvent0x2DC(byte[] payload, PushMsg msg)
     {
         var pkgType = (Event0x2DCSubType)(msg.Message.ContentHead.SubType ?? 0);
         switch (pkgType)
         {
-            case Event0x2DCSubType.GroupRecallNotice:
+            case Event0x2DCSubType.GroupRecallNotice when msg.Message.Body?.MsgContent is { } content:
             {
-                if (msg.Message.Body?.MsgContent != null)
-                {
-                    var subInfo = msg.Message.Body?.MsgContent[7..];
-                    Console.WriteLine(subInfo!.Hex());
-                }
+                var subInfo = content[7..];
+                Console.WriteLine(subInfo.Hex());
+                break;
+            }
+            default:
+            {
+                Console.WriteLine($"Unknown Event0x2DC message type: {pkgType}: {payload.Hex()}");
+                break;
+            }
+        }
+    }
+
+    private static void ProcessEvent0x210(byte[] payload, PushMsg msg)
+    {
+        var pkgType = (Event0x210SubType)(msg.Message.ContentHead.SubType ?? 0);
+        switch (pkgType)
+        {
+            case Event0x210SubType.FriendRequestNotice when msg.Message.Body?.MsgContent is { } content:
+            {
+                var subInfo = content[7..];
+                Console.WriteLine(subInfo.Hex());
                 break;
             }
             default:
@@ -126,11 +149,16 @@ internal class PushMessageService : BaseService<PushMessageEvent>
     private enum PkgType
     {
         PrivateMessage = 166,
-        PrivateFileMessage = 529,
         GroupMessage = 82,
-        GroupInviteNotice = 87,
+        
         Event0x210 = 528,
         Event0x2DC = 732,
+        
+        PrivateFileMessage = 529,
+        
+        GroupRequestInvitationNotice = 525, // from group member invitation
+        GroupRequestJoinNotice = 84, // directly entered
+        GroupInviteNotice = 87,
         GroupAdminChangedNotice = 44,
         GroupMemberIncreaseNotice = 33,
         GroupMemberDecreaseNotice = 34,
@@ -143,6 +171,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
     
     private enum Event0x210SubType
     {
-        Friend = 138
+        Friend = 138,
+        FriendRequestNotice = 226,
     }
 }
