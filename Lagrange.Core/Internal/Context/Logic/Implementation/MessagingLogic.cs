@@ -16,6 +16,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(GroupSysAdminEvent))]
 [EventSubscribe(typeof(GroupSysIncreaseEvent))]
 [EventSubscribe(typeof(GroupSysDecreaseEvent))]
+[EventSubscribe(typeof(FriendSysRequestEvent))]
 [BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
 internal class MessagingLogic : LogicBase
 {
@@ -73,6 +74,12 @@ internal class MessagingLogic : LogicBase
                 if (decrease.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.OperatorUid);
                 var decreaseArgs = new GroupMemberDecreaseEvent(decrease.GroupUin, memberUin, operatorUin);
                 Collection.Invoker.PostEvent(decreaseArgs);
+                break;
+            }
+            case FriendSysRequestEvent info:
+            {
+                var requestArgs = new FriendRequestEvent(info.SourceUin, info.Name, info.Message);
+                Collection.Invoker.PostEvent(requestArgs);
                 break;
             }
         }

@@ -91,7 +91,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             }
             case PkgType.Event0x210:
             {
-                ProcessEvent0x210(input, message);
+                ProcessEvent0x210(input, message, extraEvents);
                 break;
             }
             case PkgType.Event0x2DC:
@@ -127,20 +127,21 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         }
     }
 
-    private static void ProcessEvent0x210(byte[] payload, PushMsg msg)
+    private static void ProcessEvent0x210(byte[] payload, PushMsg msg, List<ProtocolEvent> extraEvents)
     {
         var pkgType = (Event0x210SubType)(msg.Message.ContentHead.SubType ?? 0);
         switch (pkgType)
         {
             case Event0x210SubType.FriendRequestNotice when msg.Message.Body?.MsgContent is { } content:
             {
-                var subInfo = content[7..];
-                Console.WriteLine(subInfo.Hex());
+                var friend = Serializer.Deserialize<FriendRequest>(content.AsSpan());
+                var friendEvent = FriendSysRequestEvent.Result(msg.Message.ResponseHead.FromUin, friend.Info.SourceUid, friend.Info.Message, friend.Info.Name);
+                extraEvents.Add(friendEvent);
                 break;
             }
             default:
             {
-                Console.WriteLine($"Unknown Event0x2DC message type: {pkgType}: {payload.Hex()}");
+                Console.WriteLine($"Unknown Event0x210 message type: {pkgType}: {payload.Hex()}");
                 break;
             }
         }

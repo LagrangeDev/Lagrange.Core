@@ -25,4 +25,6 @@ public partial class EventInvoker
     public event LagrangeEvent<GroupMemberIncreaseEvent>? OnGroupMemberIncreaseEvent;
     
     public event LagrangeEvent<GroupMemberDecreaseEvent>? OnGroupMemberDecreaseEvent;
+    
+    public event LagrangeEvent<FriendRequestEvent>? OnFriendRequestEvent;
 }

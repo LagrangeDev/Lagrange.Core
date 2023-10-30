@@ -43,7 +43,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 |          |         |                           |         | ~~Flash Image~~ |    🔴    | Group Request     |    🔴    | GroupPromoteAdmin   |    🟢    |
 |          |         |                           |         | Reply           |    🟢    | ~~Voice Call~~    |    🔴    | GroupInvite         |    🟢    |
 |          |         |                           |         | File            |    🟡    | Client Key        |    🟢    | GroupRequestJoin    |    🔴    |
-|          |         |                           |         |                 |         | Cookies           |    🟢    | FriendRequest       |    🔴    |
+|          |         |                           |         |                 |         | Cookies           |    🟢    | FriendRequest       |    🟢    |
 |          |         |                           |         |                 |         | Send Message      |    🟢    | ~~FriendTyping~~    |    🔴    |
 |          |         |                           |         |                 |         |                   |         | ~~FriendVoiceCall~~ |    🔴    |
 
