@@ -4,7 +4,7 @@ using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Utility.Sign;
 using Lagrange.OneBot.Core.Message;
 using Lagrange.OneBot.Core.Network;
-using Lagrange.OneBot.Core.Network.Service;
+using Lagrange.OneBot.Core.Notify;
 using Lagrange.OneBot.Core.Operation;
 using Lagrange.OneBot.Database;
 using Lagrange.OneBot.Utility;
@@ -83,6 +83,7 @@ public sealed class LagrangeAppBuilder
         Services.AddSingleton<ContextBase, LiteDbContext>();
         Services.AddSingleton<SignProvider, OneBotSigner>();
 
+        Services.AddSingleton<NotifyService>();
         Services.AddSingleton<MessageService>();
         Services.AddSingleton<OperationService>();
         return this;

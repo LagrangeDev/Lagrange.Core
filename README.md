@@ -203,7 +203,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | Notice   | [Group Poke]                   |    🔴    |
 | Notice   | [Group red envelope luck king] |    🔴    |
 | Notice   | [Group Member Honor Changed]   |    🔴    |
-| Request  | [Add Friend Request]           |    🔴    |
+| Request  | [Add Friend Request]           |    🟢    |
 | Request  | [Group Request/Invitations]    |    🔴    |
 | Meta     | [LifeCycle]                    |    🟢    |
 | Meta     | [Heartbeat]                    |    🟢    |
