@@ -301,7 +301,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 ```json
 {    "Implementations": [
       {
-        "Type": "ReverseWebsocket",
+        "Type": "ReverseWebSocket",
         "Host": "127.0.0.1",
         "Port": 8080,
         "Suffix": "/onebot/v11/ws",
@@ -310,7 +310,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
         "AccessToken": ""
       },
       {
-        "Type": "ReverseWebsocket",
+        "Type": "ReverseWebSocket",
         "Host": "127.0.0.1",
         "Port": 8081,
         "HeartBeatInterval": 5000,
