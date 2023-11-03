@@ -22,7 +22,6 @@
     <ItemGroup>
         <None Include="../README.md" Pack="true" PackagePath="\" />
         <PackageReference Include="protobuf-net" Version="3.2.16" />
-      <PackageReference Include="System.Text.Json" Version="7.0.2" />
     </ItemGroup>
 
 </Project>
