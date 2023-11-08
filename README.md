@@ -72,7 +72,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [Location]       |    🔴    |
 | [Music]          |    🔴    |
 | [Reply]          |    🔴    |
-| [Forward]        |    🔴    |
+| [Forward]        |    🟢    |
 | [Node]           |    🔴    |
 | [Xml]            |    🔴    |
 | [Json]           |    🔴    |
@@ -110,7 +110,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [/send_msg]                |    🟢    |
 | [/delete_msg]              |    🔴    |
 | [/get_msg]                 |    🔴    |
-| [/get_forward_msg]         |    🔴    |
+| [/get_forward_msg]         |    🟢    |
 | ~~[/send_like]~~           |    🔴    |
 | [/set_group_kick]          |    🟢    |
 | [/set_group_ban]           |    🟢    |
@@ -194,8 +194,8 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | Message  | [Group Message]                |    🟢    |
 | Notice   | [Group File Upload]            |    🔴    |
 | Notice   | [Group Admin Change]           |    🔴    |
-| Notice   | [Group Member Decrease]        |    🔴    |
-| Notice   | [Group Member Increase]        |    🔴    |
+| Notice   | [Group Member Decrease]        |    🟢    |
+| Notice   | [Group Member Increase]        |    🟢    |
 | Notice   | [Group Mute]                   |    🔴    |
 | Notice   | [Friend Add]                   |    🔴    |
 | Notice   | [Group Recall Message]         |    🔴    |

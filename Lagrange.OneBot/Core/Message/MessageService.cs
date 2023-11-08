@@ -17,7 +17,20 @@ public sealed class MessageService
 {
     private readonly LagrangeWebSvcCollection _service;
     private readonly ContextBase _context;
-    private readonly Dictionary<Type, (string, ISegment)> _entityToSegment;
+    private static readonly Dictionary<Type, (string, ISegment)> EntityToSegment;
+
+    static MessageService()
+    {
+        EntityToSegment = new Dictionary<Type, (string, ISegment)>();
+        foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
+        {
+            var attribute = type.GetCustomAttribute<SegmentSubscriberAttribute>();
+            if (attribute != null)
+            {
+                EntityToSegment[attribute.Entity] = (attribute.Type, (ISegment)type.CreateInstance(false));
+            }
+        }
+    }
     
     public MessageService(BotContext bot, LagrangeWebSvcCollection service, ContextBase context)
     {
@@ -29,16 +42,6 @@ public sealed class MessageService
         invoker.OnFriendMessageReceived += OnFriendMessageReceived;
         invoker.OnGroupMessageReceived += OnGroupMessageReceived;
         invoker.OnTempMessageReceived += OnTempMessageReceived;
-
-        _entityToSegment = new Dictionary<Type, (string, ISegment)>();
-        foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
-        {
-            var attribute = type.GetCustomAttribute<SegmentSubscriberAttribute>();
-            if (attribute != null)
-            {
-                _entityToSegment[attribute.Entity] = (attribute.Type, (ISegment)type.CreateInstance(false));
-            }
-        }
     }
     
     private void OnFriendMessageReceived(BotContext bot, FriendMessageEvent e)
@@ -70,13 +73,13 @@ public sealed class MessageService
         // TODO: Implement temp msg
     }
 
-    private List<OneBotSegment> Convert(IEnumerable<IMessageEntity> entities)
+    public static List<OneBotSegment> Convert(IEnumerable<IMessageEntity> entities)
     {
         var result = new List<OneBotSegment>();
 
         foreach (var entity in entities)
         {
-            if (_entityToSegment.TryGetValue(entity.GetType(), out var instance))
+            if (EntityToSegment.TryGetValue(entity.GetType(), out var instance))
             {
                 result.Add(new OneBotSegment(instance.Item1, instance.Item2.FromEntity(entity)));
             }
