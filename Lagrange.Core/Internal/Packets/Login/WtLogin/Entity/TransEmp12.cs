@@ -28,8 +28,7 @@ internal class TransEmp12 : TransEmp
 
     public static Dictionary<ushort, TlvBody> Deserialize(BinaryPacket packet, out State qrState)
     {
-        qrState = (State)packet.ReadByte();
-        if (qrState == State.Confirmed)
+        if ((qrState = (State)packet.ReadByte()) == State.Confirmed)
         {
             packet.Skip(12); // misc unknown data
             return TlvPacker.ReadTlvCollections(packet, true);
