@@ -70,8 +70,8 @@ public class LagrangeApp : IHost
         
         await WebService.StartAsync(cancellationToken);
         
-        if (Configuration["Account:Password"] == null || Configuration["Account:Password"] == "" || 
-            Instance.ContextCollection.Keystore.Session.TempPassword == null)
+        if (string.IsNullOrEmpty(Configuration["Account:Password"]) &&
+            Instance.ContextCollection.Keystore.Session.TempPassword == null) // EasyLogin and PasswordLogin is both disabled
         {
             Logger.LogInformation("Session expired or Password not filled in, try to login by QrCode");
 
