@@ -21,7 +21,7 @@ public class MultiMsgEntity : IMessageEntity
     
     internal MultiMsgEntity() => Chains = new List<MessageChain>();
 
-    private MultiMsgEntity(string resId)
+    internal MultiMsgEntity(string resId)
     {
         ResId = resId;
         Chains = new List<MessageChain>();
