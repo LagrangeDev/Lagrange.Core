@@ -8,7 +8,7 @@ using Lagrange.Core.Utility.Binary.Compression;
 
 namespace Lagrange.Core.Message.Entity;
 
-[MessageElement(typeof(GeneralFlags))]
+[MessageElement(typeof(RichMsg))]
 public class MultiMsgEntity : IMessageEntity
 {
     private static readonly XmlSerializer Serializer = new(typeof(MultiMessage));
@@ -81,8 +81,20 @@ public class MultiMsgEntity : IMessageEntity
         };
     }
 
-    IMessageEntity? IMessageEntity.UnpackElement(Elem elem) => 
-            elem.GeneralFlags is { LongTextResId: not null } flags ? new MultiMsgEntity(flags.LongTextResId) : null;
+    IMessageEntity? IMessageEntity.UnpackElement(Elem elem)
+    {
+        if (elem.RichMsg is { ServiceId: 35, Template1: not null } richMsg)
+        {
+            var xml = ZCompression.ZDecompress(richMsg.Template1[1..]);
+            if ((MultiMessage?)Serializer.Deserialize(new MemoryStream(xml)) is { } xmlEntity)
+            {
+                return new MultiMsgEntity(xmlEntity.ResId);
+            }
+        }
+
+        return null;
+    } 
+            
 
     public string ToPreviewString() => $"[MultiMsgEntity] {Chains.Count} chains";
 
