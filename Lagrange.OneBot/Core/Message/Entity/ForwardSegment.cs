@@ -12,12 +12,15 @@ public partial class ForwardSegment(string name)
     [JsonPropertyName("id")] public string Name { get; set; } = name;
 }
 
-[SegmentSubscriber(typeof(MultiMsgEntity), "forward")]
+[SegmentSubscriber(typeof(MultiMsgEntity), "forward", "node")]
 public partial class ForwardSegment : ISegment
 {
     public IMessageEntity ToEntity() => throw new InvalidOperationException("Only Receive but not send");
     
-    public void Build(MessageBuilder builder, ISegment segment) => throw new InvalidOperationException();
+    public void Build(MessageBuilder builder, ISegment segment)
+    {
+        if (segment is ForwardSegment forward) builder.Add(new MultiMsgEntity(forward.Name));
+    }
 
     public ISegment FromEntity(IMessageEntity entity)
     {

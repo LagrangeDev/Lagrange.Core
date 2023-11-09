@@ -82,6 +82,22 @@ public sealed class MessageBuilder
         return this;
     }
 
+    public MessageBuilder File(byte[] file, string fileName)
+    {
+        var fileEntity = new FileEntity(file, fileName);
+        _chain.Add(fileEntity);
+        
+        return this;
+    }
+    
+    public MessageBuilder File(string filePath)
+    {
+        var fileEntity = new FileEntity(filePath);
+        _chain.Add(fileEntity);
+        
+        return this;
+    }
+
     public MessageBuilder Add(IMessageEntity entity)
     {
         _chain.Add(entity);

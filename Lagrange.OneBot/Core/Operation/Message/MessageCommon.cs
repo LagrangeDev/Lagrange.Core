@@ -19,7 +19,7 @@ public static class MessageCommon
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var attribute = type.GetCustomAttribute<SegmentSubscriberAttribute>();
-            if (attribute != null) TypeToSegment[attribute.Type] = (ISegment)type.CreateInstance(false);
+            if (attribute != null) TypeToSegment[attribute.SendType] = (ISegment)type.CreateInstance(false);
         }
     }
     
