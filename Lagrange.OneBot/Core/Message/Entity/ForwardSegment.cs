@@ -4,6 +4,7 @@ using Lagrange.Core.Message.Entity;
 
 namespace Lagrange.OneBot.Core.Message.Entity;
 
+[Serializable]
 public partial class ForwardSegment(string name)
 {
     public ForwardSegment() : this("") { }
@@ -11,7 +12,7 @@ public partial class ForwardSegment(string name)
     [JsonPropertyName("id")] public string Name { get; set; } = name;
 }
 
-[SegmentSubscriber(typeof(ForwardSegment), "forward")]
+[SegmentSubscriber(typeof(MultiMsgEntity), "forward")]
 public partial class ForwardSegment : ISegment
 {
     public IMessageEntity ToEntity() => throw new InvalidOperationException("Only Receive but not send");
