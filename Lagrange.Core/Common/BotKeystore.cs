@@ -7,13 +7,13 @@ using Lagrange.Core.Utility.Generator;
 
 namespace Lagrange.Core.Common;
 
-public class BotKeystore // TODO: 你自己不恶心吗，穿件衣服吧你
+public class BotKeystore
 {
     [JsonConstructor]
-#pragma warning disable CS8618
     public BotKeystore()
-#pragma warning restore CS8618
     {
+        PasswordMd5 = "";
+        
         SecpImpl = new EcdhImpl(EcdhImpl.CryptMethod.Secp192K1);
         PrimeImpl = new EcdhImpl(EcdhImpl.CryptMethod.Prime256V1, false);
         TeaImpl = new TeaImpl();
