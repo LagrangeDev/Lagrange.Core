@@ -73,7 +73,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [Music]          |    🔴    |
 | [Reply]          |    🔴    |
 | [Forward]        |    🟢    |
-| [Node]           |    🔴    |
+| [Node]           |    🟢    |
 | [Xml]            |    🔴    |
 | [Json]           |    🔴    |
 
@@ -234,7 +234,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | CommunicationType  | Support |
 | ------------------ | :-----: |
 | [Http]             |    🔴    |
-| [Http-Post]        |    🟢    |
+| [Http-Post]        |    🔴    |
 | [ForwardWebSocket] |    🟢    |
 | [ReverseWebSocket] |    🟢    |
 

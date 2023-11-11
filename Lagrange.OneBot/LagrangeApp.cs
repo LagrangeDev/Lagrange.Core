@@ -65,10 +65,11 @@ public class LagrangeApp : IHost
             Logger.LogInformation($"Bot Online: {keystore.Uin}");
             string json = JsonSerializer.Serialize(keystore, new JsonSerializerOptions { WriteIndented = true });
             
+            // Adapters should be started here instead of at the start of application
+            await WebService.StartAsync(cancellationToken);
+            
             await File.WriteAllTextAsync(Configuration["ConfigPath:Keystore"] ?? "keystore.json", json, cancellationToken);
         };
-        
-        await WebService.StartAsync(cancellationToken);
         
         if (string.IsNullOrEmpty(Configuration["Account:Password"]) &&
             Instance.ContextCollection.Keystore.Session.TempPassword == null) // EasyLogin and PasswordLogin is both disabled
