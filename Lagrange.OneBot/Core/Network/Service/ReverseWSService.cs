@@ -28,7 +28,7 @@ public sealed class ReverseWSService : LagrangeWSService
             SetRequestHeader(socket, new Dictionary<string, string>
             {
                 { "X-Client-Role", "Universal" },
-                { "X-Self-ID", Config.GetValue<uint>("Account:Uin").ToString() },
+                { "X-Self-ID", uin.ToString() },
                 { "User-Agent", Constant.OneBotImpl }
             });
             socket.Options.KeepAliveInterval = TimeSpan.FromSeconds(5);

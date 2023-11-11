@@ -1,3 +1,4 @@
+using Lagrange.Core;
 using Lagrange.OneBot.Core.Network.Service;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -11,9 +12,9 @@ public class LagrangeWebSvcCollection : Dictionary<string, ILagrangeWebService>,
     
     public event EventHandler<MsgRecvEventArgs> OnMessageReceived = delegate {  };
 
-    public LagrangeWebSvcCollection(IConfiguration global, ILogger<LagrangeApp> logger)
+    public LagrangeWebSvcCollection(BotContext context, IConfiguration global, ILogger<LagrangeApp> logger)
     {
-        uint uin = global.GetValue<uint>("Account:Uin");
+        uint uin = context.BotUin;
         
         if (global.GetSection("Implementations").Exists())
         {
