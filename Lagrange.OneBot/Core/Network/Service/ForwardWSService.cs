@@ -76,6 +76,7 @@ public sealed class ForwardWSService : LagrangeWSService
                 conn.OnClose = () =>
                 {
                     Logger.LogWarning($"[{Tag}: Disconnected]");
+                    _connection = null;
                 };
             });
         }, cancellationToken);
