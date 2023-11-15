@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Lagrange.OneBot.Core.Entity.Notify;
 
+[Serializable]
 public class OneBotMemberDecrease(uint selfId, string subType, uint groupId, uint operatorId, uint userId) 
     : OneBotNotify(selfId, "group_decrease")
 {
