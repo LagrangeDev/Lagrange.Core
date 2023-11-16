@@ -18,6 +18,8 @@ public sealed class ForwardWSService : LagrangeWSService
     
     private readonly Timer _timer;
 
+    private readonly string _accessToken;
+
     public ForwardWSService(IConfiguration config, ILogger<LagrangeApp> logger, uint uin) : base(config, logger, uin)
     {
         string url = $"ws://{config["Host"]}:{config["Port"]}";
@@ -28,6 +30,7 @@ public sealed class ForwardWSService : LagrangeWSService
         };
         
         _timer = new Timer(OnHeartbeat, null, 1, config.GetValue<int>("HeartBeatInterval"));
+        _accessToken = string.IsNullOrEmpty(config["AccessToken"]) ? "" : config["AccessToken"]!;
     }
 
     public override Task StartAsync(CancellationToken cancellationToken)
@@ -53,6 +56,15 @@ public sealed class ForwardWSService : LagrangeWSService
 
                 conn.OnOpen = () =>
                 {
+                    if (!string.IsNullOrEmpty(_accessToken))
+                    {
+                        if (!conn.ConnectionInfo.Headers.ContainsKey("Authorization") || conn.ConnectionInfo.Headers["Authorization"] != $"Bearer {_accessToken}")
+                        {
+                            conn.Close(1002);
+                            return;
+                        }
+                    }
+
                     Logger.LogInformation($"[{Tag}]: Connected");
                     
                     var lifecycle = new OneBotLifecycle(Uin, "connect");
@@ -64,6 +76,7 @@ public sealed class ForwardWSService : LagrangeWSService
                 conn.OnClose = () =>
                 {
                     Logger.LogWarning($"[{Tag}: Disconnected]");
+                    _connection = null;
                 };
             });
         }, cancellationToken);
