@@ -39,4 +39,9 @@ internal class WindowsSigner : SignProvider
             return new byte[35]; // Dummy signature
         }
     }
+
+    public override bool Test()
+    {
+        throw new NotImplementedException();
+    }
 }

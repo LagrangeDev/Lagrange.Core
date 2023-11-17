@@ -36,7 +36,13 @@ internal class MacSigner : SignProvider
         {
             Available = false;
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(MacSigner)}] Failed to get signature, using dummy signature");
+            
             return new byte[35]; // Dummy signature
         }
+    }
+
+    public override bool Test()
+    {
+        throw new NotImplementedException();
     }
 }

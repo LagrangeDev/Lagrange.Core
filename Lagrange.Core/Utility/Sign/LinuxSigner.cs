@@ -8,6 +8,17 @@ namespace Lagrange.Core.Utility.Sign;
 internal class LinuxSigner : SignProvider
 {
     private const string Url = "";
+
+    private readonly Timer _timer;
+
+    public LinuxSigner()
+    {
+        _timer = new Timer(_ =>
+        {
+            bool reconnect = Available = Test();
+            if (reconnect) _timer?.Change(-1, 5000);
+        });
+    }
     
     public override byte[]? Sign(string cmd, uint seq, byte[] body, out byte[]? ver, out string? token)
     {
@@ -32,8 +43,25 @@ internal class LinuxSigner : SignProvider
         catch (Exception)
         {
             Available = false;
+            _timer.Change(0, 5000);
+            
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(LinuxSigner)}] Failed to get signature, using dummy signature");
             return new byte[20]; // Dummy signature
         }
+    }
+
+    public override bool Test()
+    {
+        try
+        {
+            string response = Http.GetAsync($"{Url}/ping").GetAwaiter().GetResult();
+            if (JsonSerializer.Deserialize<JsonObject>(response)?["code"]?.GetValue<int>() == 0) return true;
+        }
+        catch
+        {
+            return false;
+        }
+
+        return false;
     }
 }

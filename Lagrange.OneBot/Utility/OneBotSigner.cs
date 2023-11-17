@@ -14,13 +14,12 @@ public class OneBotSigner : SignProvider
 {
     private const string Tag = nameof(OneBotSigner);
     private readonly string _signServer;
-    private readonly HttpClient _client;
     private readonly ILogger _logger;
-    
+    private readonly Timer _timer;
+
     public OneBotSigner(IConfiguration config, ILogger<LagrangeApp> logger)
     {
         _signServer = config["SignServerUrl"] ?? "";
-        _client = new HttpClient();
         _logger = logger;
         
         if (string.IsNullOrEmpty(_signServer))
@@ -32,6 +31,12 @@ public class OneBotSigner : SignProvider
         {
             logger.LogInformation($"[{Tag}]: Signature Service is successfully established");
         }
+        
+        _timer = new Timer(_ =>
+        {
+            bool reconnect = Available = Test();
+            if (reconnect) _timer?.Change(-1, 5000);
+        });
     }
 
     public override byte[]? Sign(string cmd, uint seq, byte[] body, [UnscopedRef] out byte[]? ver, [UnscopedRef] out string? token)
@@ -60,8 +65,29 @@ public class OneBotSigner : SignProvider
         catch
         {
             Available = false;
+            _timer.Change(0, 5000);
+            
             _logger.LogWarning($"[{Tag}] Failed to get signature, using dummy signature");
             return new byte[35]; // Dummy signature
         }
+    }
+
+    public override bool Test()
+    {
+        try
+        {
+            string response = Http.GetAsync($"{_signServer}/ping").GetAwaiter().GetResult();
+            if (JsonSerializer.Deserialize<JsonObject>(response)?["code"]?.GetValue<int>() == 0)
+            {
+                _logger.LogInformation($"[{Tag}] Reconnected to Signature Service successfully");
+                return true;
+            }
+        }
+        catch
+        {
+            return false;
+        }
+
+        return false;
     }
 }

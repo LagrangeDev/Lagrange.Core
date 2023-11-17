@@ -46,4 +46,6 @@ public abstract class SignProvider
     };
     
     public abstract byte[]? Sign(string cmd, uint seq, byte[] body, out byte[]? ver, out string? token);
+
+    public abstract bool Test();
 }
