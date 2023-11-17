@@ -91,12 +91,12 @@ public sealed class ForwardWSService : LagrangeWSService
         return Task.CompletedTask;
     }
     
-    public override Task SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
+    public override async ValueTask SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
     {
         string payload = JsonSerializer.Serialize(json);
         
         Logger.LogTrace($"[{Tag}] Send: {payload}");
-        return _connection?.Send(payload) ?? Task.CompletedTask;
+        await (_connection?.Send(payload) ?? Task.CompletedTask);
     }
     
     private static bool IsPortInUse(uint port)

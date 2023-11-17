@@ -58,12 +58,12 @@ public class ReverseWSService : LagrangeWSService
         return Task.CompletedTask;
     }
 
-    public override Task SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
+    public override ValueTask SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
     {
         string payload = JsonSerializer.Serialize(json);
         
         Logger.LogTrace($"[{Tag}] Send: {payload}");
-        return _socket.SendAsync(Encoding.UTF8.GetBytes(payload), WebSocketMessageType.Text, true, cancellationToken);
+        return _socket.SendAsync(Encoding.UTF8.GetBytes(payload).AsMemory(), WebSocketMessageType.Text, true, cancellationToken);
     }
 
     private async Task ReceiveLoop(CancellationToken cancellationToken)

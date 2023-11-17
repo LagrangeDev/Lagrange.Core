@@ -25,5 +25,5 @@ public abstract class LagrangeWSService(IConfiguration config, ILogger<LagrangeA
     public abstract Task StopAsync(CancellationToken cancellationToken);
 
     public abstract event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
-    public abstract Task SendJsonAsync<T>(T json, CancellationToken cancellationToken = default);
+    public abstract ValueTask SendJsonAsync<T>(T json, CancellationToken cancellationToken = default);
 }
