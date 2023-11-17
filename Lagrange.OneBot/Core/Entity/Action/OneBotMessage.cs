@@ -10,7 +10,7 @@ public class OneBotMessage
     
     [JsonPropertyName("user_id")] public uint UserId { get; set; }
     
-    [JsonPropertyName("group_id")] public uint GroupId { get; set; }
+    [JsonPropertyName("group_id")] public uint? GroupId { get; set; }
 
     [JsonPropertyName("message")] public List<OneBotSegment> Messages { get; set; } = new();
 }

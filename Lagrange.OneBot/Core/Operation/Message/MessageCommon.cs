@@ -27,7 +27,7 @@ public static class MessageCommon
     {
         var builder = message.MessageType == "private"
             ? MessageBuilder.Friend(message.UserId)
-            : MessageBuilder.Group(message.GroupId);
+            : MessageBuilder.Group(message.GroupId ?? 0);
         BuildMessages(builder, message.Messages);
 
         return builder;
