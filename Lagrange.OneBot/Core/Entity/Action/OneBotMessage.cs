@@ -8,7 +8,7 @@ public class OneBotMessage
 {
     [JsonPropertyName("message_type")] public string MessageType { get; set; } = "";
     
-    [JsonPropertyName("user_id")] public uint UserId { get; set; }
+    [JsonPropertyName("user_id")] public uint? UserId { get; set; }
     
     [JsonPropertyName("group_id")] public uint? GroupId { get; set; }
 
