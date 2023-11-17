@@ -52,8 +52,9 @@ public sealed class OperationService
                     await _service.SendJsonAsync(new OneBotResult(null, 404, "failed") { Echo = action.Echo }, eventArgs.Identifier);
                 }
             }
-            catch
+            catch (Exception e)
             {
+                _logger.LogWarning(e.ToString());
                 await _service.SendJsonAsync(new OneBotResult(null, 200, "failed") { Echo = action.Echo }, eventArgs.Identifier);
             }
         }
