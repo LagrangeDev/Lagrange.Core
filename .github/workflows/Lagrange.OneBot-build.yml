@@ -4,9 +4,9 @@ on:
   push:
     paths:
       - "**.cs"
-    branches: ["main"]
+    branches: ["master"]
   pull_request:
-    branches: ["main"]
+    branches: ["master"]
     paths:
       - "**.cs"
 
