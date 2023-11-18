@@ -25,9 +25,19 @@ public static class MessageCommon
     
     public static MessageBuilder ParseChain(OneBotMessage message)
     {
-        var builder = message.MessageType == "private"
-            ? MessageBuilder.Friend(message.UserId ?? 0)
-            : MessageBuilder.Group(message.GroupId ?? 0);
+        MessageBuilder builder;
+        if (message.MessageType != "")
+        {
+            builder = message.MessageType == "private"
+                ? MessageBuilder.Friend(message.UserId ?? 0)
+                : MessageBuilder.Group(message.GroupId ?? 0);
+        }
+        else
+        {
+            builder = message.UserId != null
+                ? MessageBuilder.Friend(message.UserId ?? 0)
+                : MessageBuilder.Group(message.GroupId ?? 0);
+        }
         BuildMessages(builder, message.Messages);
 
         return builder;
