@@ -1,3 +1,4 @@
+using System.Runtime;
 using System.Text;
 using Microsoft.Extensions.Hosting;
 
@@ -9,6 +10,8 @@ internal abstract class Program
     {
         Console.OutputEncoding = Encoding.UTF8;
         Console.InputEncoding = Encoding.UTF8;
+
+        GCSettings.LatencyMode = GCLatencyMode.Batch;
         
         var hostBuilder = new LagrangeAppBuilder(args)
             .ConfigureConfiguration("appsettings.json", false, true)
