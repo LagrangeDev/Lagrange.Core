@@ -52,7 +52,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 ## Lagrange.OneBot
 
 ### Implementation - OneBot v11
-
+#### The Binary for development could be found in Actions Artifacts
 <Details>
 <Summary>Message Segement</Summary>
 
