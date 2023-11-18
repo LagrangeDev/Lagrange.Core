@@ -14,6 +14,8 @@
 
 An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 
+#### Currently out of Updating
+
 </div>
 
 ## Disclaimer
