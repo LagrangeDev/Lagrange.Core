@@ -33,6 +33,26 @@ public static class MessageCommon
         return builder;
     }
     
+    public static MessageBuilder ParseChain(OneBotMessageSimple message)
+    {
+        var builder = message.MessageType == "private"
+            ? MessageBuilder.Friend(message.UserId ?? 0)
+            : MessageBuilder.Group(message.GroupId ?? 0);
+        BuildMessages(builder, message.Messages);
+
+        return builder;
+    }
+    
+    public static MessageBuilder ParseChain(OneBotMessageText message)
+    {
+        var builder = message.MessageType == "private"
+            ? MessageBuilder.Friend(message.UserId ?? 0)
+            : MessageBuilder.Group(message.GroupId ?? 0);
+        builder.Text(message.Messages);
+
+        return builder;
+    }
+    
     public static MessageBuilder ParseChain(OneBotPrivateMessage message)
     {
         var builder = MessageBuilder.Friend(message.UserId);
@@ -41,10 +61,43 @@ public static class MessageCommon
         return builder;
     }
     
+    public static MessageBuilder ParseChain(OneBotPrivateMessageSimple message)
+    {
+        var builder = MessageBuilder.Friend(message.UserId);
+        BuildMessages(builder, message.Messages);
+
+        return builder;
+    }
+    
+    public static MessageBuilder ParseChain(OneBotPrivateMessageText message)
+    {
+        var builder = MessageBuilder.Group(message.UserId);
+        builder.Text(message.Messages);
+
+        return builder;
+    }
+
+    
     public static MessageBuilder ParseChain(OneBotGroupMessage message)
     {
         var builder = MessageBuilder.Group(message.GroupId);
         BuildMessages(builder, message.Messages);
+
+        return builder;
+    }
+    
+    public static MessageBuilder ParseChain(OneBotGroupMessageSimple message)
+    {
+        var builder = MessageBuilder.Group(message.GroupId);
+        BuildMessages(builder, message.Messages);
+
+        return builder;
+    }
+    
+    public static MessageBuilder ParseChain(OneBotGroupMessageText message)
+    {
+        var builder = MessageBuilder.Group(message.GroupId);
+        builder.Text(message.Messages);
 
         return builder;
     }
@@ -59,5 +112,14 @@ public static class MessageCommon
                 instance.Build(builder, cast);
             }
         }
+    }
+    
+    private static void BuildMessages(MessageBuilder builder, OneBotSegment segment)
+    {
+            if (TypeToSegment.TryGetValue(segment.Type, out var instance))
+            {
+                var cast = (ISegment)((JsonElement)segment.Data).Deserialize(instance.GetType())!;
+                instance.Build(builder, cast);
+            }
     }
 }
