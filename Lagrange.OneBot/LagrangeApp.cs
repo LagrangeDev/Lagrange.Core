@@ -1,6 +1,8 @@
+using System.Text;
 using System.Text.Json;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Sign;
 using Lagrange.OneBot.Core.Message;
 using Lagrange.OneBot.Core.Network;
@@ -48,7 +50,9 @@ public class LagrangeApp : IHost
         Logger.LogInformation($"Protocol: {Configuration["Protocol"]} | {Instance.ContextCollection.AppInfo.CurrentVersion}");
 
         Instance.ContextCollection.Packet.SignProvider = Services.GetRequiredService<SignProvider>();
-        
+        if (!string.IsNullOrEmpty(Configuration["Account:Password"]))
+            Instance.ContextCollection.Keystore.PasswordMd5 = Encoding.UTF8.GetBytes(Configuration["Account:Password"] ?? "").Hex() ;
+
         Instance.Invoker.OnBotLogEvent += (_, args) => Logger.Log(args.Level switch
         {
             LogLevel.Debug => Microsoft.Extensions.Logging.LogLevel.Trace,
