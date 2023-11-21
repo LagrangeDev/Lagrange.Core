@@ -28,10 +28,7 @@ internal class GroupFSDownloadService : BaseService<GroupFSDownloadEvent>
             }
         }, false, true);
 
-        var stream = new MemoryStream();
-        Serializer.Serialize(stream, packet);
-        output = new BinaryPacket(stream);
-        
+        output = packet.Serialize();
         extraPackets = null;
         return true;
     }

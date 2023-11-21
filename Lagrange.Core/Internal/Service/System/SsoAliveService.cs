@@ -3,6 +3,7 @@ using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.System;
 using Lagrange.Core.Internal.Packets.System;
 using Lagrange.Core.Utility.Binary;
+using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.System;
@@ -16,9 +17,8 @@ internal class SsoAliveService : BaseService<SsoAliveEvent>
     {
         using var stream = new MemoryStream();
         var packet = new NTSsoHeartBeat { Type = 1 };
-        Serializer.Serialize(stream, packet);
         
-        output = new BinaryPacket(stream);
+        output = packet.Serialize();
         extraPackets = null;
         return true;
     }

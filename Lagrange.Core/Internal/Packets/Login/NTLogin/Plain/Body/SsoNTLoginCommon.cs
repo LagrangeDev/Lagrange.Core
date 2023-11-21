@@ -2,6 +2,7 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Packets.Login.NTLogin.Plain.Universal;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Crypto;
+using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Packets.Login.NTLogin.Plain.Body;
@@ -59,8 +60,6 @@ internal static class SsoNTLoginCommon
             Type = 1
         };
         
-        using var encryptStream = new MemoryStream();
-        Serializer.Serialize(encryptStream, encryptPacket);
-        return new BinaryPacket(encryptStream.ToArray());
+        return encryptPacket.Serialize();
     }
 }

@@ -3,6 +3,7 @@ using Lagrange.Core.Internal.Event.Protocol;
 using Lagrange.Core.Internal.Event.Protocol.Message;
 using Lagrange.Core.Internal.Packets.Message;
 using Lagrange.Core.Utility.Binary;
+using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Message;
@@ -26,10 +27,7 @@ internal class RecallGroupMessageService : BaseService<RecallGroupMessageEvent>
             Field4 = new GroupRecallMsgField4 { Field1 = 0 }
         };
         
-        using var stream = new MemoryStream();
-        Serializer.Serialize(stream, packet);
-        output = new BinaryPacket(stream);
-        
+        output = packet.Serialize();
         extraPackets = null;
         return true;
     }

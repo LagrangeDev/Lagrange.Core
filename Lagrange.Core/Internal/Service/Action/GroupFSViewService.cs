@@ -6,6 +6,7 @@ using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Response;
 using Lagrange.Core.Utility.Binary;
+using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Action;
@@ -49,10 +50,7 @@ internal class GroupFSViewService : BaseService<GroupFSViewEvent>
             _ => throw new Exception()
         };
 
-        var stream = new MemoryStream();
-        Serializer.Serialize(stream, packet);
-        output = new BinaryPacket(stream);
-        
+        output = packet.Serialize();
         extraPackets = null;
         return true;
     }
