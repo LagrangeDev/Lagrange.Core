@@ -1,8 +1,6 @@
 namespace Lagrange.OneBot.Core.Network;
 
-public class MsgRecvEventArgs(string data, string? identifier = null) : EventArgs
+public class MsgRecvEventArgs(string data) : EventArgs
 {
-    public string? Identifier { get; init; } = identifier;
-
     public string Data { get; init; } = data;
 }

@@ -43,9 +43,9 @@ public sealed class HttpPostService : ILagrangeWebService
         await SendJsonAsync(lifecycle, cancellationToken);
     }
 
-    public async ValueTask SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
+    public ValueTask SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
     {
         string payload = JsonSerializer.Serialize(json);
-        await _client.PostAsync(_url, new StringContent(payload, Encoding.UTF8), cancellationToken);
+        return new ValueTask(_client.PostAsync(_url, new StringContent(payload, Encoding.UTF8), cancellationToken));
     }
 }
