@@ -1,11 +1,9 @@
 using System.Net.NetworkInformation;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using Fleck;
 using Lagrange.Core;
 using Lagrange.OneBot.Core.Entity.Meta;
 using Lagrange.OneBot.Core.Network.Options;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -31,7 +29,7 @@ public sealed class ForwardWSService : ILagrangeWebService
 
     private readonly string _accessToken;
 
-    public ForwardWSService(IOptionsSnapshot<ForwardWSServiceOptions> options, ILogger<LagrangeApp> logger, BotContext context)
+    public ForwardWSService(IOptionsSnapshot<ForwardWSServiceOptions> options, ILogger<ForwardWSService> logger, BotContext context)
     {
         _options = options.Value;
         _logger = logger;
@@ -70,7 +68,7 @@ public sealed class ForwardWSService : ILagrangeWebService
                 {
                     if (!string.IsNullOrEmpty(_accessToken))
                     {
-                        if (!conn.ConnectionInfo.Headers.ContainsKey("Authorization") || conn.ConnectionInfo.Headers["Authorization"] != $"Bearer {_accessToken}")
+                        if (!conn.ConnectionInfo.Headers.TryGetValue("Authorization", out string? value) || value != $"Bearer {_accessToken}")
                         {
                             conn.Close(1002);
                             return;
@@ -109,11 +107,7 @@ public sealed class ForwardWSService : ILagrangeWebService
         _logger.LogTrace($"[{Tag}] Send: {payload}");
 
         var connection = _connection;
-        if (connection != null)
-        {
-            return new ValueTask(connection.Send(payload));
-        }
-        return default;
+        return connection != null ? new ValueTask(connection.Send(payload)) : default;
     }
 
     private void OnHeartbeat(object? sender)

@@ -6,7 +6,7 @@
 
         public uint Port { get; set; }
 
-        public uint HeartBeatInterval { get; set; }
+        public uint HeartBeatInterval { get; set; } = 5000; // by default 5000
 
         public string? AccessToken { get; set; }
     }

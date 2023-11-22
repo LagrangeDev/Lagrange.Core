@@ -18,7 +18,7 @@ public sealed class HttpPostService : ILagrangeWebService
 
     private readonly string _url;
     
-    public HttpPostService(IConfiguration config, ILogger<LagrangeApp> logger)
+    public HttpPostService(IConfiguration config, ILogger<HttpPostService> logger)
     {
         _config = config;
         _logger = logger;

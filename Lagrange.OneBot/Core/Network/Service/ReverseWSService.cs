@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Lagrange.OneBot.Core.Network.Service;
 
-public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> options, ILogger<LagrangeApp> logger, BotContext context)
+public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> options, ILogger<ReverseWSService> logger, BotContext context)
     : BackgroundService, ILagrangeWebService
 {
     protected const string Tag = nameof(ReverseWSService);
@@ -35,21 +35,16 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
 
         public CancellationToken Token => _cts.Token;
 
-        public void Dispose()
-        {
-            _cts.Cancel();
-        }
+        public void Dispose() => _cts.Cancel();
     }
 
     public ValueTask SendJsonAsync<T>(T payload, CancellationToken cancellationToken = default)
     {
         var connCtx = _connCtx ?? throw new InvalidOperationException("Reverse webSocket service was not running");
         var connTask = connCtx.ConnectTask;
-        if (!connTask.IsCompletedSuccessfully)
-        {
-            return SendJsonAsync(connCtx.WebSocket, connTask, payload, connCtx.Token);
-        }
-        return SendJsonAsync(connCtx.WebSocket, payload, connCtx.Token);
+        return !connTask.IsCompletedSuccessfully
+            ? SendJsonAsync(connCtx.WebSocket, connTask, payload, connCtx.Token)
+            : SendJsonAsync(connCtx.WebSocket, payload, connCtx.Token);
     }
 
     protected async ValueTask SendJsonAsync<T>(ClientWebSocket ws, Task connectTask, T payload, CancellationToken token)
@@ -85,6 +80,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
             Log.LogInvalidUrl(_logger, Tag, urlstr);
             return;
         }
+        
         while (true)
         {
             try
@@ -126,16 +122,16 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         var buffer = new byte[1024];
         while (true)
         {
-            int rcvd = 0;
+            int received = 0;
             while (true)
             {
-                var result = await ws.ReceiveAsync(buffer.AsMemory(rcvd), token);
-                rcvd += result.Count;
+                var result = await ws.ReceiveAsync(buffer.AsMemory(received), token);
+                received += result.Count;
                 if (result.EndOfMessage) break;
 
-                if (rcvd == buffer.Length) Array.Resize(ref buffer, rcvd + 1024);
+                if (received == buffer.Length) Array.Resize(ref buffer, received + 1024);
             }
-            string text = Encoding.UTF8.GetString(buffer, 0, rcvd);
+            string text = Encoding.UTF8.GetString(buffer, 0, received);
             Log.LogDataReceived(_logger, Tag, text);
             OnMessageReceived?.Invoke(this, new MsgRecvEventArgs(text)); // Handle user handlers error?
         }
@@ -143,7 +139,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
 
     private async Task HeartbeatLoop(ClientWebSocket ws, CancellationToken token)
     {
-        var interval = TimeSpan.FromSeconds(_options.HeartBeatInterval);
+        var interval = TimeSpan.FromMilliseconds(_options.HeartBeatInterval);
         while (true)
         {
             var status = new OneBotStatus(true, true);
@@ -163,6 +159,9 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
 
         [LoggerMessage(EventId = 3, Level = LogLevel.Warning, Message = "[{tag}] Client disconnected")]
         public static partial void LogClientDisconnected(ILogger logger, Exception e, string tag);
+
+        [LoggerMessage(EventId = 4, Level = LogLevel.Information, Message = "[{tag}] Client reconnecting at interval of {interval}")]
+        public static partial void LogClientReconnect(ILogger logger, string tag, uint interval);
 
         [LoggerMessage(EventId = 10, Level = LogLevel.Error, Message = "[{tag}] Invalid configuration was detected, url: {url}")]
         public static partial void LogInvalidUrl(ILogger logger, string tag, string url);

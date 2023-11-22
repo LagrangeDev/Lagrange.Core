@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Lagrange.OneBot.Core.Network;
 
-public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, IConfiguration config, ILogger<LagrangeApp> logger) 
+public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, IConfiguration config, ILogger<LagrangeWebSvcCollection> logger) 
     : IHostedService
 {
     private const string Tag = nameof(LagrangeWebSvcCollection);
