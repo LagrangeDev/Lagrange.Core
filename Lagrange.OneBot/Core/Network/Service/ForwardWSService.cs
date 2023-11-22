@@ -31,7 +31,7 @@ public sealed class ForwardWSService : ILagrangeWebService
 
     private readonly string _accessToken;
 
-    public ForwardWSService(IOptions<ForwardWSServiceOptions> options, ILogger<LagrangeApp> logger, BotContext context)
+    public ForwardWSService(IOptionsSnapshot<ForwardWSServiceOptions> options, ILogger<LagrangeApp> logger, BotContext context)
     {
         _options = options.Value;
         _logger = logger;

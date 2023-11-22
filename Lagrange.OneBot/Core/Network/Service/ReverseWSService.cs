@@ -47,7 +47,7 @@ public partial class ReverseWSService : BackgroundService, ILagrangeWebService
         }
     }
 
-    public ReverseWSService(IOptions<ReverseWSServiceOptions> options, ILogger<LagrangeApp> logger, BotContext context)
+    public ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> options, ILogger<LagrangeApp> logger, BotContext context)
     {
         _options = options.Value;
         _logger = logger;
