@@ -1,17 +1,28 @@
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using Fleck;
+using Lagrange.Core;
 using Lagrange.OneBot.Core.Entity.Meta;
+using Lagrange.OneBot.Core.Network.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Lagrange.OneBot.Core.Network.Service;
 
-public sealed class ForwardWSService : LagrangeWSService
+public sealed class ForwardWSService : ILagrangeWebService
 {
     private const string Tag = nameof(ForwardWSService);
-    public override event EventHandler<MsgRecvEventArgs>? OnMessageReceived = delegate {  };
-    
+
+    public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
+
+    private readonly ForwardWSServiceOptions _options;
+
+    private readonly ILogger _logger;
+
+    private readonly BotContext _context;
+
     private readonly WebSocketServer _server;
 
     private IWebSocketConnection? _connection;
@@ -20,25 +31,26 @@ public sealed class ForwardWSService : LagrangeWSService
 
     private readonly string _accessToken;
 
-    public ForwardWSService(IConfiguration config, ILogger<LagrangeApp> logger, uint uin) : base(config, logger, uin)
+    public ForwardWSService(IOptionsSnapshot<ForwardWSServiceOptions> options, ILogger<LagrangeApp> logger, BotContext context)
     {
-        string url = $"ws://{config["Host"]}:{config["Port"]}";
-
-        _server = new WebSocketServer(url)
+        _options = options.Value;
+        _logger = logger;
+        _context = context;
+        _server = new WebSocketServer($"ws://{_options.Host}:{_options.Port}")
         {
             RestartAfterListenError = true
         };
         
-        _timer = new Timer(OnHeartbeat, null, 1, config.GetValue<int>("HeartBeatInterval"));
-        _accessToken = string.IsNullOrEmpty(config["AccessToken"]) ? "" : config["AccessToken"]!;
+        _timer = new Timer(OnHeartbeat, null, 1, _options.HeartBeatInterval);
+        _accessToken = _options.AccessToken ?? "";
     }
 
-    public override Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
-        uint port = Config.GetValue<uint?>("Port") ?? throw new Exception("Port is not defined");
+        uint port = _options.Port;
         if (IsPortInUse(port))
         {
-            Logger.LogCritical($"[{Tag}] The port {port} is in use, {Tag} failed to start");
+            _logger.LogCritical($"[{Tag}] The port {port} is in use, {Tag} failed to start");
             return Task.CompletedTask;
         }
         
@@ -50,7 +62,7 @@ public sealed class ForwardWSService : LagrangeWSService
                 
                 conn.OnMessage = s =>
                 {
-                    Logger.LogTrace($"[{Tag}] Receive: {s}");
+                    _logger.LogTrace($"[{Tag}] Receive: {s}");
                     OnMessageReceived?.Invoke(this, new MsgRecvEventArgs(s));
                 };
 
@@ -65,24 +77,24 @@ public sealed class ForwardWSService : LagrangeWSService
                         }
                     }
 
-                    Logger.LogInformation($"[{Tag}]: Connected");
+                    _logger.LogInformation($"[{Tag}]: Connected");
                     
-                    var lifecycle = new OneBotLifecycle(Uin, "connect");
+                    var lifecycle = new OneBotLifecycle(_context.BotUin, "connect");
                     SendJsonAsync(lifecycle, cancellationToken).GetAwaiter().GetResult();
                     
-                    _timer.Change(0, Config.GetValue<int>("HeartBeatInterval"));
+                    _timer.Change(0, _options.HeartBeatInterval);
                 };
 
                 conn.OnClose = () =>
                 {
-                    Logger.LogWarning($"[{Tag}: Disconnected]");
+                    _logger.LogWarning($"[{Tag}: Disconnected]");
                     _connection = null;
                 };
             });
         }, cancellationToken);
     }
 
-    public override Task StopAsync(CancellationToken cancellationToken)
+    public Task StopAsync(CancellationToken cancellationToken)
     {
         _timer.Dispose();
         _server.ListenerSocket.Close();
@@ -91,14 +103,27 @@ public sealed class ForwardWSService : LagrangeWSService
         return Task.CompletedTask;
     }
     
-    public override async ValueTask SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
+    public ValueTask SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
     {
         string payload = JsonSerializer.Serialize(json);
-        
-        Logger.LogTrace($"[{Tag}] Send: {payload}");
-        await (_connection?.Send(payload) ?? Task.CompletedTask);
+        _logger.LogTrace($"[{Tag}] Send: {payload}");
+
+        var connection = _connection;
+        if (connection != null)
+        {
+            return new ValueTask(connection.Send(payload));
+        }
+        return default;
     }
-    
+
+    private void OnHeartbeat(object? sender)
+    {
+        var status = new OneBotStatus(true, true);
+        var heartBeat = new OneBotHeartBeat(_context.BotUin, (int)_options.HeartBeatInterval, status);
+
+        _ = SendJsonAsync(heartBeat);
+    }
+
     private static bool IsPortInUse(uint port)
     {
         return IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(endpoint => endpoint.Port == port);

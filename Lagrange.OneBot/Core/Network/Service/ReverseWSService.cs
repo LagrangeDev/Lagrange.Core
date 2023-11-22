@@ -1,126 +1,191 @@
 using System.Net.WebSockets;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
-using Lagrange.Core.Utility.Extension;
+using Lagrange.Core;
 using Lagrange.OneBot.Core.Entity.Meta;
-using Microsoft.Extensions.Configuration;
+using Lagrange.OneBot.Core.Network.Options;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Lagrange.OneBot.Core.Network.Service;
 
-public class ReverseWSService : LagrangeWSService
+public partial class ReverseWSService : BackgroundService, ILagrangeWebService
 {
-    private const string Tag = nameof(ReverseWSService);
+    protected const string Tag = nameof(ReverseWSService);
     
-    public override event EventHandler<MsgRecvEventArgs>? OnMessageReceived = delegate { };
+    public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
 
-    private ClientWebSocket _socket;
-    
-    private readonly Timer _timer;
+    protected readonly ReverseWSServiceOptions _options;
 
-    public ReverseWSService(IConfiguration config, ILogger<LagrangeApp> logger, uint uin) : base(config, logger, uin)
+    protected readonly ILogger _logger;
+
+    protected readonly BotContext _botCtx;
+
+    protected ConnectionContext? _connCtx;
+
+    protected sealed class ConnectionContext : IDisposable
     {
-        _socket = SetupSocket();
-        _timer = new Timer(OnHeartbeat, null, -1, config.GetValue<int>("HeartBeatInterval"));
-    }
+        public readonly ClientWebSocket WebSocket;
 
+        public readonly Task ConnectTask;
 
-    public override async Task StartAsync(CancellationToken cancellationToken)
-    {
-        await _socket.ConnectAsync(new Uri($"ws://{Config["Host"]}:{Config["Port"]}{Config["Suffix"]}"), cancellationToken);
-        _ = ReceiveLoop(cancellationToken);
-        
-        var lifecycle = new OneBotLifecycle(Uin, "connect");
-        await SendJsonAsync(lifecycle, cancellationToken);
+        private readonly CancellationTokenSource _cts;
 
-        _timer.Change(0, Config.GetValue<int>("HeartBeatInterval"));
-    }
+        public CancellationToken Token => _cts.Token;
 
-    public override Task StopAsync(CancellationToken cancellationToken)
-    {
-        _timer.Dispose();
-        _socket.Dispose();
-        
-        return Task.CompletedTask;
-    }
-
-    public override async ValueTask SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
-    {
-        if (_socket.State is WebSocketState.Closed or WebSocketState.None)
+        public ConnectionContext(ClientWebSocket webSocket, Task connectTask)
         {
-            Logger.LogWarning($"[{Tag}] Detected Disconnect, scheduling reconnect");
-            await Reconnect(cancellationToken);
+            WebSocket = webSocket;
+            ConnectTask = connectTask;
+            _cts = new CancellationTokenSource();
         }
 
-        string payload = JsonSerializer.Serialize(json);
-        
-        Logger.LogTrace($"[{Tag}] Send: {payload}");
-        await _socket.SendAsync(Encoding.UTF8.GetBytes(payload).AsMemory(), WebSocketMessageType.Text, true, cancellationToken);
+        public void Dispose()
+        {
+            _cts.Cancel();
+        }
     }
 
-    private async Task ReceiveLoop(CancellationToken cancellationToken)
+    public ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> options, ILogger<LagrangeApp> logger, BotContext context)
     {
-        try
-        {
-            await Task.CompletedTask.ForceAsync();
-            var buffer = new byte[64 * 1024 * 1024];
-            
-            while (true)
-            {
-                var result = await _socket.ReceiveAsync(buffer.AsMemory(), cancellationToken);
-                byte[] newBuffer = new byte[result.Count];
-                Unsafe.CopyBlock(ref newBuffer[0], ref buffer[0], (uint)result.Count);
+        _options = options.Value;
+        _logger = logger;
+        _botCtx = context;
+    }
 
-                string text = Encoding.UTF8.GetString(newBuffer);
-                Logger.LogTrace($"[{Tag}] Receive: {text}");
-                OnMessageReceived?.Invoke(this, new MsgRecvEventArgs(text));
+    public ValueTask SendJsonAsync<T>(T payload, CancellationToken cancellationToken = default)
+    {
+        var connCtx = _connCtx ?? throw new InvalidOperationException("Reverse webSocket service was not running");
+        var connTask = connCtx.ConnectTask;
+        if (!connTask.IsCompletedSuccessfully)
+        {
+            return SendJsonAsync(connCtx.WebSocket, connTask, payload, connCtx.Token);
+        }
+        return SendJsonAsync(connCtx.WebSocket, payload, connCtx.Token);
+    }
+
+    protected async ValueTask SendJsonAsync<T>(ClientWebSocket ws, Task connectTask, T payload, CancellationToken token)
+    {
+        await connectTask;
+        await SendJsonAsync(ws, payload, token);
+    }
+
+    protected ValueTask SendJsonAsync<T>(ClientWebSocket ws, T payload, CancellationToken token)
+    {
+        var json = JsonSerializer.Serialize(payload);
+        var buffer = Encoding.UTF8.GetBytes(json);
+        Log.LogSendingData(_logger, Tag, json);
+        return ws.SendAsync(buffer.AsMemory(), WebSocketMessageType.Text, true, token);
+    }
+
+    protected ClientWebSocket CreateDefaultWebSocket()
+    {
+        var ws = new ClientWebSocket();
+        ws.Options.SetRequestHeader("X-Client-Role", "Universal");
+        ws.Options.SetRequestHeader("X-Self-ID", _botCtx.BotUin.ToString());
+        ws.Options.SetRequestHeader("User-Agent", Constant.OneBotImpl);
+        if (_options.AccessToken != null)
+        {
+            ws.Options.SetRequestHeader("Authorization", $"Bearer {_options.AccessToken}");
+        }
+        ws.Options.KeepAliveInterval = Timeout.InfiniteTimeSpan;
+        return ws;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        string urlstr = $"ws://{_options.Host}:{_options.Port}{_options.Suffix}";
+        if (!Uri.TryCreate(urlstr, UriKind.Absolute, out var url))
+        {
+            Log.LogInvalidUrl(_logger, Tag, urlstr);
+            return;
+        }
+        while (true)
+        {
+            try
+            {
+                using var ws = CreateDefaultWebSocket();
+                var connTask = ws.ConnectAsync(url, stoppingToken);
+                using var connCtx = new ConnectionContext(ws, connTask);
+                _connCtx = connCtx;
+                await connTask;
+
+                var lifecycle = new OneBotLifecycle(_botCtx.BotUin, "connect");
+                await SendJsonAsync(ws, lifecycle, stoppingToken);
+
+                var recvTask = ReceiveLoop(ws, stoppingToken);
+                if (_options.HeartBeatInterval > 0)
+                {
+                    var heartbeatTask = HeartbeatLoop(ws, stoppingToken);
+                    await Task.WhenAll([recvTask, heartbeatTask]);
+                }
+                else
+                {
+                    await recvTask;
+                }
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
+                _connCtx = null;
+                break;
+            }
+            catch (Exception e)
+            {
+                Log.LogClientDisconnected(_logger, e, Tag);
             }
         }
-        catch
+    }
+
+    private async Task ReceiveLoop(ClientWebSocket ws, CancellationToken token)
+    {
+        var buffer = new byte[1024];
+        while (true)
         {
-            // 
+            int rcvd = 0;
+            while (true)
+            {
+                var result = await ws.ReceiveAsync(buffer.AsMemory(rcvd), token);
+                if (result.EndOfMessage)
+                {
+                    break;
+                }
+                rcvd += result.Count;
+                if (rcvd == buffer.Length)
+                {
+                    Array.Resize(ref buffer, rcvd + 1024);
+                }
+            }
+            string text = Encoding.UTF8.GetString(buffer);
+            Log.LogDataReceived(_logger, Tag, text);
+            OnMessageReceived?.Invoke(this, new MsgRecvEventArgs(text)); // Handle user handlers error?
         }
     }
 
-    private async Task Reconnect(CancellationToken cancellationToken = default)
+    private async Task HeartbeatLoop(ClientWebSocket ws, CancellationToken token)
     {
-        if (_socket.State is WebSocketState.Open or WebSocketState.Connecting) return;
-        if (_socket.State == WebSocketState.Closed)
+        var interval = TimeSpan.FromSeconds(_options.HeartBeatInterval);
+        while (true)
         {
-            _socket.Dispose();
-            _socket = SetupSocket();
-        }
-        
-        try
-        {
-            await _socket.ConnectAsync(new Uri($"ws://{Config["Host"]}:{Config["Port"]}{Config["Suffix"]}"), cancellationToken);
-            Logger.LogInformation($"[{Tag}] Reconnected Successfully");
-        }
-        catch
-        {
-            Logger.LogWarning($"[{Tag}] Reconnected failed");
+            var status = new OneBotStatus(true, true);
+            var heartBeat = new OneBotHeartBeat(_botCtx.BotUin, (int)_options.HeartBeatInterval, status);
+            await SendJsonAsync(ws, heartBeat, token);
+            await Task.Delay(interval, token);
         }
     }
 
-    private ClientWebSocket SetupSocket()
+    private static partial class Log
     {
-        var socket = new ClientWebSocket();
-        
-        SetRequestHeader(socket, new Dictionary<string, string>
-        {
-            { "X-Client-Role", "Universal" },
-            { "X-Self-ID", Uin.ToString() },
-            { "User-Agent", Constant.OneBotImpl }
-        });
-        if (string.IsNullOrEmpty(Config["AccessToken"])) socket.Options.SetRequestHeader("Authorization", $"Bearer {Config["AccessToken"]}");
-        socket.Options.KeepAliveInterval = Timeout.InfiniteTimeSpan;
+        [LoggerMessage(EventId = 1, Level = LogLevel.Trace, Message = "[{tag}] Send: {data}")]
+        public static partial void LogSendingData(ILogger logger, string tag, string data);
 
-        return socket;
-    }
-    
-    private static void SetRequestHeader(ClientWebSocket webSocket, Dictionary<string, string> headers)
-    {
-        foreach (var (key, value) in headers) webSocket.Options.SetRequestHeader(key, value);
+        [LoggerMessage(EventId = 2, Level = LogLevel.Trace, Message = "[{tag}] Receive: {data}")]
+        public static partial void LogDataReceived(ILogger logger, string tag, string data);
+
+        [LoggerMessage(EventId = 3, Level = LogLevel.Warning, Message = "[{tag}] Client disconnected")]
+        public static partial void LogClientDisconnected(ILogger logger, Exception e, string tag);
+
+        [LoggerMessage(EventId = 10, Level = LogLevel.Error, Message = "[{tag}] Invalid configuration was detected, url: {url}")]
+        public static partial void LogInvalidUrl(ILogger logger, string tag, string url);
     }
 }

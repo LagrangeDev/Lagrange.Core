@@ -48,7 +48,7 @@ public class NTLoginTest
             if (captcha != null && randStr != null) bot.SubmitCaptcha(captcha, randStr);
         };
         
-        bot.Invoker.OnGroupInvitationReceived += async (_, @event) =>
+        bot.Invoker.OnGroupInvitationReceived += (_, @event) =>
         {
             Console.WriteLine(@event.ToString());
         };
