@@ -51,7 +51,7 @@ public class LagrangeApp : IHost
 
         Instance.ContextCollection.Packet.SignProvider = Services.GetRequiredService<SignProvider>();
         if (!string.IsNullOrEmpty(Configuration["Account:Password"]))
-            Instance.ContextCollection.Keystore.PasswordMd5 = Encoding.UTF8.GetBytes(Configuration["Account:Password"] ?? "").Hex() ;
+            Instance.ContextCollection.Keystore.PasswordMd5 = await Encoding.UTF8.GetBytes(Configuration["Account:Password"] ?? "").Md5Async() ;
 
         Instance.Invoker.OnBotLogEvent += (_, args) => Logger.Log(args.Level switch
         {
