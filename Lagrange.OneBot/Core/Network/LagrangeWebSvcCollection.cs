@@ -6,57 +6,46 @@ using Microsoft.Extensions.Logging;
 
 namespace Lagrange.OneBot.Core.Network;
 
-public sealed partial class LagrangeWebSvcCollection : IHostedService
+public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, IConfiguration config, ILogger<LagrangeApp> logger) 
+    : IHostedService
 {
     private const string Tag = nameof(LagrangeWebSvcCollection);
     
     public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
 
-    private readonly IServiceProvider _services;
-
-    private readonly IConfiguration _config;
-
-    private readonly ILogger<LagrangeApp> _logger;
-
-    private readonly List<(IServiceScope, ILagrangeWebService)> _webServices;
-
-    public LagrangeWebSvcCollection(IServiceProvider services, IConfiguration config, ILogger<LagrangeApp> logger)
-    {
-        _services = services;
-        _config = config;
-        _logger = logger;
-        _webServices = new List<(IServiceScope, ILagrangeWebService)>();
-    }
+    private readonly List<(IServiceScope, ILagrangeWebService)> _webServices = new();
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var implsSection = _config.GetSection("Implementations");
+        var implsSection = config.GetSection("Implementations");
         if (implsSection.Exists())
         {
-            Log.LogMultiConnection(_logger, Tag);
+            Log.LogMultiConnection(logger, Tag);
         }
         else 
         {
-            implsSection = _config.GetSection("Implementation");
+            implsSection = config.GetSection("Implementation");
             if (!implsSection.Exists())
             {
-                Log.LogNoConnection(_logger, Tag);
+                Log.LogNoConnection(logger, Tag);
                 return;
             }
-            Log.LogSingleConnection(_logger, Tag);
+            
+            Log.LogSingleConnection(logger, Tag);
         }
 
         foreach (var section in implsSection.GetChildren())
         {
-            var scope = _services.CreateScope();
-            var services = scope.ServiceProvider;
+            var scope = services.CreateScope();
             var factory = services.GetRequiredService<ILagrangeWebServiceFactory>();
             factory.SetConfig(section);
+            
             var webService = services.GetRequiredService<ILagrangeWebService>();
             webService.OnMessageReceived += (sender, args) =>
             {
                 OnMessageReceived?.Invoke(sender, new MsgRecvEventArgs(args.Data));
             };
+            
             try
             {
                 await webService.StartAsync(cancellationToken);
@@ -64,7 +53,7 @@ public sealed partial class LagrangeWebSvcCollection : IHostedService
             }
             catch (Exception e)
             {
-                Log.LogWebServiceStartFailed(_logger, e, Tag);
+                Log.LogWebServiceStartFailed(logger, e, Tag);
                 scope.Dispose();
             }
         }
@@ -80,7 +69,7 @@ public sealed partial class LagrangeWebSvcCollection : IHostedService
             }
             catch (Exception e)
             {
-                Log.LogWebServiceStopFailed(_logger, e, Tag);
+                Log.LogWebServiceStopFailed(logger, e, Tag);
             }
             finally
             {
@@ -104,7 +93,7 @@ public sealed partial class LagrangeWebSvcCollection : IHostedService
             }
             catch (Exception e)
             {
-                Log.LogWebServiceSendFailed(_logger, e, Tag);
+                Log.LogWebServiceSendFailed(logger, e, Tag);
             }
         }
     }

@@ -14,21 +14,13 @@ namespace Lagrange.OneBot.Core.Network.Service
 
     }
 
-    public abstract class LagrangeWebServiceFactory : ILagrangeWebServiceFactory
+    public abstract class LagrangeWebServiceFactory(IServiceProvider services) : ILagrangeWebServiceFactory
     {
-        protected readonly IServiceProvider _services;
+        protected readonly IServiceProvider _services = services;
 
         protected IConfiguration? _config;
 
-        protected LagrangeWebServiceFactory(IServiceProvider services)
-        {
-            _services = services;
-        }
-
-        public void SetConfig(IConfiguration config)
-        {
-            _config = config;
-        }
+        public void SetConfig(IConfiguration config) => _config = config;
 
         public abstract ILagrangeWebService? Create();
     }

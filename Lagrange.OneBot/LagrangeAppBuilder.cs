@@ -87,7 +87,10 @@ public sealed class LagrangeAppBuilder
         Services.AddScoped<ILagrangeWebServiceFactory<ReverseWSService>, ReverseWSServiceFactory>();
         Services.AddScoped<ReverseWSService>();
         Services.AddScoped<ILagrangeWebServiceFactory, DefaultLagrangeWebServiceFactory>();
-        Services.AddScoped(services => services.GetRequiredService<ILagrangeWebServiceFactory>().Create()!);
+        Services.AddScoped(services =>
+        {
+            return services.GetRequiredService<ILagrangeWebServiceFactory>().Create() ?? throw new Exception("Invalid conf detected");
+        });
 
         Services.AddSingleton<ContextBase, LiteDbContext>();
         Services.AddSingleton<SignProvider, OneBotSigner>();

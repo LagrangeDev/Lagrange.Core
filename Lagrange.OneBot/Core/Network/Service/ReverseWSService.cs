@@ -10,48 +10,35 @@ using Microsoft.Extensions.Options;
 
 namespace Lagrange.OneBot.Core.Network.Service;
 
-public partial class ReverseWSService : BackgroundService, ILagrangeWebService
+public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> options, ILogger<LagrangeApp> logger, BotContext context)
+    : BackgroundService, ILagrangeWebService
 {
     protected const string Tag = nameof(ReverseWSService);
     
     public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
 
-    protected readonly ReverseWSServiceOptions _options;
+    protected readonly ReverseWSServiceOptions _options = options.Value;
 
-    protected readonly ILogger _logger;
+    protected readonly ILogger _logger = logger;
 
-    protected readonly BotContext _botCtx;
+    protected readonly BotContext _botCtx = context;
 
     protected ConnectionContext? _connCtx;
 
-    protected sealed class ConnectionContext : IDisposable
+    protected sealed class ConnectionContext(ClientWebSocket webSocket, Task connectTask) : IDisposable
     {
-        public readonly ClientWebSocket WebSocket;
+        public readonly ClientWebSocket WebSocket = webSocket;
 
-        public readonly Task ConnectTask;
+        public readonly Task ConnectTask = connectTask;
 
-        private readonly CancellationTokenSource _cts;
+        private readonly CancellationTokenSource _cts = new();
 
         public CancellationToken Token => _cts.Token;
-
-        public ConnectionContext(ClientWebSocket webSocket, Task connectTask)
-        {
-            WebSocket = webSocket;
-            ConnectTask = connectTask;
-            _cts = new CancellationTokenSource();
-        }
 
         public void Dispose()
         {
             _cts.Cancel();
         }
-    }
-
-    public ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> options, ILogger<LagrangeApp> logger, BotContext context)
-    {
-        _options = options.Value;
-        _logger = logger;
-        _botCtx = context;
     }
 
     public ValueTask SendJsonAsync<T>(T payload, CancellationToken cancellationToken = default)
@@ -85,10 +72,7 @@ public partial class ReverseWSService : BackgroundService, ILagrangeWebService
         ws.Options.SetRequestHeader("X-Client-Role", "Universal");
         ws.Options.SetRequestHeader("X-Self-ID", _botCtx.BotUin.ToString());
         ws.Options.SetRequestHeader("User-Agent", Constant.OneBotImpl);
-        if (_options.AccessToken != null)
-        {
-            ws.Options.SetRequestHeader("Authorization", $"Bearer {_options.AccessToken}");
-        }
+        if (_options.AccessToken != null) ws.Options.SetRequestHeader("Authorization", $"Bearer {_options.AccessToken}");
         ws.Options.KeepAliveInterval = Timeout.InfiniteTimeSpan;
         return ws;
     }
@@ -118,7 +102,7 @@ public partial class ReverseWSService : BackgroundService, ILagrangeWebService
                 if (_options.HeartBeatInterval > 0)
                 {
                     var heartbeatTask = HeartbeatLoop(ws, stoppingToken);
-                    await Task.WhenAll([recvTask, heartbeatTask]);
+                    await Task.WhenAll(recvTask, heartbeatTask);
                 }
                 else
                 {
@@ -146,15 +130,10 @@ public partial class ReverseWSService : BackgroundService, ILagrangeWebService
             while (true)
             {
                 var result = await ws.ReceiveAsync(buffer.AsMemory(rcvd), token);
-                if (result.EndOfMessage)
-                {
-                    break;
-                }
+                if (result.EndOfMessage) break;
+                
                 rcvd += result.Count;
-                if (rcvd == buffer.Length)
-                {
-                    Array.Resize(ref buffer, rcvd + 1024);
-                }
+                if (rcvd == buffer.Length) Array.Resize(ref buffer, rcvd + 1024);
             }
             string text = Encoding.UTF8.GetString(buffer);
             Log.LogDataReceived(_logger, Tag, text);
