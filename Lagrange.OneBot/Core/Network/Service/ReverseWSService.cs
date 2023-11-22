@@ -130,12 +130,12 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
             while (true)
             {
                 var result = await ws.ReceiveAsync(buffer.AsMemory(rcvd), token);
-                if (result.EndOfMessage) break;
-                
                 rcvd += result.Count;
+                if (result.EndOfMessage) break;
+
                 if (rcvd == buffer.Length) Array.Resize(ref buffer, rcvd + 1024);
             }
-            string text = Encoding.UTF8.GetString(buffer);
+            string text = Encoding.UTF8.GetString(buffer, 0, rcvd);
             Log.LogDataReceived(_logger, Tag, text);
             OnMessageReceived?.Invoke(this, new MsgRecvEventArgs(text)); // Handle user handlers error?
         }
