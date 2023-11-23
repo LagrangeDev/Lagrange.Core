@@ -4,6 +4,7 @@ using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Utility.Sign;
 using Lagrange.OneBot.Core.Message;
 using Lagrange.OneBot.Core.Network;
+using Lagrange.OneBot.Core.Network.Service;
 using Lagrange.OneBot.Core.Notify;
 using Lagrange.OneBot.Core.Operation;
 using Lagrange.OneBot.Database;
@@ -79,7 +80,18 @@ public sealed class LagrangeAppBuilder
     public LagrangeAppBuilder ConfigureOneBot()
     {
         Services.AddSingleton<LagrangeWebSvcCollection>();
-        
+        Services.AddOptions();
+
+        Services.AddScoped<ILagrangeWebServiceFactory<ForwardWSService>, ForwardWSServiceFactory>();
+        Services.AddScoped<ForwardWSService>();
+        Services.AddScoped<ILagrangeWebServiceFactory<ReverseWSService>, ReverseWSServiceFactory>();
+        Services.AddScoped<ReverseWSService>();
+        Services.AddScoped<ILagrangeWebServiceFactory, DefaultLagrangeWebServiceFactory>();
+        Services.AddScoped(services =>
+        {
+            return services.GetRequiredService<ILagrangeWebServiceFactory>().Create() ?? throw new Exception("Invalid conf detected");
+        });
+
         Services.AddSingleton<ContextBase, LiteDbContext>();
         Services.AddSingleton<SignProvider, OneBotSigner>();
 

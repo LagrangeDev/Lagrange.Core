@@ -20,10 +20,7 @@ internal class KeyExchangeService : BaseService<KeyExchangeEvent>
     protected override bool Build(KeyExchangeEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
-        var stream = new MemoryStream();
-        Serializer.Serialize(stream, BuildPacket(keystore, device));
-        output = new BinaryPacket(stream);
-        
+        output = BuildPacket(keystore, device).Serialize();
         extraPackets = null;
         return true;
     }

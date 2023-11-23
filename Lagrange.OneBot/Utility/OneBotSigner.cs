@@ -17,7 +17,7 @@ public class OneBotSigner : SignProvider
     private readonly ILogger _logger;
     private readonly Timer _timer;
 
-    public OneBotSigner(IConfiguration config, ILogger<LagrangeApp> logger)
+    public OneBotSigner(IConfiguration config, ILogger<OneBotSigner> logger)
     {
         _signServer = config["SignServerUrl"] ?? "";
         _logger = logger;

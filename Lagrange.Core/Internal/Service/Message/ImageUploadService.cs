@@ -57,10 +57,7 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
             NetType = 10
         };
         
-        using var stream = new MemoryStream();
-        Serializer.Serialize(stream, packet);
-        output = new BinaryPacket(stream);
-        
+        output = packet.Serialize();
         extraPackets = null;
         return true;
     }

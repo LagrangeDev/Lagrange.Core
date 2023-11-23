@@ -41,12 +41,7 @@ internal class RequestFriendService : BaseService<RequestFriendEvent>
             Field29 = 1
         }, false, true);
 
-        var stream = new MemoryStream();
-        Serializer.Serialize(stream, packet);
-        output = new BinaryPacket(stream);
-        
-        Console.WriteLine(output.ToArray().Hex());
-        
+        output = packet.Serialize();
         extraPackets = null;
         return true;
     }

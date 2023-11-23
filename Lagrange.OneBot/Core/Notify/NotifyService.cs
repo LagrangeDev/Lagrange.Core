@@ -7,7 +7,7 @@ namespace Lagrange.OneBot.Core.Notify;
 
 public sealed class NotifyService
 {
-    public NotifyService(BotContext bot, ILogger<LagrangeApp> logger, LagrangeWebSvcCollection service)
+    public NotifyService(BotContext bot, ILogger<NotifyService> logger, LagrangeWebSvcCollection service)
     {
         bot.Invoker.OnFriendRequestEvent += async (_, @event) =>
         {

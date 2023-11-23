@@ -28,12 +28,7 @@ internal class AcceptGroupRequestService : BaseService<AcceptGroupRequestEvent>
             }
         });
         
-        using var stream = new MemoryStream();
-        Serializer.Serialize(stream, packet);
-        output = new BinaryPacket(stream);
-        
-        Console.WriteLine(output.ToArray().Hex());
-        
+        output = packet.Serialize();
         extraPackets = null;
         return true;
     }

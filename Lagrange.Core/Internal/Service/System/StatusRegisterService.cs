@@ -34,10 +34,8 @@ internal class StatusRegisterService : BaseService<StatusRegisterEvent>
             RegisterVendorType = 0,
             RegType = 1,
         };
-        using var stream = new MemoryStream();
-        Serializer.Serialize(stream, packet);
 
-        output = new BinaryPacket(stream);
+        output = packet.Serialize();
         extraPackets = null;
         return true;
     }

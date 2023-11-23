@@ -4,6 +4,7 @@ using Lagrange.Core.Internal.Event.Protocol.Action;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 using Lagrange.Core.Utility.Binary;
+using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Action;
@@ -20,10 +21,7 @@ internal class GroupLeaveService : BaseService<GroupLeaveEvent>
             GroupUin = input.GroupUin
         });
 
-        var stream = new MemoryStream();
-        Serializer.Serialize(stream, packet);
-        output = new BinaryPacket(stream);
-
+        output = packet.Serialize();
         extraPackets = null;
         return true;
     }

@@ -35,10 +35,7 @@ internal class FetchFriendsService : BaseService<FetchFriendsEvent>
          * 20002：昵称
          */
         
-        using var stream = new MemoryStream();
-        Serializer.Serialize(stream, packet);
-        output = new BinaryPacket(stream);
-
+        output = packet.Serialize();
         extraPackets = null;
         return true;
     }

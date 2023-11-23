@@ -57,7 +57,7 @@ public sealed class MessageService
             Message = Convert(e.Chain)
         };
 
-        _service.SendJsonAsync(request);
+        _ =_service.SendJsonAsync(request);
     }
     
     private void OnGroupMessageReceived(BotContext bot, GroupMessageEvent e)
@@ -65,7 +65,7 @@ public sealed class MessageService
         var request = new OneBotGroupMsg(bot.UpdateKeystore().Uin, e.Chain.GroupUin ?? 0,Convert(e.Chain),
             e.Chain.GroupMemberInfo ?? throw new Exception("Group member not found"));
         
-        _service.SendJsonAsync(request);
+        _ = _service.SendJsonAsync(request);
     }
     
     private void OnTempMessageReceived(BotContext bot, TempMessageEvent e)
