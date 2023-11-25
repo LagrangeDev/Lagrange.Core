@@ -83,6 +83,8 @@ public class LagrangeApp : IHost
             if (await Instance.FetchQrCode() is { } qrCode)
             {
                 QrCodeHelper.Output(qrCode.Url ?? "");
+                await File.WriteAllBytesAsync($"qr-{Instance.BotUin}.png", qrCode.QrCode ?? Array.Empty<byte>(), cancellationToken);
+                
                 await Instance.LoginByQrCode();
             }
         }
