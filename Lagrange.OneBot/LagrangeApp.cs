@@ -53,7 +53,7 @@ public class LagrangeApp : IHost
         if (!string.IsNullOrEmpty(Configuration["Account:Password"]))
             Instance.ContextCollection.Keystore.PasswordMd5 = await Encoding.UTF8.GetBytes(Configuration["Account:Password"] ?? "").Md5Async() ;
 
-        Instance.Invoker.OnBotLogEvent += (_, args) => Logger.Log(args.Level switch
+        Instance.Invoker.OnBotLogEvent += (_, args) => Services.GetRequiredService<ILogger<BotContext>>().Log(args.Level switch
         {
             LogLevel.Debug => Microsoft.Extensions.Logging.LogLevel.Trace,
             LogLevel.Verbose => Microsoft.Extensions.Logging.LogLevel.Information,
