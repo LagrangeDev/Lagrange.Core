@@ -1,12 +1,15 @@
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Internal.Context.Attributes;
 using Lagrange.Core.Internal.Event.Protocol;
+using Lagrange.Core.Internal.Event.Protocol.Notify;
 using Lagrange.Core.Internal.Event.Protocol.System;
 using Lagrange.Core.Internal.Service;
 
 namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 
 [EventSubscribe(typeof(InfoPushGroupEvent))]
+[EventSubscribe(typeof(GroupSysDecreaseEvent))]
+[EventSubscribe(typeof(GroupSysIncreaseEvent))]
 [BusinessLogic("CachingLogic", "Cache Uin to Uid")]
 internal class CachingLogic : LogicBase
 {
@@ -47,8 +50,12 @@ internal class CachingLogic : LogicBase
                 
                 Collection.Log.LogVerbose(Tag, $"Caching group entities: {infoPushGroupEvent.Groups.Count}");
                 break;
+            case GroupSysDecreaseEvent groupSysDecreaseEvent:
+                return CacheUid(groupSysDecreaseEvent.GroupUin, true);
+            case GroupSysIncreaseEvent groupSysIncreaseEvent:
+                return CacheUid(groupSysIncreaseEvent.GroupUin, true);
         }
-        
+
         return Task.CompletedTask;
     }
     
@@ -65,11 +72,11 @@ internal class CachingLogic : LogicBase
     public async Task<string?> ResolveUid(uint? groupUin, uint friendUin)
     {
         if (_uinToUid.Count == 0) await ResolveFriendsUid();
-        if (groupUin == null) return _uinToUid.TryGetValue(friendUin, out var friendUid) ? friendUid : null;
+        if (groupUin == null) return _uinToUid.GetValueOrDefault(friendUin);
         
         await CacheUid(groupUin.Value);
 
-        return _uinToUid.TryGetValue(friendUin, out var uid) ? uid : null;
+        return _uinToUid.GetValueOrDefault(friendUin);
     }
     
     public async Task<uint?> ResolveUin(uint? groupUin, string friendUid, bool force = false)
