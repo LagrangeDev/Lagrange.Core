@@ -104,14 +104,21 @@ public sealed class ForwardWSService : ILagrangeWebService
         return Task.CompletedTask;
     }
     
-    public ValueTask SendJsonAsync<T>(T json, string? identifier = null, CancellationToken cancellationToken = default)
+    public async ValueTask SendJsonAsync<T>(T json, string? identifier = null, CancellationToken cancellationToken = default)
     {
         string payload = JsonSerializer.Serialize(json);
         _logger.LogTrace($"[{Tag}] Send: {payload}");
 
-        return identifier != null && _connections.TryGetValue(identifier, out var connection)
-            ? new ValueTask(connection.Send(payload))
-            : ValueTask.CompletedTask;
+        if (identifier == null)
+        {
+            foreach (var (_, connection) in _connections) await connection.Send(payload);
+        }
+        else
+        {
+            await (_connections.TryGetValue(identifier, out var connection)
+                ? new ValueTask(connection.Send(payload))
+                : ValueTask.CompletedTask);
+        }
     }
 
     private void OnHeartbeat(object? sender)
