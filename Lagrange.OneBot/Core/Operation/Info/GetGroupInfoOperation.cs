@@ -16,12 +16,9 @@ public class GetGroupInfoOperation : IOperation
         {
             var result = (await context.FetchGroups(message.NoCache)).FirstOrDefault(x => x.GroupUin == message.GroupId);
 
-            if (result == null)
-            {
-                return new OneBotResult(null, -1, "failed");
-            }
-
-            return new OneBotResult(new OneBotGroup(result.GroupUin, result.GroupName), 0, "ok");
+            return result == null 
+                ? new OneBotResult(null, -1, "failed") 
+                : new OneBotResult(new OneBotGroup(result.GroupUin, result.GroupName), 0, "ok");
         }
 
         throw new Exception();

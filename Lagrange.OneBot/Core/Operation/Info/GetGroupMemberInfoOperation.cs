@@ -16,12 +16,15 @@ public class GetGroupMemberInfoOperation : IOperation
         {
             var result = (await context.FetchMembers(message.GroupId, message.NoCache)).FirstOrDefault(x => x.Uin == message.UserId);
 
-            if (result == null)
-            {
-                return new OneBotResult(null, -1, "failed");
-            }
-
-            return new OneBotResult(new OneBotGroupMember(message.GroupId, result.Uin, result.Permission.ToString(), result.GroupLevel.ToString(), result.MemberCard, result.MemberName, (uint)new DateTimeOffset(result.JoinTime).ToUnixTimeMilliseconds(), (uint)new DateTimeOffset(result.LastMsgTime).ToUnixTimeMilliseconds()), 0, "ok");
+            return result == null 
+                ? new OneBotResult(null, -1, "failed") 
+                : new OneBotResult(new OneBotGroupMember(message.GroupId, 
+                    result.Uin,
+                    result.Permission.ToString(), 
+                    result.GroupLevel.ToString(), result.MemberCard, result.MemberName, 
+                    (uint)new DateTimeOffset(result.JoinTime).ToUnixTimeMilliseconds(), 
+                    (uint)new DateTimeOffset(result.LastMsgTime).ToUnixTimeMilliseconds()), 
+                    0, "ok");
         }
 
         throw new Exception();
