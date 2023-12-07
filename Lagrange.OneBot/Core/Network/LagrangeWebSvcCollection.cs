@@ -1,4 +1,5 @@
 using Lagrange.OneBot.Core.Network.Service;
+using Lagrange.OneBot.Core.Operation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,9 +12,7 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
 {
     private const string Tag = nameof(LagrangeWebSvcCollection);
     
-    public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
-
-    private readonly List<(IServiceScope, ILagrangeWebService)> _webServices = new();
+    private readonly List<(IServiceScope, ILagrangeWebService)> _webServices = [];
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -34,6 +33,7 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
             Log.LogSingleConnection(logger, Tag);
         }
 
+        var operationSvc = services.GetRequiredService<OperationService>();
         foreach (var section in implsSection.GetChildren())
         {
             var scope = services.CreateScope();
@@ -43,10 +43,10 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
             factory.SetConfig(section);
 
             if (factory.Create() is not { } webService) continue;
-            
-            webService.OnMessageReceived += (sender, args) =>
+            webService.OnMessageReceived += async (_, args) =>
             {
-                OnMessageReceived?.Invoke(sender, new MsgRecvEventArgs(args.Data));
+                if (await operationSvc.HandleOperation(args) is { } result) 
+                    await webService.SendJsonAsync(result, args.Identifier, cancellationToken);
             };
 
             try

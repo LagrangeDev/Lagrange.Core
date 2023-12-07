@@ -4,7 +4,6 @@ using Lagrange.Core;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Network;
-using Lagrange.OneBot.Core.Network.Service;
 using Microsoft.Extensions.Logging;
 
 namespace Lagrange.OneBot.Core.Operation;
@@ -26,17 +25,10 @@ public sealed class OperationService
             var attribute = type.GetCustomAttribute<OperationAttribute>();
             if (attribute != null) _operations[attribute.Api] = (IOperation)type.CreateInstance(false);
         }
-
-        service.OnMessageReceived += (s, e) => _ = HandleOperation(s, e);
     }
 
-    private async Task HandleOperation(object? sender, MsgRecvEventArgs e)
+    public async Task<OneBotResult?> HandleOperation(MsgRecvEventArgs e)
     {
-        if (sender is not ILagrangeWebService webService)
-        {
-            _logger.LogWarning("Json Serialization failed for such action");
-            return;
-        }
         if (JsonSerializer.Deserialize<OneBotAction>(e.Data) is { } action)
         {
             try
@@ -46,22 +38,19 @@ public sealed class OperationService
                     var result = await handler.HandleOperation(_bot, action.Params);
                     result.Echo = action.Echo;
 
-                    await webService.SendJsonAsync(result, e.Identifier);
+                    return result;
                 }
-                else
-                {
-                    await webService.SendJsonAsync(new OneBotResult(null, 404, "failed") { Echo = action.Echo }, e.Identifier);
-                }
+
+                return new OneBotResult(null, 404, "failed") { Echo = action.Echo };
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Unexpected error encountered while handling message.");
-                await webService.SendJsonAsync(new OneBotResult(null, 200, "failed") { Echo = action.Echo }, e.Identifier);
+                return new OneBotResult(null, 200, "failed") { Echo = action.Echo };
             }
         }
-        else
-        {
-            _logger.LogWarning("Json Serialization failed for such action");
-        }
+
+        _logger.LogWarning("Json Serialization failed for such action");
+        return null;
     }
 }
