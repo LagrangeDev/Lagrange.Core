@@ -59,7 +59,6 @@ public sealed class ForwardWSService : ILagrangeWebService
             _server.Start(conn =>
             {
                 string identifier = conn.ConnectionInfo.Id.ToString();
-                _connections.TryAdd(identifier, conn);
                 
                 conn.OnMessage = s =>
                 {
@@ -78,6 +77,7 @@ public sealed class ForwardWSService : ILagrangeWebService
                         }
                     }
 
+                    _connections.TryAdd(identifier, conn);
                     _logger.LogInformation($"[{Tag}] Connected(Conn: {identifier})");
                     
                     var lifecycle = new OneBotLifecycle(_context.BotUin, "connect");
