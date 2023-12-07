@@ -21,11 +21,11 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 ? ((FetchCookieEvent)events[0]).Cookies : new List<string>();
     }
 
-    public async Task<List<BotFriend>> FetchFriends(bool refreshCache = false) => 
-            await Collection.Business.CachingLogic.GetCachedFriends(refreshCache);
+    public Task<List<BotFriend>> FetchFriends(bool refreshCache = false) => 
+            Collection.Business.CachingLogic.GetCachedFriends(refreshCache);
 
-    public async Task<List<BotGroupMember>> FetchMembers(uint groupUin, bool refreshCache = false) => 
-            await Collection.Business.CachingLogic.GetCachedMembers(groupUin, refreshCache);
+    public Task<List<BotGroupMember>> FetchMembers(uint groupUin, bool refreshCache = false) => 
+            Collection.Business.CachingLogic.GetCachedMembers(groupUin, refreshCache);
     
     public async Task<List<BotGroup>> FetchGroups(bool refreshCache)
     {
@@ -160,6 +160,12 @@ internal class OperationLogic : LogicBase
         var recallMessageEvent = RecallGroupMessageEvent.Create(chain.GroupUin.Value, chain.Sequence);
         var events = await Collection.Business.SendEvent(recallMessageEvent);
         return events.Count != 0 && ((RecallGroupMessageEvent)events[0]).ResultCode == 0;
+    }
+
+    public async Task FetchRequests()
+    {
+        var fetchRequestsEvent = FetchRequestsEvent.Create();
+        var events = await Collection.Business.SendEvent(fetchRequestsEvent);
     }
 
     public async Task<bool> RequestFriend(uint targetUin, string message, string question)

@@ -60,7 +60,7 @@ internal class SocketContext : ContextBase, IClientListener
         return false;
     }
     
-    public async Task<bool> Send(byte[] packet) => await _tcpClient.Send(packet);
+    public Task<bool> Send(byte[] packet) => _tcpClient.Send(packet);
 
     public uint GetPacketLength(ReadOnlySpan<byte> header) => BinaryPrimitives.ReadUInt32BigEndian(header);
 
