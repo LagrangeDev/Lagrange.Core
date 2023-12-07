@@ -37,15 +37,18 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
         foreach (var section in implsSection.GetChildren())
         {
             var scope = services.CreateScope();
-            var factory = services.GetRequiredService<ILagrangeWebServiceFactory>();
-            factory.SetConfig(section);
+            var serviceProvider = scope.ServiceProvider;
             
-            var webService = services.GetRequiredService<ILagrangeWebService>();
+            var factory = serviceProvider.GetRequiredService<ILagrangeWebServiceFactory>();
+            factory.SetConfig(section);
+
+            if (factory.Create() is not { } webService) continue;
+            
             webService.OnMessageReceived += (sender, args) =>
             {
                 OnMessageReceived?.Invoke(sender, new MsgRecvEventArgs(args.Data));
             };
-            
+
             try
             {
                 await webService.StartAsync(cancellationToken);
