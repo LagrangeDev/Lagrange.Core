@@ -6,5 +6,5 @@ public interface ILagrangeWebService : IHostedService
 {
     public event EventHandler<MsgRecvEventArgs> OnMessageReceived;
         
-    public ValueTask SendJsonAsync<T>(T json, CancellationToken cancellationToken = default);
+    public ValueTask SendJsonAsync<T>(T json, string? identifier = null, CancellationToken cancellationToken = default);
 }

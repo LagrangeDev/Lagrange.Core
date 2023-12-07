@@ -30,14 +30,14 @@ public sealed class OperationService
         service.OnMessageReceived += (s, e) => _ = HandleOperation(s, e);
     }
 
-    private async Task HandleOperation(object? sender, MsgRecvEventArgs eventArgs)
+    private async Task HandleOperation(object? sender, MsgRecvEventArgs e)
     {
         if (sender is not ILagrangeWebService webService)
         {
             _logger.LogWarning("Json Serialization failed for such action");
             return;
         }
-        if (JsonSerializer.Deserialize<OneBotAction>(eventArgs.Data) is { } action)
+        if (JsonSerializer.Deserialize<OneBotAction>(e.Data) is { } action)
         {
             try
             {
@@ -46,17 +46,17 @@ public sealed class OperationService
                     var result = await handler.HandleOperation(_bot, action.Params);
                     result.Echo = action.Echo;
 
-                    await webService.SendJsonAsync(result);
+                    await webService.SendJsonAsync(result, e.Identifier);
                 }
                 else
                 {
-                    await webService.SendJsonAsync(new OneBotResult(null, 404, "failed") { Echo = action.Echo });
+                    await webService.SendJsonAsync(new OneBotResult(null, 404, "failed") { Echo = action.Echo }, e.Identifier);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogWarning(e, "Unexpected error encountered while handling message.");
-                await webService.SendJsonAsync(new OneBotResult(null, 200, "failed") { Echo = action.Echo });
+                _logger.LogWarning(ex, "Unexpected error encountered while handling message.");
+                await webService.SendJsonAsync(new OneBotResult(null, 200, "failed") { Echo = action.Echo }, e.Identifier);
             }
         }
         else

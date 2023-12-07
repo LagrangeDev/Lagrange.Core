@@ -81,13 +81,13 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
         }
     }
     
-    public async Task SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
+    public async Task SendJsonAsync<T>(T json, string? identifier = null, CancellationToken cancellationToken = default)
     {
         foreach (var (_, service) in _webServices)
         {
             try
             {
-                var vt = service.SendJsonAsync(json, cancellationToken);
+                var vt = service.SendJsonAsync(json, identifier, cancellationToken);
                 if (!vt.IsCompletedSuccessfully)
                 {
                     var t = vt.AsTask();

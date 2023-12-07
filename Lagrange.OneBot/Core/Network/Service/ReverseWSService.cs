@@ -38,10 +38,11 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         public void Dispose() => _cts.Cancel();
     }
 
-    public ValueTask SendJsonAsync<T>(T payload, CancellationToken cancellationToken = default)
+    public ValueTask SendJsonAsync<T>(T payload, string? identifier, CancellationToken cancellationToken = default)
     {
         var connCtx = _connCtx ?? throw new InvalidOperationException("Reverse webSocket service was not running");
         var connTask = connCtx.ConnectTask;
+        
         return !connTask.IsCompletedSuccessfully
             ? SendJsonAsync(connCtx.WebSocket, connTask, payload, connCtx.Token)
             : SendJsonAsync(connCtx.WebSocket, payload, connCtx.Token);

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net.NetworkInformation;
 using System.Text.Json;
 using Fleck;
@@ -23,7 +24,7 @@ public sealed class ForwardWSService : ILagrangeWebService
 
     private readonly WebSocketServer _server;
 
-    private IWebSocketConnection? _connection;
+    private readonly ConcurrentDictionary<string, IWebSocketConnection> _connections;
     
     private readonly Timer _timer;
 
@@ -38,6 +39,7 @@ public sealed class ForwardWSService : ILagrangeWebService
         {
             RestartAfterListenError = true
         };
+        _connections = new ConcurrentDictionary<string, IWebSocketConnection>();
         
         _timer = new Timer(OnHeartbeat, null, 1, _options.HeartBeatInterval);
         _accessToken = _options.AccessToken ?? "";
@@ -56,12 +58,13 @@ public sealed class ForwardWSService : ILagrangeWebService
         {
             _server.Start(conn =>
             {
-                _connection = conn;
+                string identifier = conn.ConnectionInfo.Id.ToString();
+                _connections.TryAdd(identifier, conn);
                 
                 conn.OnMessage = s =>
                 {
-                    _logger.LogTrace($"[{Tag}] Receive: {s}");
-                    OnMessageReceived?.Invoke(this, new MsgRecvEventArgs(s));
+                    _logger.LogTrace($"[{Tag}] Receive(Conn: {identifier}): {s}");
+                    OnMessageReceived?.Invoke(this, new MsgRecvEventArgs(s, identifier));
                 };
 
                 conn.OnOpen = () =>
@@ -75,18 +78,18 @@ public sealed class ForwardWSService : ILagrangeWebService
                         }
                     }
 
-                    _logger.LogInformation($"[{Tag}]: Connected");
+                    _logger.LogInformation($"[{Tag}] Connected(Conn: {identifier})");
                     
                     var lifecycle = new OneBotLifecycle(_context.BotUin, "connect");
-                    SendJsonAsync(lifecycle, cancellationToken).GetAwaiter().GetResult();
+                    SendJsonAsync(lifecycle, identifier, cancellationToken).GetAwaiter().GetResult();
                     
                     _timer.Change(0, _options.HeartBeatInterval);
                 };
 
                 conn.OnClose = () =>
                 {
-                    _logger.LogWarning($"[{Tag}: Disconnected]");
-                    _connection = null;
+                    _logger.LogWarning($"[{Tag}: Disconnected(Conn: {identifier})");
+                    _connections.TryRemove(identifier, out _);
                 };
             });
         }, cancellationToken);
@@ -101,13 +104,14 @@ public sealed class ForwardWSService : ILagrangeWebService
         return Task.CompletedTask;
     }
     
-    public ValueTask SendJsonAsync<T>(T json, CancellationToken cancellationToken = default)
+    public ValueTask SendJsonAsync<T>(T json, string? identifier = null, CancellationToken cancellationToken = default)
     {
         string payload = JsonSerializer.Serialize(json);
         _logger.LogTrace($"[{Tag}] Send: {payload}");
 
-        var connection = _connection;
-        return connection != null ? new ValueTask(connection.Send(payload)) : default;
+        return identifier != null && _connections.TryGetValue(identifier, out var connection)
+            ? new ValueTask(connection.Send(payload))
+            : ValueTask.CompletedTask;
     }
 
     private void OnHeartbeat(object? sender)
@@ -115,12 +119,11 @@ public sealed class ForwardWSService : ILagrangeWebService
         var status = new OneBotStatus(true, true);
         var heartBeat = new OneBotHeartBeat(_context.BotUin, (int)_options.HeartBeatInterval, status);
 
-        _ = SendJsonAsync(heartBeat);
+        foreach (var (identifier, _) in _connections) _ = SendJsonAsync(heartBeat, identifier);
     }
 
     private static bool IsPortInUse(uint port)
     {
         return IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(endpoint => endpoint.Port == port);
     }
-
 }
