@@ -3,13 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Lagrange.OneBot.Core.Network.Service
 {
-    public class DefaultLagrangeWebServiceFactory : LagrangeWebServiceFactory
+    public class DefaultLagrangeWebServiceFactory(IServiceProvider services) : LagrangeWebServiceFactory(services)
     {
-        public DefaultLagrangeWebServiceFactory(IServiceProvider services) : base(services)
-        {
-            
-        }
-
         public override ILagrangeWebService? Create()
         {
             var config = _config ?? throw new InvalidOperationException("Configuration must be provided");
