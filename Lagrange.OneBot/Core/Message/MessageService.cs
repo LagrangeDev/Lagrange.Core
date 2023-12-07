@@ -7,6 +7,8 @@ using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Message;
 using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Database;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Lagrange.OneBot.Core.Message;
 
@@ -17,6 +19,8 @@ public sealed class MessageService
 {
     private readonly LagrangeWebSvcCollection _service;
     private readonly ContextBase _context;
+    private readonly IConfiguration _config;
+    
     private static readonly Dictionary<Type, (string, ISegment)> EntityToSegment;
 
     static MessageService()
@@ -32,11 +36,12 @@ public sealed class MessageService
         }
     }
     
-    public MessageService(BotContext bot, LagrangeWebSvcCollection service, ContextBase context)
+    public MessageService(BotContext bot, LagrangeWebSvcCollection service, ContextBase context, IConfiguration config)
     {
         _service = service;
         _context = context;
-        
+        _config = config;
+
         var invoker = bot.Invoker;
         
         invoker.OnFriendMessageReceived += OnFriendMessageReceived;
@@ -62,9 +67,11 @@ public sealed class MessageService
     
     private void OnGroupMessageReceived(BotContext bot, GroupMessageEvent e)
     {
-        var request = new OneBotGroupMsg(bot.UpdateKeystore().Uin, e.Chain.GroupUin ?? 0,Convert(e.Chain),
-            e.Chain.GroupMemberInfo ?? throw new Exception("Group member not found"));
+        if (_config.GetValue<bool>("Message:IgnoreSelf") && e.Chain.FriendUin == bot.BotUin) return; // ignore self message
         
+        var request = new OneBotGroupMsg(bot.UpdateKeystore().Uin, e.Chain.GroupUin ?? 0, Convert(e.Chain),
+            e.Chain.GroupMemberInfo ?? throw new Exception("Group member not found"));
+
         _ = _service.SendJsonAsync(request);
     }
     

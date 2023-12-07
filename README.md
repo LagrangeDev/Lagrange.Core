@@ -268,6 +268,9 @@ Please use Lagrange.Core responsibly and in accordance with the law.
         "AutoReconnect": true,
         "GetOptimumServer": true
     },
+    "Message": {
+      "IgnoreSelf": true
+    },
     "Implementation": {
         "ForwardWebSocket": {
             "Host": "127.0.0.1",
