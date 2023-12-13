@@ -27,6 +27,9 @@ internal class OperationLogic : LogicBase
     public Task<List<BotGroupMember>> FetchMembers(uint groupUin, bool refreshCache = false) => 
             Collection.Business.CachingLogic.GetCachedMembers(groupUin, refreshCache);
     
+    public async Task<BotStranger> FetchStranger(uint targetUin,bool refreshCache = false) => 
+        await Collection.Business.CachingLogic.GetCachedStranger(targetUin,refreshCache);
+    
     public async Task<List<BotGroup>> FetchGroups(bool refreshCache)
     {
         if (refreshCache) await Collection.Business.PushEvent(InfoSyncEvent.Create());

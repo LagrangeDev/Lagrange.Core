@@ -21,7 +21,8 @@ internal class CachingLogic : LogicBase
     
     private readonly List<BotFriend> _cachedFriends;
     private readonly Dictionary<uint, List<BotGroupMember>> _cachedGroupMembers;
-
+    private readonly Dictionary<uint, BotStranger> _cachedAllMembers;
+    
     private TaskCompletionSource<List<BotGroup>>? _initCompletionSource;
     
     internal CachingLogic(ContextCollection collection) : base(collection)
@@ -32,6 +33,7 @@ internal class CachingLogic : LogicBase
        
         _cachedFriends = new List<BotFriend>();
         _cachedGroupMembers = new Dictionary<uint, List<BotGroupMember>>();
+        _cachedAllMembers = new Dictionary<uint, BotStranger>();
     }
 
     public override Task Incoming(ProtocolEvent e)
@@ -99,6 +101,18 @@ internal class CachingLogic : LogicBase
         return members;
     }
     
+    public async Task<BotStranger> GetCachedStranger(uint targetUin, bool refreshCache)
+    {
+        if( !_cachedAllMembers.TryGetValue(targetUin, out var member) || refreshCache)
+        {
+            //may be not realize: await ResolveMemberUid(targetUin);
+            
+            return new BotStranger(targetUin, "", "");
+        }
+        return member;
+    }
+    
+    
     public async Task<List<BotFriend>> GetCachedFriends(bool refreshCache)
     {
         if (_cachedFriends.Count == 0 || refreshCache) await ResolveFriendsUid();
@@ -123,6 +137,17 @@ internal class CachingLogic : LogicBase
         
         foreach (var friend in friends) _uinToUid.TryAdd(friend.Uin, friend.Uid);
         _cachedFriends.AddRange(friends);
+        
+        // add to All members
+        foreach (var friend in friends)
+        {
+            var stranger = new BotStranger(friend.Uin, friend.Uid, friend.Nickname);
+            if (!_cachedAllMembers.TryAdd(friend.Uin, stranger))
+            {
+                _cachedAllMembers[friend.Uin] = stranger;
+            }
+        }
+        Collection.Log.LogDebug(Tag, $"Add member to All members: {friends.Count}");
     }
 
     private async Task ResolveMembersUid(uint groupUin)
@@ -145,6 +170,18 @@ internal class CachingLogic : LogicBase
 
             foreach (var member in @event.Members) _uinToUid.TryAdd(member.Uin, member.Uid);
             _cachedGroupMembers[groupUin] = @event.Members;
+            
+            // add to All members
+            foreach (var member in @event.Members)
+            {
+                    
+                var stranger = new BotStranger(member.Uin, member.Uid, member.MemberName);
+                if (!_cachedAllMembers.TryAdd(member.Uin, stranger))
+                {
+                    _cachedAllMembers[member.Uin] = stranger;
+                }
+            }
+            Collection.Log.LogDebug(Tag, $"Add member to All members: {@event.Members.Count} | group {groupUin}");
         }
         else
         {

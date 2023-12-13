@@ -25,6 +25,18 @@ public static class OperationExt
         => bot.ContextCollection.Business.OperationLogic.FetchMembers(groupUin, refreshCache);
     
     /// <summary>
+    /// Fetch the target Stranger from cache <br/>
+    /// (The implementation of this api relies on the group_member_info, so it can only get information from the cache; If refreshCache=1, an empty body is returned)
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="refreshCache">force the cache to be refreshed</param>
+    /// <returns></returns>
+    public static Task<BotStranger> FetchStranger(this BotContext bot, uint targetUin , bool refreshCache = false)
+        => bot.ContextCollection.Business.OperationLogic.FetchStranger(targetUin,refreshCache);
+    
+    
+    
+    /// <summary>
     /// Fetch the group list of the account from server or cache
     /// </summary>
     /// <param name="bot">target BotContext</param>
