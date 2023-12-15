@@ -20,7 +20,7 @@ public class GetGroupMemberInfoOperation : IOperation
                 ? new OneBotResult(null, -1, "failed") 
                 : new OneBotResult(new OneBotGroupMember(message.GroupId, 
                     result.Uin,
-                    result.Permission.ToString(), 
+                    result.Permission.ToString().ToLower(), 
                     result.GroupLevel.ToString(), result.MemberCard, result.MemberName, 
                     (uint)new DateTimeOffset(result.JoinTime).ToUnixTimeMilliseconds(), 
                     (uint)new DateTimeOffset(result.LastMsgTime).ToUnixTimeMilliseconds()), 
