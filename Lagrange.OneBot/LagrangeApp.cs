@@ -6,6 +6,7 @@ using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Sign;
 using Lagrange.OneBot.Core.Message;
 using Lagrange.OneBot.Core.Network;
+using Lagrange.OneBot.Core.Notify;
 using Lagrange.OneBot.Core.Operation;
 using Lagrange.OneBot.Utility;
 using Microsoft.Extensions.Configuration;
@@ -71,6 +72,7 @@ public class LagrangeApp : IHost
             
             // Adapters should be started here instead of at the start of application
             await WebService.StartAsync(cancellationToken);
+            Services.GetRequiredService<NotifyService>().RegisterEvents();
             
             await File.WriteAllTextAsync(Configuration["ConfigPath:Keystore"] ?? "keystore.json", json, cancellationToken);
         };
