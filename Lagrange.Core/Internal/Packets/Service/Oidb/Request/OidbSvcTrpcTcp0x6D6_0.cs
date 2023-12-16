@@ -32,11 +32,13 @@ internal class OidbSvcTrpcTcp0x6D6_0Upload
     
     [ProtoMember(7)] public string LocalDirectory { get; set; }
     
-    [ProtoMember(8)] public ulong FileSize { get; set; }
+    [ProtoMember(8)] public long FileSize { get; set; }
     
     [ProtoMember(9)] public byte[] FileSha1 { get; set; }
     
     [ProtoMember(10)] public byte[] FileSha3 { get; set; } // ?
     
     [ProtoMember(11)] public byte[] FileMd5 { get; set; }
+    
+    [ProtoMember(15)] public bool Field15 { get; set; } // true
 }
