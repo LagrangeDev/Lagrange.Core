@@ -1,13 +1,13 @@
+using ProtoBuf;
 using System.Reflection;
+using Lagrange.Core.Message.Entity;
+using Lagrange.Core.Utility.Extension;
+using Lagrange.Core.Utility.Generator;
 using Lagrange.Core.Internal.Packets.Message.C2C;
 using Lagrange.Core.Internal.Packets.Message.Component;
 using Lagrange.Core.Internal.Packets.Message.Component.Extra;
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Routing;
-using ProtoBuf;
-using Lagrange.Core.Message.Entity;
-using Lagrange.Core.Utility.Extension;
-using Lagrange.Core.Utility.Generator;
 using ContentHead = Lagrange.Core.Internal.Packets.Message.ContentHead;
 using MessageBody = Lagrange.Core.Internal.Packets.Message.MessageBody;
 using MessageControl = Lagrange.Core.Internal.Packets.Message.MessageControl;
