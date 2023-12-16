@@ -63,12 +63,18 @@ public class FaceEntity : IMessageEntity
             if (faceId != null) return new FaceEntity((ushort)faceId, false);
         }
 
-        if (elems.CommonElem is { PbElem: not null } common)
+        if (elems.CommonElem is { ServiceType:37, PbElem: not null } common)
         {
             var qFace = Serializer.Deserialize<QFaceExtra>(common.PbElem.AsSpan());
             
             ushort? faceId = (ushort?)qFace.FaceId;
             if (faceId != null) return new FaceEntity((ushort)faceId, true);
+        }
+
+        if (elems.CommonElem is { ServiceType: 33, PbElem: not null } append)
+        {
+            var qSmallFace = Serializer.Deserialize<QSmallFaceExtra>(append.PbElem.AsSpan());
+            return new FaceEntity((ushort)qSmallFace.FaceId, false);
         }
         
         return null;
