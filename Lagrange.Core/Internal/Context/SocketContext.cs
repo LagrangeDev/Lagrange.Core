@@ -1,7 +1,7 @@
 using System.Buffers.Binary;
 using System.Net;
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Event.Protocol.System;
+using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Network;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Network;

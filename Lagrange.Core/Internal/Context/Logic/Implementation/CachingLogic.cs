@@ -1,8 +1,8 @@
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Internal.Context.Attributes;
-using Lagrange.Core.Internal.Event.Protocol;
-using Lagrange.Core.Internal.Event.Protocol.Notify;
-using Lagrange.Core.Internal.Event.Protocol.System;
+using Lagrange.Core.Internal.Event;
+using Lagrange.Core.Internal.Event.Notify;
+using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Service;
 
 namespace Lagrange.Core.Internal.Context.Logic.Implementation;

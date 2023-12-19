@@ -1,6 +1,7 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Message;
 
 namespace Lagrange.Core.Test.Tests;
@@ -61,5 +62,8 @@ public class NTLoginTest
         await bot.SendMessage(friendChain.Build());
 
         await Task.Delay(1000);
+
+        await bot.ContextCollection.Business.SendEvent(FetchAvatarEvent.Create("u_jwgijMpG1BnknQNubcy1bQ"));
+        await bot.FetchRequests();
     }
 }

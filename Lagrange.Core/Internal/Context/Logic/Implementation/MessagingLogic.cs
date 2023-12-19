@@ -1,9 +1,9 @@
+using Lagrange.Core.Event;
+using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Internal.Context.Attributes;
 using Lagrange.Core.Internal.Event;
-using Lagrange.Core.Internal.Event.EventArg;
-using Lagrange.Core.Internal.Event.Protocol;
-using Lagrange.Core.Internal.Event.Protocol.Message;
-using Lagrange.Core.Internal.Event.Protocol.Notify;
+using Lagrange.Core.Internal.Event.Message;
+using Lagrange.Core.Internal.Event.Notify;
 using Lagrange.Core.Internal.Service;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;

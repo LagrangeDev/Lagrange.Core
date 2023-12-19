@@ -1,4 +1,4 @@
-using Lagrange.Core.Internal.Event.Protocol.Message;
+using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Utility.Extension;

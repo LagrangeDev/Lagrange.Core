@@ -1,7 +1,7 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Entity;
-using Lagrange.Core.Internal.Event.Protocol;
-using Lagrange.Core.Internal.Event.Protocol.Action;
+using Lagrange.Core.Internal.Event;
+using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Response;

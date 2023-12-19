@@ -1,5 +1,5 @@
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Event;
+using Lagrange.Core.Event;
 using TaskScheduler = Lagrange.Core.Utility.TaskScheduler;
 
 namespace Lagrange.Core.Internal.Context;

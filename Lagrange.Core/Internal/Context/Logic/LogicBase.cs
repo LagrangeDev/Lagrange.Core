@@ -1,4 +1,4 @@
-using Lagrange.Core.Internal.Event.Protocol;
+using Lagrange.Core.Internal.Event;
 
 namespace Lagrange.Core.Internal.Context.Logic;
 

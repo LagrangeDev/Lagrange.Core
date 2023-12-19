@@ -1,8 +1,8 @@
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Internal.Context.Attributes;
-using Lagrange.Core.Internal.Event.Protocol.Action;
-using Lagrange.Core.Internal.Event.Protocol.Message;
-using Lagrange.Core.Internal.Event.Protocol.System;
+using Lagrange.Core.Internal.Event.Action;
+using Lagrange.Core.Internal.Event.Message;
+using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Message;
 
 namespace Lagrange.Core.Internal.Context.Logic.Implementation;
@@ -160,6 +160,12 @@ internal class OperationLogic : LogicBase
         var recallMessageEvent = RecallGroupMessageEvent.Create(chain.GroupUin.Value, chain.Sequence);
         var events = await Collection.Business.SendEvent(recallMessageEvent);
         return events.Count != 0 && ((RecallGroupMessageEvent)events[0]).ResultCode == 0;
+    }
+
+    public async Task FetchRequests()
+    {
+        var fetchRequestsEvent = FetchRequestsEvent.Create();
+        var events = await Collection.Business.SendEvent(fetchRequestsEvent);
     }
 
     public async Task<bool> RequestFriend(uint targetUin, string message, string question)

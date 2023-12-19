@@ -18,7 +18,7 @@ internal static class ProtoGen
         
         foreach (var type in types)
         {
-            if (type.Namespace?.StartsWith("Lagrange.Core.Packets") != true) continue;
+            if (type.Namespace?.StartsWith("Lagrange.Core.Internal.Packets") != true) continue;
 
             sb.AppendLine($"message {type.Name} {{");
             var properties = type.GetProperties();

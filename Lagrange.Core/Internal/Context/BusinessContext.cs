@@ -3,7 +3,7 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Context.Attributes;
 using Lagrange.Core.Internal.Context.Logic;
 using Lagrange.Core.Internal.Context.Logic.Implementation;
-using Lagrange.Core.Internal.Event.Protocol;
+using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Service;
 using Lagrange.Core.Utility.Extension;

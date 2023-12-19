@@ -1,7 +1,7 @@
 using System.Reflection;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
-using Lagrange.Core.Internal.Event.EventArg;
+using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Message;

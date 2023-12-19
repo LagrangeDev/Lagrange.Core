@@ -1,6 +1,6 @@
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Event.Protocol;
-using Lagrange.Core.Internal.Event.Protocol.Login;
+using Lagrange.Core.Internal.Event;
+using Lagrange.Core.Internal.Event.Login;
 using Lagrange.Core.Internal.Packets.Login.NTLogin;
 using Lagrange.Core.Internal.Packets.Login.NTLogin.Plain;
 using Lagrange.Core.Internal.Packets.Login.NTLogin.Plain.Body;

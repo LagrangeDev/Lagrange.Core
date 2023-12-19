@@ -1,4 +1,4 @@
-using Lagrange.Core.Internal.Event;
+using Lagrange.Core.Event;
 
 namespace Lagrange.Core.Common.Interface.Api;
 

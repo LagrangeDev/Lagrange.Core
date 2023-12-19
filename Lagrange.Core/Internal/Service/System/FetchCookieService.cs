@@ -1,7 +1,7 @@
 using System.Text;
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Event.Protocol;
-using Lagrange.Core.Internal.Event.Protocol.System;
+using Lagrange.Core.Internal.Event;
+using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Response;

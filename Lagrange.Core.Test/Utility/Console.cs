@@ -1,4 +1,4 @@
-using Lagrange.Core.Internal.Event.EventArg;
+using Lagrange.Core.Event.EventArg;
 
 namespace Lagrange.Core.Test.Utility;
 

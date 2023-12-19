@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Event.Protocol;
-using Lagrange.Core.Internal.Event.Protocol.Login;
+using Lagrange.Core.Internal.Event;
+using Lagrange.Core.Internal.Event.Login;
 using Lagrange.Core.Internal.Packets.Login.Ecdh;
 using Lagrange.Core.Internal.Packets.Login.Ecdh.Plain;
 using Lagrange.Core.Utility.Binary;

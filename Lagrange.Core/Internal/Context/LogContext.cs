@@ -1,6 +1,6 @@
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Event;
-using Lagrange.Core.Internal.Event.EventArg;
+using Lagrange.Core.Event;
+using Lagrange.Core.Event.EventArg;
 
 namespace Lagrange.Core.Internal.Context;
 

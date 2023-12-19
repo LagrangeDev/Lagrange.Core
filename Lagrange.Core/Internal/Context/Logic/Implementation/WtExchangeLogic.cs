@@ -1,10 +1,10 @@
 using System.Text.Json;
 using Lagrange.Core.Common;
+using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Internal.Context.Attributes;
-using Lagrange.Core.Internal.Event.EventArg;
-using Lagrange.Core.Internal.Event.Protocol;
-using Lagrange.Core.Internal.Event.Protocol.Login;
-using Lagrange.Core.Internal.Event.Protocol.System;
+using Lagrange.Core.Internal.Event;
+using Lagrange.Core.Internal.Event.Login;
+using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Packets.Login.NTLogin;
 using Lagrange.Core.Internal.Packets.Login.WtLogin.Entity;
 using Lagrange.Core.Internal.Service;

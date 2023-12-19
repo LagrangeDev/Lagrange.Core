@@ -1,6 +1,5 @@
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Event.Protocol;
-using Lagrange.Core.Internal.Packets;
+using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Utility.Binary;
 
 namespace Lagrange.Core.Internal.Service;

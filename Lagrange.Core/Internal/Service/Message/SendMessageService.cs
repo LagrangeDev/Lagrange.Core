@@ -1,6 +1,6 @@
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Event.Protocol;
-using Lagrange.Core.Internal.Event.Protocol.Message;
+using Lagrange.Core.Internal.Event;
+using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Packets.Action;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Binary;
