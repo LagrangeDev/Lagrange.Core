@@ -162,12 +162,6 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((RecallGroupMessageEvent)events[0]).ResultCode == 0;
     }
 
-    public async Task FetchRequests()
-    {
-        var fetchRequestsEvent = FetchRequestsEvent.Create();
-        var events = await Collection.Business.SendEvent(fetchRequestsEvent);
-    }
-
     public async Task<bool> RequestFriend(uint targetUin, string message, string question)
     {
         var requestFriendSearchEvent = RequestFriendSearchEvent.Create(targetUin);
