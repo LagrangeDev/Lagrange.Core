@@ -52,7 +52,7 @@ public class LagrangeApp : IHost
 
         Instance.ContextCollection.Packet.SignProvider = Services.GetRequiredService<SignProvider>();
         if (!string.IsNullOrEmpty(Configuration["Account:Password"]))
-            Instance.ContextCollection.Keystore.PasswordMd5 = await Encoding.UTF8.GetBytes(Configuration["Account:Password"] ?? "").Md5Async() ;
+            Instance.ContextCollection.Keystore.PasswordMd5 = await Encoding.UTF8.GetBytes(Configuration["Account:Password"] ?? "").Md5Async();
 
         Instance.Invoker.OnBotLogEvent += (_, args) => Services.GetRequiredService<ILogger<BotContext>>().Log(args.Level switch
         {
@@ -92,15 +92,18 @@ public class LagrangeApp : IHost
         }
         else
         {
-            Instance.Invoker.OnBotCaptchaEvent += (_, args) =>
+            Instance.Invoker.OnBotCaptchaEvent += async (_, args) =>
             {
                 Logger.LogWarning($"Captcha: {args.Url}");
                 Logger.LogWarning("Please input ticket and randomString:");
-                
-                var ticket = Console.ReadLine();
-                var randomString = Console.ReadLine();
 
-                if (ticket != null && randomString != null) Instance.SubmitCaptcha(ticket, randomString);
+                await Task.Run(() =>
+                {
+                    var ticket = Console.ReadLine();
+                    var randomString = Console.ReadLine();
+
+                    if (ticket != null && randomString != null) Instance.SubmitCaptcha(ticket, randomString);
+                }, cancellationToken);
             };
             
             await Instance.LoginByPassword();
