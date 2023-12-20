@@ -31,5 +31,7 @@ internal class GroupMuteData
 [ProtoContract]
 internal class GroupMuteState
 {
-    [ProtoMember(2)] public uint IsMute { get; set; } // uint.MaxValue = Mute else Lift
+    [ProtoMember(1)] public string? TargetUid { get; set; }
+    
+    [ProtoMember(2)] public uint Duration { get; set; } // uint.MaxValue = Mute else Lift
 }

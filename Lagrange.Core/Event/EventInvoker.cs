@@ -26,6 +26,7 @@ public partial class EventInvoker : IDisposable
         RegisterEvent((GroupMemberDecreaseEvent e) => OnGroupMemberDecreaseEvent?.Invoke(context, e));
         RegisterEvent((FriendRequestEvent e) => OnFriendRequestEvent?.Invoke(context, e));
         RegisterEvent((GroupMuteEvent e) => OnGroupMuteEvent?.Invoke(context, e));
+        RegisterEvent((GroupMemberMuteEvent e) => OnGroupMemberMuteEvent?.Invoke(context, e));
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

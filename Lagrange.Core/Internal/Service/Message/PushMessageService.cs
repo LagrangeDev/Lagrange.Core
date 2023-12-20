@@ -122,8 +122,16 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             case Event0x2DCSubType.GroupMuteNotice when msg.Message.Body?.MsgContent is { } content:
             {
                 var mute = Serializer.Deserialize<GroupMute>(content.AsSpan());
-                var groupMuteEvent = GroupSysMuteEvent.Result(mute.GroupUin, mute.OperatorUid, mute.Data.State.IsMute == uint.MaxValue);
-                extraEvents.Add(groupMuteEvent);
+                if (mute.Data.State.TargetUid == null)
+                {
+                    var groupMuteEvent = GroupSysMuteEvent.Result(mute.GroupUin, mute.OperatorUid, mute.Data.State.Duration == uint.MaxValue);
+                    extraEvents.Add(groupMuteEvent);
+                }
+                else
+                {
+                    var memberMuteEvent = GroupSysMemberMuteEvent.Result(mute.GroupUin, mute.OperatorUid, mute.Data.State.TargetUid, mute.Data.State.Duration);
+                    extraEvents.Add(memberMuteEvent);
+                }
                 break;
             }
             default:
