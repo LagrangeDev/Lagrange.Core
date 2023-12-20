@@ -197,10 +197,10 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | Message  | [Private Message]              |    🔴    |
 | Message  | [Group Message]                |    🟢    |
 | Notice   | [Group File Upload]            |    🔴    |
-| Notice   | [Group Admin Change]           |    🔴    |
+| Notice   | [Group Admin Change]           |    🟢    |
 | Notice   | [Group Member Decrease]        |    🟢    |
 | Notice   | [Group Member Increase]        |    🟢    |
-| Notice   | [Group Mute]                   |    🔴    |
+| Notice   | [Group Mute]                   |    🟢    |
 | Notice   | [Friend Add]                   |    🔴    |
 | Notice   | [Group Recall Message]         |    🔴    |
 | Notice   | [Friend Recall Message]        |    🔴    |

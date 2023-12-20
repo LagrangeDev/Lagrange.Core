@@ -34,5 +34,12 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             string type = @event.Type.ToString().ToLower();
             await service.SendJsonAsync(new OneBotMemberDecrease(bot.BotUin, type, @event.GroupUin, @event.OperatorUin ?? 0, @event.MemberUin));
         };
+        
+        bot.Invoker.OnGroupMemberMuteEvent += async (_, @event) =>
+        {
+            logger.LogInformation(@event.ToString());
+            string type = @event.Duration == 0 ? "lift_ban" : "ban";
+            await service.SendJsonAsync(new OneBotGroupMute(bot.BotUin, type, @event.GroupUin, @event.OperatorUin ?? 0, @event.TargetUin, @event.Duration));
+        };
     }
 }
