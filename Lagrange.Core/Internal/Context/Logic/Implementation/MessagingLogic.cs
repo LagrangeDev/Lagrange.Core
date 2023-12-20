@@ -17,6 +17,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(GroupSysIncreaseEvent))]
 [EventSubscribe(typeof(GroupSysDecreaseEvent))]
 [EventSubscribe(typeof(FriendSysRequestEvent))]
+[EventSubscribe(typeof(GroupSysMuteEvent))]
 [BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
 internal class MessagingLogic : LogicBase
 {
@@ -80,6 +81,14 @@ internal class MessagingLogic : LogicBase
             {
                 var requestArgs = new FriendRequestEvent(info.SourceUin, info.Name, info.Message);
                 Collection.Invoker.PostEvent(requestArgs);
+                break;
+            }
+            case GroupSysMuteEvent groupMute:
+            {
+                uint? operatorUin = null;
+                if (groupMute.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(groupMute.GroupUin, groupMute.OperatorUid);
+                var muteArgs = new GroupMuteEvent(groupMute.GroupUin, operatorUin, groupMute.IsMuted);
+                Collection.Invoker.PostEvent(muteArgs);
                 break;
             }
         }

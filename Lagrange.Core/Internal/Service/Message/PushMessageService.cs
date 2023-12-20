@@ -96,7 +96,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             }
             case PkgType.Event0x2DC:
             {
-                ProcessEvent0x2DC(input, message);
+                ProcessEvent0x2DC(input, message, extraEvents);
                 break;
             }
             default:
@@ -108,7 +108,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         return true;
     }
 
-    private static void ProcessEvent0x2DC(byte[] payload, PushMsg msg)
+    private static void ProcessEvent0x2DC(byte[] payload, PushMsg msg, List<ProtocolEvent> extraEvents)
     {
         var pkgType = (Event0x2DCSubType)(msg.Message.ContentHead.SubType ?? 0);
         switch (pkgType)
@@ -117,6 +117,13 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             {
                 var subInfo = content[7..];
                 Console.WriteLine(subInfo.Hex());
+                break;
+            }
+            case Event0x2DCSubType.GroupMuteNotice when msg.Message.Body?.MsgContent is { } content:
+            {
+                var mute = Serializer.Deserialize<GroupMute>(content.AsSpan());
+                var groupMuteEvent = GroupSysMuteEvent.Result(mute.GroupUin, mute.OperatorUid, mute.Data.State.IsMute == uint.MaxValue);
+                extraEvents.Add(groupMuteEvent);
                 break;
             }
             default:
@@ -167,7 +174,8 @@ internal class PushMessageService : BaseService<PushMessageEvent>
 
     private enum Event0x2DCSubType
     {
-        GroupRecallNotice = 17
+        GroupRecallNotice = 17,
+        GroupMuteNotice = 12
     }
     
     private enum Event0x210SubType
