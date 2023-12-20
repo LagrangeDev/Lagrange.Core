@@ -24,13 +24,15 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
         bot.Invoker.OnGroupMemberIncreaseEvent += async (_, @event) =>
         {
             logger.LogInformation(@event.ToString());
-            await service.SendJsonAsync(new OneBotMemberIncrease(bot.BotUin, "invite", @event.GroupUin, @event.InvitorUin ?? 0, @event.MemberUin));
+            string type = @event.Type.ToString().ToLower();
+            await service.SendJsonAsync(new OneBotMemberIncrease(bot.BotUin, type, @event.GroupUin, @event.InvitorUin ?? 0, @event.MemberUin));
         };
         
         bot.Invoker.OnGroupMemberDecreaseEvent += async (_, @event) =>
         {
             logger.LogInformation(@event.ToString());
-            await service.SendJsonAsync(new OneBotMemberDecrease(bot.BotUin, "leave", @event.GroupUin, @event.OperatorUin ?? 0, @event.MemberUin));
+            string type = @event.Type.ToString().ToLower();
+            await service.SendJsonAsync(new OneBotMemberDecrease(bot.BotUin, type, @event.GroupUin, @event.OperatorUin ?? 0, @event.MemberUin));
         };
     }
 }

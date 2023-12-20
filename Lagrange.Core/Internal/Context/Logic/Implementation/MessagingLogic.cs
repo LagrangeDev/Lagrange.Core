@@ -63,7 +63,7 @@ internal class MessagingLogic : LogicBase
                 uint memberUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.MemberUid, true) ?? 0;
                 uint? invitorUin = null;
                 if (increase.InvitorUid != null) invitorUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.InvitorUid);
-                var increaseArgs = new GroupMemberIncreaseEvent(increase.GroupUin, memberUin, invitorUin);
+                var increaseArgs = new GroupMemberIncreaseEvent(increase.GroupUin, memberUin, invitorUin, increase.Type);
                 Collection.Invoker.PostEvent(increaseArgs);
                 break;
             }
@@ -72,7 +72,7 @@ internal class MessagingLogic : LogicBase
                 uint memberUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.MemberUid) ?? 0;
                 uint? operatorUin = null;
                 if (decrease.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.OperatorUid);
-                var decreaseArgs = new GroupMemberDecreaseEvent(decrease.GroupUin, memberUin, operatorUin);
+                var decreaseArgs = new GroupMemberDecreaseEvent(decrease.GroupUin, memberUin, operatorUin, decrease.Type);
                 Collection.Invoker.PostEvent(decreaseArgs);
                 break;
             }

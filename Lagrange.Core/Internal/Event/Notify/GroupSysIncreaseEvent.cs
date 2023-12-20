@@ -8,12 +8,16 @@ internal class GroupSysIncreaseEvent : ProtocolEvent
     
     public string? InvitorUid { get; }
     
-    private GroupSysIncreaseEvent(uint groupUin, string memberUid, string? invitorUid) : base(0)
+    public uint Type { get; }
+    
+    private GroupSysIncreaseEvent(uint groupUin, string memberUid, string? invitorUid, uint type) : base(0)
     {
         GroupUin = groupUin;
         MemberUid = memberUid;
         InvitorUid = invitorUid;
+        Type = type;
     }
-    
-    public static GroupSysIncreaseEvent Result(uint groupUin, string uid, string? invitorUid) => new(groupUin, uid, invitorUid);
+
+    public static GroupSysIncreaseEvent Result(uint groupUin, string uid, string? invitorUid, uint type) =>
+        new(groupUin, uid, invitorUid, type);
 }

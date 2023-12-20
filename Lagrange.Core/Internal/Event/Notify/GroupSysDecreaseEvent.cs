@@ -8,12 +8,16 @@ internal class GroupSysDecreaseEvent : ProtocolEvent
     
     public string? OperatorUid { get; }
     
-    private GroupSysDecreaseEvent(uint groupUin, string memberUid, string? operatorUid) : base(0)
+    public uint Type { get; }
+    
+    private GroupSysDecreaseEvent(uint groupUin, string memberUid, string? operatorUid, uint type) : base(0)
     {
         GroupUin = groupUin;
         MemberUid = memberUid;
         OperatorUid = operatorUid;
+        Type = type;
     }
-    
-    public static GroupSysDecreaseEvent Result(uint groupUin, string uid, string? operatorUid) => new(groupUin, uid, operatorUid);
+
+    public static GroupSysDecreaseEvent Result(uint groupUin, string uid, string? operatorUid, uint type) =>
+        new(groupUin, uid, operatorUid, type);
 }

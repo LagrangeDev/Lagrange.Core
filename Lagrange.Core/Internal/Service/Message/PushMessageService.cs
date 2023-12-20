@@ -78,14 +78,14 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             case PkgType.GroupMemberIncreaseNotice when message.Message.Body?.MsgContent is { } content:
             {
                 var increase = Serializer.Deserialize<GroupChange>(content.AsSpan());
-                var increaseEvent = GroupSysIncreaseEvent.Result(increase.GroupUin, increase.MemberUid, increase.OperatorUid);
+                var increaseEvent = GroupSysIncreaseEvent.Result(increase.GroupUin, increase.MemberUid, increase.OperatorUid, increase.IncreaseType);
                 extraEvents.Add(increaseEvent);
                 break;
             }
             case PkgType.GroupMemberDecreaseNotice when message.Message.Body?.MsgContent is { } content:
             {
                 var decrease = Serializer.Deserialize<GroupChange>(content.AsSpan());
-                var decreaseEvent = GroupSysDecreaseEvent.Result(decrease.GroupUin, decrease.MemberUid, decrease.OperatorUid);
+                var decreaseEvent = GroupSysDecreaseEvent.Result(decrease.GroupUin, decrease.MemberUid, decrease.OperatorUid, decrease.DecreaseType);
                 extraEvents.Add(decreaseEvent);
                 break;
             }

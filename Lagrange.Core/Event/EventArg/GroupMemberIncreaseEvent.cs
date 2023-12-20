@@ -8,12 +8,21 @@ public class GroupMemberIncreaseEvent : EventBase
     
     public uint? InvitorUin { get; }
     
-    public GroupMemberIncreaseEvent(uint groupUin, uint memberUin, uint? invitorUin)
+    public EventType Type { get; }
+    
+    public GroupMemberIncreaseEvent(uint groupUin, uint memberUin, uint? invitorUin, uint type)
     {
         GroupUin = groupUin;
         MemberUin = memberUin;
         InvitorUin = invitorUin;
-        
-        EventMessage = $"{nameof(GroupMemberIncreaseEvent)}: {GroupUin} | {MemberUin} | {InvitorUin}";
+        Type = (EventType)type;
+
+        EventMessage = $"{nameof(GroupMemberIncreaseEvent)}: {GroupUin} | {MemberUin} | {InvitorUin} | {Type}";
+    }
+
+    public enum EventType : uint
+    {
+        Approve = 0,
+        Invite = 6
     }
 }
