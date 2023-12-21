@@ -18,6 +18,10 @@ public sealed class MessageBuilder
     public static MessageBuilder FakeGroup(uint groupUin, uint memberUin) => 
             new(new MessageChain(groupUin, memberUin, (uint)Random.Shared.Next(1000000, 9999999)));
     
+    /// <summary>
+    /// Add a text entity to the message chain
+    /// </summary>
+    /// <param name="text">The text to be added</param>
     public MessageBuilder Text(string text)
     {
         var textEntity = new TextEntity(text);
@@ -26,6 +30,11 @@ public sealed class MessageBuilder
         return this;
     }
     
+    /// <summary>
+    /// Add a mention entity to the message chain (@someone)
+    /// </summary>
+    /// <param name="target">the Uin of target</param>
+    /// <param name="display">the string to be displayed</param>
     public MessageBuilder Mention(uint target, string? display = null)
     {
         var mentionEntity = new MentionEntity(display ?? target.ToString(), target);
@@ -34,6 +43,11 @@ public sealed class MessageBuilder
         return this;
     }
     
+    /// <summary>
+    /// Add a face entity to the message chain
+    /// </summary>
+    /// <param name="id">The id of emoji</param>
+    /// <param name="isLarge">Is the emoji large</param>
     public MessageBuilder Face(ushort id, bool isLarge = false)
     {
         var faceEntity = new FaceEntity(id, isLarge);
@@ -42,6 +56,10 @@ public sealed class MessageBuilder
         return this;
     }
 
+    /// <summary>
+    /// Add a forward entity to the message chain (reply)
+    /// </summary>
+    /// <param name="target">The message chain to be forwarded</param>
     public MessageBuilder Forward(MessageChain target)
     {
         var forwardEntity = new ForwardEntity(target);
@@ -50,6 +68,11 @@ public sealed class MessageBuilder
         return this;
     }
     
+    /// <summary>
+    /// Add a multimsg entity to the message chain (multi message)
+    /// </summary>
+    /// <param name="groupUin">The group to be sent, if null, the message will be sent as private message</param>
+    /// <param name="msg">The messages to be sent</param>
     public MessageBuilder MultiMsg(uint? groupUin = null, params MessageBuilder[] msg)
     {
         var multiMsgEntity = new MultiMsgEntity(groupUin, msg.Select(x => x.Build()).ToList());
@@ -57,7 +80,19 @@ public sealed class MessageBuilder
         
         return this;
     }
-
+    
+    public MessageBuilder MultiMsg(uint? groupUin = null, params MessageChain[] chains)
+    {
+        var multiMsgEntity = new MultiMsgEntity(groupUin, chains.ToList());
+        _chain.Add(multiMsgEntity);
+        
+        return this;
+    }
+    
+    /// <summary>
+    /// Add a xml entity to the message chain (card message)
+    /// </summary>
+    /// <param name="xml">The xml to be sent</param>
     public MessageBuilder Xml(string xml)
     {
         var xmlEntity = new XmlEntity(xml);
@@ -66,6 +101,11 @@ public sealed class MessageBuilder
         return this;
     }
     
+    /// <summary>
+    /// Add a image entity to the message chain
+    /// </summary>
+    /// <remarks>The file would not be closed until the message is sent</remarks>
+    /// <param name="filePath">The path of image file</param>
     public MessageBuilder Image(string filePath)
     {
         var imageEntity = new ImageEntity(filePath);
@@ -74,6 +114,10 @@ public sealed class MessageBuilder
         return this;
     }
     
+    /// <summary>
+    /// Add a image entity to the message chain
+    /// </summary>
+    /// <param name="file">The image file</param>
     public MessageBuilder Image(byte[] file)
     {
         var imageEntity = new ImageEntity(file);
