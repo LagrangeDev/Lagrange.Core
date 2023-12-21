@@ -144,6 +144,20 @@ internal class MessagingLogic : LogicBase
                 multi.Chains.AddRange((IEnumerable<MessageChain>?)result.Chains ?? Array.Empty<MessageChain>());
             }
         }
+
+        foreach (var mention in chain.OfType<MentionEntity>())
+        {
+            if (chain is { IsGroup: true, GroupUin: not null })
+            {
+                var members = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
+                mention.Name ??= members.FirstOrDefault(x => x.Uin == mention.Uin)?.MemberCard;
+            }
+            else
+            {
+                var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
+                mention.Name ??= friends.FirstOrDefault(x => x.Uin == mention.Uin)?.Nickname;
+            }
+        }
     }
     
     private async Task ResolveChainUid(MessageChain chain)

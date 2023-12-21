@@ -13,7 +13,7 @@ public class MentionEntity : IMessageEntity
     
     public string Uid { get; set; }
     
-    public string Name { get; set; }
+    public string? Name { get; set; }
     
     public MentionEntity()
     {
@@ -25,7 +25,7 @@ public class MentionEntity : IMessageEntity
     /// <summary>
     /// Set target to 0 to mention everyone
     /// </summary>
-    public MentionEntity(string name, uint target = 0)
+    public MentionEntity(string? name, uint target = 0)
     {
         Uin = target;
         Uid = ""; // automatically resolved by MessagingLogic.cs

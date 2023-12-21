@@ -37,7 +37,7 @@ public sealed class MessageBuilder
     /// <param name="display">the string to be displayed</param>
     public MessageBuilder Mention(uint target, string? display = null)
     {
-        var mentionEntity = new MentionEntity(display ?? target.ToString(), target);
+        var mentionEntity = new MentionEntity(display, target);
         _chain.Add(mentionEntity);
         
         return this;
