@@ -215,7 +215,7 @@ internal static class MessagePacker
     
     private static MessageChain ParseChain(PushMsgBody message)
     {
-        return message.ResponseHead.Grp == null
+        var chain = message.ResponseHead.Grp == null
             ? new MessageChain(
                 message.ResponseHead.FromUin,
                 message.ResponseHead.ToUid ?? string.Empty , 
@@ -227,5 +227,9 @@ internal static class MessagePacker
                 message.ResponseHead.FromUin, 
                 (uint)(message.ContentHead.Sequence ?? 0),
                 message.ContentHead.NewId ?? 0);
+
+        chain.Time = DateTimeOffset.FromUnixTimeSeconds(message.ContentHead.Timestamp ?? 0).DateTime;
+        
+        return chain;
     }
 }
