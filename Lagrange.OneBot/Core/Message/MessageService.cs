@@ -51,9 +51,13 @@ public sealed class MessageService
     
     private void OnFriendMessageReceived(BotContext bot, FriendMessageEvent e)
     {
-        var request = new OneBotPrivateMsg(bot.UpdateKeystore().Uin)
+                
+        var record = (MessageRecord)e.Chain;
+        _context.Insert(record.MessageHash, record);
+        
+        var request = new OneBotPrivateMsg(bot.BotUin)
         {
-            MessageId = 0,
+            MessageId = record.MessageHash,
             UserId = e.Chain.FriendUin,
             GroupSender = new OneBotSender
             {
@@ -69,8 +73,11 @@ public sealed class MessageService
     {
         if (_config.GetValue<bool>("Message:IgnoreSelf") && e.Chain.FriendUin == bot.BotUin) return; // ignore self message
         
-        var request = new OneBotGroupMsg(bot.UpdateKeystore().Uin, e.Chain.GroupUin ?? 0, Convert(e.Chain),
-            e.Chain.GroupMemberInfo ?? throw new Exception("Group member not found"));
+        var record = (MessageRecord)e.Chain;
+        _context.Insert(record.MessageHash, record);
+        
+        var request = new OneBotGroupMsg(bot.BotUin, e.Chain.GroupUin ?? 0, Convert(e.Chain),
+            e.Chain.GroupMemberInfo ?? throw new Exception("Group member not found"), record.MessageHash);
 
         _ = _service.SendJsonAsync(request);
     }

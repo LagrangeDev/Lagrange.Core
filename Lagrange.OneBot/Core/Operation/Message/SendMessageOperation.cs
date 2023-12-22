@@ -12,24 +12,14 @@ public sealed class SendMessageOperation : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
     {
-        switch (payload.Deserialize<OneBotMessageBase>())
+        var result = payload.Deserialize<OneBotMessageBase>() switch
         {
-            case OneBotMessage message:
-                // List<Message>
-                await context.SendMessage(MessageCommon.ParseChain(message).Build());
-                break;
-            case OneBotMessageSimple messageSimple:
-                // Message
-                await context.SendMessage(MessageCommon.ParseChain(messageSimple).Build());
-                break;
-            case OneBotMessageText messageText:
-                // String
-                await context.SendMessage(MessageCommon.ParseChain(messageText).Build());
-                break;
-            default:
-                throw new Exception();
-        }
-        
+            OneBotMessage message => await context.SendMessage(MessageCommon.ParseChain(message).Build()),
+            OneBotMessageSimple messageSimple => await context.SendMessage(MessageCommon.ParseChain(messageSimple).Build()),
+            OneBotMessageText messageText => await context.SendMessage(MessageCommon.ParseChain(messageText).Build()),
+            _ => throw new Exception()
+        };
+
         return new OneBotResult(new OneBotMessageResponse(0), 0, "ok");
     }
 }

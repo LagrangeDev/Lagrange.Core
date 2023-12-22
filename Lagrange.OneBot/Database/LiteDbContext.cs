@@ -14,16 +14,21 @@ public class LiteDbContext : ContextBase
         _instance = new LiteDatabase(databasePath);
     }
 
-    public override void Insert<T>(T value)
+    public override void Insert<T>(ulong id, T value)
     {
         var collection = _instance.GetCollection<T>();
         collection.Insert(value);
+        
+        _instance.Commit();
     }
 
     public override int InsertRange<T>(IEnumerable<T> value, int batchSize = 5000)
     {
         var collection = _instance.GetCollection<T>();
-        return collection.InsertBulk(value, batchSize);
+        int count = collection.InsertBulk(value, batchSize);
+        _instance.Commit();
+
+        return count;
     }
 
     public override T Query<T>(Func<T, bool> predicate)

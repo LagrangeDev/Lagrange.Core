@@ -1,9 +1,10 @@
 using System.Reflection;
 using System.Text.Json;
 using Lagrange.Core;
-using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Network;
+using Lagrange.OneBot.Database;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Lagrange.OneBot.Core.Operation;
@@ -12,19 +13,27 @@ public sealed class OperationService
 {
     private readonly BotContext _bot;
     private readonly ILogger _logger;
-    private readonly Dictionary<string, IOperation> _operations;
+    private readonly Dictionary<string, Type> _operations;
+    private readonly ServiceProvider _service;
 
-    public OperationService(BotContext bot, ILogger<OperationService> logger, LagrangeWebSvcCollection service)
+    public OperationService(BotContext bot, ILogger<OperationService> logger, ContextBase context)
     {
         _bot = bot;
         _logger = logger;
-        _operations = new Dictionary<string, IOperation>();
         
+        _operations = new Dictionary<string, Type>();
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var attribute = type.GetCustomAttribute<OperationAttribute>();
-            if (attribute != null) _operations[attribute.Api] = (IOperation)type.CreateInstance(false);
+            if (attribute != null) _operations[attribute.Api] = type;
         }
+        
+        var service = new ServiceCollection();
+        service.AddSingleton(context);
+        service.AddSingleton(logger);
+        
+        foreach (var (_, type) in _operations) service.AddScoped(type);
+        _service = service.BuildServiceProvider();
     }
 
     public async Task<OneBotResult?> HandleOperation(MsgRecvEventArgs e)
@@ -33,8 +42,9 @@ public sealed class OperationService
         {
             try
             {
-                if (_operations.TryGetValue(action.Action, out var handler))
+                if (_operations.TryGetValue(action.Action, out var type))
                 {
+                    var handler = (IOperation)_service.GetRequiredService(type);
                     var result = await handler.HandleOperation(_bot, action.Params);
                     result.Echo = action.Echo;
 

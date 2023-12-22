@@ -10,7 +10,7 @@ public class OneBotPrivateMsg(uint selfId) : OneBotEntityBase(selfId, "message")
 
     [JsonPropertyName("sub_type")] public string SubType { get; } = "friend";
 
-    [JsonPropertyName("message_id")] public int MessageId { get; set; }
+    [JsonPropertyName("message_id")] public uint MessageId { get; set; }
     
     [JsonPropertyName("user_id")] public uint UserId { get; set; }
     
