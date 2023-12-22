@@ -112,7 +112,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [/send_private_msg]        |    🟢    |
 | [/send_group_msg]          |    🟢    |
 | [/send_msg]                |    🟢    |
-| [/delete_msg]              |    🔴    |
+| [/delete_msg]              |    🟡    |
 | [/get_msg]                 |    🟢    |
 | [/get_forward_msg]         |    🟢    |
 | ~~[/send_like]~~           |    🔴    |
