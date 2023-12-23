@@ -79,6 +79,9 @@ public static class OperationExt
     
     public static Task<bool> RequestFriend(this BotContext bot, uint targetUin, string message = "", string question = "")
         => bot.ContextCollection.Business.OperationLogic.RequestFriend(targetUin, message, question);
+
+    public static Task<bool> Like(this BotContext bot, uint targetUin)
+        => bot.ContextCollection.Business.OperationLogic.Like(targetUin);
     
     /// <summary>
     /// Get the client key for all sites
