@@ -34,9 +34,9 @@ internal class OidbSvcTrpcTcp0x10C0_1ResponseRequests
     
     [ProtoMember(5)] public OidbSvcTrpcTcp0x10C0_1ResponseUser Target { get; set; }
     
-    [ProtoMember(6)] public OidbSvcTrpcTcp0x10C0_1ResponseUser Invitor { get; set; }
+    [ProtoMember(6)] public OidbSvcTrpcTcp0x10C0_1ResponseUser? Invitor { get; set; }
     
-    [ProtoMember(7)] public OidbSvcTrpcTcp0x10C0_1ResponseUser Operator { get; set; }
+    [ProtoMember(7)] public OidbSvcTrpcTcp0x10C0_1ResponseUser? Operator { get; set; }
     
     [ProtoMember(9)] public string Field9 { get; set; }
 }

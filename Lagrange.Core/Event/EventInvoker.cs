@@ -5,6 +5,8 @@ namespace Lagrange.Core.Event;
 
 public partial class EventInvoker : IDisposable
 {
+    private const string Tag = "EventInvoker";
+    
     private readonly Dictionary<Type, Action<EventBase>> _events;
     
     public delegate void LagrangeEvent<in TEvent>(BotContext context, TEvent e) where TEvent : EventBase;
@@ -39,11 +41,11 @@ public partial class EventInvoker : IDisposable
             try
             {
                 if (_events.TryGetValue(e.GetType(), out var action)) action(e);
-                else PostEvent(new BotLogEvent("BotContext", LogLevel.Warning, $"Event {e.GetType().Name} is not registered but pushed to invoker"));
+                else PostEvent(new BotLogEvent(Tag, LogLevel.Warning, $"Event {e.GetType().Name} is not registered but pushed to invoker"));
             }
             catch (Exception ex)
             {
-                PostEvent(new BotLogEvent("BotContext", LogLevel.Exception, $"{ex.StackTrace}\n{ex.Message}"));
+                PostEvent(new BotLogEvent(Tag, LogLevel.Exception, $"{ex.StackTrace}\n{ex.Message}"));
             }
         });
     }

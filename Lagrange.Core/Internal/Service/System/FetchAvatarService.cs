@@ -3,6 +3,7 @@ using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
+using Lagrange.Core.Internal.Packets.Service.Oidb.Response;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
@@ -33,8 +34,10 @@ internal class FetchAvatarService : BaseService<FetchAvatarEvent>
     protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, out FetchAvatarEvent output,
         out List<ProtocolEvent>? extraEvents)
     {
-        Console.WriteLine(input.Hex());
-        
-        return base.Parse(input, keystore, appInfo, device, out output, out extraEvents);
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xFE1_2Response>>(input.AsSpan());
+
+        output = FetchAvatarEvent.Result(0, payload.Body.Body.Uin, "");
+        extraEvents = null;
+        return true;
     }
 }

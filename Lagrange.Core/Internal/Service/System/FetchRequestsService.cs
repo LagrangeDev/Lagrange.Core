@@ -32,7 +32,21 @@ internal class FetchRequestsService : BaseService<FetchRequestsEvent>
         out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x10C0_1Response>>(input.AsSpan());
+        var events = payload.Body.Requests.Select(x => new FetchRequestsEvent.RawEvent(
+            x.Group.GroupUin,
+            x.Invitor?.Uid,
+            x.Invitor?.Name,
+            x.Target.Uid,
+            x.Target.Name,
+            x.Operator?.Uid,
+            x.Operator?.Name,
+            x.Sequence,
+            x.State,
+            x.EventType
+        )).ToList();
         
-        return base.Parse(input, keystore, appInfo, device, out output, out extraEvents);
+        output = FetchRequestsEvent.Result((int)payload.ErrorCode, events);
+        extraEvents = null;
+        return true;
     }
 }
