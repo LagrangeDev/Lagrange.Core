@@ -1,7 +1,19 @@
 namespace Lagrange.Core.Common.Entity;
 
+[Serializable]
 public class BotFriend
 {
+    /// <summary>
+    /// The empty constructor for serialization
+    /// </summary>
+    internal BotFriend()
+    {
+        Uid = string.Empty;
+        Nickname = string.Empty;
+        Remarks = string.Empty;
+        PersonalSign = string.Empty;
+    }
+    
     internal BotFriend(uint uin,string uid, string nickname, string remarks, string personalSign)
     {
         Uin = uin;

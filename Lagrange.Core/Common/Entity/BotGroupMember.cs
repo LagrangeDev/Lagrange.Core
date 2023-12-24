@@ -1,7 +1,18 @@
 namespace Lagrange.Core.Common.Entity;
 
+[Serializable]
 public class BotGroupMember
 {
+    /// <summary>
+    /// The empty constructor for serialization
+    /// </summary>
+    internal BotGroupMember()
+    {
+        Uid = string.Empty;
+        MemberCard = string.Empty;
+        MemberName = string.Empty;
+    }
+    
     internal BotGroupMember(uint uin, string uid, GroupMemberPermission permission, uint groupLevel, string memberCard, 
         string memberName, DateTime joinTime, DateTime lastMsgTime)
     {
