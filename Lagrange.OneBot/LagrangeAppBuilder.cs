@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Utility.Sign;
@@ -7,11 +6,12 @@ using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Core.Network.Service;
 using Lagrange.OneBot.Core.Notify;
 using Lagrange.OneBot.Core.Operation;
-using Lagrange.OneBot.Database;
 using Lagrange.OneBot.Utility;
+using LiteDB;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Lagrange.OneBot;
 
@@ -92,7 +92,7 @@ public sealed class LagrangeAppBuilder
             return services.GetRequiredService<ILagrangeWebServiceFactory>().Create() ?? throw new Exception("Invalid conf detected");
         });
 
-        Services.AddSingleton<ContextBase, LiteDbContext>();
+        Services.AddSingleton<LiteDatabase>(x => new LiteDatabase(Configuration["ConfigPath:Database"] ?? $"lagrange-{Configuration["Account:Uin"]}.db"));
         Services.AddSingleton<SignProvider, OneBotSigner>();
 
         Services.AddSingleton<NotifyService>();

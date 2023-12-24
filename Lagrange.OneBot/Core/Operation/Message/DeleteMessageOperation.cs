@@ -5,17 +5,18 @@ using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Message;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Database;
+using LiteDB;
 
 namespace Lagrange.OneBot.Core.Operation.Message;
 
 [Operation("delete_msg")]
-public class DeleteMessageOperation(ContextBase database) : IOperation
+public class DeleteMessageOperation(LiteDatabase database) : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
     {
         if (payload.Deserialize<OneBotGetMessage>() is { } getMsg)
         {
-            var record = database.Query<MessageRecord>(x => x.MessageHash == getMsg.MessageId);
+            var record = database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == getMsg.MessageId);
             var chain = (MessageChain)record;
 
             if (chain.IsGroup && await context.RecallGroupMessage(chain)) return new OneBotResult(null, 200, "ok");

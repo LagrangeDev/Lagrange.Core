@@ -7,6 +7,7 @@ using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Message;
 using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Database;
+using LiteDB;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
@@ -18,7 +19,7 @@ namespace Lagrange.OneBot.Core.Message;
 public sealed class MessageService
 {
     private readonly LagrangeWebSvcCollection _service;
-    private readonly ContextBase _context;
+    private readonly LiteDatabase _context;
     private readonly IConfiguration _config;
     
     private static readonly Dictionary<Type, (string, ISegment)> EntityToSegment;
@@ -36,7 +37,7 @@ public sealed class MessageService
         }
     }
     
-    public MessageService(BotContext bot, LagrangeWebSvcCollection service, ContextBase context, IConfiguration config)
+    public MessageService(BotContext bot, LagrangeWebSvcCollection service, LiteDatabase context, IConfiguration config)
     {
         _service = service;
         _context = context;
@@ -53,7 +54,7 @@ public sealed class MessageService
     {
                 
         var record = (MessageRecord)e.Chain;
-        _context.Insert(record.MessageHash, record);
+        _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
         
         var request = new OneBotPrivateMsg(bot.BotUin)
         {
@@ -74,7 +75,7 @@ public sealed class MessageService
         if (_config.GetValue<bool>("Message:IgnoreSelf") && e.Chain.FriendUin == bot.BotUin) return; // ignore self message
         
         var record = (MessageRecord)e.Chain;
-        _context.Insert(record.MessageHash, record);
+        _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
         
         var request = new OneBotGroupMsg(bot.BotUin, e.Chain.GroupUin ?? 0, Convert(e.Chain),
             e.Chain.GroupMemberInfo ?? throw new Exception("Group member not found"), record.MessageHash);

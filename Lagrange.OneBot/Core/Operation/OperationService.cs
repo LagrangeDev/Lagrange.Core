@@ -1,11 +1,12 @@
 using System.Reflection;
-using System.Text.Json;
 using Lagrange.Core;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Database;
+using LiteDB;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Lagrange.OneBot.Core.Operation;
 
@@ -16,7 +17,7 @@ public sealed class OperationService
     private readonly Dictionary<string, Type> _operations;
     private readonly ServiceProvider _service;
 
-    public OperationService(BotContext bot, ILogger<OperationService> logger, ContextBase context)
+    public OperationService(BotContext bot, ILogger<OperationService> logger, LiteDatabase context)
     {
         _bot = bot;
         _logger = logger;
