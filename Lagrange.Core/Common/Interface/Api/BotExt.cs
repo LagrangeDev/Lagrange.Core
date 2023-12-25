@@ -36,4 +36,11 @@ public static class BotExt
     /// <returns>BotKeystore instance</returns>
     public static BotKeystore UpdateKeystore(this BotContext bot)
         => bot.ContextCollection.Keystore;
+
+    /// <summary>
+    /// Use this method to update device info
+    /// </summary>
+    /// <param name="bot"></param>
+    public static BotDeviceInfo UpdateDeviceInfo(this BotContext bot)
+        => bot.ContextCollection.Device;
 }
