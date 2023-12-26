@@ -51,6 +51,9 @@ public static class GroupExt
     public static Task<bool> LeaveGroup(this BotContext bot, uint groupUin)
         => bot.ContextCollection.Business.OperationLogic.LeaveGroup(groupUin);
 
+    public static Task<bool> InviteGroup(this BotContext bot, uint groupUin, List<uint> invitedUins)
+        => bot.ContextCollection.Business.OperationLogic.InviteGroup(groupUin, invitedUins);
+
     #region Group File System
 
     public static Task<ulong> FetchGroupFSSpace(this BotContext bot, uint groupUin)

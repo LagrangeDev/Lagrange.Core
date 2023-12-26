@@ -226,6 +226,20 @@ internal class OperationLogic : LogicBase
         var results = await Collection.Business.SendEvent(friendLikeEvent);
         return results.Count != 0 && results[0].ResultCode == 0;
     }
+
+    public async Task<bool> InviteGroup(uint groupUin, List<uint> invitedUins)
+    {
+        var invitedUids = new List<string>(invitedUins.Count);
+        foreach (uint uin in invitedUins)
+        {
+            string? uid = await Collection.Business.CachingLogic.ResolveUid(null, uin);
+            if (uid != null) invitedUids.Add(uid);
+        }
+
+        var @event = GroupInviteEvent.Create(groupUin, invitedUids);
+        var results = await Collection.Business.SendEvent(@event);
+        return results.Count != 0 && results[0].ResultCode == 0;
+    }
     
     public async Task<string?> GetClientKey()
     {

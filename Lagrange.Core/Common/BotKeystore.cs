@@ -56,7 +56,7 @@ public class BotKeystore
     
     public WtLoginSession Session { get; set; }
     
-    public BotInfo? Info { get; internal set; }
+    public BotInfo? Info { get; set; }
     
     [Serializable]
     public class KeyCollection
@@ -94,6 +94,7 @@ public class BotKeystore
         }
     }
 
+    [Serializable]
     public class BotInfo
     {
         internal BotInfo(byte age, byte gender, string name)
@@ -103,11 +104,17 @@ public class BotKeystore
             Name = name;
         }
 
-        public byte Age { get; }
+        [JsonConstructor]
+        public BotInfo()
+        {
+            Name = "";
+        }
+
+        public byte Age { get; set; }
         
-        public byte Gender { get; }
+        public byte Gender { get; set; }
         
-        public string Name { get; }
+        public string Name { get; set; }
 
         public override string ToString() => $"Bot name: {Name} | Gender: {Gender} | Age: {Age}";
     }
