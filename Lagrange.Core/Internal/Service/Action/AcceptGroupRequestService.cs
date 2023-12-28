@@ -21,7 +21,7 @@ internal class AcceptGroupRequestService : BaseService<AcceptGroupRequestEvent>
             Accept = Convert.ToUInt32(!input.Accept) + 1,
             Body = new OidbSvcTrpcTcp0x10C8_1Body
             {
-                LatestSeq = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - 1) * 1000, // timestamp * 1000
+                Sequence = input.Sequence,
                 Field2 = 2,
                 GroupUin = input.GroupUin,
                 Field4 = ""
@@ -36,7 +36,9 @@ internal class AcceptGroupRequestService : BaseService<AcceptGroupRequestEvent>
     protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out AcceptGroupRequestEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        output = AcceptGroupRequestEvent.Result(0);
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<byte[]>>(input.AsSpan());
+        
+        output = AcceptGroupRequestEvent.Result((int)payload.ErrorCode);
         extraEvents = null;
         return true;
     }

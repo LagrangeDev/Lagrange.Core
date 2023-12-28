@@ -245,7 +245,13 @@ internal class OperationLogic : LogicBase
     {
         var clientKeyEvent = FetchClientKeyEvent.Create();
         var events = await Collection.Business.SendEvent(clientKeyEvent);
-        if (events.Count == 0) return null;
-        return ((FetchClientKeyEvent)events[0]).ClientKey;
+        return events.Count == 0 ? null : ((FetchClientKeyEvent)events[0]).ClientKey;
+    }
+
+    public async Task<bool> GroupInvitationRequest(uint groupUin, ulong sequence, bool accept)
+    {
+        var inviteEvent = AcceptGroupRequestEvent.Create(accept, groupUin, sequence);
+        var results = await Collection.Business.SendEvent(inviteEvent);
+        return results.Count != 0 && results[0].ResultCode == 0;
     }
 }
