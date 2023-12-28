@@ -76,6 +76,9 @@ public static class OperationExt
     /// <returns></returns>
     public static Task<List<BotGroupRequest>?> FetchRequests(this BotContext bot)
         => bot.ContextCollection.Business.OperationLogic.FetchRequests();
+
+    public static Task<bool> GroupTransfer(this BotContext bot, uint groupUin, uint targetUin)
+        => bot.ContextCollection.Business.OperationLogic.GroupTransfer(groupUin, targetUin);
     
     public static Task<bool> RequestFriend(this BotContext bot, uint targetUin, string message = "", string question = "")
         => bot.ContextCollection.Business.OperationLogic.RequestFriend(targetUin, message, question);
