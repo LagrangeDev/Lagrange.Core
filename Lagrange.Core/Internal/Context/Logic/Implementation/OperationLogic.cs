@@ -201,6 +201,16 @@ internal class OperationLogic : LogicBase
         }
     }
 
+    public async Task<bool> GroupTransfer(uint groupUin, uint targetUin)
+    {
+        string? uid = await Collection.Business.CachingLogic.ResolveUid(groupUin, targetUin);
+        if (uid == null || Collection.Keystore.Uid is not { } source) return false;
+
+        var transferEvent = GroupTransferEvent.Create(groupUin, source, uid);
+        var results = await Collection.Business.SendEvent(transferEvent);
+        return results.Count != 0 && results[0].ResultCode == 0;
+    }
+
     public async Task<bool> RequestFriend(uint targetUin, string message, string question)
     {
         var requestFriendSearchEvent = RequestFriendSearchEvent.Create(targetUin);
