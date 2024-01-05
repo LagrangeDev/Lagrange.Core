@@ -28,7 +28,7 @@ public class MessageRecord
     {
         var chain = record.GroupUin != 0 
             ? new MessageChain(record.GroupUin, record.FriendUin, record.Sequence, record.MessageId) 
-            : new MessageChain(record.FriendUin, string.Empty, string.Empty, record.MessageId);
+            : new MessageChain(record.FriendUin, string.Empty, string.Empty, record.Sequence, record.MessageId);
 
         chain.Time = record.Time;
         chain.FriendInfo = record.FriendInfo;
@@ -56,7 +56,7 @@ public class MessageRecord
         var messageId = BitConverter.GetBytes(msgId);
         var sequence = BitConverter.GetBytes(seq);
 
-        byte[] id = [messageId[6], messageId[7], sequence[0], sequence[1]];
+        byte[] id = [messageId[0], messageId[1], sequence[0], sequence[1]];
         return BitConverter.ToUInt32(id.AsSpan());
     }
 }

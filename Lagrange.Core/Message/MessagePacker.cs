@@ -198,7 +198,7 @@ internal static class MessagePacker
             SubType = chain.IsGroup ? null : 4,
             DivSeq = chain.IsGroup ? null : 4,
             MsgId = (uint)Random.Shared.Next(100000000, int.MaxValue),
-            Sequence = Random.Shared.Next(1000000, 9999999),
+            Sequence = (uint?)Random.Shared.Next(1000000, 9999999),
             Timestamp = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             Field7 = 1,
             Field8 = 0,
@@ -220,6 +220,7 @@ internal static class MessagePacker
                 message.ResponseHead.FromUin,
                 message.ResponseHead.ToUid ?? string.Empty , 
                 message.ResponseHead.FromUid ?? string.Empty, 
+                message.ContentHead.Sequence ?? 0,
                 message.ContentHead.NewId ?? 0)
             
             : new MessageChain(

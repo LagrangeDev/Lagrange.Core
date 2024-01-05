@@ -32,11 +32,11 @@ public sealed class MessageChain : List<IMessageEntity>
 
     #endregion
 
-    internal MessageChain(uint friendUin, string selfUid, string friendUid, ulong messageId = 0)
+    internal MessageChain(uint friendUin, string selfUid, string friendUid, uint sequence = 0, ulong messageId = 0)
     {
         GroupUin = null;
         FriendUin = friendUin;
-        Sequence = 0; // unuseful at there
+        Sequence = sequence; // unuseful at there
         SelfUid = selfUid;
         Uid = friendUid;
         MessageId = messageId;
