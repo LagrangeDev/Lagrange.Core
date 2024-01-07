@@ -85,7 +85,7 @@ internal class OperationLogic : LogicBase
 
         var renameGroupEvent = RenameMemberEvent.Create(groupUin, uid, targetName);
         var events = await Collection.Business.SendEvent(renameGroupEvent);
-        return events.Count != 0 && ((GroupSetAdminEvent)events[0]).ResultCode == 0;
+        return events.Count != 0 && ((RenameMemberEvent)events[0]).ResultCode == 0;
     }
 
     public async Task<bool> RenameGroup(uint groupUin, string targetName)
