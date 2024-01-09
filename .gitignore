@@ -256,10 +256,6 @@ riderModule.iml
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
-/Native.Sdk/Cqp.Tool
-/Native.Csharp/Sdk.Cqp/Api/CnApi.cs
-Lib/
-Skadi/Properties/launchSettings.json
 
 #macos
 .DS_Store
