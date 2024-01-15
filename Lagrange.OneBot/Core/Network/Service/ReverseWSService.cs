@@ -75,7 +75,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        string urlstr = $"ws://{_options.Host}:{_options.Port}{_options.Suffix}";
+        string urlstr = $"{_options.Host}:{_options.Port}{_options.Suffix}";
         if (!Uri.TryCreate(urlstr, UriKind.Absolute, out var url))
         {
             Log.LogInvalidUrl(_logger, Tag, urlstr);
