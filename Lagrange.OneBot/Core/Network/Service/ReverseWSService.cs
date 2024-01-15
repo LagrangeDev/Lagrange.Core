@@ -14,7 +14,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
     : BackgroundService, ILagrangeWebService
 {
     protected const string Tag = nameof(ReverseWSService);
-    
+
     public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
 
     protected readonly ReverseWSServiceOptions _options = options.Value;
@@ -42,7 +42,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
     {
         var connCtx = _connCtx ?? throw new InvalidOperationException("Reverse webSocket service was not running");
         var connTask = connCtx.ConnectTask;
-        
+
         return !connTask.IsCompletedSuccessfully
             ? SendJsonAsync(connCtx.WebSocket, connTask, payload, connCtx.Token)
             : SendJsonAsync(connCtx.WebSocket, payload, connCtx.Token);
@@ -75,13 +75,17 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        string urlstr = $"ws://{_options.Host}:{_options.Port}{_options.Suffix}";
+        string urlstr = $"{_options.Host}:{_options.Port}{_options.Suffix}";
+        if (!_options.Host.StartsWith("ws://") && !_options.Host.StartsWith("wss://"))
+        {
+            urlstr = "ws://" + urlstr;
+        }
         if (!Uri.TryCreate(urlstr, UriKind.Absolute, out var url))
         {
             Log.LogInvalidUrl(_logger, Tag, urlstr);
             return;
         }
-        
+
         while (true)
         {
             try
