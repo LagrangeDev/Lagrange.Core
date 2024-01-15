@@ -30,7 +30,10 @@ public partial class ImageSegment : ISegment
                 
             if (imageSegment.Url.StartsWith("file"))
             {
-                string path = imageSegment.Url.Replace("file://", "");
+                // 修复windows下斜杠替换不完全导致的路径问题，同时兼容协议缩写的情况：https://github.com/LagrangeDev/Lagrange.Core/issues/69
+                string path = imageSegment.Url.Replace("file:///", "");
+                path = path.Replace("file://", "");
+                path = path.Replace("file:/", "");
                 builder.Image(File.ReadAllBytes(path));
             }
                 
