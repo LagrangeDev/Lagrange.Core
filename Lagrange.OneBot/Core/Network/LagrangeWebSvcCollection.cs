@@ -36,6 +36,7 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
         var operationSvc = services.GetRequiredService<OperationService>();
         foreach (var section in implsSection.GetChildren())
         {
+            if (section["Enable"] == "false") continue;
             var scope = services.CreateScope();
             var serviceProvider = scope.ServiceProvider;
             
