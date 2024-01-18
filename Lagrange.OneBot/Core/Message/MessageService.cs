@@ -1,10 +1,13 @@
 using System.Reflection;
+using System.Text;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Message;
+using Lagrange.OneBot.Core.Message.Entity;
 using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Database;
 using LiteDB;
@@ -21,7 +24,7 @@ public sealed class MessageService
     private readonly LagrangeWebSvcCollection _service;
     private readonly LiteDatabase _context;
     private readonly IConfiguration _config;
-    
+
     private static readonly Dictionary<Type, (string, ISegment)> EntityToSegment;
 
     static MessageService()
@@ -36,7 +39,7 @@ public sealed class MessageService
             }
         }
     }
-    
+
     public MessageService(BotContext bot, LagrangeWebSvcCollection service, LiteDatabase context, IConfiguration config)
     {
         _service = service;
@@ -44,45 +47,48 @@ public sealed class MessageService
         _config = config;
 
         var invoker = bot.Invoker;
-        
+
         invoker.OnFriendMessageReceived += OnFriendMessageReceived;
         invoker.OnGroupMessageReceived += OnGroupMessageReceived;
         invoker.OnTempMessageReceived += OnTempMessageReceived;
     }
-    
+
     private void OnFriendMessageReceived(BotContext bot, FriendMessageEvent e)
     {
-                
+
         var record = (MessageRecord)e.Chain;
         _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
-        
+
+        var segments = Convert(e.Chain);
         var request = new OneBotPrivateMsg(bot.BotUin)
         {
             MessageId = record.MessageHash,
             UserId = e.Chain.FriendUin,
             GroupSender = new OneBotSender
             {
-                
+
             },
-            Message = Convert(e.Chain)
+            Message = segments,
+            RawMessage = ToRawMessage(segments)
         };
 
-        _ =_service.SendJsonAsync(request);
+        _ = _service.SendJsonAsync(request);
     }
-    
+
     private void OnGroupMessageReceived(BotContext bot, GroupMessageEvent e)
     {
         if (_config.GetValue<bool>("Message:IgnoreSelf") && e.Chain.FriendUin == bot.BotUin) return; // ignore self message
-        
+
         var record = (MessageRecord)e.Chain;
         _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
-        
-        var request = new OneBotGroupMsg(bot.BotUin, e.Chain.GroupUin ?? 0, Convert(e.Chain),
+
+        var segments = Convert(e.Chain);
+        var request = new OneBotGroupMsg(bot.BotUin, e.Chain.GroupUin ?? 0, segments, ToRawMessage(segments),
             e.Chain.GroupMemberInfo ?? throw new Exception("Group member not found"), record.MessageHash);
 
         _ = _service.SendJsonAsync(request);
     }
-    
+
     private void OnTempMessageReceived(BotContext bot, TempMessageEvent e)
     {
         // TODO: Implement temp msg
@@ -101,5 +107,43 @@ public sealed class MessageService
         }
 
         return result;
+    }
+
+    private static string EscapeText(string str)
+    {
+        return str.Replace("&", "&amp;")
+                  .Replace("[", "&#91;")
+                  .Replace("]", "&#93;");
+    }
+
+    private static string EscapeCQ(string str)
+    {
+        return EscapeText(str).Replace(",", "&#44;");
+    }
+
+    public static string ToRawMessage(List<OneBotSegment> segments)
+    {
+        var rawMessageBuilder = new StringBuilder();
+        foreach (var segment in segments)
+        {
+            if (segment.Type == "text")
+            {
+                rawMessageBuilder.Append(EscapeText(((TextSegment)segment.Data).Text));
+            }
+            else
+            {
+                rawMessageBuilder.Append("[CQ:");
+                rawMessageBuilder.Append(segment.Type);
+                foreach (var property in JsonSerializer.SerializeToElement(segment.Data).EnumerateObject())
+                {
+                    rawMessageBuilder.Append(',');
+                    rawMessageBuilder.Append(property.Name);
+                    rawMessageBuilder.Append('=');
+                    rawMessageBuilder.Append(EscapeCQ(property.Value.GetString()!));
+                }
+                rawMessageBuilder.Append(']');
+            }
+        }
+        return rawMessageBuilder.ToString();
     }
 }
