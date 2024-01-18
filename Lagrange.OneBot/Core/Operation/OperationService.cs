@@ -21,47 +21,53 @@ public sealed class OperationService
     {
         _bot = bot;
         _logger = logger;
-        
+
         _operations = new Dictionary<string, Type>();
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var attribute = type.GetCustomAttribute<OperationAttribute>();
             if (attribute != null) _operations[attribute.Api] = type;
         }
-        
+
         var service = new ServiceCollection();
         service.AddSingleton(context);
         service.AddSingleton(logger);
-        
+
         foreach (var (_, type) in _operations) service.AddScoped(type);
         _service = service.BuildServiceProvider();
     }
 
     public async Task<OneBotResult?> HandleOperation(MsgRecvEventArgs e)
     {
-        if (JsonSerializer.Deserialize<OneBotAction>(e.Data) is { } action)
+        try
         {
-            try
+            if (JsonSerializer.Deserialize<OneBotAction>(e.Data) is { } action)
             {
-                if (_operations.TryGetValue(action.Action, out var type))
+                try
                 {
-                    var handler = (IOperation)_service.GetRequiredService(type);
-                    var result = await handler.HandleOperation(_bot, action.Params);
-                    result.Echo = action.Echo;
+                    if (_operations.TryGetValue(action.Action, out var type))
+                    {
+                        var handler = (IOperation)_service.GetRequiredService(type);
+                        var result = await handler.HandleOperation(_bot, action.Params);
+                        result.Echo = action.Echo;
 
-                    return result;
+                        return result;
+                    }
+
+                    return new OneBotResult(null, 404, "failed") { Echo = action.Echo };
                 }
-
-                return new OneBotResult(null, 404, "failed") { Echo = action.Echo };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Unexpected error encountered while handling message.");
-                return new OneBotResult(null, 200, "failed") { Echo = action.Echo };
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Unexpected error encountered while handling message.");
+                    return new OneBotResult(null, 200, "failed") { Echo = action.Echo };
+                }
             }
         }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Json Serialization failed for such action");
+        }
 
-        _logger.LogWarning("Json Serialization failed for such action");
         return null;
     }
 }
