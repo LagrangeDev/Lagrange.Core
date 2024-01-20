@@ -31,6 +31,7 @@ public sealed class LagrangeAppBuilder
     public LagrangeAppBuilder ConfigureConfiguration(string path, bool optional = false, bool reloadOnChange = false)
     {
         Configuration.AddJsonFile(path, optional, reloadOnChange);
+        Configuration.AddEnvironmentVariables(); // use this to configure appsettings.json with environment variables in docker container
         return this;
     }
 
