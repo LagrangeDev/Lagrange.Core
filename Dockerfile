@@ -5,6 +5,7 @@ COPY . ./
 RUN dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj \
         -c Release \
         -o out \
+        -v normal \
         --no-self-contained \
         -p:PublishSingleFile=true \
         -p:IncludeContentInSingleFile=true
