@@ -116,12 +116,14 @@ public class ImageEntity : IMessageEntity
     {
         if (elems.NotOnlineImage is { } image)
         {
+            string baseUrl = image.OrigUrl.Contains("&rkey=") ? BaseUrl : LegacyBaseUrl;
+            
             return new ImageEntity
             {
                 PictureSize = new Vector2(image.PicWidth, image.PicHeight),
                 FilePath = image.FilePath,
                 ImageSize = image.FileLen,
-                ImageUrl = $"{BaseUrl}{image.OrigUrl}"
+                ImageUrl = $"{baseUrl}{image.OrigUrl}"
             };
         }
         
