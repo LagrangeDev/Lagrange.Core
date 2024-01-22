@@ -19,7 +19,7 @@ public partial class AtSegment : ISegment
     
     public void Build(MessageBuilder builder, ISegment segment)
     {
-        if (segment is AtSegment atSegment) builder.Mention(uint.Parse(atSegment.At));
+        if (segment is AtSegment atSegment) builder.Mention(atSegment.At == "all" ? 0 : uint.Parse(atSegment.At));
     }
 
     public ISegment FromEntity(IMessageEntity entity)
