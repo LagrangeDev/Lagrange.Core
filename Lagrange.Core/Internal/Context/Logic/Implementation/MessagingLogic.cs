@@ -166,7 +166,7 @@ internal class MessagingLogic : LogicBase
         {
             switch (entity)
             {
-                case MentionEntity mention:
+                case MentionEntity mention when mention.Uin != 0:
                 {
                     mention.Uid = await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
                     break;
