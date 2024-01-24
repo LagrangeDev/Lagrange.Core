@@ -23,8 +23,7 @@ internal class WtExchangeLogic : LogicBase
 {
     private const string Tag = nameof(WtExchangeLogic);
 
-    private readonly TaskCompletionSource<bool> _qrCodeTask;
-    private readonly TaskCompletionSource<bool> _unusualTask;
+    private readonly TaskCompletionSource<bool> _transEmpTask;
     private TaskCompletionSource<(string, string)>? _captchaTask;
 
     private const string Interface = "https://ntlogin.qq.com/qr/getFace";
@@ -33,8 +32,7 @@ internal class WtExchangeLogic : LogicBase
 
     internal WtExchangeLogic(ContextCollection collection) : base(collection)
     {
-        _qrCodeTask = new TaskCompletionSource<bool>();
-        _unusualTask = new TaskCompletionSource<bool>();
+        _transEmpTask = new TaskCompletionSource<bool>();
     }
 
     public override async Task Incoming(ProtocolEvent e)
@@ -80,8 +78,19 @@ internal class WtExchangeLogic : LogicBase
 
     public Task LoginByQrCode()
     {
-        Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => await QueryQrCodeState());
-        return _qrCodeTask.Task;
+        Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => await QueryTransEmpState(async @event =>
+        {
+            if (@event.TgtgtKey != null)
+            {
+                Collection.Keystore.Stub.TgtgtKey = @event.TgtgtKey;
+                Collection.Keystore.Session.TempPassword = @event.TempPassword;
+                Collection.Keystore.Session.NoPicSig = @event.NoPicSig;
+            }
+            
+            return await DoWtLogin();
+        }));
+        
+        return _transEmpTask.Task;
     }
 
     public async Task<bool> LoginByPassword()
@@ -120,7 +129,7 @@ internal class WtExchangeLogic : LogicBase
                     }
                     case LoginCommon.Error.UnusualVerify:
                     {
-                        Collection.Log.LogInfo(Tag, "Login Success, but need to verify");
+                        Collection.Log.LogInfo(Tag, "Verification needed");
 
                         if (!await FetchUnusual())
                         {
@@ -128,14 +137,23 @@ internal class WtExchangeLogic : LogicBase
                             return false;
                         }
                         
-                        Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => await QueryUnusualState());
-                        bool result = await _unusualTask.Task;
+                        Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => await QueryTransEmpState(async e =>
+                        {
+                            if (e.TempPassword != null)
+                            {
+                                Collection.Keystore.Session.TempPassword = e.TempPassword;
+                                return await DoUnusualEasyLogin();
+                            }
+
+                            return false;
+                        }));
+                        bool result = await _transEmpTask.Task;
                         if (result) await BotOnline();
                         return result;
                     }
                     default:
                     {
-                        Collection.Log.LogWarning(Tag, "Fast Login Failed, trying to Login by Password...");
+                        Collection.Log.LogWarning(Tag, $"Fast Login Failed with code {easyLoginResult[0].ResultCode}, trying to Login by Password...");
                         
                         Collection.Keystore.Session.TempPassword = null; // clear temp password
                         return await LoginByPassword(); // try password login
@@ -163,10 +181,7 @@ internal class WtExchangeLogic : LogicBase
                     }
                     case LoginCommon.Error.UnusualVerify:
                     {
-                        Collection.Log.LogInfo(Tag, "Login Success, but need to verify");
-
-                        await FetchUnusual();
-                        Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => await QueryUnusualState());
+                        Collection.Log.LogInfo(Tag, "Unusual Verify is not currently supported for PasswordLogin");
                         return true;
                     }
                     case LoginCommon.Error.CaptchaVerify:
@@ -246,25 +261,22 @@ internal class WtExchangeLogic : LogicBase
         return false;
     }
 
-    private async Task QueryQrCodeState()
+    private async Task QueryTransEmpState(Func<TransEmpEvent, Task<bool>> callback)
     {
-        if (Collection.Keystore.Session.QrString == null)
+        if (Collection.Keystore.Session.QrString != null)
         {
-            Collection.Log.LogFatal(Tag, "QrString is null, Please Fetch QrCode First");
-            _qrCodeTask.SetResult(false);
-            return;
+            var request = new NTLoginHttpRequest
+            {
+                Appid = Collection.AppInfo.AppId,
+                Qrsig = Collection.Keystore.Session.QrString,
+                FaceUpdateTime = 0
+            };
+            
+            var payload = JsonSerializer.SerializeToUtf8Bytes(request);
+            var response = await Http.PostAsync(Interface, payload, "application/json");
+            var info = JsonSerializer.Deserialize<NTLoginHttpResponse>(response);
+            if (info != null) Collection.Keystore.Uin = info.Uin;
         }
-
-        var request = new NTLoginHttpRequest
-        {
-            Appid = Collection.AppInfo.AppId,
-            Qrsig = Collection.Keystore.Session.QrString,
-            FaceUpdateTime = 0
-        };
-        var payload = JsonSerializer.SerializeToUtf8Bytes(request);
-        var response = await Http.PostAsync(Interface, payload, "application/json");
-        var info = JsonSerializer.Deserialize<NTLoginHttpResponse>(response);
-        if (info != null) Collection.Keystore.Uin = info.Uin;
 
         var transEmp = TransEmpEvent.Create(TransEmpEvent.State.QueryResult);
         var result = await Collection.Business.SendEvent(transEmp);
@@ -281,15 +293,7 @@ internal class WtExchangeLogic : LogicBase
                 {
                     Collection.Log.LogInfo(Tag, "QrCode Confirmed, Logging in with A1 sig...");
                     Collection.Scheduler.Cancel(QueryEvent); // cancel query task
-
-                    if (@event.TgtgtKey != null)
-                    {
-                        Collection.Keystore.Stub.TgtgtKey = @event.TgtgtKey;
-                        Collection.Keystore.Session.TempPassword = @event.TempPassword;
-                        Collection.Keystore.Session.NoPicSig = @event.NoPicSig;
-
-                        _qrCodeTask.SetResult(await DoWtLogin());
-                    }
+                    _transEmpTask.SetResult(await callback.Invoke(@event));
                     break;
                 }
                 case TransEmp12.State.CodeExpired:
@@ -298,7 +302,7 @@ internal class WtExchangeLogic : LogicBase
                     Collection.Scheduler.Cancel(QueryEvent);
                     Collection.Scheduler.Dispose();
 
-                    _qrCodeTask.SetResult(false);
+                    _transEmpTask.SetResult(false);
                     return;
                 }
                 case TransEmp12.State.Canceled:
@@ -307,7 +311,7 @@ internal class WtExchangeLogic : LogicBase
                     Collection.Scheduler.Cancel(QueryEvent);
                     Collection.Scheduler.Dispose();
 
-                    _qrCodeTask.SetResult(false);
+                    _transEmpTask.SetResult(false);
                     return;
                 }
                 case TransEmp12.State.WaitingForConfirm: 
@@ -347,59 +351,13 @@ internal class WtExchangeLogic : LogicBase
         return false;
     }
 
-    private async Task QueryUnusualState()
-    {
-        var transEmp = TransEmpEvent.Create(TransEmpEvent.State.QueryResult);
-        var result = await Collection.Business.SendEvent(transEmp);
-        
-        if (result.Count != 0)
-        {
-            var @event = (TransEmpEvent)result[0];
-            var state = (TransEmp12.State)@event.ResultCode;
-            Collection.Log.LogInfo(Tag, $"Confirmation State Queried: {state}");
-
-            switch (state)
-            {
-                case TransEmp12.State.Confirmed:
-                {
-                    Collection.Log.LogInfo(Tag, "Verification Confirmed, Logging in Unusual Login Service...");
-                    Collection.Scheduler.Cancel(QueryEvent); // cancel query task
-
-                    if (@event.TempPassword != null) Collection.Keystore.Session.TempPassword = @event.TempPassword;
-                    _unusualTask.SetResult(await DoUnusualEasyLogin());
-                    break;
-                }
-                case TransEmp12.State.CodeExpired:
-                {
-                    Collection.Log.LogWarning(Tag, "Verification Expired, Please Login Again");
-                    Collection.Scheduler.Cancel(QueryEvent);
-                    Collection.Scheduler.Dispose();
-                    
-                    _unusualTask.SetResult(false);
-                    break;
-                }
-                case TransEmp12.State.Canceled:
-                {
-                    Collection.Log.LogWarning(Tag, "Verification Canceled, Please Login Again");
-                    Collection.Scheduler.Cancel(QueryEvent);
-                    Collection.Scheduler.Dispose();
-                    
-                    _unusualTask.SetResult(false);
-                    break;
-                }
-                case TransEmp12.State.WaitingForConfirm:
-                default:
-                    break;
-            }
-        }
-    }
-
     private async Task<bool> DoUnusualEasyLogin()
     {
         Collection.Log.LogInfo(Tag, "Trying to Login by EasyLogin...");
         var unusualEvent = UnusualEasyLoginEvent.Create();
         var result = await Collection.Business.SendEvent(unusualEvent);
         return result.Count != 0 && ((UnusualEasyLoginEvent)result[0]).Success;
+    }
 
     }
     
