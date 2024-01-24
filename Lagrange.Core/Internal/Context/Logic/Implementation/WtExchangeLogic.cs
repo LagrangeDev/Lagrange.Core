@@ -358,8 +358,6 @@ internal class WtExchangeLogic : LogicBase
         var result = await Collection.Business.SendEvent(unusualEvent);
         return result.Count != 0 && ((UnusualEasyLoginEvent)result[0]).Success;
     }
-
-    }
     
     public bool SubmitCaptcha(string ticket, string randStr) => _captchaTask?.TrySetResult((ticket, randStr)) ?? false;
 }
