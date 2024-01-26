@@ -187,6 +187,7 @@ internal class WtExchangeLogic : LogicBase
                     case LoginCommon.Error.CaptchaVerify:
                     {
                         Collection.Log.LogInfo(Tag, "Login Success, but captcha is required, please follow the link from event");
+                        
                         if (Collection.Keystore.Session.CaptchaUrl != null)
                         {
                             var captchaEvent = new BotCaptchaEvent(Collection.Keystore.Session.CaptchaUrl);
@@ -202,6 +203,17 @@ internal class WtExchangeLogic : LogicBase
                         
                         Collection.Log.LogInfo(Tag, "Captcha Url is null, please try again later");
                         return false;
+                    }
+                    case LoginCommon.Error.NewDeviceVerify:
+                    {
+                        Collection.Log.LogInfo(Tag, $"NewDeviceVerify Url: {Collection.Keystore.Session.NewDeviceVerifyUrl}");
+                        
+                        var newDeviceEvent = new BotNewDeviceVerifyEvent("", Array.Empty<byte>());
+                        Collection.Invoker.PostEvent(newDeviceEvent);
+                        
+                        bool result = await _transEmpTask.Task;
+                        if (result) await BotOnline();
+                        return result;
                     }
                     default:
                     {
@@ -357,6 +369,14 @@ internal class WtExchangeLogic : LogicBase
         var unusualEvent = UnusualEasyLoginEvent.Create();
         var result = await Collection.Business.SendEvent(unusualEvent);
         return result.Count != 0 && ((UnusualEasyLoginEvent)result[0]).Success;
+    }
+    
+    private async Task<bool> DoNewDeviceLogin()
+    {
+        Collection.Log.LogInfo(Tag, "Trying to Login by EasyLogin...");
+        var unusualEvent = NewDeviceLoginEvent.Create();
+        var result = await Collection.Business.SendEvent(unusualEvent);
+        return result.Count != 0 && ((NewDeviceLoginEvent)result[0]).Success;
     }
     
     public bool SubmitCaptcha(string ticket, string randStr) => _captchaTask?.TrySetResult((ticket, randStr)) ?? false;

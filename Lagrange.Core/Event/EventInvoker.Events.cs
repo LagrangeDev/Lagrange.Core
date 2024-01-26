@@ -10,7 +10,9 @@ public partial class EventInvoker
     
     public event LagrangeEvent<BotLogEvent>? OnBotLogEvent;
     
-    public event LagrangeEvent<BotCaptchaEvent>? OnBotCaptchaEvent; 
+    public event LagrangeEvent<BotCaptchaEvent>? OnBotCaptchaEvent;
+
+    public event LagrangeEvent<BotNewDeviceVerifyEvent>? OnBotNewDeviceVerify; 
     
     public event LagrangeEvent<GroupInvitationEvent>? OnGroupInvitationReceived; 
 

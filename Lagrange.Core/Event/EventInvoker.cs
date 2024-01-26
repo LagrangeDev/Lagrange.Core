@@ -19,6 +19,7 @@ public partial class EventInvoker : IDisposable
         RegisterEvent((BotOfflineEvent e) => OnBotOfflineEvent?.Invoke(context, e));
         RegisterEvent((BotLogEvent e) => OnBotLogEvent?.Invoke(context, e));
         RegisterEvent((BotCaptchaEvent e) => OnBotCaptchaEvent?.Invoke(context, e));
+        RegisterEvent((BotNewDeviceVerifyEvent e) => OnBotNewDeviceVerify?.Invoke(context, e));
         RegisterEvent((GroupInvitationEvent e) => OnGroupInvitationReceived?.Invoke(context, e));
         RegisterEvent((FriendMessageEvent e) => OnFriendMessageReceived?.Invoke(context, e));
         RegisterEvent((GroupMessageEvent e) => OnGroupMessageReceived?.Invoke(context, e));

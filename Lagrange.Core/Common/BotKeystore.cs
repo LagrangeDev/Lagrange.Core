@@ -81,6 +81,7 @@ public class BotKeystore
         internal byte[]? UnusualSign { get; set; }
         internal string? UnusualCookies { get; set; }
         internal string? CaptchaUrl { get; set; }
+        internal string? NewDeviceVerifyUrl { get; set; }
         internal (string, string, string)? Captcha { get; set; }
         
         public byte[]? TempPassword { get; set; }
