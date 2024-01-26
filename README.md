@@ -115,7 +115,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [/delete_msg]              |    🟡    |
 | [/get_msg]                 |    🟢    |
 | [/get_forward_msg]         |    🟢    |
-| ~~[/send_like]~~           |    🔴    |
+| ~~[/send_like]~~           |    🟢    |
 | [/set_group_kick]          |    🟢    |
 | [/set_group_ban]           |    🟢    |
 | [/set_group_anonymous_ban] |    🔴    |
@@ -133,8 +133,8 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [/get_friend_list]         |    🟢    |
 | [/get_group_info]          |    🟢    |
 | [/get_group_list]          |    🟢    |
-| [/get_group_member_info]   |    🔴    |
-| [/get_group_member_list]   |    🔴    |
+| [/get_group_member_info]   |    🟢    |
+| [/get_group_member_list]   |    🟢    |
 | [/get_group_honor_info]    |    🔴    |
 | [/get_cookies]             |    🔴    |
 | [/get_csrf_token]          |    🔴    |
