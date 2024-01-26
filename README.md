@@ -136,7 +136,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [/get_group_member_info]   |    🟢    |
 | [/get_group_member_list]   |    🟢    |
 | [/get_group_honor_info]    |    🔴    |
-| [/get_cookies]             |    🔴    |
+| [/get_cookies]             |    🟢    |
 | [/get_csrf_token]          |    🔴    |
 | [/get_credentials]         |    🔴    |
 | [/get_record]              |    🔴    |
