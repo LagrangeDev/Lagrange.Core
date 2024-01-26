@@ -145,7 +145,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [/can_send_record]         |    🟢    |
 | [/get_status]              |    🔴    |
 | [/get_version_info]        |    🟢    |
-| [/set_restart]             |    🔴    |
+| [/set_restart]             |    🟢    |
 | [/clean_cache]             |    🔴    |
 
 [/send_private_msg]: https://github.com/botuniverse/onebot-11/blob/master/api/public.md#send_private_msg-%E5%8F%91%E9%80%81%E7%A7%81%E8%81%8A%E6%B6%88%E6%81%AF
