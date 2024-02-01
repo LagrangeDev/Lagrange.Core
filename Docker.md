@@ -13,6 +13,12 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 
 # Using with Docker
 
+**Tips:**
+
+>Before creating the container, it is essential to mount the data folder`/app/data` to avoid the need for reauthentication every time you start the container. Additionally, it is advisable to also mount configuration file `/app/appsettings.json`.
+
+> If you encounter network issues, you can try using `--network=host`.
+
 ```bash
 # 8081 port for ForwardWebSocket
 docker run -d -p 8081:8081 eric1008818/lagrange.onebot:edge
@@ -29,9 +35,9 @@ docker run -d -v lagrange_data:/app/data eric1008818/lagrange.onebot:edge
 
 ### Using Mount
 
-use bind mount to mount your `appsettings.json` to `/App/appsettings.json`		
+use bind mount to mount your `appsettings.json` to `/app/appsettings.json`		
 ```bash
-docker run -d -v /etc/appsettings.json:/appsettings.json eric1008818/lagrange.onebot:edge
+docker run -d -v /etc/appsettings.json:/app/appsettings.json eric1008818/lagrange.onebot:edge
 ```
 
 ### Using Environment Variables
