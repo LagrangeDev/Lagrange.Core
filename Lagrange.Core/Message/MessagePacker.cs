@@ -105,9 +105,9 @@ internal static class MessagePacker
     {
         var chain = ParseChain(message);
 
-        if (message.Body?.RichText?.Elems != null) // 怎么Body还能是null的
+        if (message.Body?.RichText is { Elems: { } elements}) // 怎么Body还能是null的
         {
-            foreach (var element in message.Body.RichText.Elems)
+            foreach (var element in elements)
             {
                 foreach (var (entityType, expectElems) in EntityToElem)
                 {
@@ -122,6 +122,11 @@ internal static class MessagePacker
                     }
                 }
             }
+        }
+
+        if (message.Body?.RichText?.Ptt is { } ptt && !chain.IsGroup)
+        {
+            chain.Add(new RecordEntity(ptt.FileUuid, ptt.FileName));
         }
 
         return chain;

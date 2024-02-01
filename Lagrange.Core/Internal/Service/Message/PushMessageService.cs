@@ -38,12 +38,19 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 output = PushMessageEvent.Create(chain);
                 break;
             }
+            case PkgType.PrivateRecordMessage:
+            {
+                var chain = MessagePacker.Parse(message.Message);
+                output = PushMessageEvent.Create(chain);
+                break;
+            }
             case PkgType.GroupRequestJoinNotice when message.Message.Body?.MsgContent is { } content:
             {
                 break;
             }
             case PkgType.GroupRequestInvitationNotice when message.Message.Body?.MsgContent is { } content:
             {
+                
                 break;
             }
             case PkgType.GroupInviteNotice when message.Message.Body?.MsgContent is { } content:
@@ -170,6 +177,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         Event0x210 = 528,
         Event0x2DC = 732,
         
+        PrivateRecordMessage = 208,
         PrivateFileMessage = 529,
         
         GroupRequestInvitationNotice = 525, // from group member invitation

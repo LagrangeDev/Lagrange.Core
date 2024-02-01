@@ -20,7 +20,7 @@ internal class ImageExtraMetadata
 {
     [ProtoMember(1)] public ImageExtraFile File { get; set; }
     
-    [ProtoMember(2)] public ImageExtraUrls Urls { get; set; }
+    [ProtoMember(2)] public ImageExtraUrls? Urls { get; set; }
 }
 
 [ProtoContract]
@@ -33,6 +33,14 @@ internal class ImageExtraCredential
 internal class ImageExtraFile
 {
     [ProtoMember(1)] public ImageExtraFileInfo FileInfo { get; set; }
+    
+    [ProtoMember(2)] public string? FileUuid { get; set; }
+    
+    [ProtoMember(3)] public uint Field3 { get; set; }
+    
+    [ProtoMember(4)] public uint Timestamp { get; set; }
+    
+    [ProtoMember(5)] public uint Field5 { get; set; }
 }
 
 [ProtoContract]

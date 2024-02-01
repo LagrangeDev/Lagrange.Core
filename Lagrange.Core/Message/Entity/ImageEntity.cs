@@ -143,14 +143,19 @@ public class ImageEntity : IMessageEntity
         if (elems.CommonElem is { ServiceType: 48 } common)
         {
             var extra = Serializer.Deserialize<ImageExtra>(common.PbElem.AsSpan());
-            
-            return new ImageEntity
+
+            if (extra.Metadata.Urls != null)
             {
-                PictureSize = new Vector2(extra.Metadata.File.FileInfo.PicWidth, extra.Metadata.File.FileInfo.PicHeight),
-                FilePath = extra.Metadata.File.FileInfo.FilePath,
-                ImageSize = (uint)extra.Metadata.File.FileInfo.FileSize,
-                ImageUrl = $"https://{extra.Metadata.Urls.Domain}{extra.Metadata.Urls.Suffix}{extra.Credential.Resp.GroupKey?.RKey ?? extra.Credential.Resp.FriendKey?.RKey}"
-            };
+                string url = $"https://{extra.Metadata.Urls.Domain}{extra.Metadata.Urls.Suffix}{extra.Credential.Resp.GroupKey?.RKey ?? extra.Credential.Resp.FriendKey?.RKey}";
+                
+                return new ImageEntity
+                {
+                    PictureSize = new Vector2(extra.Metadata.File.FileInfo.PicWidth, extra.Metadata.File.FileInfo.PicHeight),
+                    FilePath = extra.Metadata.File.FileInfo.FilePath,
+                    ImageSize = (uint)extra.Metadata.File.FileInfo.FileSize,
+                    ImageUrl = url
+                };
+            }
         }
         
         return null;

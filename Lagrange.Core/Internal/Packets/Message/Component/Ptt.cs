@@ -10,7 +10,7 @@ internal class Ptt
     
     [ProtoMember(2)] public long SrcUin { get; set; }
     
-    [ProtoMember(3)] public byte[] FileUuid { get; set; }
+    [ProtoMember(3)] public string FileUuid { get; set; }
     
     [ProtoMember(4)] public byte[] FileMd5 { get; set; }
     
