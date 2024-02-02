@@ -133,13 +133,10 @@ public sealed class MessageService
                 rawMessageBuilder.Append(segment.Type);
                 foreach (var property in JsonSerializer.SerializeToElement(segment.Data, new JsonSerializerOptions { TypeInfoResolver = Resolver  }).EnumerateObject())
                 {
-                    if (property.Value.GetString() is { } content)
-                    {
-                        rawMessageBuilder.Append(',');
-                        rawMessageBuilder.Append(property.Name);
-                        rawMessageBuilder.Append('=');
-                        rawMessageBuilder.Append(EscapeCQ(content));
-                    }
+                    rawMessageBuilder.Append(',');
+                    rawMessageBuilder.Append(property.Name);
+                    rawMessageBuilder.Append('=');
+                    rawMessageBuilder.Append(EscapeCQ(property.Value.ToString()));
                 }
                 rawMessageBuilder.Append(']');
             }
