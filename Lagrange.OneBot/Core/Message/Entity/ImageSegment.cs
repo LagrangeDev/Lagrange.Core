@@ -7,9 +7,7 @@ namespace Lagrange.OneBot.Core.Message.Entity;
 [Serializable]
 public partial class ImageSegment(string url)
 {
-    private readonly HttpClient _client = new();
-
-    public ImageSegment() : this("") => _client = new HttpClient();
+    public ImageSegment() : this("") { }
 
     [JsonPropertyName("file")] public string Url { get; set; } = url;
 }
@@ -21,24 +19,9 @@ public partial class ImageSegment : ISegment
     
     public void Build(MessageBuilder builder, ISegment segment)
     {
-        if (segment is ImageSegment imageSegment and not { Url: "" })
+        if (segment is ImageSegment imageSegment and not { Url: "" } && CommonResolver.Resolve(imageSegment.Url) is { } image)
         {
-            if (imageSegment.Url.StartsWith("http"))
-            {
-                builder.Image(_client.GetAsync(imageSegment.Url).Result.Content.ReadAsByteArrayAsync().Result);
-            }
-                
-            if (imageSegment.Url.StartsWith("file"))
-            {
-                string path = new Uri(imageSegment.Url).LocalPath;
-                builder.Image(File.ReadAllBytes(path));
-            }
-                
-            if (imageSegment.Url.StartsWith("base64"))
-            {
-                string base64 = imageSegment.Url.Replace("base64://", "");
-                builder.Image(Convert.FromBase64String(base64));
-            }
+            builder.Image(image);
         }
     }
 

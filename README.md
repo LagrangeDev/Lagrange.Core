@@ -63,7 +63,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [Text]           |    🟢    |
 | [Face]           |    🟢    |
 | [Image]          |    🟢    |
-| [Record]         |    🔴    |
+| [Record]         |    🟡    |
 | [Video]          |    🔴    |
 | [At]             |    🟢    |
 | [Rps]            |    🔴    |
