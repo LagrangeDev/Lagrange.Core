@@ -9,7 +9,7 @@ public partial class TextSegment(string text)
 {
     public TextSegment() : this("") { }
 
-    [JsonPropertyName("text")] public string Text { get; set; } = text;
+    [JsonPropertyName("text")] [CQProperty] public string Text { get; set; } = text;
 }
 
 [SegmentSubscriber(typeof(TextEntity), "text")]

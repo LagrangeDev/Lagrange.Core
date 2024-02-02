@@ -9,17 +9,19 @@ public partial class RecordSegment(string url)
 {
     public RecordSegment() : this("") { }
 
-    [JsonPropertyName("file")] public string Url { get; set; } = url;
+    [JsonPropertyName("file")] [CQProperty] public string File { get; set; } = url;
+
+    [JsonPropertyName("url")] public string Url { get; set; }  = url;
 }
 
 [SegmentSubscriber(typeof(RecordEntity), "record")]
 public partial class RecordSegment : ISegment
 {
-    public IMessageEntity ToEntity() => new RecordEntity(Url);
+    public IMessageEntity ToEntity() => new RecordEntity(File);
     
     public void Build(MessageBuilder builder, ISegment segment)
     {
-        if (segment is RecordSegment recordSegment and not { Url: "" } && CommonResolver.Resolve(recordSegment.Url) is { } image)
+        if (segment is RecordSegment recordSegment and not { File: "" } && CommonResolver.Resolve(recordSegment.File) is { } image)
         {
             builder.Record(image);
         }

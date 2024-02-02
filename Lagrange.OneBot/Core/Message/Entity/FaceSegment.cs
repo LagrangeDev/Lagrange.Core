@@ -9,7 +9,7 @@ public partial class FaceSegment(int id)
 {
     public FaceSegment() : this(0) { }
     
-    [JsonPropertyName("id")] public string Id { get; set; } = id.ToString();
+    [JsonPropertyName("id")] [CQProperty] public string Id { get; set; } = id.ToString();
 }
 
 [SegmentSubscriber(typeof(FaceEntity), "face")]

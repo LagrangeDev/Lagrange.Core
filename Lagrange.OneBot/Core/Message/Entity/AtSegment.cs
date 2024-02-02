@@ -9,7 +9,7 @@ public partial class AtSegment(uint at)
 {
     public AtSegment() : this(0) { }
     
-    [JsonPropertyName("qq")] public string At { get; set; } = at.ToString();
+    [JsonPropertyName("qq")] [CQProperty] public string At { get; set; } = at.ToString();
 }
 
 [SegmentSubscriber(typeof(MentionEntity), "at")]

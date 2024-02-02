@@ -9,17 +9,19 @@ public partial class VideoSegment(string url)
 {
     public VideoSegment() : this("") { }
 
-    [JsonPropertyName("file")] public string Url { get; set; } = url;
+    [JsonPropertyName("file")] [CQProperty] public string File { get; set; } = url;
+    
+    [JsonPropertyName("url")] public string Url { get; set; }  = url;
 }
 
 [SegmentSubscriber(typeof(VideoEntity), "video")]
 public partial class VideoSegment : ISegment
 {
-    public IMessageEntity ToEntity() => new VideoEntity(Url);
+    public IMessageEntity ToEntity() => new VideoEntity(File);
     
     public void Build(MessageBuilder builder, ISegment segment)
     {
-        if (segment is VideoSegment videoSegment and not { Url: "" } && CommonResolver.Resolve(videoSegment.Url) is { } image)
+        if (segment is VideoSegment videoSegment and not { File: "" } && CommonResolver.Resolve(videoSegment.File) is { } image)
         {
             // TODO: Add Video
         }

@@ -9,7 +9,7 @@ public partial class ForwardSegment(string name)
 {
     public ForwardSegment() : this("") { }
 
-    [JsonPropertyName("id")] public string Name { get; set; } = name;
+    [JsonPropertyName("id")] [CQProperty] public string Name { get; set; } = name;
 }
 
 [SegmentSubscriber(typeof(MultiMsgEntity), "forward", "node")]

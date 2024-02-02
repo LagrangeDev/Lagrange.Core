@@ -1,8 +1,9 @@
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using Lagrange.Core;
-using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Extension;
@@ -12,7 +13,6 @@ using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Database;
 using LiteDB;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 
 namespace Lagrange.OneBot.Core.Message;
 
@@ -26,10 +26,12 @@ public sealed class MessageService
     private readonly IConfiguration _config;
 
     private static readonly Dictionary<Type, (string, ISegment)> EntityToSegment;
+    private static readonly IJsonTypeInfoResolver Resolver;
 
     static MessageService()
     {
         EntityToSegment = new Dictionary<Type, (string, ISegment)>();
+        Resolver = new DefaultJsonTypeInfoResolver { Modifiers = { ModifyTypeInfo } };
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var attribute = type.GetCustomAttribute<SegmentSubscriberAttribute>();
@@ -109,41 +111,48 @@ public sealed class MessageService
         return result;
     }
 
-    private static string EscapeText(string str)
-    {
-        return str.Replace("&", "&amp;")
-                  .Replace("[", "&#91;")
-                  .Replace("]", "&#93;");
-    }
+    private static string EscapeText(string str) => str
+        .Replace("&", "&amp;")
+        .Replace("[", "&#91;")
+        .Replace("]", "&#93;");
 
-    private static string EscapeCQ(string str)
-    {
-        return EscapeText(str).Replace(",", "&#44;");
-    }
+    private static string EscapeCQ(string str) => EscapeText(str).Replace(",", "&#44;");
 
-    public static string ToRawMessage(List<OneBotSegment> segments)
+    private static string ToRawMessage(List<OneBotSegment> segments)
     {
         var rawMessageBuilder = new StringBuilder();
         foreach (var segment in segments)
         {
-            if (segment.Type == "text")
+            if (segment.Data is TextSegment textSeg)
             {
-                rawMessageBuilder.Append(EscapeText(((TextSegment)segment.Data).Text));
+                rawMessageBuilder.Append(EscapeText(textSeg.Text));
             }
             else
             {
                 rawMessageBuilder.Append("[CQ:");
                 rawMessageBuilder.Append(segment.Type);
-                foreach (var property in JsonSerializer.SerializeToElement(segment.Data).EnumerateObject())
+                foreach (var property in JsonSerializer.SerializeToElement(segment.Data, new JsonSerializerOptions { TypeInfoResolver = Resolver  }).EnumerateObject())
                 {
-                    rawMessageBuilder.Append(',');
-                    rawMessageBuilder.Append(property.Name);
-                    rawMessageBuilder.Append('=');
-                    rawMessageBuilder.Append(EscapeCQ(property.Value.GetString()!));
+                    if (property.Value.GetString() is { } content)
+                    {
+                        rawMessageBuilder.Append(',');
+                        rawMessageBuilder.Append(property.Name);
+                        rawMessageBuilder.Append('=');
+                        rawMessageBuilder.Append(EscapeCQ(content));
+                    }
                 }
                 rawMessageBuilder.Append(']');
             }
         }
         return rawMessageBuilder.ToString();
+    }
+    
+    private static void ModifyTypeInfo(JsonTypeInfo ti)
+    {
+        if (ti.Kind != JsonTypeInfoKind.Object) return;
+        foreach (var info in ti.Properties.Where(x => x.AttributeProvider?.IsDefined(typeof(CQPropertyAttribute), false) == false).ToArray())
+        {
+            ti.Properties.Remove(info);
+        }
     }
 }
