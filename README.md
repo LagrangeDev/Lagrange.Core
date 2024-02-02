@@ -32,22 +32,22 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 ## Features List
 
-| Protocol | Support | Login                     | Support | Messages  |  Support  | Operations        | Support | Events              | Support |
-| -------- | :-----: | ------------------------- | :-----: |:----------|:---------:| :---------------- | :-----: | :------------------ | :-----: |
-| Windows  |    🟢    | QrCode                    |    🟢    | Images    |    🟢     | ~~Poke~~          |    🔴    | Captcha             |    🟢    |
-| macOS    |    🟢    | Password                  |    🟢    | Text / At |    🟢     | Recall            |    🟡    | BotOnline           |    🟢    |
-| Linux    |    🟢    | EasyLogin                 |    🟢    | Records   |    🟡     | Leave Group       |    🟢    | BotOffline          |    🟢    |
-|          |         | UnusalDevice<br/>Password |    🔴    | QFace     |    🟢     | ~~Special Title~~ |    🔴    | Message             |    🟢    |
-|          |         | UnusalDevice<br/>Easy     |    🟢    | Json      |    🟡     | Kick Member       |    🟢    | ~~Poke~~            |    🔴    |
-|          |         | NewDeviceVerify           |    🔴    | Xml       |    🟢     | Mute Member       |    🟢    | MessageRecall       |    🔴    |
-|          |         |                           |         | Forward   |    🟢     | Set Admin         |    🟢    | GroupMemberDecrease |    🟢    |
-|          |         |                           |         | Video     |    🟡     | Friend Request    |    🔴    | GroupMemberIncrease |    🟢    |
-|          |         |                           |         | Reply.    |    🟢     | Group Request     |    🟢    | GroupPromoteAdmin   |    🟢    |
-|          |         |                           |         | File      |    🟡     | ~~Voice Call~~    |    🔴    | GroupInvite         |    🟢    |
-|          |         |                           |         | Poke      |    🟢     | Client Key        |    🟢    | GroupRequestJoin    |    🔴    |
-|          |         |                           |         |           |           | Cookies           |    🟢    | FriendRequest       |    🟢    |
-|          |         |                           |         |           |           | Send Message      |    🟢    | ~~FriendTyping~~    |    🔴    |
-|          |         |                           |         |           |           |                   |         | ~~FriendVoiceCall~~ |    🔴    |
+| Protocol | Support | Login                     | Support | Messages  | Support | Operations        | Support | Events              | Support |
+|----------|:-------:|---------------------------|:-------:|:----------|:-------:|:------------------|:-------:|:--------------------|:-------:|
+| Windows  |   🟢    | QrCode                    |   🟢    | Images    |   🟢    | ~~Poke~~          |   🔴    | Captcha             |   🟢    |
+| macOS    |   🟢    | Password                  |   🟢    | Text / At |   🟢    | Recall            |   🟡    | BotOnline           |   🟢    |
+| Linux    |   🟢    | EasyLogin                 |   🟢    | Records   |   🟡    | Leave Group       |   🟢    | BotOffline          |   🟢    |
+|          |         | UnusalDevice<br/>Password |   🔴    | QFace     |   🟢    | ~~Special Title~~ |   🔴    | Message             |   🟢    |
+|          |         | UnusalDevice<br/>Easy     |   🟢    | Json      |   🟡    | Kick Member       |   🟢    | ~~Poke~~            |   🔴    |
+|          |         | NewDeviceVerify           |   🔴    | Xml       |   🟢    | Mute Member       |   🟢    | MessageRecall       |   🔴    |
+|          |         |                           |         | Forward   |   🟢    | Set Admin         |   🟢    | GroupMemberDecrease |   🟢    |
+|          |         |                           |         | Video     |   🟡    | Friend Request    |   🔴    | GroupMemberIncrease |   🟢    |
+|          |         |                           |         | Reply.    |   🟢    | Group Request     |   🟢    | GroupPromoteAdmin   |   🟢    |
+|          |         |                           |         | File      |   🟡    | ~~Voice Call~~    |   🔴    | GroupInvite         |   🟢    |
+|          |         |                           |         | Poke      |   🟢    | Client Key        |   🟢    | GroupRequestJoin    |   🔴    |
+|          |         |                           |         |           |         | Cookies           |   🟢    | FriendRequest       |   🟢    |
+|          |         |                           |         |           |         | Send Message      |   🟢    | ~~FriendTyping~~    |   🔴    |
+|          |         |                           |         |           |         |                   |         | ~~FriendVoiceCall~~ |   🔴    |
 
 ## Lagrange.OneBot
 
@@ -57,27 +57,27 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 <Summary>Message Segement</Summary>
 
 | Message Segement | Support |
-| ---------------- | :-----: |
-| [Text]           |    🟢    |
-| [Face]           |    🟢    |
-| [Image]          |    🟢    |
-| [Record]         |    🟡    |
-| [Video]          |    🟡    |
-| [At]             |    🟢    |
-| [Rps]            |    🔴    |
-| [Dice]           |    🔴    |
-| [Shake]          |    🔴    |
-| [Poke]           |    🔴    |
-| [Anonymous]      |    🔴    |
-| [Share]          |    🔴    |
-| [Contact]        |    🔴    |
-| [Location]       |    🔴    |
-| [Music]          |    🔴    |
-| [Reply]          |    🔴    |
-| [Forward]        |    🟢    |
-| [Node]           |    🟢    |
-| [Xml]            |    🔴    |
-| [Json]           |    🔴    |
+|------------------|:-------:|
+| [Text]           |   🟢    |
+| [Face]           |   🟢    |
+| [Image]          |   🟢    |
+| [Record]         |   🟡    |
+| [Video]          |   🟡    |
+| [At]             |   🟢    |
+| [Rps]            |   🔴    |
+| [Dice]           |   🔴    |
+| [Shake]          |   🔴    |
+| [Poke]           |   🟢    |
+| [Anonymous]      |   🔴    |
+| [Share]          |   🔴    |
+| [Contact]        |   🔴    |
+| [Location]       |   🔴    |
+| [Music]          |   🔴    |
+| [Reply]          |   🔴    |
+| [Forward]        |   🟢    |
+| [Node]           |   🟢    |
+| [Xml]            |   🔴    |
+| [Json]           |   🔴    |
 
 [Text]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#qq-%E8%A1%A8%E6%83%85
 [Record]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E8%AF%AD%E9%9F%B3
