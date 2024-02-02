@@ -126,6 +126,30 @@ public sealed class MessageBuilder
         return this;
     }
 
+    /// <summary>
+    /// Add a audio entity to the message chain
+    /// </summary>
+    /// <param name="file">The audio file that has already been converted to SilkCodec</param>
+    public MessageBuilder Record(byte[] file)
+    {
+        var recordEntity = new RecordEntity(file);
+        _chain.Add(recordEntity);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Add a audio entity to the message chain
+    /// </summary>
+    /// <param name="filePath">The audio file that has already been converted to SilkCodec</param>
+    public MessageBuilder Record(string filePath)
+    {
+        var recordEntity = new RecordEntity(filePath);
+        _chain.Add(recordEntity);
+
+        return this;
+    }
+
     public MessageBuilder File(byte[] file, string fileName)
     {
         var fileEntity = new FileEntity(file, fileName);
