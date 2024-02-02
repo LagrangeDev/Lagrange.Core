@@ -150,6 +150,18 @@ public sealed class MessageBuilder
         return this;
     }
 
+    /// <summary>
+    /// Add a dedicated poke entity to message chain
+    /// </summary>
+    /// <param name="type">Poke ID, default value is the preset of NTQQ</param>
+    public MessageBuilder Poke(uint type = 1)
+    {
+        var pokeEntity = new PokeEntity(type);
+        _chain.Add(pokeEntity);
+
+        return this;
+    }
+
     public MessageBuilder File(byte[] file, string fileName)
     {
         var fileEntity = new FileEntity(file, fileName);
