@@ -6,11 +6,11 @@ namespace Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 [ProtoContract]
 internal class VideoFile
 {
-    [ProtoMember(1)] public byte[] FileUuid { get; set; }
+    [ProtoMember(1)] public string FileUuid { get; set; }
     
     [ProtoMember(2)] public byte[] FileMd5 { get; set; }
     
-    [ProtoMember(3)] public byte[] FileName { get; set; }
+    [ProtoMember(3)] public string FileName { get; set; }
     
     [ProtoMember(4)] public int FileFormat { get; set; }
     

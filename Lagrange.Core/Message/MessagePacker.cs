@@ -231,7 +231,7 @@ internal static class MessagePacker
             : new MessageChain(
                 message.ResponseHead.Grp.GroupUin, 
                 message.ResponseHead.FromUin, 
-                (uint)(message.ContentHead.Sequence ?? 0),
+                message.ContentHead.Sequence ?? 0,
                 message.ContentHead.NewId ?? 0);
 
         chain.Time = DateTimeOffset.FromUnixTimeSeconds(message.ContentHead.Timestamp ?? 0).DateTime;

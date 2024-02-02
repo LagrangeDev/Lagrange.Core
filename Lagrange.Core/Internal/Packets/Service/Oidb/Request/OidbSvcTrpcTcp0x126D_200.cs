@@ -5,6 +5,9 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 // Resharper disable InconsistentNaming
 #pragma warning disable CS8618
 
+/// <summary>
+/// Record Download
+/// </summary>
 [ProtoContract]
 [OidbSvcTrpcTcp(0x126D, 200)]
 internal class OidbSvcTrpcTcp0x126D_200

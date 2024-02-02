@@ -27,7 +27,7 @@ public class RecordEntity : IMessageEntity
     
     internal string? FileSha1 { get; set; }
     
-    public RecordEntity() { }
+    internal RecordEntity() { }
     
     public RecordEntity(string filePath)
     {
@@ -76,5 +76,5 @@ public class RecordEntity : IMessageEntity
         return null;
     }
 
-    public string ToPreviewString() =>  $"[{nameof(RecordEntity)}]: {AudioUrl}";
+    public string ToPreviewString() =>  $"[{nameof(RecordEntity)}: {AudioUrl}]";
 }

@@ -162,6 +162,23 @@ internal class MessagingLogic : LogicBase
                 record.AudioUrl = result.AudioUrl;
             }
         }
+        
+        if (chain.HasTypeOf<VideoEntity>())
+        {
+            var video = chain.GetEntity<VideoEntity>();
+            if (video?.VideoUuid == null) return;
+
+            string uid = (chain.IsGroup
+                ? await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin)
+                : chain.Uid) ?? "";
+            var @event = VideoDownloadEvent.Create(video.VideoUuid, uid, video.FilePath, "", "",chain.IsGroup);
+            var results = await Collection.Business.SendEvent(@event);
+            if (results.Count != 0)
+            {
+                var result = (VideoDownloadEvent)results[0];
+                video.VideoUrl = result.AudioUrl;
+            }
+        }
 
         foreach (var mention in chain.OfType<MentionEntity>())
         {
