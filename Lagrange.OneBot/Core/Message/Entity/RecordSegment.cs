@@ -15,7 +15,7 @@ public partial class RecordSegment(string url)
 [SegmentSubscriber(typeof(RecordEntity), "record")]
 public partial class RecordSegment : ISegment
 {
-    public IMessageEntity ToEntity() => new ImageEntity(url);
+    public IMessageEntity ToEntity() => new RecordEntity(Url);
     
     public void Build(MessageBuilder builder, ISegment segment)
     {

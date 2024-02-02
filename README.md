@@ -41,7 +41,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 |          |         | UnusalDevice<br/>Easy     |    🟢    | Json            |    🟡    | Kick Member       |    🟢    | ~~Poke~~            |    🔴    |
 |          |         | NewDeviceVerify           |    🔴    | Xml             |    🟢    | Mute Member       |    🟢    | MessageRecall       |    🔴    |
 |          |         |                           |         | Forward         |    🟢    | Set Admin         |    🟢    | GroupMemberDecrease |    🟢    |
-|          |         |                           |         | Video           |    🔴    | Friend Request    |    🔴    | GroupMemberIncrease |    🟢    |
+|          |         |                           |         | Video           |    🟡    | Friend Request    |    🔴    | GroupMemberIncrease |    🟢    |
 |          |         |                           |         | ~~Flash Image~~ |    🔴    | Group Request     |    🟢    | GroupPromoteAdmin   |    🟢    |
 |          |         |                           |         | Reply           |    🟢    | ~~Voice Call~~    |    🔴    | GroupInvite         |    🟢    |
 |          |         |                           |         | File            |    🟡    | Client Key        |    🟢    | GroupRequestJoin    |    🔴    |
@@ -62,7 +62,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [Face]           |    🟢    |
 | [Image]          |    🟢    |
 | [Record]         |    🟡    |
-| [Video]          |    🔴    |
+| [Video]          |    🟡    |
 | [At]             |    🟢    |
 | [Rps]            |    🔴    |
 | [Dice]           |    🔴    |

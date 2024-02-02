@@ -15,7 +15,7 @@ public partial class ImageSegment(string url)
 [SegmentSubscriber(typeof(ImageEntity), "image")]
 public partial class ImageSegment : ISegment
 {
-    public IMessageEntity ToEntity() => new ImageEntity(url);
+    public IMessageEntity ToEntity() => new ImageEntity(Url);
     
     public void Build(MessageBuilder builder, ISegment segment)
     {
