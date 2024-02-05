@@ -13,7 +13,7 @@ public class ForwardEntity : IMessageEntity
 
     public uint TargetUin { get; internal set; }
 
-    private List<Elem> Elements { get; }
+    internal List<Elem> Elements { get; }
 
     private string? SelfUin { get; set; }
     
