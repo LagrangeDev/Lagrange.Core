@@ -42,7 +42,7 @@ internal class Elem
 	
 	[ProtoMember(45)] public SrcMsg? SrcMsg { get; set; } // Forward/ReplyEntity
 	
-	[ProtoMember(51)] public LightAppElem? LightApp { get; set; }
+	[ProtoMember(51)] public LightAppElem? LightAppElem { get; set; }
 	
 	[ProtoMember(53)] public CommonElem? CommonElem { get; set; }
 }
