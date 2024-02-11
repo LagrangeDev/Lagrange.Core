@@ -9,7 +9,7 @@ RUN dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj \
         -p:PublishSingleFile=true \
         -p:IncludeContentInSingleFile=true
 		
-FROM mcr.microsoft.com/dotnet/runtime:7.0-alpine3.18
+FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine3.18
 WORKDIR /app
 COPY --from=build-env /App/out .
 COPY appsettings.onebot.json ./appsettings.json
