@@ -17,8 +17,6 @@ public partial class PokeSegment(uint type)
 [SegmentSubscriber(typeof(PokeEntity), "poke")]
 public partial class PokeSegment : ISegment
 {
-    public IMessageEntity ToEntity() => new PokeEntity(Type);
-    
     public void Build(MessageBuilder builder, ISegment segment)
     {
         if (segment is PokeSegment pokeSegment) builder.Poke(pokeSegment.Type);

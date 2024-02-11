@@ -17,8 +17,6 @@ public partial class ImageSegment(string url)
 [SegmentSubscriber(typeof(ImageEntity), "image")]
 public partial class ImageSegment : ISegment
 {
-    public IMessageEntity ToEntity() => new ImageEntity(File);
-    
     public void Build(MessageBuilder builder, ISegment segment)
     {
         if (segment is ImageSegment imageSegment and not { File: "" } && CommonResolver.Resolve(imageSegment.File) is { } image)

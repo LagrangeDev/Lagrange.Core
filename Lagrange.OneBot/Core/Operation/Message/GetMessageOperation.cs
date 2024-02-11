@@ -11,7 +11,7 @@ using LiteDB;
 namespace Lagrange.OneBot.Core.Operation.Message;
 
 [Operation("get_msg")]
-public class GetMessageOperation(LiteDatabase database) : IOperation
+public class GetMessageOperation(LiteDatabase database, MessageService service) : IOperation
 {
     public Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
     {
@@ -19,7 +19,7 @@ public class GetMessageOperation(LiteDatabase database) : IOperation
         {
             var record = database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == getMsg.MessageId);
             var chain = (MessageChain)record;
-            var elements = MessageService.Convert(chain);
+            var elements = service.Convert(chain);
             var response = new OneBotGetMessageResponse(chain.Time, chain.IsGroup ? "group" : "private", record.MessageHash, elements);
             
             return Task.FromResult(new OneBotResult(response, 200, "ok"));

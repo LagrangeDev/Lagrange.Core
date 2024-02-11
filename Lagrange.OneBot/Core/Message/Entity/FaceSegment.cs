@@ -15,8 +15,6 @@ public partial class FaceSegment(int id)
 [SegmentSubscriber(typeof(FaceEntity), "face")]
 public partial class FaceSegment : ISegment
 {
-    public IMessageEntity ToEntity() => new FaceEntity(ushort.Parse(Id), false);
-    
     public void Build(MessageBuilder builder, ISegment segment)
     {
         if (segment is FaceSegment faceSegment) builder.Face(ushort.Parse(faceSegment.Id));

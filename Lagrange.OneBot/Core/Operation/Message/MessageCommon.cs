@@ -118,20 +118,14 @@ public static partial class MessageCommon
     [GeneratedRegex(@"\[CQ:([^,\]]+)(?:,([^,\]]+))*\]")]
     private static partial Regex CQCodeRegex();
 
-    private static string UnescapeCQ(string str)
-    {
-        return str.Replace("&#91;", "[")
-                  .Replace("&#93;", "]")
-                  .Replace("&#44;", ",")
-                  .Replace("&amp;", "&");
-    }
+    private static string UnescapeCQ(string str) => str.Replace("&#91;", "[")
+        .Replace("&#93;", "]")
+        .Replace("&#44;", ",")
+        .Replace("&amp;", "&");
 
-    private static string UnescapeText(string str)
-    {
-        return str.Replace("&#91;", "[")
-                  .Replace("&#93;", "]")
-                  .Replace("&amp;", "&");
-    }
+    private static string UnescapeText(string str) => str.Replace("&#91;", "[")
+        .Replace("&#93;", "]")
+        .Replace("&amp;", "&");
 
     private static void BuildMessages(MessageBuilder builder, string message)
     {

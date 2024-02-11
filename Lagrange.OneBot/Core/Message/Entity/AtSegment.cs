@@ -15,8 +15,6 @@ public partial class AtSegment(uint at)
 [SegmentSubscriber(typeof(MentionEntity), "at")]
 public partial class AtSegment : ISegment
 {
-    public IMessageEntity ToEntity() => new MentionEntity(null, uint.Parse(At));
-    
     public void Build(MessageBuilder builder, ISegment segment)
     {
         if (segment is AtSegment atSegment) builder.Mention(atSegment.At == "all" ? 0 : uint.Parse(atSegment.At), atSegment.At == "all" ? "@\u5168\u4f53\u6210\u5458" : null);

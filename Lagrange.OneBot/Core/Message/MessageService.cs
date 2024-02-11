@@ -25,13 +25,14 @@ public sealed class MessageService
     private readonly LiteDatabase _context;
     private readonly IConfiguration _config;
 
-    private static readonly Dictionary<Type, (string, ISegment)> EntityToSegment;
+    private static readonly Dictionary<Type, (string Type, ISegment Factory)> EntityToSegment;
     private static readonly IJsonTypeInfoResolver Resolver;
 
     static MessageService()
     {
         EntityToSegment = new Dictionary<Type, (string, ISegment)>();
         Resolver = new DefaultJsonTypeInfoResolver { Modifiers = { ModifyTypeInfo } };
+        
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var attribute = type.GetCustomAttribute<SegmentSubscriberAttribute>();
@@ -96,7 +97,7 @@ public sealed class MessageService
         // TODO: Implement temp msg
     }
 
-    public static List<OneBotSegment> Convert(IEnumerable<IMessageEntity> entities)
+    public List<OneBotSegment> Convert(IEnumerable<IMessageEntity> entities)
     {
         var result = new List<OneBotSegment>();
 
@@ -104,7 +105,7 @@ public sealed class MessageService
         {
             if (EntityToSegment.TryGetValue(entity.GetType(), out var instance))
             {
-                result.Add(new OneBotSegment(instance.Item1, instance.Item2.FromEntity(entity)));
+                result.Add(new OneBotSegment(instance.Type, instance.Factory.FromEntity(entity)));
             }
         }
 

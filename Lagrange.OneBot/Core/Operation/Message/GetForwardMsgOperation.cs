@@ -10,7 +10,7 @@ using Lagrange.OneBot.Core.Message;
 namespace Lagrange.OneBot.Core.Operation.Message;
 
 [Operation("get_forward_msg")]
-public class GetForwardMsgOperation : IOperation
+public class GetForwardMsgOperation(MessageService service) : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
     {
@@ -22,7 +22,7 @@ public class GetForwardMsgOperation : IOperation
             var results = await context.ContextCollection.Business.SendEvent(@event);
             foreach (var chain in ((MultiMsgDownloadEvent)results[0]).Chains ?? throw new Exception())
             {
-                var parsed = MessageService.Convert(chain);
+                var parsed = service.Convert(chain);
                 var node = new OneBotNode(chain.FriendUin, "", parsed);
                 nodes.Add(new OneBotSegment("node", node));
             }

@@ -15,8 +15,6 @@ public partial class TextSegment(string text)
 [SegmentSubscriber(typeof(TextEntity), "text")]
 public partial class TextSegment : ISegment
 {
-    public IMessageEntity ToEntity() => new TextEntity(Text);
-
     public void Build(MessageBuilder builder, ISegment segment)
     {
         if (segment is TextSegment textSegment) builder.Text(textSegment.Text);
