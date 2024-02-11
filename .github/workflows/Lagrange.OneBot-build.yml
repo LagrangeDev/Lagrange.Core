@@ -30,13 +30,24 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-
-      - name: Build Lagrange.OneBot
+          
+      - name: Build Lagrange.OneBot .NET 7.0
         shell: powershell
         run: |
-          dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeContentInSingleFile=true -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }}
+          dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeContentInSingleFile=true -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net7.0
 
-      - name: Upload binary files(${{ matrix.runtimeIdentifier }})
+      - name: Build Lagrange.OneBot .NET 8.0
+        shell: powershell
+        run: |
+          dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeContentInSingleFile=true -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
+
+      - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 8.0
+        uses: actions/upload-artifact@v3
+        with:
+          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}
+          path: Lagrange.OneBot/bin/Debug/net8.0/${{ matrix.runtimeIdentifier }}/publish
+
+      - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 7.0
         uses: actions/upload-artifact@v3
         with:
           name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}
