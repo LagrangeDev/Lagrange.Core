@@ -161,6 +161,18 @@ public sealed class MessageBuilder
 
         return this;
     }
+    
+    /// <summary>
+    /// Add a dedicated LightApp entity to message chain
+    /// </summary>
+    /// <param name="payload">Json Payload</param>
+    public MessageBuilder LightApp(string payload)
+    {
+        var pokeEntity = new LightAppEntity(payload);
+        _chain.Add(pokeEntity);
+
+        return this;
+    }
 
     public MessageBuilder File(byte[] file, string fileName)
     {
