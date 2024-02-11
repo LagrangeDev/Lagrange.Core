@@ -5,7 +5,7 @@ namespace Lagrange.OneBot.Core.Message;
 
 public abstract class SegmentBase
 {
-    public LiteDatabase? Database { get; set; }
+    public LiteDatabase? Database { protected get; set; }
     
     public abstract void Build(MessageBuilder builder, SegmentBase segment);
     
