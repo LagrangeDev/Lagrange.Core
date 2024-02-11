@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine3.18 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine3.18 AS build-env
 WORKDIR /App
 
 COPY . ./
@@ -8,7 +8,7 @@ RUN dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj \
         --no-self-contained \
         -p:PublishSingleFile=true \
         -p:IncludeContentInSingleFile=true \
-	--framework net8.0
+	    --framework net8.0
 		
 FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine3.18
 WORKDIR /app
