@@ -11,7 +11,7 @@ public partial class ReplySegment(uint messageId)
 {
     public ReplySegment() : this(0) { }
 
-    [JsonPropertyName("id")] [CQProperty] public uint MessageId { get; set; } = messageId;
+    [JsonPropertyName("id")] [CQProperty] public string MessageId { get; set; } = messageId.ToString();
 }
 
 [SegmentSubscriber(typeof(ForwardEntity), "reply")]
@@ -25,7 +25,7 @@ public partial class ReplySegment : SegmentBase
     {
         if (segment is ReplySegment reply && Database is not null)
         {
-            reply.TargetChain ??= (MessageChain)Database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == reply.MessageId);
+            reply.TargetChain ??= (MessageChain)Database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == uint.Parse(reply.MessageId));
             builder.Forward(reply.TargetChain);
         }
     }
@@ -41,7 +41,7 @@ public partial class ReplySegment : SegmentBase
 
         return new ReplySegment
         {
-            MessageId = target.MessageHash
+            MessageId = target.MessageHash.ToString()
         };
     }
 }
