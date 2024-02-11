@@ -9,5 +9,5 @@ public abstract class SegmentBase
     
     public abstract void Build(MessageBuilder builder, SegmentBase segment);
     
-    public abstract SegmentBase FromEntity(MessageChain chain, IMessageEntity entity);
+    public abstract SegmentBase? FromEntity(MessageChain chain, IMessageEntity entity);
 }

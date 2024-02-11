@@ -24,13 +24,14 @@ public sealed class MessageService
     private readonly LagrangeWebSvcCollection _service;
     private readonly LiteDatabase _context;
     private readonly IConfiguration _config;
-    private readonly Dictionary<Type, (string Type, SegmentBase Factory)> _entityToSegment;
+    private readonly Dictionary<Type, List<(string Type, SegmentBase Factory)>> _entityToFactory;
     
-    private static readonly IJsonTypeInfoResolver Resolver;
+    private static readonly JsonSerializerOptions Options;
+
 
     static MessageService()
     {
-        Resolver = new DefaultJsonTypeInfoResolver { Modifiers = { ModifyTypeInfo } };
+        Options = new JsonSerializerOptions { TypeInfoResolver = new DefaultJsonTypeInfoResolver { Modifiers = { ModifyTypeInfo } } };
     }
 
     public MessageService(BotContext bot, LagrangeWebSvcCollection service, LiteDatabase context, IConfiguration config)
@@ -45,7 +46,7 @@ public sealed class MessageService
         invoker.OnGroupMessageReceived += OnGroupMessageReceived;
         invoker.OnTempMessageReceived += OnTempMessageReceived;
         
-        _entityToSegment = new Dictionary<Type, (string, SegmentBase)>();
+        _entityToFactory = new Dictionary<Type, List<(string, SegmentBase)>>();
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var attribute = type.GetCustomAttribute<SegmentSubscriberAttribute>();
@@ -53,7 +54,9 @@ public sealed class MessageService
             {
                 var instance = (SegmentBase)type.CreateInstance(false);
                 instance.Database = _context;
-                _entityToSegment[attribute.Entity] = (attribute.Type, instance);
+
+                if (_entityToFactory.TryGetValue(attribute.Entity, out var factories)) factories.Add((attribute.Type, instance));
+                else _entityToFactory[attribute.Entity] = [(attribute.Type, instance)];
             }
         }
     }
@@ -105,9 +108,12 @@ public sealed class MessageService
 
         foreach (var entity in chain)
         {
-            if (_entityToSegment.TryGetValue(entity.GetType(), out var instance))
+            if (_entityToFactory.TryGetValue(entity.GetType(), out var instances))
             {
-                result.Add(new OneBotSegment(instance.Type, instance.Factory.FromEntity(chain, entity)));
+                foreach (var instance in instances)
+                {
+                    if (instance.Factory.FromEntity(chain, entity) is { } segment) result.Add(new OneBotSegment(instance.Type, segment));
+                }
             }
         }
 
@@ -134,7 +140,7 @@ public sealed class MessageService
             {
                 rawMessageBuilder.Append("[CQ:");
                 rawMessageBuilder.Append(segment.Type);
-                foreach (var property in JsonSerializer.SerializeToElement(segment.Data, new JsonSerializerOptions { TypeInfoResolver = Resolver  }).EnumerateObject())
+                foreach (var property in JsonSerializer.SerializeToElement(segment.Data, Options).EnumerateObject())
                 {
                     rawMessageBuilder.Append(',');
                     rawMessageBuilder.Append(property.Name);
