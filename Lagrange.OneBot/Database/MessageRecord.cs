@@ -1,5 +1,6 @@
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Message;
+using Lagrange.OneBot.Utility;
 
 namespace Lagrange.OneBot.Database;
 
@@ -23,6 +24,11 @@ public class MessageRecord
     public List<IMessageEntity> Entities { get; set; } = [];
     
     public uint MessageHash { get; set; }
+
+    static MessageRecord()
+    {
+        Vector2Mapper.RegisterType(); // I HATE THIS
+    }
 
     public static explicit operator MessageChain(MessageRecord record)
     {
