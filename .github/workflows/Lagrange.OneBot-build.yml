@@ -44,11 +44,11 @@ jobs:
       - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 8.0
         uses: actions/upload-artifact@v3
         with:
-          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}
-          path: Lagrange.OneBot/bin/Debug/net8.0/${{ matrix.runtimeIdentifier }}/publish
+          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0
+          path: Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
 
       - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 7.0
         uses: actions/upload-artifact@v3
         with:
-          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}
+          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_7.0
           path: Lagrange.OneBot/bin/Debug/net7.0/${{ matrix.runtimeIdentifier }}/publish
