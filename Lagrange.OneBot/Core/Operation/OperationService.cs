@@ -1,8 +1,9 @@
 using System.Reflection;
 using Lagrange.Core;
 using Lagrange.OneBot.Core.Entity.Action;
+using Lagrange.OneBot.Core.Message;
 using Lagrange.OneBot.Core.Network;
-using Lagrange.OneBot.Database;
+using Lagrange.OneBot.Core.Operation.Message;
 using LiteDB;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,7 +18,7 @@ public sealed class OperationService
     private readonly Dictionary<string, Type> _operations;
     private readonly ServiceProvider _service;
 
-    public OperationService(BotContext bot, ILogger<OperationService> logger, LiteDatabase context)
+    public OperationService(BotContext bot, ILogger<OperationService> logger, LiteDatabase context, MessageService message)
     {
         _bot = bot;
         _logger = logger;
@@ -32,6 +33,8 @@ public sealed class OperationService
         var service = new ServiceCollection();
         service.AddSingleton(context);
         service.AddSingleton(logger);
+        service.AddSingleton(message);
+        service.AddSingleton<MessageCommon>();
 
         foreach (var (_, type) in _operations) service.AddScoped(type);
         _service = service.BuildServiceProvider();

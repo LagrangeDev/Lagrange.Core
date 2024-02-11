@@ -6,25 +6,32 @@ using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Message;
 using Lagrange.OneBot.Core.Message;
+using LiteDB;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Lagrange.OneBot.Core.Operation.Message;
 
-public static partial class MessageCommon
+public partial class MessageCommon
 {
-    private static readonly Dictionary<string, SegmentBase> TypeToSegment;
+    private readonly Dictionary<string, SegmentBase> _typeToSegment;
 
-    static MessageCommon()
+    public MessageCommon(LiteDatabase database)
     {
-        TypeToSegment = new Dictionary<string, SegmentBase>();
+        _typeToSegment = new Dictionary<string, SegmentBase>();
 
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var attribute = type.GetCustomAttribute<SegmentSubscriberAttribute>();
-            if (attribute != null) TypeToSegment[attribute.SendType] = (SegmentBase)type.CreateInstance(false);
+            if (attribute != null)
+            {
+                var instance = (SegmentBase)type.CreateInstance(false);
+                instance.Database = database;
+                _typeToSegment[attribute.SendType] = instance;
+            }
         }
     }
 
-    public static MessageBuilder ParseChain(OneBotMessage message)
+    public MessageBuilder ParseChain(OneBotMessage message)
     {
         var builder = message.MessageType == "private"
             ? MessageBuilder.Friend(message.UserId ?? 0)
@@ -34,7 +41,7 @@ public static partial class MessageCommon
         return builder;
     }
 
-    public static MessageBuilder ParseChain(OneBotMessageSimple message)
+    public MessageBuilder ParseChain(OneBotMessageSimple message)
     {
         var builder = message.MessageType == "private"
             ? MessageBuilder.Friend(message.UserId ?? 0)
@@ -54,7 +61,7 @@ public static partial class MessageCommon
         return builder;
     }
 
-    public static MessageBuilder ParseChain(OneBotPrivateMessage message)
+    public MessageBuilder ParseChain(OneBotPrivateMessage message)
     {
         var builder = MessageBuilder.Friend(message.UserId);
         BuildMessages(builder, message.Messages);
@@ -62,7 +69,7 @@ public static partial class MessageCommon
         return builder;
     }
 
-    public static MessageBuilder ParseChain(OneBotPrivateMessageSimple message)
+    public MessageBuilder ParseChain(OneBotPrivateMessageSimple message)
     {
         var builder = MessageBuilder.Friend(message.UserId);
         BuildMessages(builder, message.Messages);
@@ -70,7 +77,7 @@ public static partial class MessageCommon
         return builder;
     }
 
-    public static MessageBuilder ParseChain(OneBotPrivateMessageText message)
+    public MessageBuilder ParseChain(OneBotPrivateMessageText message)
     {
         var builder = MessageBuilder.Friend(message.UserId);
         if (message.AutoEscape == true)
@@ -85,7 +92,7 @@ public static partial class MessageCommon
     }
 
 
-    public static MessageBuilder ParseChain(OneBotGroupMessage message)
+    public MessageBuilder ParseChain(OneBotGroupMessage message)
     {
         var builder = MessageBuilder.Group(message.GroupId);
         BuildMessages(builder, message.Messages);
@@ -93,7 +100,7 @@ public static partial class MessageCommon
         return builder;
     }
 
-    public static MessageBuilder ParseChain(OneBotGroupMessageSimple message)
+    public MessageBuilder ParseChain(OneBotGroupMessageSimple message)
     {
         var builder = MessageBuilder.Group(message.GroupId);
         BuildMessages(builder, message.Messages);
@@ -101,7 +108,7 @@ public static partial class MessageCommon
         return builder;
     }
 
-    public static MessageBuilder ParseChain(OneBotGroupMessageText message)
+    public MessageBuilder ParseChain(OneBotGroupMessageText message)
     {
         var builder = MessageBuilder.Group(message.GroupId);
         if (message.AutoEscape == true)
@@ -127,7 +134,7 @@ public static partial class MessageCommon
         .Replace("&#93;", "]")
         .Replace("&amp;", "&");
 
-    private static void BuildMessages(MessageBuilder builder, string message)
+    private void BuildMessages(MessageBuilder builder, string message)
     {
         var matches = CQCodeRegex().Matches(message);
         int textStart = 0;
@@ -137,7 +144,7 @@ public static partial class MessageCommon
             textStart = match.Index + match.Length;
 
             string type = match.Groups[1].Value;
-            if (TypeToSegment.TryGetValue(type, out var instance))
+            if (_typeToSegment.TryGetValue(type, out var instance))
             {
                 var data = new Dictionary<string, string>();
                 foreach (var capture in match.Groups[2].Captures.Cast<Capture>())
@@ -153,11 +160,11 @@ public static partial class MessageCommon
         if (textStart < message.Length) builder.Text(UnescapeText(message[textStart..]));
     }
 
-    private static void BuildMessages(MessageBuilder builder, List<OneBotSegment> segments)
+    private void BuildMessages(MessageBuilder builder, List<OneBotSegment> segments)
     {
         foreach (var segment in segments)
         {
-            if (TypeToSegment.TryGetValue(segment.Type, out var instance))
+            if (_typeToSegment.TryGetValue(segment.Type, out var instance))
             {
                 var cast = (SegmentBase)((JsonElement)segment.Data).Deserialize(instance.GetType())!;
                 instance.Build(builder, cast);
@@ -165,9 +172,9 @@ public static partial class MessageCommon
         }
     }
 
-    private static void BuildMessages(MessageBuilder builder, OneBotSegment segment)
+    private void BuildMessages(MessageBuilder builder, OneBotSegment segment)
     {
-        if (TypeToSegment.TryGetValue(segment.Type, out var instance))
+        if (_typeToSegment.TryGetValue(segment.Type, out var instance))
         {
             var cast = (SegmentBase)((JsonElement)segment.Data).Deserialize(instance.GetType())!;
             instance.Build(builder, cast);

@@ -8,14 +8,14 @@ using Lagrange.OneBot.Core.Entity.Action.Response;
 namespace Lagrange.OneBot.Core.Operation.Message;
 
 [Operation("send_msg")]
-public sealed class SendMessageOperation : IOperation
+public sealed class SendMessageOperation(MessageCommon common) : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
     {
         var result = payload.Deserialize<OneBotMessageBase>() switch
         {
-            OneBotMessage message => await context.SendMessage(MessageCommon.ParseChain(message).Build()),
-            OneBotMessageSimple messageSimple => await context.SendMessage(MessageCommon.ParseChain(messageSimple).Build()),
+            OneBotMessage message => await context.SendMessage(common.ParseChain(message).Build()),
+            OneBotMessageSimple messageSimple => await context.SendMessage(common.ParseChain(messageSimple).Build()),
             OneBotMessageText messageText => await context.SendMessage(MessageCommon.ParseChain(messageText).Build()),
             _ => throw new Exception()
         };
