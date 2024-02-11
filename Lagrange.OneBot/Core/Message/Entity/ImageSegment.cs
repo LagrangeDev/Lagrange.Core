@@ -9,15 +9,15 @@ public partial class ImageSegment(string url)
 {
     public ImageSegment() : this("") { }
 
-    [JsonPropertyName("file")]  [CQProperty] public string File { get; set; } = url;
+    [JsonPropertyName("file")] [CQProperty] public string File { get; set; } = url;
     
     [JsonPropertyName("url")] public string Url { get; set; }  = url;
 }
 
 [SegmentSubscriber(typeof(ImageEntity), "image")]
-public partial class ImageSegment : ISegment
+public partial class ImageSegment : SegmentBase
 {
-    public void Build(MessageBuilder builder, ISegment segment)
+    public override void Build(MessageBuilder builder, SegmentBase segment)
     {
         if (segment is ImageSegment imageSegment and not { File: "" } && CommonResolver.Resolve(imageSegment.File) is { } image)
         {
@@ -25,7 +25,7 @@ public partial class ImageSegment : ISegment
         }
     }
 
-    public ISegment FromEntity(IMessageEntity entity)
+    public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
     {
         if (entity is not ImageEntity imageEntity) throw new ArgumentException("Invalid entity type.");
 

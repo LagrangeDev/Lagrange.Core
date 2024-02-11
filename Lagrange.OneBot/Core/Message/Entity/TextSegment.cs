@@ -13,14 +13,14 @@ public partial class TextSegment(string text)
 }
 
 [SegmentSubscriber(typeof(TextEntity), "text")]
-public partial class TextSegment : ISegment
+public partial class TextSegment : SegmentBase
 {
-    public void Build(MessageBuilder builder, ISegment segment)
+    public override void Build(MessageBuilder builder, SegmentBase segment)
     {
         if (segment is TextSegment textSegment) builder.Text(textSegment.Text);
     }
     
-    public ISegment FromEntity(IMessageEntity entity)
+    public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
     {
         if (entity is not TextEntity textEntity) throw new ArgumentException("Invalid entity type.");
         

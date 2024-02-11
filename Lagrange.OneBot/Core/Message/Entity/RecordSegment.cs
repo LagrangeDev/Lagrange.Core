@@ -15,9 +15,9 @@ public partial class RecordSegment(string url)
 }
 
 [SegmentSubscriber(typeof(RecordEntity), "record")]
-public partial class RecordSegment : ISegment
+public partial class RecordSegment : SegmentBase
 {
-    public void Build(MessageBuilder builder, ISegment segment)
+    public override void Build(MessageBuilder builder, SegmentBase segment)
     {
         if (segment is RecordSegment recordSegment and not { File: "" } && CommonResolver.Resolve(recordSegment.File) is { } image)
         {
@@ -25,7 +25,7 @@ public partial class RecordSegment : ISegment
         }
     }
 
-    public ISegment FromEntity(IMessageEntity entity)
+    public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
     {
         if (entity is not RecordEntity recordEntity) throw new ArgumentException("Invalid entity type.");
 

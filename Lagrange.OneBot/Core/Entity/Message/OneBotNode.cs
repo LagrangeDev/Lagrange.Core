@@ -5,7 +5,7 @@ using Lagrange.OneBot.Core.Message;
 namespace Lagrange.OneBot.Core.Entity.Message;
 
 [Serializable]
-public class OneBotNode(uint userId, string nickName, List<OneBotSegment> content) : ISegment
+public class OneBotNode(uint userId, string nickName, List<OneBotSegment> content) : SegmentBase
 {
     [JsonPropertyName("user_id")] public uint UserId { get; set; } = userId;
 
@@ -18,12 +18,12 @@ public class OneBotNode(uint userId, string nickName, List<OneBotSegment> conten
         throw new NotImplementedException();
     }
 
-    public void Build(MessageBuilder builder, ISegment segment)
+    public override void Build(MessageBuilder builder, SegmentBase segment)
     {
         throw new NotImplementedException();
     }
 
-    public ISegment FromEntity(IMessageEntity entity)
+    public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
     {
         throw new NotImplementedException();
     }

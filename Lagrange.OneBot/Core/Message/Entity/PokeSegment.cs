@@ -15,14 +15,14 @@ public partial class PokeSegment(uint type)
 }
 
 [SegmentSubscriber(typeof(PokeEntity), "poke")]
-public partial class PokeSegment : ISegment
+public partial class PokeSegment : SegmentBase
 {
-    public void Build(MessageBuilder builder, ISegment segment)
+    public override void Build(MessageBuilder builder, SegmentBase segment)
     {
         if (segment is PokeSegment pokeSegment) builder.Poke(pokeSegment.Type);
     }
 
-    public ISegment FromEntity(IMessageEntity entity)
+    public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
     {
         if (entity is not PokeEntity pokeEntity) throw new ArgumentException("Invalid entity type.");
         

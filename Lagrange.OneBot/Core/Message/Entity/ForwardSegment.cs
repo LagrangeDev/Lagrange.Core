@@ -13,14 +13,14 @@ public partial class ForwardSegment(string name)
 }
 
 [SegmentSubscriber(typeof(MultiMsgEntity), "forward", "node")]
-public partial class ForwardSegment : ISegment
+public partial class ForwardSegment : SegmentBase
 {
-    public void Build(MessageBuilder builder, ISegment segment)
+    public override void Build(MessageBuilder builder, SegmentBase segment)
     {
         if (segment is ForwardSegment forward) builder.Add(new MultiMsgEntity(forward.Name));
     }
 
-    public ISegment FromEntity(IMessageEntity entity)
+    public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
     {
         if (entity is not MultiMsgEntity multiMsg) throw new ArgumentException("Invalid entity type.");
 

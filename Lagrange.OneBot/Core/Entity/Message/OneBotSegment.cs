@@ -4,7 +4,7 @@ using Lagrange.OneBot.Core.Message.Entity;
 
 namespace Lagrange.OneBot.Core.Entity.Message;
 
-public class OneBotSegment(string type, ISegment data)
+public class OneBotSegment(string type, SegmentBase data)
 {
     public OneBotSegment() : this("", new TextSegment()) { }
 

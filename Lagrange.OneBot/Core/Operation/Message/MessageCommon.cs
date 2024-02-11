@@ -11,16 +11,16 @@ namespace Lagrange.OneBot.Core.Operation.Message;
 
 public static partial class MessageCommon
 {
-    private static readonly Dictionary<string, ISegment> TypeToSegment;
+    private static readonly Dictionary<string, SegmentBase> TypeToSegment;
 
     static MessageCommon()
     {
-        TypeToSegment = new Dictionary<string, ISegment>();
+        TypeToSegment = new Dictionary<string, SegmentBase>();
 
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
             var attribute = type.GetCustomAttribute<SegmentSubscriberAttribute>();
-            if (attribute != null) TypeToSegment[attribute.SendType] = (ISegment)type.CreateInstance(false);
+            if (attribute != null) TypeToSegment[attribute.SendType] = (SegmentBase)type.CreateInstance(false);
         }
     }
 
@@ -145,7 +145,7 @@ public static partial class MessageCommon
                     var pair = capture.Value.Split('=', 2);
                     if (pair.Length == 2) data[pair[0]] = UnescapeCQ(pair[1]);
                 }
-                var cast = (ISegment)JsonSerializer.SerializeToElement(data).Deserialize(instance.GetType())!;
+                var cast = (SegmentBase)JsonSerializer.SerializeToElement(data).Deserialize(instance.GetType())!;
                 instance.Build(builder, cast);
             }
         }
@@ -159,7 +159,7 @@ public static partial class MessageCommon
         {
             if (TypeToSegment.TryGetValue(segment.Type, out var instance))
             {
-                var cast = (ISegment)((JsonElement)segment.Data).Deserialize(instance.GetType())!;
+                var cast = (SegmentBase)((JsonElement)segment.Data).Deserialize(instance.GetType())!;
                 instance.Build(builder, cast);
             }
         }
@@ -169,7 +169,7 @@ public static partial class MessageCommon
     {
         if (TypeToSegment.TryGetValue(segment.Type, out var instance))
         {
-            var cast = (ISegment)((JsonElement)segment.Data).Deserialize(instance.GetType())!;
+            var cast = (SegmentBase)((JsonElement)segment.Data).Deserialize(instance.GetType())!;
             instance.Build(builder, cast);
         }
     }

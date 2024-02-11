@@ -15,9 +15,9 @@ public partial class VideoSegment(string url)
 }
 
 [SegmentSubscriber(typeof(VideoEntity), "video")]
-public partial class VideoSegment : ISegment
+public partial class VideoSegment : SegmentBase
 {
-    public void Build(MessageBuilder builder, ISegment segment)
+    public override void Build(MessageBuilder builder, SegmentBase segment)
     {
         if (segment is VideoSegment videoSegment and not { File: "" } && CommonResolver.Resolve(videoSegment.File) is { } image)
         {
@@ -25,7 +25,7 @@ public partial class VideoSegment : ISegment
         }
     }
 
-    public ISegment FromEntity(IMessageEntity entity)
+    public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
     {
         if (entity is not VideoEntity videoEntity) throw new ArgumentException("Invalid entity type.");
 

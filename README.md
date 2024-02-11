@@ -73,7 +73,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [Contact]        |   🔴    |
 | [Location]       |   🔴    |
 | [Music]          |   🔴    |
-| [Reply]          |   🔴    |
+| [Reply]          |   🟢    |
 | [Forward]        |   🟢    |
 | [Node]           |   🟢    |
 | [Xml]            |   🔴    |

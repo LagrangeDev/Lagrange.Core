@@ -24,23 +24,13 @@ public sealed class MessageService
     private readonly LagrangeWebSvcCollection _service;
     private readonly LiteDatabase _context;
     private readonly IConfiguration _config;
-
-    private static readonly Dictionary<Type, (string Type, ISegment Factory)> EntityToSegment;
+    private readonly Dictionary<Type, (string Type, SegmentBase Factory)> _entityToSegment;
+    
     private static readonly IJsonTypeInfoResolver Resolver;
 
     static MessageService()
     {
-        EntityToSegment = new Dictionary<Type, (string, ISegment)>();
         Resolver = new DefaultJsonTypeInfoResolver { Modifiers = { ModifyTypeInfo } };
-        
-        foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
-        {
-            var attribute = type.GetCustomAttribute<SegmentSubscriberAttribute>();
-            if (attribute != null)
-            {
-                EntityToSegment[attribute.Entity] = (attribute.Type, (ISegment)type.CreateInstance(false));
-            }
-        }
     }
 
     public MessageService(BotContext bot, LagrangeWebSvcCollection service, LiteDatabase context, IConfiguration config)
@@ -54,6 +44,18 @@ public sealed class MessageService
         invoker.OnFriendMessageReceived += OnFriendMessageReceived;
         invoker.OnGroupMessageReceived += OnGroupMessageReceived;
         invoker.OnTempMessageReceived += OnTempMessageReceived;
+        
+        _entityToSegment = new Dictionary<Type, (string, SegmentBase)>();
+        foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
+        {
+            var attribute = type.GetCustomAttribute<SegmentSubscriberAttribute>();
+            if (attribute != null)
+            {
+                var instance = (SegmentBase)type.CreateInstance(false);
+                instance.Database = _context;
+                _entityToSegment[attribute.Entity] = (attribute.Type, instance);
+            }
+        }
     }
 
     private void OnFriendMessageReceived(BotContext bot, FriendMessageEvent e)
@@ -97,15 +99,15 @@ public sealed class MessageService
         // TODO: Implement temp msg
     }
 
-    public List<OneBotSegment> Convert(IEnumerable<IMessageEntity> entities)
+    public List<OneBotSegment> Convert(MessageChain chain)
     {
         var result = new List<OneBotSegment>();
 
-        foreach (var entity in entities)
+        foreach (var entity in chain)
         {
-            if (EntityToSegment.TryGetValue(entity.GetType(), out var instance))
+            if (_entityToSegment.TryGetValue(entity.GetType(), out var instance))
             {
-                result.Add(new OneBotSegment(instance.Type, instance.Factory.FromEntity(entity)));
+                result.Add(new OneBotSegment(instance.Type, instance.Factory.FromEntity(chain, entity)));
             }
         }
 
