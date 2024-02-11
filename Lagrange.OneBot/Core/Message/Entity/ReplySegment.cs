@@ -34,10 +34,16 @@ public partial class ReplySegment : SegmentBase
     {
         if (entity is not ForwardEntity forward || Database is null) throw new ArgumentException("The entity is not a forward entity.");
 
+        
         var collection = Database.GetCollection<MessageRecord>();
-        var target = chain.IsGroup 
-            ? collection.FindOne(x => x.Sequence == forward.Sequence && x.GroupUin == chain.GroupUin) 
-            : collection.FindOne(x => x.Sequence == forward.Sequence && x.FriendUin == chain.FriendUin);
+            
+        uint friendUin = chain.FriendUin;  // such action is to break the BsonExpression from MessageChain into uint
+        uint groupUin = chain.GroupUin ?? 0;
+            
+        var query = chain.IsGroup
+            ? collection.Query().Where(x => x.Sequence == forward.Sequence).Where(x => x.GroupUin == groupUin)
+            : collection.Query().Where(x => x.Sequence == forward.Sequence).Where(x => x.FriendUin == friendUin);
+        var target = query.First();
 
         return new ReplySegment
         {
