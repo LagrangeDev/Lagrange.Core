@@ -3,7 +3,7 @@ using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.OneBot.Database;
 
-namespace Lagrange.OneBot.Core.Message.Entity;
+namespace Lagrange.OneBot.Message.Entity;
 
 [Serializable]
 public partial class ReplySegment(uint messageId)

@@ -5,7 +5,7 @@ using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Message;
-using Lagrange.OneBot.Core.Message;
+using Lagrange.OneBot.Message;
 using LiteDB;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 

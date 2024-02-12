@@ -1,4 +1,4 @@
-namespace Lagrange.OneBot.Core.Message;
+namespace Lagrange.OneBot.Message;
 
 [AttributeUsage(AttributeTargets.Property)]
 public class CQPropertyAttribute : Attribute;

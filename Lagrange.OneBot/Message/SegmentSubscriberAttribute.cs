@@ -1,4 +1,4 @@
-namespace Lagrange.OneBot.Core.Message;
+namespace Lagrange.OneBot.Message;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class SegmentSubscriberAttribute(Type entity, string type, string? sendType = null) : Attribute

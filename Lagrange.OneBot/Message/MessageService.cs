@@ -2,19 +2,19 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 using Lagrange.Core;
 using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Message;
-using Lagrange.OneBot.Core.Message.Entity;
 using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Database;
+using Lagrange.OneBot.Message.Entity;
 using LiteDB;
 using Microsoft.Extensions.Configuration;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace Lagrange.OneBot.Core.Message;
+namespace Lagrange.OneBot.Message;
 
 /// <summary>
 /// The class that converts the OneBot message to/from MessageEntity of Lagrange.Core

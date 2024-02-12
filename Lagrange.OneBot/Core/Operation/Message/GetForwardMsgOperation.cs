@@ -5,7 +5,7 @@ using Lagrange.Core.Internal.Event.Message;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Action.Response;
 using Lagrange.OneBot.Core.Entity.Message;
-using Lagrange.OneBot.Core.Message;
+using Lagrange.OneBot.Message;
 
 namespace Lagrange.OneBot.Core.Operation.Message;
 

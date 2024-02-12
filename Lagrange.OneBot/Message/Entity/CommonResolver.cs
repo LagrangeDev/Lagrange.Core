@@ -1,4 +1,4 @@
-namespace Lagrange.OneBot.Core.Message.Entity;
+namespace Lagrange.OneBot.Message.Entity;
 
 public static class CommonResolver
 {

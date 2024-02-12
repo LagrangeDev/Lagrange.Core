@@ -1,9 +1,9 @@
 using System.Reflection;
 using Lagrange.Core;
 using Lagrange.OneBot.Core.Entity.Action;
-using Lagrange.OneBot.Core.Message;
 using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Core.Operation.Message;
+using Lagrange.OneBot.Message;
 using LiteDB;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

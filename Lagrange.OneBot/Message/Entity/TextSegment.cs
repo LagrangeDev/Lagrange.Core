@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 
-namespace Lagrange.OneBot.Core.Message.Entity;
+namespace Lagrange.OneBot.Message.Entity;
 
 [Serializable]
 public partial class TextSegment(string text)

@@ -1,7 +1,7 @@
 using Lagrange.Core.Message;
 using LiteDB;
 
-namespace Lagrange.OneBot.Core.Message;
+namespace Lagrange.OneBot.Message;
 
 public abstract class SegmentBase
 {
