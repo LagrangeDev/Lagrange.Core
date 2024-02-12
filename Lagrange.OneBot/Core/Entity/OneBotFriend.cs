@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Lagrange.OneBot.Core;
+namespace Lagrange.OneBot.Core.Entity;
 
 [Serializable]
 public class OneBotFriend
