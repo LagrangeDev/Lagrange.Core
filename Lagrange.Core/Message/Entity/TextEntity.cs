@@ -6,7 +6,7 @@ namespace Lagrange.Core.Message.Entity;
 [MessageElement(typeof(Text))]
 public class TextEntity : IMessageEntity
 {
-    public string Text { get; }
+    public string Text { get; set; }
     
     public TextEntity() => Text = "";
     
