@@ -70,7 +70,7 @@ public sealed class MessageService
         var segments = Convert(e.Chain);
         var request = new OneBotPrivateMsg(bot.BotUin)
         {
-            MessageId = record.MessageHash,
+            MessageId = (int)record.MessageHash,
             UserId = e.Chain.FriendUin,
             GroupSender = new OneBotSender
             {

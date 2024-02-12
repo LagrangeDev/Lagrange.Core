@@ -10,7 +10,7 @@ public class OneBotGetMessageResponse(DateTime time, string messageType, uint me
     
     [JsonPropertyName("message_type")] public string MessageType { get; set; } = messageType;
 
-    [JsonPropertyName("message_id")] public uint MessageId { get; set; } = messageId;
+    [JsonPropertyName("message_id")] public int MessageId { get; set; } = (int)messageId;
 
     [JsonPropertyName("real_id")] public uint RealId { get; set; } = messageId;
     
