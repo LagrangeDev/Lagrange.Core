@@ -23,7 +23,7 @@ public class MessageRecord
 
     public List<IMessageEntity> Entities { get; set; } = [];
     
-    public uint MessageHash { get; set; }
+    public int MessageHash { get; set; }
 
     static MessageRecord()
     {
@@ -57,12 +57,12 @@ public class MessageRecord
         MessageHash = CalcMessageHash(chain.MessageId, chain.Sequence)
     };
 
-    private static uint CalcMessageHash(ulong msgId, uint seq)
+    private static int CalcMessageHash(ulong msgId, uint seq)
     {
         var messageId = BitConverter.GetBytes(msgId);
         var sequence = BitConverter.GetBytes(seq);
 
         byte[] id = [messageId[0], messageId[1], sequence[0], sequence[1]];
-        return BitConverter.ToUInt32(id.AsSpan());
+        return BitConverter.ToInt32(id.AsSpan());
     }
 }
