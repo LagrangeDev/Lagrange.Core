@@ -64,14 +64,14 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [Record]         |   🟡    |
 | [Video]          |   🟡    |
 | [At]             |   🟢    |
-| [Rps]            |   🔴    |
-| [Dice]           |   🔴    |
+| [Rps]            |   🟢    |
+| [Dice]           |   🟢    |
 | [Shake]          |   🔴    |
 | [Poke]           |   🟢    |
 | [Anonymous]      |   🔴    |
 | [Share]          |   🔴    |
 | [Contact]        |   🔴    |
-| [Location]       |   🔴    |
+| [Location]       |   🟢    |
 | [Music]          |   🔴    |
 | [Reply]          |   🟢    |
 | [Forward]        |   🟢    |
