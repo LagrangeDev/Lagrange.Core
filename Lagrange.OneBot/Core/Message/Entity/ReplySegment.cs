@@ -25,7 +25,7 @@ public partial class ReplySegment : SegmentBase
     {
         if (segment is ReplySegment reply && Database is not null)
         {
-            reply.TargetChain ??= (MessageChain)Database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == uint.Parse(reply.MessageId));
+            reply.TargetChain ??= (MessageChain)Database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == (uint)int.Parse(reply.MessageId));
             builder.Forward(reply.TargetChain);
         }
     }
@@ -47,7 +47,7 @@ public partial class ReplySegment : SegmentBase
 
         return new ReplySegment
         {
-            MessageId = target.MessageHash.ToString()
+            MessageId = ((int)target.MessageHash).ToString()
         };
     }
 }
