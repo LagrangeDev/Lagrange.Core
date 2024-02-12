@@ -85,10 +85,10 @@ public sealed class MessageService
 
     private void OnGroupMessageReceived(BotContext bot, GroupMessageEvent e)
     {
-        if (_config.GetValue<bool>("Message:IgnoreSelf") && e.Chain.FriendUin == bot.BotUin) return; // ignore self message
-
         var record = (MessageRecord)e.Chain;
         _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
+        
+        if (_config.GetValue<bool>("Message:IgnoreSelf") && e.Chain.FriendUin == bot.BotUin) return; // ignore self message
 
         var segments = Convert(e.Chain);
         var request = new OneBotGroupMsg(bot.BotUin, e.Chain.GroupUin ?? 0, segments, ToRawMessage(segments),
