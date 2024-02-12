@@ -2,7 +2,6 @@ using System.Text.Json.Serialization;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.OneBot.Database;
-using LiteDB;
 
 namespace Lagrange.OneBot.Core.Message.Entity;
 
@@ -25,7 +24,7 @@ public partial class ReplySegment : SegmentBase
     {
         if (segment is ReplySegment reply && Database is not null)
         {
-            reply.TargetChain ??= (MessageChain)Database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == (uint)int.Parse(reply.MessageId));
+            reply.TargetChain ??= (MessageChain)Database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == int.Parse(reply.MessageId));
             builder.Forward(reply.TargetChain);
         }
     }
@@ -47,7 +46,7 @@ public partial class ReplySegment : SegmentBase
 
         return new ReplySegment
         {
-            MessageId = ((int)target.MessageHash).ToString()
+            MessageId = target.MessageHash.ToString()
         };
     }
 }
