@@ -35,6 +35,7 @@ public sealed class OperationService
         service.AddSingleton(logger);
         service.AddSingleton(message);
         service.AddSingleton<MessageCommon>();
+        service.AddLogging();
 
         foreach (var (_, type) in _operations) service.AddScoped(type);
         _service = service.BuildServiceProvider();

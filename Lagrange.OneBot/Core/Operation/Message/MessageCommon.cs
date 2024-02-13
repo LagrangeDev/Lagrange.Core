@@ -7,22 +7,25 @@ using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Message;
 using Lagrange.OneBot.Message;
 using LiteDB;
+using Microsoft.Extensions.Logging;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Lagrange.OneBot.Core.Operation.Message;
 
 public partial class MessageCommon
 {
+    private readonly ILogger<MessageCommon> _logger;
+    
     private readonly Dictionary<string, SegmentBase> _typeToSegment;
 
-    public MessageCommon(LiteDatabase database)
+    public MessageCommon(LiteDatabase database, ILogger<MessageCommon> logger)
     {
+        _logger = logger;
         _typeToSegment = new Dictionary<string, SegmentBase>();
 
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
-            var attribute = type.GetCustomAttribute<SegmentSubscriberAttribute>();
-            if (attribute != null)
+            if (type.GetCustomAttribute<SegmentSubscriberAttribute>() is { } attribute)
             {
                 var instance = (SegmentBase)type.CreateInstance(false);
                 instance.Database = database;
@@ -51,12 +54,20 @@ public partial class MessageCommon
         return builder;
     }
 
-    public static MessageBuilder ParseChain(OneBotMessageText message)
+    public MessageBuilder ParseChain(OneBotMessageText message)
     {
         var builder = message.MessageType == "private"
             ? MessageBuilder.Friend(message.UserId ?? 0)
             : MessageBuilder.Group(message.GroupId ?? 0);
-        builder.Text(message.Messages);
+        
+        if (message.AutoEscape == true)
+        {
+            builder.Text(message.Messages);
+        }
+        else
+        {
+            BuildMessages(builder, message.Messages);
+        }
 
         return builder;
     }
@@ -152,8 +163,9 @@ public partial class MessageCommon
                     var pair = capture.Value.Split('=', 2);
                     if (pair.Length == 2) data[pair[0]] = UnescapeCQ(pair[1]);
                 }
-                var cast = (SegmentBase)JsonSerializer.SerializeToElement(data).Deserialize(instance.GetType())!;
-                instance.Build(builder, cast);
+                
+                if (JsonSerializer.SerializeToElement(data).Deserialize(instance.GetType()) is SegmentBase cast) instance.Build(builder, cast);
+                else Log.LogCQFailed(_logger, type, string.Empty);
             }
         }
 
@@ -166,8 +178,8 @@ public partial class MessageCommon
         {
             if (_typeToSegment.TryGetValue(segment.Type, out var instance))
             {
-                var cast = (SegmentBase)((JsonElement)segment.Data).Deserialize(instance.GetType())!;
-                instance.Build(builder, cast);
+                if (((JsonElement)segment.Data).Deserialize(instance.GetType()) is SegmentBase cast) instance.Build(builder, cast);
+                else Log.LogCQFailed(_logger, segment.Type, string.Empty);
             }
         }
     }
@@ -176,8 +188,14 @@ public partial class MessageCommon
     {
         if (_typeToSegment.TryGetValue(segment.Type, out var instance))
         {
-            var cast = (SegmentBase)((JsonElement)segment.Data).Deserialize(instance.GetType())!;
-            instance.Build(builder, cast);
+            if (((JsonElement)segment.Data).Deserialize(instance.GetType()) is SegmentBase cast) instance.Build(builder, cast);
+            else Log.LogCQFailed(_logger, segment.Type, string.Empty);
         }
+    }
+
+    private static partial class Log
+    {
+        [LoggerMessage(EventId = 1, Level = LogLevel.Warning, Message = "Segment {type} Deserialization failed for code {code}")]
+        public static partial void LogCQFailed(ILogger logger, string type, string code);
     }
 }

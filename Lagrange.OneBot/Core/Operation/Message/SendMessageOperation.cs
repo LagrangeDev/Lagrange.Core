@@ -16,7 +16,7 @@ public sealed class SendMessageOperation(MessageCommon common) : IOperation
         {
             OneBotMessage message => await context.SendMessage(common.ParseChain(message).Build()),
             OneBotMessageSimple messageSimple => await context.SendMessage(common.ParseChain(messageSimple).Build()),
-            OneBotMessageText messageText => await context.SendMessage(MessageCommon.ParseChain(messageText).Build()),
+            OneBotMessageText messageText => await context.SendMessage(common.ParseChain(messageText).Build()),
             _ => throw new Exception()
         };
 
