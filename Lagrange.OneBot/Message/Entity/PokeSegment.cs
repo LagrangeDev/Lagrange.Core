@@ -9,9 +9,9 @@ public partial class PokeSegment(uint type)
 {
     public PokeSegment() : this(0) { }
 
-    [JsonPropertyName("type")] [CQProperty] public uint Type { get; set; } = type;
+    [JsonPropertyName("type")] [CQProperty] public string Type { get; set; } = type.ToString();
     
-    [JsonPropertyName("id")] [CQProperty] public uint Id { get; set; }
+    [JsonPropertyName("id")] [CQProperty] public string Id { get; set; } = string.Empty;
 }
 
 [SegmentSubscriber(typeof(PokeEntity), "poke")]
@@ -19,7 +19,7 @@ public partial class PokeSegment : SegmentBase
 {
     public override void Build(MessageBuilder builder, SegmentBase segment)
     {
-        if (segment is PokeSegment pokeSegment) builder.Poke(pokeSegment.Type);
+        if (segment is PokeSegment pokeSegment) builder.Poke(uint.Parse(pokeSegment.Type));
     }
 
     public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)

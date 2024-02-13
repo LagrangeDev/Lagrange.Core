@@ -11,9 +11,9 @@ public partial class LocationSegment(float latitude, float longitude)
 {
     public LocationSegment() : this(0f, 0f) { }
 
-    [JsonPropertyName("lat")] [CQProperty] public float Latitude { get; set; } = latitude;
+    [JsonPropertyName("lat")] [CQProperty] public string Latitude { get; set; } = latitude.ToString("F5");
 
-    [JsonPropertyName("lon")] [CQProperty] public float Longitude { get; set; } = longitude;
+    [JsonPropertyName("lon")] [CQProperty] public string Longitude { get; set; } = longitude.ToString("F5");
 
     [JsonPropertyName("title")] public string Title { get; set; } = string.Empty;
 
@@ -47,8 +47,8 @@ public partial class LocationSegment : SegmentBase
                     EnumRelationType = 1,
                     From = "plusPanel",
                     Id = "",
-                    Lat = location.Latitude.ToString("F5"),
-                    Lng = location.Longitude.ToString("F5"),
+                    Lat = location.Latitude,
+                    Lng = location.Longitude,
                     Name = location.Title,
                     Address = location.Content
                 }
@@ -69,8 +69,8 @@ public partial class LocationSegment : SegmentBase
         {
             return new LocationSegment
             {
-                Latitude = float.Parse(app.Meta.LocationSearch.Lat),
-                Longitude = float.Parse(app.Meta.LocationSearch.Lng),
+                Latitude = app.Meta.LocationSearch.Lat,
+                Longitude =app.Meta.LocationSearch.Lng,
                 Content = app.Meta.LocationSearch.Address,
                 Title = app.Meta.LocationSearch.Name,
             };
