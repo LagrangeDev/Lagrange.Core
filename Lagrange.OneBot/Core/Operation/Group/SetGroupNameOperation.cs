@@ -16,7 +16,7 @@ public class SetGroupNameOperation : IOperation
         if (message != null)
         {
             bool _ = await context.RenameGroup(message.GroupId, message.GroupName);
-            return new OneBotResult(null, 0, "ok");
+            return new OneBotResult(null, 200, "ok");
         }
 
         throw new Exception();

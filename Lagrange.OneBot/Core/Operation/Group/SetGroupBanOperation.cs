@@ -16,7 +16,7 @@ public class SetGroupBanOperation : IOperation
         if (message != null)
         {
             bool _ = await context.MuteGroupMember(message.GroupId, message.UserId, message.Duration);
-            return new OneBotResult(null, 0, "ok");
+            return new OneBotResult(null, 200, "ok");
         }
 
         throw new Exception();

@@ -16,7 +16,7 @@ public class SetGroupAdminOperation : IOperation
         if (message != null)
         {
             bool _ = await context.SetGroupAdmin(message.GroupId, message.UserId, message.Enable);
-            return new OneBotResult(null, 0, "ok");
+            return new OneBotResult(null, 200, "ok");
         }
 
         throw new Exception();

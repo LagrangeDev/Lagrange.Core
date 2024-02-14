@@ -27,7 +27,7 @@ public class GetForwardMsgOperation(MessageService service) : IOperation
                 nodes.Add(new OneBotSegment("node", node));
             }
 
-            return new OneBotResult(new OneBotGetForwardMsgResponse(nodes), 0, "ok");
+            return new OneBotResult(new OneBotGetForwardMsgResponse(nodes), 200, "ok");
         }
 
         throw new Exception();
