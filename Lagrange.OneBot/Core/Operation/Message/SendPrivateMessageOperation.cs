@@ -21,6 +21,6 @@ public sealed class SendPrivateMessageOperation(MessageCommon common) : IOperati
             _ => throw new Exception()
         };
         
-        return new OneBotResult(new OneBotMessageResponse(0), 200, "ok");
+        return new OneBotResult(new OneBotMessageResponse(0), 0, "ok");
     }
 }

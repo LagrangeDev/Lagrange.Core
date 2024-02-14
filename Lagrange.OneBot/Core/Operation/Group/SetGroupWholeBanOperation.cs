@@ -16,7 +16,7 @@ public class SetGroupWholeBanOperation : IOperation
         if (message != null)
         {
             bool _ = await context.MuteGroupGlobal(message.GroupId, message.Enable);
-            return new OneBotResult(null, 200, "ok");
+            return new OneBotResult(null, 0, "ok");
         }
         
         throw new Exception();

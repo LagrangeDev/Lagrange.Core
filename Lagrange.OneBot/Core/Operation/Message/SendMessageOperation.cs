@@ -20,6 +20,6 @@ public sealed class SendMessageOperation(MessageCommon common) : IOperation
             _ => throw new Exception()
         };
 
-        return new OneBotResult(new OneBotMessageResponse(0), 200, "ok");
+        return new OneBotResult(new OneBotMessageResponse(0), 0, "ok");
     }
 }

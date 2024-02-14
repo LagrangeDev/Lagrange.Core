@@ -12,6 +12,6 @@ public class GetLoginInfoOperation : IOperation
     {
         var keystore = context.ContextCollection.Keystore;
         var result = new OneBotLoginInfoResponse(keystore.Uin, keystore.Info?.Name ?? "");
-        return Task.FromResult(new OneBotResult(result, 200, "ok"));
+        return Task.FromResult(new OneBotResult(result, 0, "ok"));
     }
 }

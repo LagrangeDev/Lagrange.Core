@@ -16,7 +16,7 @@ public class SetGroupLeaveOperation : IOperation
         if (message != null)
         {
             bool _ = await context.LeaveGroup(message.GroupId); // TODO: Figure out is_dismiss
-            return new OneBotResult(null, 200, "ok");
+            return new OneBotResult(null, 0, "ok");
         }
 
         throw new Exception();

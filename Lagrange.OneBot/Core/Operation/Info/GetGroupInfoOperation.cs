@@ -18,7 +18,7 @@ public class GetGroupInfoOperation : IOperation
 
             return result == null 
                 ? new OneBotResult(null, -1, "failed") 
-                : new OneBotResult(new OneBotGroup(result.GroupUin, result.GroupName), 200, "ok");
+                : new OneBotResult(new OneBotGroup(result.GroupUin, result.GroupName), 0, "ok");
         }
 
         throw new Exception();

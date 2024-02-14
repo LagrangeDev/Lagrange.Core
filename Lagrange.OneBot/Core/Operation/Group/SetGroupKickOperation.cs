@@ -16,7 +16,7 @@ public class SetGroupKickOperation : IOperation
         if (message != null)
         {
             bool _ = await context.KickGroupMember(message.GroupId, message.UserId, message.RejectAddRequest);
-            return new OneBotResult(null, 200, "ok");
+            return new OneBotResult(null, 0, "ok");
         }
 
         throw new Exception();
