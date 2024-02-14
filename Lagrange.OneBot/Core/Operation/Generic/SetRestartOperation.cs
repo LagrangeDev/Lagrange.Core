@@ -12,7 +12,7 @@ public class SetRestartOperation(IHost host) : IOperation
     {
         try
         {
-            return new OneBotResult(null, 200, "ok");
+            return new OneBotResult(null, 0, "ok");
         }
         finally
         {

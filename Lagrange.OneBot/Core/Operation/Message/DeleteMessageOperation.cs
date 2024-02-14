@@ -19,7 +19,7 @@ public class DeleteMessageOperation(LiteDatabase database) : IOperation
             var record = database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == getMsg.MessageId);
             var chain = (MessageChain)record;
 
-            if (chain.IsGroup && await context.RecallGroupMessage(chain)) return new OneBotResult(null, 200, "ok");
+            if (chain.IsGroup && await context.RecallGroupMessage(chain)) return new OneBotResult(null, 0, "ok");
         }
 
         throw new Exception();

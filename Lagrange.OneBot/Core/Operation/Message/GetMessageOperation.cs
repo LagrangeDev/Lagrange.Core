@@ -22,7 +22,7 @@ public class GetMessageOperation(LiteDatabase database, MessageService service) 
             var elements = service.Convert(chain);
             var response = new OneBotGetMessageResponse(chain.Time, chain.IsGroup ? "group" : "private", record.MessageHash, elements);
             
-            return Task.FromResult(new OneBotResult(response, 200, "ok"));
+            return Task.FromResult(new OneBotResult(response, 0, "ok"));
         }
         
         throw new Exception();

@@ -13,7 +13,7 @@ public class GetCookiesOperation : IOperation
         if (payload?["domain"]?.ToString() is { } domain)
         {
             var cookies = await context.FetchCookies([domain]);
-            return new OneBotResult(new JsonObject { { "cookies", cookies[0] } }, 200, "ok");
+            return new OneBotResult(new JsonObject { { "cookies", cookies[0] } }, 0, "ok");
         }
         
         throw new Exception();

@@ -14,8 +14,8 @@ public class SendLikeOperation : IOperation
         if (payload.Deserialize<OneBotSendLike>() is { } like)
         {
             return await context.Like(like.UserId) // the times is ignored to simulate the real user behaviour
-                ? new OneBotResult(null, 200, "ok")
-                : new OneBotResult(null, 200, "user not found in the buffer");
+                ? new OneBotResult(null, 0, "ok")
+                : new OneBotResult(null, 0, "user not found in the buffer");
         }
         
         throw new Exception();
