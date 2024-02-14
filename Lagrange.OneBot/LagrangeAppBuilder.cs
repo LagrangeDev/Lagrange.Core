@@ -55,6 +55,11 @@ public sealed class LagrangeAppBuilder
             keystore = Configuration["Account:Uin"] is { } uin && Configuration["Account:Password"] is { } password 
                     ? new BotKeystore(uint.Parse(uin), password) 
                     : new BotKeystore();
+            string? directoryPath = Path.GetDirectoryName(keystorePath);
+            if (!string.IsNullOrEmpty(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
         }
         else
         {
@@ -66,6 +71,11 @@ public sealed class LagrangeAppBuilder
         {
             deviceInfo = BotDeviceInfo.GenerateInfo();
             string json = JsonSerializer.Serialize(deviceInfo);
+            string? directoryPath = Path.GetDirectoryName(deviceInfoPath);
+            if (!string.IsNullOrEmpty(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
             File.WriteAllText(deviceInfoPath, json);
         }
         else
