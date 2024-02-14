@@ -17,9 +17,9 @@ public class MessageRecord
     
     public ulong MessageId { get; set; }
     
-    public BotFriend? FriendInfo { get; internal set; }
+    public BotFriend? FriendInfo { get; set; }
     
-    public BotGroupMember? GroupMemberInfo { get; internal set; }
+    public BotGroupMember? GroupMemberInfo { get; set; }
 
     public List<IMessageEntity> Entities { get; set; } = [];
     
