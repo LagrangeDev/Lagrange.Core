@@ -63,19 +63,14 @@ public sealed class MessageService
 
     private void OnFriendMessageReceived(BotContext bot, FriendMessageEvent e)
     {
-
         var record = (MessageRecord)e.Chain;
         _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
 
         var segments = Convert(e.Chain);
-        var request = new OneBotPrivateMsg(bot.BotUin)
+        var request = new OneBotPrivateMsg(bot.BotUin, new OneBotSender(e.Chain.FriendUin, e.Chain.FriendInfo?.Nickname ?? string.Empty))
         {
-            MessageId = (int)record.MessageHash,
+            MessageId = record.MessageHash,
             UserId = e.Chain.FriendUin,
-            GroupSender = new OneBotSender
-            {
-
-            },
             Message = segments,
             RawMessage = ToRawMessage(segments)
         };
