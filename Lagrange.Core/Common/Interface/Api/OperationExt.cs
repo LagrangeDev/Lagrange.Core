@@ -70,7 +70,7 @@ public static class OperationExt
         => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(chain);
 
     /// <summary>
-    /// Fetch Notifications and requests such as friend requests and Group Join Reuqests
+    /// Fetch Notifications and requests such as friend requests and Group Join Requests
     /// </summary>
     /// <param name="bot">target BotContext</param>
     /// <returns></returns>

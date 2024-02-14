@@ -211,6 +211,20 @@ internal class OperationLogic : LogicBase
         return results.Count != 0 && results[0].ResultCode == 0;
     }
 
+    public async Task<bool> SetStatus(uint status)
+    {
+        var setStatusEvent = SetStatusEvent.Create(status, 0);
+        var results = await Collection.Business.SendEvent(setStatusEvent);
+        return results.Count != 0 && results[0].ResultCode == 0;
+    }
+
+    public async Task<bool> SetCustomStatus(uint faceId, string text)
+    {
+        var setCustomStatusEvent = SetCustomStatusEvent.Create(faceId, text);
+        var results = await Collection.Business.SendEvent(setCustomStatusEvent);
+        return results.Count != 0 && results[0].ResultCode == 0;
+    }
+
     public async Task<bool> RequestFriend(uint targetUin, string message, string question)
     {
         var requestFriendSearchEvent = RequestFriendSearchEvent.Create(targetUin);
