@@ -55,6 +55,11 @@ public sealed class LagrangeAppBuilder
             keystore = Configuration["Account:Uin"] is { } uin && Configuration["Account:Password"] is { } password 
                     ? new BotKeystore(uint.Parse(uin), password) 
                     : new BotKeystore();
+            string? directoryPath = Path.GetDirectoryName(keystorePath);
+            if (!string.IsNullOrEmpty(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
         }
         else
         {
