@@ -326,10 +326,13 @@ Please use Lagrange.Core responsibly and in accordance with the law.
     
   ```
 
+## NOTICE BEFORE LOGIN
+- It is recommended that use QRCode Login for the first time as NewDeviceLogin is not implemented.
+- Linux Protocol is recommended as only SignServer for such is provided
 
 ## Known Problem
 
-~~- [ ] Signature Service is currently not established, so the login tend to be failed and return code may be 45, you can establish your own sign service by rewriting the `Signature` static class.~~
+- ~~[ ] Signature Service is currently not established, so the login tend to be failed and return code may be 45, you can establish your own sign service by rewriting the `Signature` static class.~~
 
 ~~Thanks KonataDev/TheSnowfield for Provision of Signature API~~
 
