@@ -49,7 +49,7 @@ public static class OperationExt
     /// <param name="chain">the chain constructed by <see cref="MessageBuilder"/></param>
     public static Task<MessageResult> SendMessage(this BotContext bot, MessageChain chain)
         => bot.ContextCollection.Business.OperationLogic.SendMessage(chain);
-    
+
     /// <summary>
     /// Recall the group message from Bot itself by <see cref="MessageResult"/>
     /// </summary>
@@ -76,6 +76,25 @@ public static class OperationExt
     /// <returns></returns>
     public static Task<List<BotGroupRequest>?> FetchRequests(this BotContext bot)
         => bot.ContextCollection.Business.OperationLogic.FetchRequests();
+
+    /// <summary>
+    /// set status
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="status">The status code</param>
+    /// <returns></returns>
+    public static Task<bool> SetStatus(this BotContext bot, uint status)
+        => bot.ContextCollection.Business.OperationLogic.SetStatus(status);
+
+    /// <summary>
+    /// set custom status
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="faceId">faceId that is same as the <see cref="Lagrange.Core.Message.Entity.FaceEntity"/></param>
+    /// <param name="text">text that would shown</param>
+    /// <returns></returns>
+    public static Task<bool> SetCustomStatus(this BotContext bot, uint faceId, string text)
+        => bot.ContextCollection.Business.OperationLogic.SetCustomStatus(faceId, text);
 
     public static Task<bool> GroupTransfer(this BotContext bot, uint groupUin, uint targetUin)
         => bot.ContextCollection.Business.OperationLogic.GroupTransfer(groupUin, targetUin);
