@@ -66,6 +66,11 @@ public sealed class LagrangeAppBuilder
         {
             deviceInfo = BotDeviceInfo.GenerateInfo();
             string json = JsonSerializer.Serialize(deviceInfo);
+            string? directoryPath = Path.GetDirectoryName(deviceInfoPath);
+            if (!string.IsNullOrEmpty(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
             File.WriteAllText(deviceInfoPath, json);
         }
         else
