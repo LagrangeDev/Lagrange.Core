@@ -4,6 +4,7 @@ using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Action.Response;
+using Lagrange.OneBot.Database;
 
 namespace Lagrange.OneBot.Core.Operation.Message;
 
@@ -12,15 +13,17 @@ public sealed class SendPrivateMessageOperation(MessageCommon common) : IOperati
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
     {
-        
-        var result = payload.Deserialize<OneBotPrivateMessageBase>() switch
+        var chain = payload.Deserialize<OneBotPrivateMessageBase>() switch
         {
-            OneBotPrivateMessage message => await context.SendMessage(common.ParseChain(message).Build()),
-            OneBotPrivateMessageSimple messageSimple => await context.SendMessage(common.ParseChain(messageSimple).Build()),
-            OneBotPrivateMessageText messageText => await context.SendMessage(common.ParseChain(messageText).Build()),
+            OneBotPrivateMessage message => common.ParseChain(message).Build(),
+            OneBotPrivateMessageSimple messageSimple => common.ParseChain(messageSimple).Build(),
+            OneBotPrivateMessageText messageText => common.ParseChain(messageText).Build(),
             _ => throw new Exception()
         };
         
-        return new OneBotResult(new OneBotMessageResponse(0), 0, "ok");
+        var result = await context.SendMessage(chain);
+        int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence ?? 0);
+        
+        return new OneBotResult(new OneBotMessageResponse(hash), (int)result.Result, "ok");
     }
 }

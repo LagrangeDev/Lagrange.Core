@@ -57,7 +57,7 @@ public class MessageRecord
         MessageHash = CalcMessageHash(chain.MessageId, chain.Sequence)
     };
 
-    private static int CalcMessageHash(ulong msgId, uint seq)
+    public static int CalcMessageHash(ulong msgId, uint seq)
     {
         var messageId = BitConverter.GetBytes(msgId);
         var sequence = BitConverter.GetBytes(seq);
