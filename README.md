@@ -191,24 +191,24 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 <Summary>Event</Summary>
 
 | PostType | EventName                      | Support |
-| -------- | ------------------------------ | :-----: |
-| Message  | [Private Message]              |    🔴    |
-| Message  | [Group Message]                |    🟢    |
-| Notice   | [Group File Upload]            |    🔴    |
-| Notice   | [Group Admin Change]           |    🟢    |
-| Notice   | [Group Member Decrease]        |    🟢    |
-| Notice   | [Group Member Increase]        |    🟢    |
-| Notice   | [Group Mute]                   |    🟢    |
-| Notice   | [Friend Add]                   |    🔴    |
-| Notice   | [Group Recall Message]         |    🔴    |
-| Notice   | [Friend Recall Message]        |    🔴    |
-| Notice   | [Group Poke]                   |    🔴    |
-| Notice   | [Group red envelope luck king] |    🔴    |
-| Notice   | [Group Member Honor Changed]   |    🔴    |
-| Request  | [Add Friend Request]           |    🟢    |
-| Request  | [Group Request/Invitations]    |    🔴    |
-| Meta     | [LifeCycle]                    |    🟢    |
-| Meta     | [Heartbeat]                    |    🟢    |
+|----------|--------------------------------|:-------:|
+| Message  | [Private Message]              |   🟢    |
+| Message  | [Group Message]                |   🟢    |
+| Notice   | [Group File Upload]            |   🔴    |
+| Notice   | [Group Admin Change]           |   🟢    |
+| Notice   | [Group Member Decrease]        |   🟢    |
+| Notice   | [Group Member Increase]        |   🟢    |
+| Notice   | [Group Mute]                   |   🟢    |
+| Notice   | [Friend Add]                   |   🔴    |
+| Notice   | [Group Recall Message]         |   🔴    |
+| Notice   | [Friend Recall Message]        |   🔴    |
+| Notice   | [Group Poke]                   |   🔴    |
+| Notice   | [Group red envelope luck king] |   🔴    |
+| Notice   | [Group Member Honor Changed]   |   🔴    |
+| Request  | [Add Friend Request]           |   🟢    |
+| Request  | [Group Request/Invitations]    |   🔴    |
+| Meta     | [LifeCycle]                    |   🟢    |
+| Meta     | [Heartbeat]                    |   🟢    |
 
 [Private Message]: https://github.com/botuniverse/onebot-11/blob/master/event/message.md#%E7%A7%81%E8%81%8A%E6%B6%88%E6%81%AF
 [Group Message]: https://github.com/botuniverse/onebot-11/blob/master/event/message.md#%E7%BE%A4%E6%B6%88%E6%81%AF
