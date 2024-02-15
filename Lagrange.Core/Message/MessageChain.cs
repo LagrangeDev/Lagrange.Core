@@ -32,14 +32,14 @@ public sealed class MessageChain : List<IMessageEntity>
 
     #endregion
 
-    internal MessageChain(uint friendUin, string selfUid, string friendUid, uint sequence = 0, ulong messageId = 0)
+    internal MessageChain(uint friendUin, string selfUid, string friendUid, uint sequence = 0, ulong? messageId = null)
     {
         GroupUin = null;
         FriendUin = friendUin;
         Sequence = sequence; // unuseful at there
         SelfUid = selfUid;
         Uid = friendUid;
-        MessageId = messageId;
+        MessageId = messageId ?? (0x10000000ul << 32) | (uint)Random.Shared.Next(100000000, int.MaxValue);
         IsGroup = false;
         Elements = new List<Elem>();
     }
@@ -48,6 +48,7 @@ public sealed class MessageChain : List<IMessageEntity>
     {
         GroupUin = groupUin;
         Sequence = 0; // unuseful at there
+        MessageId = (0x10000000ul << 32) | (uint)Random.Shared.Next(100000000, int.MaxValue);
         Uid = null;
         IsGroup = true;
         Elements = new List<Elem>();

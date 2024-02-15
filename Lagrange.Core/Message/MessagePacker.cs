@@ -177,7 +177,7 @@ internal static class MessagePacker
         },
         Body = new MessageBody { RichText = new RichText { Elems = new List<Elem>() } },
         Seq = (uint)Random.Shared.Next(1000000, 9999999), // 草泥马开摆！
-        Rand = (uint)Random.Shared.Next(100000000, int.MaxValue),
+        Rand = (uint)(chain.MessageId & uint.MaxValue),
         Ctrl = chain.IsGroup ? null : new MessageControl { MsgFlag = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() }
     };
 
