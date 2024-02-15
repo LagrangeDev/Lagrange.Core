@@ -20,8 +20,12 @@ public class TextEntity : IMessageEntity
         };
     }
     
-    IMessageEntity? IMessageEntity.UnpackElement(Elem elems) => 
-        elems.Text is { Str: not null, Attr6Buf: null } text ? new TextEntity(text.Str) : null;
+    IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
+    {
+        return elems.Text is { Str: not null, Attr6Buf: null } or { Str: not null, Attr6Buf.Length: 0 }
+            ? new TextEntity(elems.Text.Str) 
+            : null;
+    }
 
     public string ToPreviewString()
     {

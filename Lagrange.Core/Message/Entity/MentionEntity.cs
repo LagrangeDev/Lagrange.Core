@@ -59,9 +59,12 @@ public class MentionEntity : IMessageEntity
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
-        if (elems.Text is { Str: not null, Attr6Buf: not null } text) return text.Attr6Buf[7..11] is { } uin
-            ? new MentionEntity(text.Str) { Uin = BitConverter.ToUInt32(uin, false) }
-            : null;
+        if (elems.Text is { Str: not null, Attr6Buf: not null } text && text.Attr6Buf.Length != 0)
+        {
+            return text.Attr6Buf[7..11] is { } uin
+                ? new MentionEntity(text.Str) { Uin = BitConverter.ToUInt32(uin, false) }
+                : null;
+        }
         
         return null;
     }
