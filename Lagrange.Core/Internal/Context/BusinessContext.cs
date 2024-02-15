@@ -194,6 +194,7 @@ internal class BusinessContext : ContextBase
         {
             Collection.Log.LogWarning(Tag, $"Error while handling msf push: {packet.PacketType} {packet.Command}");
             Collection.Log.LogWarning(Tag, e.Message);
+            if (e.StackTrace is { } stackTrace) Collection.Log.LogWarning(Tag, stackTrace);
             Collection.Log.LogDebug(Tag, packet.Payload.ToArray().Hex());
         }
 
