@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Runtime;
 using System.Text;
 using Microsoft.Extensions.Hosting;
@@ -16,7 +17,11 @@ internal abstract class Program
         if (!File.Exists("appsettings.json"))
         {
             Console.WriteLine("No exist config file, create it now...");
-            File.WriteAllBytes("appsettings.json", Resource1.appsettings);
+
+            var assm = Assembly.GetExecutingAssembly();
+            using var istr = assm.GetManifestResourceStream("Lagrange.OneBot.Resources.appsettings.json")!;
+            using var temp = File.Create("appsettings.json");
+            istr.CopyTo(temp);
         }
 
         var hostBuilder = new LagrangeAppBuilder(args)
