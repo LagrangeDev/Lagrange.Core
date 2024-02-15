@@ -13,5 +13,5 @@ RUN dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj \
 FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine3.18
 WORKDIR /app
 COPY --from=build-env /App/out .
-COPY appsettings.onebot.json ./appsettings.json
+COPY Lagrange.OneBot/Resources/appsettings.onebot.json ./appsettings.json
 ENTRYPOINT ["./Lagrange.OneBot"]
