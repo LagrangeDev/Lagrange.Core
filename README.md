@@ -299,7 +299,6 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 }
 ```
 
-- Create a file named 'appsettings.json' under Lagrange.OneBot executable directory
 - As the Password is empty here, this indicates that QRCode login is used
 - After the QRCode Login, write Uin back to perform EasyLogin
 - If you want a multi connection, remove the 'Implementation' Part and add
@@ -329,6 +328,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 ## NOTICE BEFORE LOGIN
 - It is recommended that use QRCode Login for the first time as NewDeviceLogin is not implemented.
 - Linux Protocol is recommended as only SignServer for such is provided
+- After QRCode Login, write password and uin back to appsettings.json
 
 ## Known Problem
 
