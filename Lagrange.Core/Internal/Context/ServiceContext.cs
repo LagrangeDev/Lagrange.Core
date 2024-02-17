@@ -126,7 +126,6 @@ internal partial class ServiceContext : ContextBase
             return Interlocked.Increment(ref _sequence);
         }
         
-        public int RegisterSession(string sessionId) => 
-                _sessionSequence.GetOrAdd(sessionId, _ => GetNewSequence());
+        public int RegisterSession(string sessionId) => _sessionSequence.GetOrAdd(sessionId, GetNewSequence());
     }
 }

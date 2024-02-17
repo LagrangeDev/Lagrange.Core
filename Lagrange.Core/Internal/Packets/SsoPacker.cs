@@ -59,13 +59,15 @@ internal static class SsoPacker
     {
         uint _ = packet.ReadUint(false); // header length
         uint sequence = packet.ReadUint(false);
-        ulong dummy = packet.ReadUlong(false);
+        int retCode = packet.ReadInt(false);
+        string extra = packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix);
         string command = packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix);
         packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix); // unknown
         int isCompressed = packet.ReadInt(); 
         packet.ReadBytes(Prefix.Uint32 | Prefix.LengthOnly); // Dummy Sso header
-        
-        return new SsoPacket(12, command, sequence, isCompressed == 0 ? packet : InflatePacket(packet));
+
+        if (retCode == 0) return new SsoPacket(12, command, sequence, isCompressed == 0 ? packet : InflatePacket(packet));
+        throw new Exception($"Packet '{command}' returns {retCode} with seq: {sequence}, extra: {extra}");
     }
 
     private static BinaryPacket InflatePacket(BinaryPacket original)
