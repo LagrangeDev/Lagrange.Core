@@ -7,13 +7,12 @@ using Lagrange.OneBot.Core.Entity.Meta;
 using Lagrange.OneBot.Core.Network.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Lagrange.OneBot.Core.Network.Service;
 
-public sealed class ForwardWSService : ILagrangeWebService
+public sealed partial class ForwardWSService : ILagrangeWebService
 {
-    private const string Tag = nameof(ForwardWSService);
-
     public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
 
     private readonly ForwardWSServiceOptions _options;
@@ -26,8 +25,8 @@ public sealed class ForwardWSService : ILagrangeWebService
 
     private readonly ConcurrentDictionary<string, IWebSocketConnection> _connections;
     
-    private readonly Timer _timer;
-
+    private readonly ConcurrentDictionary<string, Timer> _heartbeats;
+    
     private readonly string _accessToken;
 
     public ForwardWSService(IOptionsSnapshot<ForwardWSServiceOptions> options, ILogger<ForwardWSService> logger, BotContext context)
@@ -41,7 +40,7 @@ public sealed class ForwardWSService : ILagrangeWebService
         };
         _connections = new ConcurrentDictionary<string, IWebSocketConnection>();
         
-        _timer = new Timer(OnHeartbeat, null, 1, _options.HeartBeatInterval);
+        _heartbeats = new ConcurrentDictionary<string, Timer>();
         _accessToken = _options.AccessToken ?? "";
     }
 
@@ -50,7 +49,7 @@ public sealed class ForwardWSService : ILagrangeWebService
         uint port = _options.Port;
         if (IsPortInUse(port))
         {
-            _logger.LogCritical($"[{Tag}] The port {port} is in use, {Tag} failed to start");
+            Log.LogPortInUse(_logger, port);
             return Task.CompletedTask;
         }
         
@@ -62,7 +61,7 @@ public sealed class ForwardWSService : ILagrangeWebService
                 
                 conn.OnMessage = s =>
                 {
-                    _logger.LogTrace($"[{Tag}] Receive(Conn: {identifier}): {s}");
+                    Log.LogReceived(_logger, identifier, s);
                     OnMessageReceived?.Invoke(this, new MsgRecvEventArgs(s, identifier));
                 };
 
@@ -72,24 +71,28 @@ public sealed class ForwardWSService : ILagrangeWebService
                     {
                         if (!conn.ConnectionInfo.Headers.TryGetValue("Authorization", out string? value) || value != $"Bearer {_accessToken}")
                         {
+                            Log.LogAuthFailed(_logger, identifier);
                             conn.Close(1002);
                             return;
                         }
                     }
 
                     _connections.TryAdd(identifier, conn);
-                    _logger.LogInformation($"[{Tag}] Connected(Conn: {identifier})");
+                    Log.LogConnected(_logger, identifier);
                     
                     var lifecycle = new OneBotLifecycle(_context.BotUin, "connect");
                     SendJsonAsync(lifecycle, identifier, cancellationToken).GetAwaiter().GetResult();
-                    
-                    _timer.Change(0, _options.HeartBeatInterval);
+
+                    var timer = new Timer(x => OnHeartbeat(x, identifier), null, 1, _options.HeartBeatInterval);
+                    timer.Change(0, _options.HeartBeatInterval);
+                    _heartbeats.TryAdd(identifier, timer);
                 };
 
                 conn.OnClose = () =>
                 {
-                    _logger.LogWarning($"[{Tag}: Disconnected(Conn: {identifier})");
+                    Log.LogDisconnected(_logger, identifier);
                     _connections.TryRemove(identifier, out _);
+                    if (_heartbeats.TryRemove(identifier, out var timer)) timer.Dispose();
                 };
             });
         }, cancellationToken);
@@ -97,9 +100,9 @@ public sealed class ForwardWSService : ILagrangeWebService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _timer.Dispose();
         _server.ListenerSocket.Close();
         _server.Dispose();
+        foreach (var (_, value) in _heartbeats) value.Dispose();
         
         return Task.CompletedTask;
     }
@@ -107,7 +110,7 @@ public sealed class ForwardWSService : ILagrangeWebService
     public async ValueTask SendJsonAsync<T>(T json, string? identifier = null, CancellationToken cancellationToken = default)
     {
         string payload = JsonSerializer.Serialize(json);
-        _logger.LogTrace($"[{Tag}] Send: {payload}");
+        Log.LogSend(_logger, identifier ?? string.Empty, payload);
 
         if (identifier == null)
         {
@@ -121,16 +124,35 @@ public sealed class ForwardWSService : ILagrangeWebService
         }
     }
 
-    private void OnHeartbeat(object? sender)
+    private void OnHeartbeat(object? _, string identifier)
     {
         var status = new OneBotStatus(true, true);
         var heartBeat = new OneBotHeartBeat(_context.BotUin, (int)_options.HeartBeatInterval, status);
 
-        foreach (var (identifier, _) in _connections) _ = SendJsonAsync(heartBeat, identifier);
+        SendJsonAsync(heartBeat, identifier).GetAwaiter().GetResult();
     }
 
-    private static bool IsPortInUse(uint port)
+    private static bool IsPortInUse(uint port) => 
+        IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(endpoint => endpoint.Port == port);
+
+    private static partial class Log
     {
-        return IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(endpoint => endpoint.Port == port);
+        [LoggerMessage(EventId = 0, Level = LogLevel.Information, Message = "Connected(Conn: {identifier})")]
+        public static partial void LogConnected(ILogger logger, string identifier);
+        
+        [LoggerMessage(EventId = 1, Level = LogLevel.Information, Message = "Disconnected(Conn: {identifier})")]
+        public static partial void LogDisconnected(ILogger logger, string identifier);
+        
+        [LoggerMessage(EventId = 2, Level = LogLevel.Trace, Message = "Receive(Conn: {identifier}): {s}")]
+        public static partial void LogReceived(ILogger logger, string identifier, string s);
+        
+        [LoggerMessage(EventId = 3, Level = LogLevel.Trace, Message = "Send(Conn: {identifier}): {s}")]
+        public static partial void LogSend(ILogger logger, string identifier, string s);
+        
+        [LoggerMessage(EventId = 4, Level = LogLevel.Critical, Message = "The port {port} is in use, service failed to start")]
+        public static partial void LogPortInUse(ILogger logger, uint port);
+        
+        [LoggerMessage(EventId = 4, Level = LogLevel.Critical, Message = "Conn: {identifier} auth failed")]
+        public static partial void LogAuthFailed(ILogger logger, string identifier);
     }
 }
