@@ -36,9 +36,9 @@ public partial class MessageCommon
 
     public MessageBuilder ParseChain(OneBotMessage message)
     {
-        var builder = message.MessageType == "private"
+        var builder = message.MessageType == "private" || message.GroupId == null
             ? MessageBuilder.Friend(message.UserId ?? 0)
-            : MessageBuilder.Group(message.GroupId ?? 0);
+            : MessageBuilder.Group(message.GroupId.Value);
         BuildMessages(builder, message.Messages);
 
         return builder;
@@ -46,9 +46,9 @@ public partial class MessageCommon
 
     public MessageBuilder ParseChain(OneBotMessageSimple message)
     {
-        var builder = message.MessageType == "private"
+        var builder = message.MessageType == "private" || message.GroupId == null
             ? MessageBuilder.Friend(message.UserId ?? 0)
-            : MessageBuilder.Group(message.GroupId ?? 0);
+            : MessageBuilder.Group(message.GroupId.Value);
         BuildMessages(builder, message.Messages);
 
         return builder;
@@ -56,9 +56,9 @@ public partial class MessageCommon
 
     public MessageBuilder ParseChain(OneBotMessageText message)
     {
-        var builder = message.MessageType == "private"
+        var builder = message.MessageType == "private" || message.GroupId == null
             ? MessageBuilder.Friend(message.UserId ?? 0)
-            : MessageBuilder.Group(message.GroupId ?? 0);
+            : MessageBuilder.Group(message.GroupId.Value);
         
         if (message.AutoEscape == true)
         {
