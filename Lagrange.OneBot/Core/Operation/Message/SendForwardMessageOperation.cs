@@ -14,11 +14,11 @@ public class SendForwardMessageOperation(MessageCommon common) : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload.Deserialize<List<OneBotSegment>>() is { } segments)
+        if (payload.Deserialize<OneBotForward>() is { } forward)
         {
             List<MessageChain> chains = [];
             
-            foreach (var segment in segments)
+            foreach (var segment in forward.Messages)
             {
                 var element = ((JsonElement)segment.Data).Deserialize<OneBotFakeNode>();
                 if (element is not null) chains.Add(common.ParseFakeChain(element).Build());
