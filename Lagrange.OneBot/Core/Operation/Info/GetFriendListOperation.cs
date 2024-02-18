@@ -9,7 +9,7 @@ namespace Lagrange.OneBot.Core.Operation.Info;
 [Operation("get_friend_list")]
 public class GetFriendListOperation : IOperation
 {
-    public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload) => 
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload) => 
         new((await context.FetchFriends(true)).Select(x => new OneBotFriend
         {
             UserId = x.Uin,

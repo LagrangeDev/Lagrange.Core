@@ -13,18 +13,9 @@ public class OneBotNode(uint userId, string nickName, List<OneBotSegment> conten
 
     [JsonPropertyName("content")] public List<OneBotSegment> Content { get; set; } = content;
     
-    public IMessageEntity ToEntity()
-    {
-        throw new NotImplementedException();
-    }
+    public IMessageEntity ToEntity() => throw new NotImplementedException();
 
-    public override void Build(MessageBuilder builder, SegmentBase segment)
-    {
-        throw new NotImplementedException();
-    }
+    public override void Build(MessageBuilder builder, SegmentBase segment) => throw new NotImplementedException();
 
-    public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
-    {
-        throw new NotImplementedException();
-    }
+    public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity) => throw new NotImplementedException();
 }

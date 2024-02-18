@@ -9,7 +9,7 @@ namespace Lagrange.OneBot.Core.Operation.Generic;
 [Operation("send_like")]
 public class SendLikeOperation : IOperation
 {
-    public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         if (payload.Deserialize<OneBotSendLike>() is { } like)
         {

@@ -8,7 +8,7 @@ public class OneBotAction
 {
     [JsonPropertyName("action")] public string Action { get; set; } = "";
     
-    [JsonPropertyName("params")] public JsonObject? Params { get; set; }
+    [JsonPropertyName("params")] public JsonNode? Params { get; set; }
 
     [JsonPropertyName("echo")] public object? Echo { get; set; } 
 }

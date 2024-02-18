@@ -12,7 +12,7 @@ namespace Lagrange.OneBot.Core.Operation.Message;
 [Operation("get_forward_msg")]
 public class GetForwardMsgOperation(MessageService service) : IOperation
 {
-    public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         if (payload.Deserialize<OneBotGetForwardMsg>() is { } forwardMsg)
         {

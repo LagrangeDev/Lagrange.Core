@@ -9,7 +9,7 @@ namespace Lagrange.OneBot.Core.Operation.Group;
 [Operation("set_group_leave")]
 public class SetGroupLeaveOperation : IOperation
 {
-    public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         var message = payload.Deserialize<OneBotSetGroupLeave>();
 

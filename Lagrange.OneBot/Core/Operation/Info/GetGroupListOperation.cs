@@ -10,7 +10,7 @@ namespace Lagrange.OneBot.Core.Operation.Info;
 [Operation("get_group_list")]
 public class GetGroupListOperation : IOperation
 {
-    public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         if (payload.Deserialize<OneBotGetGroupInfo>() is { } message)
         {

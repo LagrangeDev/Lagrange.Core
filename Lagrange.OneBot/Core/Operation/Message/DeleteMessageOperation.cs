@@ -12,7 +12,7 @@ namespace Lagrange.OneBot.Core.Operation.Message;
 [Operation("delete_msg")]
 public class DeleteMessageOperation(LiteDatabase database) : IOperation
 {
-    public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         if (payload.Deserialize<OneBotGetMessage>() is { } getMsg)
         {

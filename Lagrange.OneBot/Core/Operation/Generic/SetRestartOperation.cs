@@ -8,7 +8,7 @@ namespace Lagrange.OneBot.Core.Operation.Generic;
 [Operation("set_restart")]
 public class SetRestartOperation(IHost host) : IOperation
 {
-    public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         try
         {

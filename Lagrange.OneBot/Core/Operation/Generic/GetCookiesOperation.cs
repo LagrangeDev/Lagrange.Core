@@ -8,7 +8,7 @@ namespace Lagrange.OneBot.Core.Operation.Generic;
 [Operation("get_cookies")]
 public class GetCookiesOperation : IOperation
 {
-    public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         if (payload?["domain"]?.ToString() is { } domain)
         {

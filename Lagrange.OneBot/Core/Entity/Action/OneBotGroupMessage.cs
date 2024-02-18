@@ -12,19 +12,19 @@ public class OneBotGroupMessageBase
     [JsonPropertyName("auto_escape")] public bool? AutoEscape { get; set; }
 }
 
-// ReSharper disable once ClassNeverInstantiated.Global
+[Serializable]
 public class OneBotGroupMessage : OneBotGroupMessageBase
 {
     [JsonPropertyName("message")] public List<OneBotSegment> Messages { get; set; } = new();
 }
 
-// ReSharper disable once ClassNeverInstantiated.Global
+[Serializable]
 public class OneBotGroupMessageSimple : OneBotGroupMessageBase
 {
     [JsonPropertyName("message")] public OneBotSegment Messages { get; set; } = new();
 }
 
-// ReSharper disable once ClassNeverInstantiated.Global
+[Serializable]
 public class OneBotGroupMessageText : OneBotGroupMessageBase
 {
     [JsonPropertyName("message")] public string Messages { get; set; } = "";

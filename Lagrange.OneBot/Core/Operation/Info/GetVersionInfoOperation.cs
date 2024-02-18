@@ -8,7 +8,7 @@ namespace Lagrange.OneBot.Core.Operation.Info;
 [Operation("get_version_info")]
 public class GetVersionInfoOperation : IOperation
 {
-    public Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
+    public Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         var appInfo = context.ContextCollection.AppInfo;
         string version = $"{appInfo.Os} | {appInfo.CurrentVersion}";

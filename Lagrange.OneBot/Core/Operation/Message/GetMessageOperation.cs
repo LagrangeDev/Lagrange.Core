@@ -14,7 +14,7 @@ namespace Lagrange.OneBot.Core.Operation.Message;
 [Operation("get_msg")]
 public class GetMessageOperation(LiteDatabase database, MessageService service) : IOperation
 {
-    public Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
+    public Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         if (payload.Deserialize<OneBotGetMessage>() is { } getMsg)
         {

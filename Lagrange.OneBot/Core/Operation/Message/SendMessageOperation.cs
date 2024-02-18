@@ -11,7 +11,7 @@ namespace Lagrange.OneBot.Core.Operation.Message;
 [Operation("send_msg")]
 public sealed class SendMessageOperation(MessageCommon common) : IOperation
 {
-    public async Task<OneBotResult> HandleOperation(BotContext context, JsonObject? payload)
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         var chain = payload.Deserialize<OneBotMessageBase>() switch
         {

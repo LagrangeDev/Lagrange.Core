@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Extension;
+using Lagrange.OneBot.Core.Entity;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Message;
 using Lagrange.OneBot.Message;
@@ -32,6 +33,14 @@ public partial class MessageCommon
                 _typeToSegment[attribute.SendType] = instance;
             }
         }
+    }
+    
+    public MessageBuilder ParseFakeChain(OneBotFakeNode message)
+    {
+        var builder = MessageBuilder.Friend(uint.Parse(message.Uin));
+        BuildMessages(builder, message.Content);
+
+        return builder;
     }
 
     public MessageBuilder ParseChain(OneBotMessage message)
