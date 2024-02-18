@@ -206,7 +206,7 @@ internal class MessagingLogic : LogicBase
                     mention.Uid = await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
                     break;
                 }
-                case MultiMsgEntity multiMsg:
+                case MultiMsgEntity { ResId: null } multiMsg:
                 {
                     foreach (var multi in multiMsg.Chains)
                     {
