@@ -1,3 +1,4 @@
+using System.Net.WebSockets;
 using Lagrange.OneBot.Core.Network.Service;
 using Lagrange.OneBot.Core.Operation;
 using Microsoft.Extensions.Configuration;
@@ -94,6 +95,10 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
                     var t = vt.AsTask();
                     await t.WaitAsync(TimeSpan.FromSeconds(5), cancellationToken);
                 }
+            }
+            catch (WebSocketException e) when (e.InnerException is HttpRequestException)
+            {
+                // ignore due to connection failed
             }
             catch (Exception e)
             {

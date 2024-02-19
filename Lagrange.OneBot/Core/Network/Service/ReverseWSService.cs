@@ -13,17 +13,15 @@ namespace Lagrange.OneBot.Core.Network.Service;
 public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> options, ILogger<ReverseWSService> logger, BotContext context)
     : BackgroundService, ILagrangeWebService
 {
-    protected const string Tag = nameof(ReverseWSService);
+    private const string Tag = nameof(ReverseWSService);
 
     public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
 
-    protected readonly ReverseWSServiceOptions _options = options.Value;
+    private readonly ReverseWSServiceOptions _options = options.Value;
 
-    protected readonly ILogger _logger = logger;
+    private readonly ILogger _logger = logger;
 
-    protected readonly BotContext _botCtx = context;
-
-    protected ConnectionContext? _connCtx;
+    protected ConnectionContext? ConnCtx;
 
     protected sealed class ConnectionContext(ClientWebSocket webSocket, Task connectTask) : IDisposable
     {
@@ -40,7 +38,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
 
     public ValueTask SendJsonAsync<T>(T payload, string? identifier, CancellationToken cancellationToken = default)
     {
-        var connCtx = _connCtx ?? throw new InvalidOperationException("Reverse webSocket service was not running");
+        var connCtx = ConnCtx ?? throw new InvalidOperationException("Reverse webSocket service was not running");
         var connTask = connCtx.ConnectTask;
 
         return !connTask.IsCompletedSuccessfully
@@ -66,7 +64,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
     {
         var ws = new ClientWebSocket();
         ws.Options.SetRequestHeader("X-Client-Role", "Universal");
-        ws.Options.SetRequestHeader("X-Self-ID", _botCtx.BotUin.ToString());
+        ws.Options.SetRequestHeader("X-Self-ID", context.BotUin.ToString());
         ws.Options.SetRequestHeader("User-Agent", Constant.OneBotImpl);
         if (_options.AccessToken != null) ws.Options.SetRequestHeader("Authorization", $"Bearer {_options.AccessToken}");
         ws.Options.KeepAliveInterval = Timeout.InfiniteTimeSpan;
@@ -93,10 +91,10 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                 using var ws = CreateDefaultWebSocket();
                 var connTask = ws.ConnectAsync(url, stoppingToken);
                 using var connCtx = new ConnectionContext(ws, connTask);
-                _connCtx = connCtx;
+                ConnCtx = connCtx;
                 await connTask;
 
-                var lifecycle = new OneBotLifecycle(_botCtx.BotUin, "connect");
+                var lifecycle = new OneBotLifecycle(context.BotUin, "connect");
                 await SendJsonAsync(ws, lifecycle, stoppingToken);
 
                 var recvTask = ReceiveLoop(ws, stoppingToken);
@@ -112,8 +110,14 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
-                _connCtx = null;
+                ConnCtx = null;
                 break;
+            }
+            catch (WebSocketException e) when (e.InnerException is HttpRequestException)
+            {
+                Log.LogClientReconnect(_logger, Tag, _options.ReconnectInterval);
+                var interval = TimeSpan.FromMilliseconds(_options.HeartBeatInterval);
+                await Task.Delay(interval, stoppingToken);
             }
             catch (Exception e)
             {
@@ -148,7 +152,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         while (true)
         {
             var status = new OneBotStatus(true, true);
-            var heartBeat = new OneBotHeartBeat(_botCtx.BotUin, (int)_options.HeartBeatInterval, status);
+            var heartBeat = new OneBotHeartBeat(context.BotUin, (int)_options.HeartBeatInterval, status);
             await SendJsonAsync(ws, heartBeat, token);
             await Task.Delay(interval, token);
         }
@@ -167,6 +171,9 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
 
         [LoggerMessage(EventId = 4, Level = LogLevel.Information, Message = "[{tag}] Client reconnecting at interval of {interval}")]
         public static partial void LogClientReconnect(ILogger logger, string tag, uint interval);
+
+        [LoggerMessage(EventId = 5, Level = LogLevel.Error, Message = "[{tag}] Client connect failed, reconnect after {interval} millisecond")]
+        public static partial void LogConnectFailed(ILogger logger, string tag, uint interval);
 
         [LoggerMessage(EventId = 10, Level = LogLevel.Error, Message = "[{tag}] Invalid configuration was detected, url: {url}")]
         public static partial void LogInvalidUrl(ILogger logger, string tag, string url);
