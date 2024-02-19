@@ -251,79 +251,47 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 ```json
 {
-    "Logging": {
-        "LogLevel": {
-            "Default": "Trace",
-            "Microsoft": "Warning",
-            "Microsoft.Hosting.Lifetime": "Information"
-        }
-    },
-    "SignServerUrl": "",
-    "Account": {
-        "Uin": 0,
-        "Password": "",
-        "Protocol": "Linux",
-        "AutoReconnect": true,
-        "GetOptimumServer": true
-    },
-    "Message": {
-      "IgnoreSelf": true
-    },
-    "Implementation": {
-        "ForwardWebSocket": {
-            "Host": "127.0.0.1",
-            "Port": 8081,
-            "HeartBeatInterval": 5000,
-            "AccessToken": ""
-        },
-        "ReverseWebSocket": {
-            "Host": "127.0.0.1",
-            "Port": 8080,
-            "Suffix": "/onebot/v11/ws",
-            "ReconnectInterval": 5000,
-            "HeartBeatInterval": 5000,
-            "AccessToken": ""
-        },
-        "Http": {
-            "Host": "",
-            "Port": 0,
-            "EventEnabled": false
-        },
-        "HttpPost": {
-            "Host": "127.0.0.1",
-            "Port": 8080,
-            "Suffix": "/onebot/v11/http",
-            "Timeout": 0
-        }
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
     }
+  },
+  "SignServerUrl": "",
+  "Account": {
+    "Uin": 0,
+    "Password": "",
+    "Protocol": "Linux",
+    "AutoReconnect": true,
+    "GetOptimumServer": true
+  },
+  "Message": {
+    "IgnoreSelf": true
+  },
+  "Implementations": [
+    {
+      "Type": "ReverseWebSocket",
+      "Host": "127.0.0.1",
+      "Port": 8080,
+      "Suffix": "/onebot/v11/ws",
+      "ReconnectInterval": 5000,
+      "HeartBeatInterval": 5000,
+      "AccessToken": ""
+    },
+    {
+      "Type": "ReverseWebSocket",
+      "Host": "127.0.0.1",
+      "Port": 8081,
+      "HeartBeatInterval": 5000,
+      "AccessToken": ""
+    }
+  ]
 }
 ```
 
 - As the Password is empty here, this indicates that QRCode login is used
 - After the QRCode Login, write Uin back to perform EasyLogin
-- If you want a multi connection, remove the 'Implementation' Part and add
-```json
-{    "Implementations": [
-      {
-        "Type": "ReverseWebSocket",
-        "Host": "127.0.0.1",
-        "Port": 8080,
-        "Suffix": "/onebot/v11/ws",
-        "ReconnectInterval": 5000,
-        "HeartBeatInterval": 5000,
-        "AccessToken": ""
-      },
-      {
-        "Type": "ReverseWebSocket",
-        "Host": "127.0.0.1",
-        "Port": 8081,
-        "HeartBeatInterval": 5000,
-        "AccessToken": ""
-      }
-    ]
-}
-    
-  ```
 
 ## NOTICE BEFORE LOGIN
 - It is recommended that use QRCode Login for the first time as NewDeviceLogin is not implemented.
