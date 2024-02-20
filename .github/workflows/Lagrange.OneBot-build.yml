@@ -46,9 +46,73 @@ jobs:
         with:
           name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0
           path: Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
+        
+      - name: Compress (.Net 8.0)
+        run: Compress-Archive -Path 'Lagrange.OneBot\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish\*' -DestinationPath  'Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip'
+
+      - name: Upload Zip files for .NET 8.0
+        uses: actions/upload-artifact@v3
+        with:
+          name: Lagrange.OneBot_zip
+          path: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip
 
       - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 7.0
         uses: actions/upload-artifact@v3
         with:
           name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_7.0
           path: Lagrange.OneBot/bin/Debug/net7.0/${{ matrix.runtimeIdentifier }}/publish
+
+      - name: Compress (.Net 7.0)
+        run: Compress-Archive -Path 'Lagrange.OneBot\bin\Debug\net7.0\${{ matrix.runtimeIdentifier }}\publish\*' -DestinationPath  'Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_7.0.zip'
+      
+      - name: Upload Zip files for .NET 7.0
+        uses: actions/upload-artifact@v3
+        with:
+          name: Lagrange.OneBot_zip
+          path: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_7.0.zip
+  
+  NightlyRelease:
+    name: Nightly Release
+    runs-on: ubuntu-latest
+    needs: Build
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update Nightly Tag
+        run: |
+          git tag -f nightly
+          git push -f origin nightly
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: Lagrange.OneBot_zip
+          path: ./bin
+      - name: Update Nightly Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: nightly
+          name: 'Nightly Release'
+          prerelease: true
+          body: '> ⚠️This is a nightly release.'
+          artifacts: |
+            ./bin/*
+          allowUpdates: true
+          removeArtifacts: true
+  
+  ClearTempArtifacts:
+    name: Clear Temp Artifacts
+    if: always()
+    runs-on: ubuntu-latest
+    needs:
+      - NightlyRelease
+    permissions:
+      actions: write
+    steps:
+      - uses: geekyeggo/delete-artifact@v2
+        with:
+          token: ${{ github.token }}
+          name: |
+            Lagrange.OneBot_zip
