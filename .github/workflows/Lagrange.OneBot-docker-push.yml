@@ -8,7 +8,7 @@ on:
         - 'master'
       paths:
         - "**.cs"
-        - "Dockerfile"
+        - "Lagrange.OneBot/Resources/Dockerfile"
         - "**.csproj"
         - "appsettings.onebot.json"
   workflow_dispatch:
@@ -45,7 +45,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: "Lagrange.OneBot:Resources"
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
