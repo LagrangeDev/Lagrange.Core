@@ -152,7 +152,7 @@ public sealed partial class ForwardWSService : ILagrangeWebService
         [LoggerMessage(EventId = 4, Level = LogLevel.Critical, Message = "The port {port} is in use, service failed to start")]
         public static partial void LogPortInUse(ILogger logger, uint port);
         
-        [LoggerMessage(EventId = 4, Level = LogLevel.Critical, Message = "Conn: {identifier} auth failed")]
+        [LoggerMessage(EventId = 5, Level = LogLevel.Critical, Message = "Conn: {identifier} auth failed")]
         public static partial void LogAuthFailed(ILogger logger, string identifier);
     }
 }
