@@ -1,5 +1,8 @@
 name: Lagrange.OneBot Release
 
+on:
+  workflow_dispatch:
+
 jobs:
   Build:
     runs-on: windows-latest
