@@ -50,7 +50,7 @@ public class MultiMsgEntity : IMessageEntity
         for (int i = 0; i < Math.Min(Chains.Count, 3); i++)
         {
             var chain = Chains[i];
-            string? name = chain.FriendInfo?.Nickname ?? chain.GroupMemberInfo?.MemberCard;
+            string? name = chain.FriendInfo?.Nickname ?? chain.GroupMemberInfo?.MemberCard ?? chain.GroupMemberInfo?.MemberName;
             item.Title.Add(new MultiTitle("#777777", 26, $"{name}: {chain.GetEntity<TextEntity>()?.Text}"));
         }
         item.Summary.Color = "#808080";
