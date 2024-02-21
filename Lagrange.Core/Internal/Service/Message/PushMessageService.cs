@@ -26,7 +26,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         extraEvents = new List<ProtocolEvent>();
         switch (packetType)
         {
-            case PkgType.PrivateMessage or PkgType.GroupMessage:
+            case PkgType.PrivateMessage or PkgType.GroupMessage or PkgType.TempMessage:
             {
                 var chain = MessagePacker.Parse(message.Message);
                 output = PushMessageEvent.Create(chain);
@@ -173,6 +173,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
     {
         PrivateMessage = 166,
         GroupMessage = 82,
+        TempMessage = 141,
         
         Event0x210 = 528,
         Event0x2DC = 732,

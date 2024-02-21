@@ -39,9 +39,13 @@ internal class MessagingLogic : LogicBase
                 var chain = push.Chain;
                 Collection.Log.LogVerbose(Tag, chain.ToPreviewString());
 
-                EventBase args = push.Chain.GroupUin != null
-                        ? new GroupMessageEvent(push.Chain)
-                        : new FriendMessageEvent(push.Chain);
+                EventBase args = push.Chain.Type switch
+                {
+                    MessageChain.MessageType.Friend => new FriendMessageEvent(chain),
+                    MessageChain.MessageType.Group => new GroupMessageEvent(chain),
+                    MessageChain.MessageType.Temp => new TempMessageEvent(chain),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
                 Collection.Invoker.PostEvent(args);
 
                 break;

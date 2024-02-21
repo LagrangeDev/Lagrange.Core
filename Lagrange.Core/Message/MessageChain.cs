@@ -6,6 +6,8 @@ namespace Lagrange.Core.Message;
 
 public sealed class MessageChain : List<IMessageEntity>
 {
+    public MessageType Type { get; set; }
+    
     public uint? GroupUin { get; }
     
     public uint FriendUin { get; }
@@ -32,7 +34,8 @@ public sealed class MessageChain : List<IMessageEntity>
 
     #endregion
 
-    internal MessageChain(uint friendUin, string selfUid, string friendUid, uint sequence = 0, ulong? messageId = null)
+    internal MessageChain(uint friendUin, string selfUid, string friendUid, uint sequence = 0, ulong? messageId = null, 
+        MessageType type = MessageType.Friend)
     {
         GroupUin = null;
         FriendUin = friendUin;
@@ -42,6 +45,7 @@ public sealed class MessageChain : List<IMessageEntity>
         MessageId = messageId ?? (0x10000000ul << 32) | (uint)Random.Shared.Next(100000000, int.MaxValue);
         IsGroup = false;
         Elements = new List<Elem>();
+        Type = type;
     }
 
     internal MessageChain(uint groupUin)
@@ -84,5 +88,12 @@ public sealed class MessageChain : List<IMessageEntity>
         }
         
         return chainBuilder.ToString();
+    }
+
+    public enum MessageType
+    {
+        Group,
+        Temp,
+        Friend
     }
 }
