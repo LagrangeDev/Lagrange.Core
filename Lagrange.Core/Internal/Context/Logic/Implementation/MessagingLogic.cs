@@ -203,7 +203,22 @@ internal class MessagingLogic : LogicBase
             {
                 case MentionEntity mention when mention.Uin != 0:
                 {
-                    mention.Uid = await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
+                    var cache = Collection.Business.CachingLogic;
+                    mention.Uid = await cache.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
+
+                    if (string.IsNullOrEmpty(mention.Name))
+                    {
+                        if (chain is { IsGroup: true, GroupUin: not null })
+                        {
+                            var member = (await cache.GetCachedMembers(chain.GroupUin.Value, false)).FirstOrDefault(x => x.Uin == chain.FriendUin);
+                            mention.Name = member?.MemberCard;
+                        }
+                        else
+                        {
+                            var friend = (await cache.GetCachedFriends(false)).FirstOrDefault(x => x.Uin == chain.FriendUin);
+                            mention.Name = friend?.Nickname;
+                        }
+                    }
                     break;
                 }
                 case MultiMsgEntity { ResId: null } multiMsg:
@@ -232,12 +247,12 @@ internal class MessagingLogic : LogicBase
         if (chain is { IsGroup: true, GroupUin: not null })
         {
             var groups = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
-            chain.GroupMemberInfo = groups.FirstOrDefault(x => x.Uin == chain.FriendUin);
+            if (groups.FirstOrDefault(x => x.Uin == chain.FriendUin) is { } member) chain.GroupMemberInfo = member;
         }
         else
         {
             var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
-            chain.FriendInfo = friends.FirstOrDefault(x => x.Uin == chain.FriendUin);
+            if (friends.FirstOrDefault(x => x.Uin == chain.FriendUin) is { } friend) chain.FriendInfo = friend;
         }
     }
 }
