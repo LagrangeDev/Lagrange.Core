@@ -3,11 +3,11 @@ using System.Text.Json.Serialization;
 namespace Lagrange.OneBot.Core.Entity.Message;
 
 [Serializable]
-public class OneBotPrivateMsg(uint selfId, OneBotSender groupSender) : OneBotEntityBase(selfId, "message")
+public class OneBotPrivateMsg(uint selfId, OneBotSender groupSender, string subType) : OneBotEntityBase(selfId, "message")
 {
-    [JsonPropertyName("message_type")] public string MessageType { get; } = "private";
+    [JsonPropertyName("message_type")] public string MessageType { get; set; } = "private";
 
-    [JsonPropertyName("sub_type")] public string SubType { get; } = "friend";
+    [JsonPropertyName("sub_type")] public string SubType { get; set; } = subType;
 
     [JsonPropertyName("message_id")] public int MessageId { get; set; }
     

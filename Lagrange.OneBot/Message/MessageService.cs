@@ -27,8 +27,7 @@ public sealed class MessageService
     private readonly Dictionary<Type, List<(string Type, SegmentBase Factory)>> _entityToFactory;
     
     private static readonly JsonSerializerOptions Options;
-
-
+    
     static MessageService()
     {
         Options = new JsonSerializerOptions { TypeInfoResolver = new DefaultJsonTypeInfoResolver { Modifiers = { ModifyTypeInfo } } };
@@ -67,7 +66,7 @@ public sealed class MessageService
         _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
 
         var segments = Convert(e.Chain);
-        var request = new OneBotPrivateMsg(bot.BotUin, new OneBotSender(e.Chain.FriendUin, e.Chain.FriendInfo?.Nickname ?? string.Empty))
+        var request = new OneBotPrivateMsg(bot.BotUin, new OneBotSender(e.Chain.FriendUin, e.Chain.FriendInfo?.Nickname ?? string.Empty), "private")
         {
             MessageId = record.MessageHash,
             UserId = e.Chain.FriendUin,
@@ -94,7 +93,19 @@ public sealed class MessageService
 
     private void OnTempMessageReceived(BotContext bot, TempMessageEvent e)
     {
-        // TODO: Implement temp msg
+        var record = (MessageRecord)e.Chain;
+        _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
+        
+        var segments = Convert(e.Chain);
+        var request = new OneBotPrivateMsg(bot.BotUin, new OneBotSender(e.Chain.FriendUin, e.Chain.FriendInfo?.Nickname ?? string.Empty), "group")
+        {
+            MessageId = record.MessageHash,
+            UserId = e.Chain.FriendUin,
+            Message = segments,
+            RawMessage = ToRawMessage(segments)
+        };
+
+        _ = _service.SendJsonAsync(request);
     }
 
     public List<OneBotSegment> Convert(MessageChain chain)
