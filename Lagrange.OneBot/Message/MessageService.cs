@@ -25,7 +25,7 @@ public sealed class MessageService
     private readonly LiteDatabase _context;
     private readonly IConfiguration _config;
     private readonly Dictionary<Type, List<(string Type, SegmentBase Factory)>> _entityToFactory;
-    
+
     private static readonly JsonSerializerOptions Options;
 
 
@@ -45,7 +45,7 @@ public sealed class MessageService
         invoker.OnFriendMessageReceived += OnFriendMessageReceived;
         invoker.OnGroupMessageReceived += OnGroupMessageReceived;
         invoker.OnTempMessageReceived += OnTempMessageReceived;
-        
+
         _entityToFactory = new Dictionary<Type, List<(string, SegmentBase)>>();
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
@@ -82,7 +82,7 @@ public sealed class MessageService
     {
         var record = (MessageRecord)e.Chain;
         _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
-        
+
         if (_config.GetValue<bool>("Message:IgnoreSelf") && e.Chain.FriendUin == bot.BotUin) return; // ignore self message
 
         var segments = Convert(e.Chain);
@@ -94,7 +94,19 @@ public sealed class MessageService
 
     private void OnTempMessageReceived(BotContext bot, TempMessageEvent e)
     {
-        // TODO: Implement temp msg
+        var record = (MessageRecord)e.Chain;
+        _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
+
+        var segments = Convert(e.Chain);
+        var request = new OneBotPrivateMsg(bot.BotUin, new OneBotSender(e.Chain.FriendUin, e.Chain.FriendInfo?.Nickname ?? string.Empty))
+        {
+            MessageId = record.MessageHash,
+            UserId = e.Chain.FriendUin,
+            Message = segments,
+            RawMessage = ToRawMessage(segments)
+        };
+
+        _ = _service.SendJsonAsync(request);
     }
 
     public List<OneBotSegment> Convert(MessageChain chain)
@@ -147,7 +159,7 @@ public sealed class MessageService
         }
         return rawMessageBuilder.ToString();
     }
-    
+
     private static void ModifyTypeInfo(JsonTypeInfo ti)
     {
         if (ti.Kind != JsonTypeInfoKind.Object) return;

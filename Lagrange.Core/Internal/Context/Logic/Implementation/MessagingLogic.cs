@@ -31,76 +31,86 @@ internal class MessagingLogic : LogicBase
         switch (e)
         {
             case PushMessageEvent push:
-            {
-                if (push.Chain.Count == 0) return;
-                await ResolveAdditional(push.Chain);
-                await ResolveChainMetadata(push.Chain);
+                {
+                    if (push.Chain.Count == 0) return;
+                    await ResolveAdditional(push.Chain);
+                    await ResolveChainMetadata(push.Chain);
 
-                var chain = push.Chain;
-                Collection.Log.LogVerbose(Tag, chain.ToPreviewString());
+                    var chain = push.Chain;
+                    Collection.Log.LogVerbose(Tag, chain.ToPreviewString());
 
-                EventBase args = push.Chain.GroupUin != null
-                        ? new GroupMessageEvent(push.Chain)
-                        : new FriendMessageEvent(push.Chain);
-                Collection.Invoker.PostEvent(args);
+                    EventBase args = null;
+                    switch (push.Type)
+                    {
+                        case PushMessageEvent.MessageType.Group:
+                            args = new GroupMessageEvent(push.Chain);
+                            break;
+                        case PushMessageEvent.MessageType.Temp:
+                            args = new TempMessageEvent(push.Chain);
+                            break;
+                        default:
+                            args = new FriendMessageEvent(push.Chain);
+                            break;
+                    }
+                    Collection.Invoker.PostEvent(args);
 
-                break;
-            }
+                    break;
+                }
             case GroupSysInviteEvent invite:
-            {
-                uint invitorUin = await Collection.Business.CachingLogic.ResolveUin(null, invite.InvitorUid) ?? 0;
-                var inviteArgs = new GroupInvitationEvent(invite.GroupUin, invitorUin);
-                Collection.Invoker.PostEvent(inviteArgs);
-                break;
-            }
+                {
+                    uint invitorUin = await Collection.Business.CachingLogic.ResolveUin(null, invite.InvitorUid) ?? 0;
+                    var inviteArgs = new GroupInvitationEvent(invite.GroupUin, invitorUin);
+                    Collection.Invoker.PostEvent(inviteArgs);
+                    break;
+                }
             case GroupSysAdminEvent admin:
-            {
-                uint adminUin = await Collection.Business.CachingLogic.ResolveUin(admin.GroupUin, admin.Uid) ?? 0;
-                var adminArgs = new GroupAdminChangedEvent(admin.GroupUin, adminUin, admin.IsPromoted);
-                Collection.Invoker.PostEvent(adminArgs);
-                break;
-            }
+                {
+                    uint adminUin = await Collection.Business.CachingLogic.ResolveUin(admin.GroupUin, admin.Uid) ?? 0;
+                    var adminArgs = new GroupAdminChangedEvent(admin.GroupUin, adminUin, admin.IsPromoted);
+                    Collection.Invoker.PostEvent(adminArgs);
+                    break;
+                }
             case GroupSysIncreaseEvent increase:
-            {
-                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.MemberUid, true) ?? 0;
-                uint? invitorUin = null;
-                if (increase.InvitorUid != null) invitorUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.InvitorUid);
-                var increaseArgs = new GroupMemberIncreaseEvent(increase.GroupUin, memberUin, invitorUin, increase.Type);
-                Collection.Invoker.PostEvent(increaseArgs);
-                break;
-            }
+                {
+                    uint memberUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.MemberUid, true) ?? 0;
+                    uint? invitorUin = null;
+                    if (increase.InvitorUid != null) invitorUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.InvitorUid);
+                    var increaseArgs = new GroupMemberIncreaseEvent(increase.GroupUin, memberUin, invitorUin, increase.Type);
+                    Collection.Invoker.PostEvent(increaseArgs);
+                    break;
+                }
             case GroupSysDecreaseEvent decrease:
-            {
-                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.MemberUid) ?? 0;
-                uint? operatorUin = null;
-                if (decrease.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.OperatorUid);
-                var decreaseArgs = new GroupMemberDecreaseEvent(decrease.GroupUin, memberUin, operatorUin, decrease.Type);
-                Collection.Invoker.PostEvent(decreaseArgs);
-                break;
-            }
+                {
+                    uint memberUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.MemberUid) ?? 0;
+                    uint? operatorUin = null;
+                    if (decrease.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.OperatorUid);
+                    var decreaseArgs = new GroupMemberDecreaseEvent(decrease.GroupUin, memberUin, operatorUin, decrease.Type);
+                    Collection.Invoker.PostEvent(decreaseArgs);
+                    break;
+                }
             case FriendSysRequestEvent info:
-            {
-                var requestArgs = new FriendRequestEvent(info.SourceUin, info.Name, info.Message);
-                Collection.Invoker.PostEvent(requestArgs);
-                break;
-            }
+                {
+                    var requestArgs = new FriendRequestEvent(info.SourceUin, info.Name, info.Message);
+                    Collection.Invoker.PostEvent(requestArgs);
+                    break;
+                }
             case GroupSysMuteEvent groupMute:
-            {
-                uint? operatorUin = null;
-                if (groupMute.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(groupMute.GroupUin, groupMute.OperatorUid);
-                var muteArgs = new GroupMuteEvent(groupMute.GroupUin, operatorUin, groupMute.IsMuted);
-                Collection.Invoker.PostEvent(muteArgs);
-                break;
-            }
+                {
+                    uint? operatorUin = null;
+                    if (groupMute.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(groupMute.GroupUin, groupMute.OperatorUid);
+                    var muteArgs = new GroupMuteEvent(groupMute.GroupUin, operatorUin, groupMute.IsMuted);
+                    Collection.Invoker.PostEvent(muteArgs);
+                    break;
+                }
             case GroupSysMemberMuteEvent memberMute:
-            {
-                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(memberMute.GroupUin, memberMute.TargetUid) ?? 0;
-                uint? operatorUin = null;
-                if (memberMute.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(memberMute.GroupUin, memberMute.OperatorUid);
-                var muteArgs = new GroupMemberMuteEvent(memberMute.GroupUin, memberUin, operatorUin, memberMute.Duration);
-                Collection.Invoker.PostEvent(muteArgs);
-                break;
-            }
+                {
+                    uint memberUin = await Collection.Business.CachingLogic.ResolveUin(memberMute.GroupUin, memberMute.TargetUid) ?? 0;
+                    uint? operatorUin = null;
+                    if (memberMute.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(memberMute.GroupUin, memberMute.OperatorUid);
+                    var muteArgs = new GroupMemberMuteEvent(memberMute.GroupUin, memberUin, operatorUin, memberMute.Duration);
+                    Collection.Invoker.PostEvent(muteArgs);
+                    break;
+                }
         }
     }
 
@@ -122,7 +132,7 @@ internal class MessagingLogic : LogicBase
         {
             var file = chain.GetEntity<FileEntity>();
             if (file?.IsGroup != false || file.FileHash == null || file.FileUuid == null) return;
-            
+
             var @event = FileDownloadEvent.Create(file.FileUuid, file.FileHash, chain.Uid, chain.SelfUid);
             var results = await Collection.Business.SendEvent(@event);
             if (results.Count != 0)
@@ -131,12 +141,12 @@ internal class MessagingLogic : LogicBase
                 file.FileUrl = result.FileUrl;
             }
         }
-        
+
         if (chain.HasTypeOf<MultiMsgEntity>())
         {
             var multi = chain.GetEntity<MultiMsgEntity>();
             if (multi?.ResId == null) return;
-            
+
             var @event = MultiMsgDownloadEvent.Create(chain.Uid ?? "", multi.ResId);
             var results = await Collection.Business.SendEvent(@event);
             if (results.Count != 0)
@@ -162,7 +172,7 @@ internal class MessagingLogic : LogicBase
                 record.AudioUrl = result.AudioUrl;
             }
         }
-        
+
         if (chain.HasTypeOf<VideoEntity>())
         {
             var video = chain.GetEntity<VideoEntity>();
@@ -171,7 +181,7 @@ internal class MessagingLogic : LogicBase
             string uid = (chain.IsGroup
                 ? await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin)
                 : chain.Uid) ?? "";
-            var @event = VideoDownloadEvent.Create(video.VideoUuid, uid, video.FilePath, "", "",chain.IsGroup);
+            var @event = VideoDownloadEvent.Create(video.VideoUuid, uid, video.FilePath, "", "", chain.IsGroup);
             var results = await Collection.Business.SendEvent(@event);
             if (results.Count != 0)
             {
@@ -194,7 +204,7 @@ internal class MessagingLogic : LogicBase
             }
         }
     }
-    
+
     private async Task ResolveChainUid(MessageChain chain)
     {
         foreach (var entity in chain)
@@ -202,42 +212,27 @@ internal class MessagingLogic : LogicBase
             switch (entity)
             {
                 case MentionEntity mention when mention.Uin != 0:
-                {
-                    var cache = Collection.Business.CachingLogic;
-                    mention.Uid = await cache.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
-
-                    if (string.IsNullOrEmpty(mention.Name))
                     {
-                        if (chain is { IsGroup: true, GroupUin: not null })
-                        {
-                            var member = (await cache.GetCachedMembers(chain.GroupUin.Value, false)).FirstOrDefault(x => x.Uin == chain.FriendUin);
-                            mention.Name = member?.MemberCard;
-                        }
-                        else
-                        {
-                            var friend = (await cache.GetCachedFriends(false)).FirstOrDefault(x => x.Uin == chain.FriendUin);
-                            mention.Name = friend?.Nickname;
-                        }
+                        mention.Uid = await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
+                        break;
                     }
-                    break;
-                }
                 case MultiMsgEntity { ResId: null } multiMsg:
-                {
-                    foreach (var multi in multiMsg.Chains)
                     {
-                        await ResolveChainMetadata(multi);
-                        await Collection.Highway.UploadResources(multi);
-                    }
+                        foreach (var multi in multiMsg.Chains)
+                        {
+                            await ResolveChainMetadata(multi);
+                            await Collection.Highway.UploadResources(multi);
+                        }
 
-                    var multiMsgEvent = MultiMsgUploadEvent.Create(multiMsg.GroupUin, multiMsg.Chains);
-                    var results = await Collection.Business.SendEvent(multiMsgEvent);
-                    if (results.Count != 0)
-                    {
-                        var result = (MultiMsgUploadEvent)results[0];
-                        multiMsg.ResId = result.ResId;
+                        var multiMsgEvent = MultiMsgUploadEvent.Create(multiMsg.GroupUin, multiMsg.Chains);
+                        var results = await Collection.Business.SendEvent(multiMsgEvent);
+                        if (results.Count != 0)
+                        {
+                            var result = (MultiMsgUploadEvent)results[0];
+                            multiMsg.ResId = result.ResId;
+                        }
+                        break;
                     }
-                    break;
-                }
             }
         }
     }
@@ -247,12 +242,12 @@ internal class MessagingLogic : LogicBase
         if (chain is { IsGroup: true, GroupUin: not null })
         {
             var groups = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
-            if (groups.FirstOrDefault(x => x.Uin == chain.FriendUin) is { } member) chain.GroupMemberInfo = member;
+            chain.GroupMemberInfo = groups.FirstOrDefault(x => x.Uin == chain.FriendUin);
         }
         else
         {
             var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
-            if (friends.FirstOrDefault(x => x.Uin == chain.FriendUin) is { } friend) chain.FriendInfo = friend;
+            chain.FriendInfo = friends.FirstOrDefault(x => x.Uin == chain.FriendUin);
         }
     }
 }
