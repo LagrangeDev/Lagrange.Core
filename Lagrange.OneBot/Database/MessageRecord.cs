@@ -65,4 +65,13 @@ public class MessageRecord
         byte[] id = [messageId[0], messageId[1], sequence[0], sequence[1]];
         return BitConverter.ToInt32(id.AsSpan());
     }
+    
+    public static int CalcMessageHash(uint random, uint seq)
+    {
+        var messageId = BitConverter.GetBytes(random);
+        var sequence = BitConverter.GetBytes(seq);
+
+        byte[] id = [messageId[0], messageId[1], sequence[0], sequence[1]];
+        return BitConverter.ToInt32(id.AsSpan());
+    }
 }
