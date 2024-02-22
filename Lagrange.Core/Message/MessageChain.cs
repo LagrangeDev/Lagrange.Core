@@ -19,10 +19,10 @@ public sealed class MessageChain : List<IMessageEntity>
     public BotFriend? FriendInfo { get; internal set; }
     
     public BotGroupMember? GroupMemberInfo { get; internal set; }
-
+    
+    public uint Sequence { get; }
+    
     #region Internal Properties
-
-    internal uint Sequence { get; }
     
     internal string? SelfUid { get; }
     
