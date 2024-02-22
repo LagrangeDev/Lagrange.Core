@@ -4,7 +4,9 @@ public class GroupRecallEvent : EventBase
 {
     public uint GroupUin { get; }
     
-    public uint Uin { get; }
+    public uint AuthorUin { get; }
+    
+    public uint OperatorUin { get; }
     
     public uint Sequence { get; }
     
@@ -12,14 +14,15 @@ public class GroupRecallEvent : EventBase
     
     public uint Random { get; }
 
-    public GroupRecallEvent(uint groupUin, uint uin, uint sequence, uint time, uint random)
+    public GroupRecallEvent(uint groupUin, uint authorUin, uint operatorUin, uint sequence, uint time, uint random)
     {
         GroupUin = groupUin;
-        Uin = uin;
+        AuthorUin = authorUin;
+        OperatorUin = operatorUin;
         Sequence = sequence;
         Time = time;
         Random = random;
         
-        EventMessage = $"{nameof(GroupRecallEvent)}: {GroupUin} | {Uin} | ({Sequence} | {Time} | {Random})";
+        EventMessage = $"{nameof(GroupRecallEvent)}: {GroupUin} | {AuthorUin} | {OperatorUin} | ({Sequence} | {Time} | {Random})";
     }
 }

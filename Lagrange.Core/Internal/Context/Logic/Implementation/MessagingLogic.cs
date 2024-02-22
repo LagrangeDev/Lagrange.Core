@@ -109,8 +109,10 @@ internal class MessagingLogic : LogicBase
             }
             case GroupSysRecallEvent recall:
             {
-                uint authorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.Uid) ?? 0;
-                var recallArgs = new GroupRecallEvent(recall.GroupUin, authorUin, recall.Sequence, recall.Time, recall.Random);
+                uint authorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.AuthorUid) ?? 0;
+                uint operatorUin = 0;
+                if (recall.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.OperatorUid) ?? 0;
+                var recallArgs = new GroupRecallEvent(recall.GroupUin, authorUin, operatorUin, recall.Sequence, recall.Time, recall.Random);
                 Collection.Invoker.PostEvent(recallArgs);
                 break;
             }

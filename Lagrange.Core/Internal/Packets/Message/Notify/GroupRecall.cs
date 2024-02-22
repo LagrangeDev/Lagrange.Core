@@ -7,7 +7,7 @@ namespace Lagrange.Core.Internal.Packets.Message.Notify;
 [ProtoContract]
 internal class GroupRecall
 {
-    [ProtoMember(1)] public string Uid { get; set; }
+    [ProtoMember(1)] public string? OperatorUid { get; set; }
     
     [ProtoMember(3)] public List<RecallMessage> RecallMessages { get; set; }
     

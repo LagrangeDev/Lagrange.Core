@@ -128,7 +128,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 var proto = packet.ReadBytes(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
                 var recall = Serializer.Deserialize<NotifyMessageBody>(proto.AsSpan());
                 var meta = recall.Recall.RecallMessages[0];
-                var groupRecallEvent = GroupSysRecallEvent.Result(recall.GroupUin, meta.AuthorUid, meta.Sequence, meta.Time, meta.Random);
+                var groupRecallEvent = GroupSysRecallEvent.Result(recall.GroupUin, meta.AuthorUid, recall.Recall.OperatorUid, meta.Sequence, meta.Time, meta.Random);
                 extraEvents.Add(groupRecallEvent);
                 break;
             }

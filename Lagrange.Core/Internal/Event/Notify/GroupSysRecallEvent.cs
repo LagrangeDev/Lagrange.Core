@@ -4,7 +4,9 @@ internal class GroupSysRecallEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
     
-    public string Uid { get; }
+    public string AuthorUid { get; }
+    
+    public string? OperatorUid { get; }
     
     public uint Sequence { get; }
     
@@ -12,15 +14,16 @@ internal class GroupSysRecallEvent : ProtocolEvent
     
     public uint Random { get; }
 
-    private GroupSysRecallEvent(uint groupUin, string uid, uint sequence, uint time, uint random) : base(0)
+    private GroupSysRecallEvent(uint groupUin, string authorUid, string? operatorUid, uint sequence, uint time, uint random) : base(0)
     {
         GroupUin = groupUin;
-        Uid = uid;
+        AuthorUid = authorUid;
+        OperatorUid = operatorUid;
         Sequence = sequence;
         Time = time;
         Random = random;
     }
 
-    public static GroupSysRecallEvent Result(uint groupUin, string uid, uint sequence, uint time, uint random) 
-        => new(groupUin, uid, sequence, time, random);
+    public static GroupSysRecallEvent Result(uint groupUin, string authorUid, string? operatorUid, uint sequence, uint time, uint random) 
+        => new(groupUin, authorUid, operatorUid, sequence, time, random);
 }
