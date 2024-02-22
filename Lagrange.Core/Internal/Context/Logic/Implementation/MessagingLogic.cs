@@ -126,7 +126,7 @@ internal class MessagingLogic : LogicBase
         {
             var file = chain.GetEntity<FileEntity>();
             if (file?.IsGroup != false || file.FileHash == null || file.FileUuid == null) return;
-            
+
             var @event = FileDownloadEvent.Create(file.FileUuid, file.FileHash, chain.Uid, chain.SelfUid);
             var results = await Collection.Business.SendEvent(@event);
             if (results.Count != 0)
@@ -135,12 +135,12 @@ internal class MessagingLogic : LogicBase
                 file.FileUrl = result.FileUrl;
             }
         }
-        
+
         if (chain.HasTypeOf<MultiMsgEntity>())
         {
             var multi = chain.GetEntity<MultiMsgEntity>();
             if (multi?.ResId == null) return;
-            
+
             var @event = MultiMsgDownloadEvent.Create(chain.Uid ?? "", multi.ResId);
             var results = await Collection.Business.SendEvent(@event);
             if (results.Count != 0)
@@ -166,7 +166,7 @@ internal class MessagingLogic : LogicBase
                 record.AudioUrl = result.AudioUrl;
             }
         }
-        
+
         if (chain.HasTypeOf<VideoEntity>())
         {
             var video = chain.GetEntity<VideoEntity>();
@@ -198,7 +198,7 @@ internal class MessagingLogic : LogicBase
             }
         }
     }
-    
+
     private async Task ResolveChainUid(MessageChain chain)
     {
         foreach (var entity in chain)
@@ -251,7 +251,14 @@ internal class MessagingLogic : LogicBase
         if (chain is { IsGroup: true, GroupUin: not null })
         {
             var groups = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
+<<<<<<< HEAD
+            if (chain.FriendUin == 0)
+                chain.GroupMemberInfo = groups.FirstOrDefault(x => x.Uin == Collection.Keystore.Uin);
+            else
+                chain.GroupMemberInfo = groups.FirstOrDefault(x => x.Uin == chain.FriendUin);
+=======
             if (groups.FirstOrDefault(x => x.Uin == chain.FriendUin) is { } member) chain.GroupMemberInfo = member;
+>>>>>>> 1f5283f9ab124abb646966036063d03f580489db
         }
         else
         {
