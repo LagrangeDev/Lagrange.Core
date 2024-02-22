@@ -105,8 +105,8 @@ public class LagrangeApp : IHost
                     if (ticket != null && randomString != null) Instance.SubmitCaptcha(ticket, randomString);
                 }, cancellationToken);
             };
-            
-            await Instance.LoginByPassword();
+
+            await Task.Run(async () => await Instance.LoginByPassword(), cancellationToken);
         }
     }
 
