@@ -1,5 +1,6 @@
 using ProtoBuf;
 using System.Reflection;
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Generator;
@@ -241,4 +242,26 @@ internal static class MessagePacker
         
         return chain;
     }
+
+    private static MessageChain ParseFakeChain(PushMsgBody message)
+    {
+        var @base = ParseChain(message);
+
+        if (@base.IsGroup && message.ResponseHead.Grp != null)
+        {
+            @base.GroupMemberInfo = new BotGroupMember
+            {
+                MemberCard = message.ResponseHead.Grp.MemberName,
+                MemberName = message.ResponseHead.Grp.MemberName,
+                Uid = message.ResponseHead.FromUid ?? string.Empty
+            };
+        }
+        else
+        {
+            @base.FriendInfo = new BotFriend(0, message.ResponseHead.FromUid ?? string.Empty, message.ResponseHead.Forward?.FriendName ?? string.Empty, string.Empty, string.Empty);
+        }
+        
+        return @base;
+    }
+
 }
