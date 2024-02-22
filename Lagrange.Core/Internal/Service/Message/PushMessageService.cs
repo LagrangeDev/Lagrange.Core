@@ -162,9 +162,16 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         {
             case Event0x210SubType.FriendRequestNotice when msg.Message.Body?.MsgContent is { } content:
             {
-                var friend = Serializer.Deserialize<FriendRequest>(content.AsSpan());
-                var friendEvent = FriendSysRequestEvent.Result(msg.Message.ResponseHead.FromUin, friend.Info.SourceUid, friend.Info.Message, friend.Info.Name);
+                var request = Serializer.Deserialize<FriendRequest>(content.AsSpan());
+                var friendEvent = FriendSysRequestEvent.Result(msg.Message.ResponseHead.FromUin, request.Info.SourceUid, request.Info.Message, request.Info.Name);
                 extraEvents.Add(friendEvent);
+                break;
+            }
+            case Event0x210SubType.FriendRecallNotice when msg.Message.Body?.MsgContent is { } content:
+            {
+                var recall = Serializer.Deserialize<FriendRecall>(content.AsSpan());
+                var recallEvent = FriendSysRecallEvent.Result(recall.Info.FromUid, recall.Info.Sequence, recall.Info.Time, recall.Info.Random);
+                extraEvents.Add(recallEvent);
                 break;
             }
             default:

@@ -20,6 +20,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(GroupSysMuteEvent))]
 [EventSubscribe(typeof(GroupSysMemberMuteEvent))]
 [EventSubscribe(typeof(GroupSysRecallEvent))]
+[EventSubscribe(typeof(FriendSysRecallEvent))]
 [BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
 internal class MessagingLogic : LogicBase
 {
@@ -110,6 +111,13 @@ internal class MessagingLogic : LogicBase
             {
                 uint authorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.Uid) ?? 0;
                 var recallArgs = new GroupRecallEvent(recall.GroupUin, authorUin, recall.Sequence, recall.Time, recall.Random);
+                Collection.Invoker.PostEvent(recallArgs);
+                break;
+            }
+            case FriendSysRecallEvent recall:
+            {
+                uint fromUin = await Collection.Business.CachingLogic.ResolveUin(null, recall.FromUid) ?? 0;
+                var recallArgs = new FriendRecallEvent(fromUin, recall.Sequence, recall.Time, recall.Random);
                 Collection.Invoker.PostEvent(recallArgs);
                 break;
             }
