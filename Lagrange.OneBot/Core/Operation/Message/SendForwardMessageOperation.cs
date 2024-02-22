@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Lagrange.Core;
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Message;
 using Lagrange.OneBot.Core.Entity;
@@ -20,8 +21,12 @@ public class SendForwardMessageOperation(MessageCommon common) : IOperation
             
             foreach (var segment in forward.Messages)
             {
-                var element = ((JsonElement)segment.Data).Deserialize<OneBotFakeNode>();
-                if (element is not null) chains.Add(common.ParseFakeChain(element).Build());
+                if (((JsonElement)segment.Data).Deserialize<OneBotFakeNode>() is { } element)
+                {
+                    var chain = common.ParseFakeChain(element).Build();
+                    chain.FriendInfo = new BotFriend(uint.Parse(element.Uin), element.Name, string.Empty, string.Empty, string.Empty);
+                    chains.Add(chain);
+                }
             }
 
             var @event = MultiMsgUploadEvent.Create(null, chains);

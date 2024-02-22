@@ -12,7 +12,7 @@ public partial class ForwardSegment(string name)
     [JsonPropertyName("id")] [CQProperty] public string Name { get; set; } = name;
 }
 
-[SegmentSubscriber(typeof(MultiMsgEntity), "forward", "node")]
+[SegmentSubscriber(typeof(MultiMsgEntity), "forward")]
 public partial class ForwardSegment : SegmentBase
 {
     public override void Build(MessageBuilder builder, SegmentBase segment)
