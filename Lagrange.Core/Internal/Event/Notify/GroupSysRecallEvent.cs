@@ -21,6 +21,6 @@ internal class GroupSysRecallEvent : ProtocolEvent
         Random = random;
     }
 
-    public static GroupSysRecallEvent Create(uint groupUin, string uid, uint sequence, uint time, uint random) 
+    public static GroupSysRecallEvent Result(uint groupUin, string uid, uint sequence, uint time, uint random) 
         => new(groupUin, uid, sequence, time, random);
 }
