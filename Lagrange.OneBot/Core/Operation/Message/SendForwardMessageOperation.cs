@@ -24,7 +24,7 @@ public class SendForwardMessageOperation(MessageCommon common) : IOperation
                 if (((JsonElement)segment.Data).Deserialize<OneBotFakeNode>() is { } element)
                 {
                     var chain = common.ParseFakeChain(element).Build();
-                    chain.FriendInfo = new BotFriend(uint.Parse(element.Uin), element.Name, string.Empty, string.Empty, string.Empty);
+                    chain.FriendInfo = new BotFriend(uint.Parse(element.Uin), string.Empty, element.Name, string.Empty, string.Empty);
                     chains.Add(chain);
                 }
             }
