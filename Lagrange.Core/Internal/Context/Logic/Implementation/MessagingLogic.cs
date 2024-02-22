@@ -251,8 +251,13 @@ internal class MessagingLogic : LogicBase
         if (chain is { IsGroup: true, GroupUin: not null })
         {
             var groups = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
-            chain.GroupMemberInfo = chain.FriendUin == 0 
-                ? groups.FirstOrDefault(x => x.Uin == Collection.Keystore.Uin) 
+            if (chain.FriendUin == 0)
+                chain.GroupMemberInfo = groups.FirstOrDefault(x => x.Uin == Collection.Keystore.Uin);
+            else
+                chain.GroupMemberInfo = groups.FirstOrDefault(x => x.Uin == chain.FriendUin);
+            if (groups.FirstOrDefault(x => x.Uin == chain.FriendUin) is { } member) chain.GroupMemberInfo = member;
+            chain.GroupMemberInfo = chain.FriendUin == 0
+                ? groups.FirstOrDefault(x => x.Uin == Collection.Keystore.Uin)
                 : groups.FirstOrDefault(x => x.Uin == chain.FriendUin);
         }
         else
