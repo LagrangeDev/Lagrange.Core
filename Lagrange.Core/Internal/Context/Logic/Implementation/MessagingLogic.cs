@@ -33,7 +33,7 @@ internal class MessagingLogic : LogicBase
             case PushMessageEvent push:
             {
                 if (push.Chain.Count == 0) return;
-                await ResolveAdditional(push.Chain);
+                await ResolveIncomingChain(push.Chain);
                 await ResolveChainMetadata(push.Chain);
 
                 var chain = push.Chain;
@@ -114,13 +114,13 @@ internal class MessagingLogic : LogicBase
         {
             case SendMessageEvent send: // resolve Uin to Uid
                 await ResolveChainMetadata(send.Chain);
-                await ResolveChainUid(send.Chain);
+                await ResolveOutgoingChain(send.Chain);
                 await Collection.Highway.UploadResources(send.Chain);
                 break;
         }
     }
 
-    private async Task ResolveAdditional(MessageChain chain)
+    private async Task ResolveIncomingChain(MessageChain chain)
     {
         if (chain.HasTypeOf<FileEntity>())
         {
@@ -199,7 +199,7 @@ internal class MessagingLogic : LogicBase
         }
     }
 
-    private async Task ResolveChainUid(MessageChain chain)
+    private async Task ResolveOutgoingChain(MessageChain chain)
     {
         foreach (var entity in chain)
         {
@@ -257,6 +257,11 @@ internal class MessagingLogic : LogicBase
         }
     }
 
+    /// <summary>
+    /// <para>Resolve the <see cref="MessageChain.GroupMemberInfo"/> or <see cref="MessageChain.FriendInfo"/> for the <see cref="MessageChain"/></para>
+    /// <para>for both Incoming and Outgoing MessageChain</para>
+    /// </summary>
+    /// <param name="chain">The target chain</param>
     private async Task ResolveChainMetadata(MessageChain chain)
     {
         if (chain is { IsGroup: true, GroupUin: not null })
