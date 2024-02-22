@@ -102,9 +102,9 @@ internal static class MessagePacker
         return message;
     }
     
-    public static MessageChain Parse(PushMsgBody message)
+    public static MessageChain Parse(PushMsgBody message, bool isFake = false)
     {
-        var chain = ParseChain(message);
+        var chain = isFake ? ParseFakeChain(message) : ParseChain(message);
 
         if (message.Body?.RichText is { Elems: { } elements}) // 怎么Body还能是null的
         {
