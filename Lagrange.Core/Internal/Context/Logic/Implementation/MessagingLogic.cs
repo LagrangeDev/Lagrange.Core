@@ -242,6 +242,17 @@ internal class MessagingLogic : LogicBase
                     }
                     break;
                 }
+                case MultiMsgEntity { ResId: not null, Chains.Count: 0 } multiMsg:
+                {
+                    var @event = MultiMsgDownloadEvent.Create(chain.Uid ?? "", multiMsg.ResId);
+                    var results = await Collection.Business.SendEvent(@event);
+                    if (results.Count != 0)
+                    {
+                        var result = (MultiMsgDownloadEvent)results[0];
+                        multiMsg.Chains.AddRange((IEnumerable<MessageChain>?)result.Chains ?? Array.Empty<MessageChain>());
+                    }
+                    break;
+                }
             }
         }
     }
