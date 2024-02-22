@@ -5,6 +5,7 @@ using Lagrange.Core.Internal.Event.Notify;
 using Lagrange.Core.Internal.Packets.Message;
 using Lagrange.Core.Internal.Packets.Message.Notify;
 using Lagrange.Core.Message;
+using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
@@ -122,8 +123,14 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         {
             case Event0x2DCSubType.GroupRecallNotice when msg.Message.Body?.MsgContent is { } content:
             {
-                var subInfo = content[7..];
-                Console.WriteLine(subInfo.Hex());
+                var packet = new BinaryPacket(content);
+                _ = packet.ReadUint(false);  // group uin
+                _ = packet.ReadByte();  // unknown byte
+                var proto = packet.ReadBytes(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
+                var recall = Serializer.Deserialize<NotifyMessageBody>(proto.AsSpan());
+                var meta = recall.Recall.RecallMessages[0];
+                var groupRecallEvent = GroupSysRecallEvent.Create(recall.GroupUin, meta.AuthorUid, meta.Sequence, meta.Time, meta.Random);
+                extraEvents.Add(groupRecallEvent);
                 break;
             }
             case Event0x2DCSubType.GroupMuteNotice when msg.Message.Body?.MsgContent is { } content:
@@ -197,7 +204,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
     
     private enum Event0x210SubType
     {
-        Friend = 138,
+        FriendRecallNotice = 138,
         FriendRequestNotice = 226,
     }
 }

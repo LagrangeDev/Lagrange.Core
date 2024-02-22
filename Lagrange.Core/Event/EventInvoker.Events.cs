@@ -33,4 +33,6 @@ public partial class EventInvoker
     public event LagrangeEvent<GroupMuteEvent>? OnGroupMuteEvent;
     
     public event LagrangeEvent<GroupMemberMuteEvent>? OnGroupMemberMuteEvent;
+    
+    public event LagrangeEvent<GroupRecallEvent>? OnGroupRecallEvent;
 }
