@@ -29,9 +29,7 @@ public class Config
     [JsonPropertyName("autosize")] public bool Autosize { get; set; }
     
     [JsonPropertyName("ctime")] public long Ctime { get; set; }
-
-    [JsonPropertyName("forward")] public bool Forward { get; set; }
-
+    
     [JsonPropertyName("token")] public string Token { get; set; }
 
     [JsonPropertyName("type")] public string Type { get; set; }

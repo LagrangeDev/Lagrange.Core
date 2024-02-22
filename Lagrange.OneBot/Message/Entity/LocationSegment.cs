@@ -34,7 +34,6 @@ public partial class LocationSegment : SegmentBase
             {
                 Autosize = false,
                 Ctime = DateTimeOffset.UtcNow.Second,
-                Forward = true,
                 Token = "626399d3453d0693fe19e12cd3747c56",
                 Type = "normal"
             },
