@@ -50,4 +50,13 @@ internal class OidbSvcTrpcTcpBase<T> where T : class
         Reserved = Convert.ToInt32(isUid);
         Lafter = isLafter ? new OidbLafter() : null;
     }
+    
+    public OidbSvcTrpcTcpBase(T body, uint command,uint subCommand, bool isLafter = false, bool isUid = false)
+    {
+        Command = command;
+        SubCommand = subCommand;
+        Body = body;
+        Reserved = Convert.ToInt32(isUid);
+        Lafter = isLafter ? new OidbLafter() : null;
+    }
 }

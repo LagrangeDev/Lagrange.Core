@@ -2,11 +2,12 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
-using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
+using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Response;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
+using FileInfo = Lagrange.Core.Internal.Packets.Service.Oidb.Common.FileInfo;
 
 namespace Lagrange.Core.Internal.Service.Message;
 
@@ -17,69 +18,69 @@ internal class RecordDownloadService : BaseService<RecordDownloadEvent>
     protected override bool Build(RecordDownloadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
-        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x126D_200>(new OidbSvcTrpcTcp0x126D_200
+        var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq
         {
-            Field1 = new OidbSvcTrpcTcp0x126D_200Field1
+            ReqHead = new MultiMediaReqHead
             {
-                Field1 = new OidbSvcTrpcTcp0x126D_200Field1Field1
+                Common = new CommonHead
                 {
-                    Field1 = 1,
-                    Field2 = 200
+                    RequestId = 1,
+                    Command = 200
                 },
-                Field2 = new OidbSvcTrpcTcp0x126D_200Field1Field2
+                Scene = new SceneInfo
                 {
-                    Field1 = 1,
-                    Field2 = 3,
-                    Field3 = 1,
-                    Field201 = new OidbSvcTrpcTcp0x126D_200Field1Field2Field201
+                    RequestType = 1,
+                    BusinessType = 3,
+                    SceneType = 1,
+                    C2C = new C2CUserInfo
                     {
-                        Field1 = 2,
+                        AccountType = 2,
                         SelfUid = input.SelfUid
                     }
                 },
-                Field3 = new OidbSvcTrpcTcp0x126D_200Field1Field3
+                Client = new ClientMeta
                 {
-                    Field1 = 2
+                    AgentType = 2
                 }
             },
-            Field3 = new OidbSvcTrpcTcp0x126D_200Field3
+            Download = new DownloadReq
             {
-                Field1 = new OidbSvcTrpcTcp0x126D_200Field3Field1
+                Node = new IndexNode
                 {
-                    Field1 = new OidbSvcTrpcTcp0x126D_200Field3Field1Field1
+                    Info = new FileInfo
                     {
-                        Field1 = 0,
+                        FileSize = 0,
                         FileHash = input.FileName.Replace(".amr", ""),
                         FileSha1 = input.FileSha1 ?? "",
                         FileName = input.FileName,
-                        Field5 = new OidbSvcTrpcTcp0x126D_200Field3Field1Field1Field5
+                        Type = new FileType
                         {
-                            Field1 = 2,
-                            Field2 = 0,
-                            Field3 = 0,
-                            Field4 = 1
+                            Type = 2,
+                            PicFormat = 0,
+                            VideoFormat = 0,
+                            VoiceFormat = 1
                         },
-                        Field6 = 0,
-                        Field7 = 0,
-                        Field8 = 2,
-                        Field9 = 0
+                        Width = 0,
+                        Height = 0,
+                        Time = 2,
+                        Original = 0
                     },
                     FileUuid = input.Uuid,
-                    Field3 = Convert.ToUInt32(input.FileSha1 != null),
-                    Field4 = 0,
-                    Field5 = 0,
-                    Field6 = 0
+                    StoreId = Convert.ToUInt32(input.FileSha1 != null),
+                    UploadTime = 0,
+                    Ttl = 0,
+                    SubType = 0
                 },
-                Field2 = new OidbSvcTrpcTcp0x126D_200Field3Field2
+                Download = new DownloadExt
                 {
-                    Field2 = new OidbSvcTrpcTcp0x126D_200Field3Field2Field2
+                    Video = new VideoDownloadExt
                     {
-                        Field1 = 0,
-                        Field2 = 0
+                        BusiType = 0,
+                        SceneType = 0
                     }
                 }
             }
-        }, false, true);
+        }, 0x126d, 200, false, true);
         output = packet.Serialize();
         extraPackets = null;
         
