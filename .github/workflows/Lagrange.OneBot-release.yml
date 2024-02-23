@@ -32,3 +32,63 @@ jobs:
         with:
           name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0
           path: Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
+          
+      - name: Compress files (Not Windows)
+        if: matrix.runtimeIdentifier != 'win-x64' && matrix.runtimeIdentifier != 'win-x86'
+        run: |
+          Compress-Archive -Path 'Lagrange.OneBot\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish\Lagrange.OneBot' -DestinationPath  'Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip'
+      - name: Compress files (Windows)
+        if: matrix.runtimeIdentifier == 'win-x64' || matrix.runtimeIdentifier == 'win-x86'
+        run: |
+          Compress-Archive -Path 'Lagrange.OneBot\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish\Lagrange.OneBot.exe' -DestinationPath  'Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip'
+          
+      - name: Prepare release files
+        uses: actions/upload-artifact@v3
+        with:
+          name: Lagrange.OneBot_all
+          path: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip
+  
+  NightlyRelease:
+    name: Nightly Release
+    runs-on: ubuntu-latest
+    needs: Build
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update Nightly Tag
+        run: |
+          git tag -f nightly
+          git push -f origin nightly
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: Lagrange.OneBot_all
+          path: ./bin
+      - name: Update Nightly Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: nightly
+          name: 'Nightly Release'
+          prerelease: true
+          body: '> ⚠️This is a nightly release.'
+          artifacts: |
+            ./bin/*
+          allowUpdates: true
+          removeArtifacts: true
+  
+  ClearTempArtifacts:
+    name: Clear Temp Artifacts
+    if: always()
+    runs-on: ubuntu-latest
+    needs:
+      - NightlyRelease
+    permissions:
+      actions: write
+    steps:
+      - uses: geekyeggo/delete-artifact@v2
+        with:
+          name: |
+            Lagrange.OneBot_all
