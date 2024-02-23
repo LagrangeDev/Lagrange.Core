@@ -126,10 +126,17 @@ public sealed partial class ForwardWSService : ILagrangeWebService
 
     private void OnHeartbeat(object? _, string identifier)
     {
-        var status = new OneBotStatus(true, true);
-        var heartBeat = new OneBotHeartBeat(_context.BotUin, (int)_options.HeartBeatInterval, status);
+        try
+        {
+            var status = new OneBotStatus(true, true);
+            var heartBeat = new OneBotHeartBeat(_context.BotUin, (int)_options.HeartBeatInterval, status);
 
-        SendJsonAsync(heartBeat, identifier).GetAwaiter().GetResult();
+            SendJsonAsync(heartBeat, identifier).GetAwaiter().GetResult();
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     private static bool IsPortInUse(uint port) => 
