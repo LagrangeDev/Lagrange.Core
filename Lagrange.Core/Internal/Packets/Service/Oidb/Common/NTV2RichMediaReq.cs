@@ -10,7 +10,23 @@ internal class NTV2RichMediaReq
 {
     [ProtoMember(1)] public MultiMediaReqHead ReqHead { get; set; }
     
+    [ProtoMember(2)] public UploadReq Upload { get; set; }
+    
     [ProtoMember(3)] public DownloadReq Download { get; set; }
+    
+    [ProtoMember(4)] public DownloadRKeyReq DownloadRKey { get; set; }
+
+    [ProtoMember(5)] public DeleteReq Delete { get; set; }
+    
+    [ProtoMember(6)] public UploadCompletedReq UploadCompleted { get; set; }
+    
+    [ProtoMember(7)] public MsgInfoAuthReq MsgInfoAuth { get; set; }
+    
+    [ProtoMember(8)] public UploadKeyRenewalReq UploadKeyRenewal { get; set; }
+    
+    [ProtoMember(9)] public DownloadSafeReq DownloadSafe { get; set; }
+    
+    [ProtoMember(99)] public byte[]? Extension { get; set; }
 }
 
 [ProtoContract]
@@ -150,3 +166,204 @@ internal class PicDownloadExt { }
 
 [ProtoContract]
 internal class PttDownloadExt { }
+
+[ProtoContract]
+internal class PicUrlExtInfo
+{
+    [ProtoMember(1)] public string OriginalParameter { get; set; }
+    
+    [ProtoMember(2)] public string BigParameter { get; set; }
+
+    [ProtoMember(3)] public string ThumbParameter { get; set; }
+}
+
+[ProtoContract]
+internal class VideoExtInfo
+{
+    [ProtoMember(1)] public uint VideoCodecFormat { get; set; }
+}
+
+[ProtoContract]
+internal class MsgInfo
+{
+    [ProtoMember(1)] public List<MsgInfoBody> MsgInfoBody { get; set; }
+    
+    [ProtoMember(2)] public ExtBizInfo ExtBizInfo { get; set; }
+}
+
+[ProtoContract]
+internal class MsgInfoBody
+{
+    [ProtoMember(1)] public IndexNode Index { get; set; }
+    
+    [ProtoMember(2)] public PictureInfo Picture { get; set; }
+    
+    [ProtoMember(3)] public VideoInfo Video { get; set; }
+    
+    [ProtoMember(4)] public AudioInfo Audio { get; set; }
+    
+    [ProtoMember(5)] public bool FileExist { get; set; }
+    
+    [ProtoMember(6)] public byte[] HashSum { get; set; }
+}
+
+[ProtoContract]
+internal class VideoInfo { }
+
+[ProtoContract]
+internal class AudioInfo { }
+
+[ProtoContract]
+internal class PictureInfo
+{
+    [ProtoMember(1)] public string UrlPath { get; set; }
+    
+    [ProtoMember(2)] public PicUrlExtInfo Ext { get; set; }
+    
+    [ProtoMember(3)] public string Domain { get; set; }
+}
+
+
+[ProtoContract]
+internal class ExtBizInfo
+{
+    [ProtoMember(1)] public PicExtBizInfo Pic { get; set; }
+    
+    [ProtoMember(2)] public VideoExtBizInfo Video { get; set; }
+    
+    [ProtoMember(3)] public PttExtBizInfo Ptt { get; set; }
+    
+    [ProtoMember(10)] public uint BusiType { get; set; }
+}
+
+[ProtoContract]
+internal class PttExtBizInfo
+{
+    [ProtoMember(1)] public ulong SrcUin { get; set; }
+    
+    [ProtoMember(2)] public uint PttScene { get; set; }
+    
+    [ProtoMember(3)] public uint PttType { get; set; }
+    
+    [ProtoMember(4)] public uint ChangeVoice { get; set; }
+    
+    [ProtoMember(5)] public byte[] Waveform { get; set; }
+    
+    [ProtoMember(6)] public uint AutoConvertText { get; set; }
+    
+    [ProtoMember(11)] public byte[] BytesReserve { get; set; }
+    
+    [ProtoMember(12)] public byte[] BytesPbReserve { get; set; }
+    
+    [ProtoMember(13)] public byte[] BytesGeneralFlags { get; set; }
+}
+
+[ProtoContract]
+internal class VideoExtBizInfo
+{
+    [ProtoMember(1)] public uint FromScene { get; set; }
+    
+    [ProtoMember(2)] public uint ToScene { get; set; }
+    
+    [ProtoMember(3)] public byte[] BytesPbReserve { get; set; }
+}
+
+[ProtoContract]
+internal class PicExtBizInfo
+{
+    [ProtoMember(1)] public uint BizType { get; set; }
+    
+    [ProtoMember(2)] public string TextSummary { get; set; }
+    
+    [ProtoMember(11)] public byte[] BytesPbReserveC2c { get; set; }
+    
+    [ProtoMember(12)] public byte[] BytesPbReserveTroop { get; set; }
+    
+    [ProtoMember(1001)] public uint FromScene { get; set; }
+    
+    [ProtoMember(1002)] public uint ToScene { get; set; }
+    
+    [ProtoMember(1003)] public uint OldFileId { get; set; }
+}
+
+[ProtoContract]
+internal class DownloadSafeReq
+{
+    [ProtoMember(1)] public IndexNode Index { get; set; }
+}
+
+[ProtoContract]
+internal class UploadKeyRenewalReq
+{
+    [ProtoMember(1)] public string OldUKey { get; set; }
+    
+    [ProtoMember(2)] public uint SubType { get; set; }
+}
+
+[ProtoContract]
+internal class MsgInfoAuthReq
+{
+    [ProtoMember(1)] public byte[] Msg { get; set; }
+    
+    [ProtoMember(2)] public ulong AuthTime { get; set; }
+}
+
+[ProtoContract]
+internal class UploadCompletedReq
+{
+    [ProtoMember(1)] public bool SrvSendMsg { get; set; }
+    
+    [ProtoMember(2)] public ulong ClientRandomId { get; set; }
+    
+    [ProtoMember(3)] public MsgInfo MsgInfo { get; set; }
+    
+    [ProtoMember(4)] public uint ClientSeq { get; set; }
+}
+
+[ProtoContract]
+internal class DeleteReq
+{
+    [ProtoMember(1)] public List<IndexNode> Index { get; set; }
+    
+    [ProtoMember(2)] public bool NeedRecallMsg { get; set; }
+    
+    [ProtoMember(3)] public ulong MsgSeq { get; set; }
+    
+    [ProtoMember(4)] public ulong MsgRandom { get; set; }
+    
+    [ProtoMember(5)] public ulong MsgTime { get; set; }
+}
+
+[ProtoContract]
+internal class DownloadRKeyReq
+{
+    [ProtoMember(1)] public List<int> Types { get; set; }
+}
+
+[ProtoContract]
+internal class UploadInfo
+{
+    [ProtoMember(1)] public FileInfo FileInfo { get; set; }
+    
+    [ProtoMember(2)] public uint SubFileType { get; set; }
+}
+
+[ProtoContract]
+internal class UploadReq
+{
+    [ProtoMember(1)] public List<UploadInfo> UploadInfo { get; set; }
+    
+    [ProtoMember(2)] public bool TryFastUploadCompleted { get; set; }
+    
+    [ProtoMember(3)] public bool SrvSendMsg { get; set; }
+    
+    [ProtoMember(4)] public ulong ClientRandomId { get; set; }
+    
+    [ProtoMember(5)] public uint CompatQMsgSceneType { get; set; }
+    
+    [ProtoMember(6)] public ExtBizInfo ExtBizInfo { get; set; }
+    
+    [ProtoMember(7)] public uint ClientSeq { get; set; }
+    
+    [ProtoMember(8)] public bool NoNeedCompatMsg { get; set; }
+}
