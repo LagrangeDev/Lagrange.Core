@@ -24,7 +24,7 @@ internal class GetGroupMessageService : BaseService<GetGroupMessageEvent>
                 StartSequence = input.StartSequence,
                 EndSequence = input.EndSequence
             },
-            Field2 = true
+            Direction = true
         };
         
         output = packet.Serialize();

@@ -12,7 +12,7 @@ internal class SsoGetGroupMsg
 {
     [ProtoMember(1)] public SsoGetGroupMsgInfo Info { get; set; }
     
-    [ProtoMember(2)] public bool Field2 { get; set; }  // true
+    [ProtoMember(2)] public bool Direction { get; set; }  // true
 }
 
 [ProtoContract]
