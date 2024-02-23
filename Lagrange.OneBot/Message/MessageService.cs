@@ -73,7 +73,7 @@ public sealed class MessageService
     public OneBotPrivateMsg ConvertToPrivateMsg(uint uin, MessageChain chain, int hash)
     {
         var segments = Convert(chain);
-        var request = new OneBotPrivateMsg(uin, new OneBotSender(chain.FriendUin, chain.FriendInfo?.Nickname ?? string.Empty), "private")
+        var request = new OneBotPrivateMsg(uin, new OneBotSender(chain.FriendUin, chain.FriendInfo?.Nickname ?? string.Empty), "friend")
         {
             MessageId = hash,
             UserId = chain.FriendUin,
