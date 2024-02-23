@@ -13,7 +13,7 @@ public static class CommonResolver
                 
         if (url.StartsWith("file"))
         {
-            string path = new Uri(url).LocalPath;
+            string path = Path.GetFullPath(url.Replace("file://", ""));
             return File.ReadAllBytes(path);
         }
                 
