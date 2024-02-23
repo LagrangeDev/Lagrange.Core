@@ -65,7 +65,7 @@ internal class RecordDownloadService : BaseService<RecordDownloadEvent>
                         Field9 = 0
                     },
                     FileUuid = input.Uuid,
-                    Field3 = Convert.ToUInt32(input.IsGroup),
+                    Field3 = Convert.ToUInt32(input.FileSha1 != null),
                     Field4 = 0,
                     Field5 = 0,
                     Field6 = 0

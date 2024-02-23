@@ -125,9 +125,14 @@ internal static class MessagePacker
             }
         }
 
-        if (message.Body?.RichText?.Ptt is { } ptt && !chain.IsGroup)
+        switch (message.Body?.RichText?.Ptt)
         {
-            chain.Add(new RecordEntity(ptt.FileUuid, ptt.FileName));
+            case { } ptt when !chain.IsGroup:
+                chain.Add(new RecordEntity(ptt.FileUuid, ptt.FileName));
+                break;
+            case { } groupPtt when chain.IsGroup && groupPtt.FileId == 0:  //  for legacy ptt
+                chain.Add(new RecordEntity(groupPtt.GroupFileKey, groupPtt.FileName));
+                break;
         }
 
         return chain;

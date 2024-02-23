@@ -40,7 +40,7 @@ internal class Ptt
     
     [ProtoMember(17)] public byte[] PttUrl { get; set; }
     
-    [ProtoMember(18)] public byte[] GroupFileKey { get; set; }
+    [ProtoMember(18)] public string GroupFileKey { get; set; }
     
     [ProtoMember(19)] public int Time { get; set; }
     
