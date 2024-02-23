@@ -22,7 +22,7 @@ namespace Lagrange.OneBot.Core.Network.Service
             if (rws.Exists()) return Create<ReverseWSService>(rws);
             
             var fws = config.GetSection("ForwardWebSocket");
-            return fws.Exists() ? Create<ReverseWSService>(fws) : null;
+            return fws.Exists() ? Create<ForwardWSService>(fws) : null;
         }
 
         protected ILagrangeWebService? Create<TService>(IConfiguration config) where TService : ILagrangeWebService
