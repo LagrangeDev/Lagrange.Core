@@ -3,8 +3,6 @@ using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
-using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
-using Lagrange.Core.Internal.Packets.Service.Oidb.Response;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
@@ -91,9 +89,9 @@ internal class VideoDownloadService : BaseService<VideoDownloadEvent>
     protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, out VideoDownloadEvent output,
         out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x1026_200Response>>(input.AsSpan());
-        var body = payload.Body.Body;
-        string url = $"https://{body.Field3.Domain}{body.Field3.Suffix}{body.DownloadParams}";
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<NTV2RichMediaResp>>(input.AsSpan());
+        var body = payload.Body.Download;
+        string url = $"https://{body.Info.Domain}{body.Info.UrlPath}{body.RKeyParam}";
         
         output = VideoDownloadEvent.Result((int)payload.ErrorCode, url);
         extraEvents = null;
