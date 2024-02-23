@@ -97,10 +97,10 @@ public sealed class LagrangeAppBuilder
         Services.AddScoped<ForwardWSService>();
         Services.AddScoped<ILagrangeWebServiceFactory<ReverseWSService>, ReverseWSServiceFactory>();
         Services.AddScoped<ReverseWSService>();
-        Services.AddScoped<ILagrangeWebServiceFactory<ForwardHttpService>, ForwardHttpServiceFactory>();
-        Services.AddScoped<ForwardHttpService>();
-        Services.AddScoped<ILagrangeWebServiceFactory<ReverseHttpService>, ReverseHttpServiceFactory>();
-        Services.AddScoped<ReverseHttpService>();
+        Services.AddScoped<ILagrangeWebServiceFactory<HttpService>, HttpServiceFactory>();
+        Services.AddScoped<HttpService>();
+        Services.AddScoped<ILagrangeWebServiceFactory<HttpPostService>, HttpPostServiceFactory>();
+        Services.AddScoped<HttpPostService>();
         Services.AddScoped<ILagrangeWebServiceFactory, DefaultLagrangeWebServiceFactory>();
         Services.AddScoped(services =>
         {

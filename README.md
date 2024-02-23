@@ -235,11 +235,11 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 <Summary>Communication</Summary>
 
 | CommunicationType  | Support |
-| ------------------ | :-----: |
-| [Http]             |    🔴    |
-| [Http-Post]        |    🔴    |
-| [ForwardWebSocket] |    🟢    |
-| [ReverseWebSocket] |    🟢    |
+|--------------------|:-------:|
+| [Http]             |   🟢    |
+| [Http-Post]        |   🟢    |
+| [ForwardWebSocket] |   🟢    |
+| [ReverseWebSocket] |   🟢    |
 
 [Http]: https://github.com/botuniverse/onebot-11/blob/master/communication/http.md
 [Http-Post]: https://github.com/botuniverse/onebot-11/blob/master/communication/http-post.md

@@ -9,11 +9,11 @@ using Microsoft.Extensions.Options;
 
 namespace Lagrange.OneBot.Core.Network.Service;
 
-public sealed partial class ForwardHttpService : ILagrangeWebService
+public sealed partial class HttpService : ILagrangeWebService
 {
     public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
 
-    private readonly ForwardHttpServiceOptions _options;
+    private readonly HttpServiceOptions _options;
 
     private readonly ILogger _logger;
 
@@ -25,9 +25,7 @@ public sealed partial class ForwardHttpService : ILagrangeWebService
 
     private readonly string _accessToken;
 
-    public ForwardHttpService(IOptionsSnapshot<ForwardHttpServiceOptions> options,
-                              ILogger<ForwardHttpService> logger,
-                              BotContext context)
+    public HttpService(IOptionsSnapshot<HttpServiceOptions> options, ILogger<HttpService> logger, BotContext context)
     {
         _options = options.Value;
         _logger = logger;
@@ -53,9 +51,9 @@ public sealed partial class ForwardHttpService : ILagrangeWebService
             while (_listener.IsListening)
             {
                 var context = _listener.GetContext();
-                Task.Run(() => HandleRequest(context.Request, context.Response));
+                Task.Run(() => HandleRequest(context.Request, context.Response), cancellationToken);
             }
-        });
+        }, cancellationToken);
 
         return Task.CompletedTask;
     }

@@ -9,14 +9,14 @@ using Microsoft.Extensions.Options;
 
 namespace Lagrange.OneBot.Core.Network.Service;
 
-public partial class ReverseHttpService(IOptionsSnapshot<ReverseHttpServiceOptions> options, ILogger<ReverseHttpService> logger, BotContext context)
+public partial class HttpPostService(IOptionsSnapshot<HttpPostServiceOptions> options, ILogger<HttpPostService> logger, BotContext context)
     : BackgroundService, ILagrangeWebService
 {
-    private const string Tag = nameof(ReverseHttpService);
+    private const string Tag = nameof(HttpPostService);
 
     public event EventHandler<MsgRecvEventArgs>? OnMessageReceived { add { } remove { } }
 
-    private readonly ReverseHttpServiceOptions _options = options.Value;
+    private readonly HttpPostServiceOptions _options = options.Value;
 
     private readonly ILogger _logger = logger;
 

@@ -1,6 +1,6 @@
 namespace Lagrange.OneBot.Core.Network.Options;
 
-public sealed class ReverseHttpServiceOptions : HttpServiceOptions
+public sealed class HttpPostServiceOptions : HttpServiceOptions
 {
     public string Suffix { get; set; } = "";
 

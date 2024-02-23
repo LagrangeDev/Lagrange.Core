@@ -15,8 +15,8 @@ namespace Lagrange.OneBot.Core.Network.Service
                 {
                     "ReverseWebSocket" => Create<ReverseWSService>(config),
                     "ForwardWebSocket" => Create<ForwardWSService>(config),
-                    "ReverseHttp" => Create<ReverseHttpService>(config),
-                    "ForwardHttp" => Create<ForwardHttpService>(config),
+                    "HttpPost" => Create<HttpPostService>(config),
+                    "Http" => Create<HttpService>(config),
                     _ => null
                 };
             }
@@ -27,11 +27,11 @@ namespace Lagrange.OneBot.Core.Network.Service
             var fws = config.GetSection("ForwardWebSocket");
             if (fws.Exists()) return Create<ForwardWSService>(fws);
 
-            var rh = config.GetSection("ReverseHttp");
-            if (rh.Exists()) return Create<ReverseHttpService>(rh);
+            var rh = config.GetSection("HttpPost");
+            if (rh.Exists()) return Create<HttpPostService>(rh);
 
-            var fh = config.GetSection("ForwardHttp");
-            if (fh.Exists()) return Create<ForwardHttpService>(fh);
+            var fh = config.GetSection("Http");
+            if (fh.Exists()) return Create<HttpService>(fh);
 
             return null;
         }
