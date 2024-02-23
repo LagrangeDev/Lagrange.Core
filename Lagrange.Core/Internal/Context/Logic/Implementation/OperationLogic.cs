@@ -285,4 +285,13 @@ internal class OperationLogic : LogicBase
         var results = await Collection.Business.SendEvent(getMsgEvent);
         return results.Count != 0 ? ((GetGroupMessageEvent)results[0]).Chains : null;
     }
+    
+    public async Task<List<MessageChain>?> GetRoamMessage(uint friendUin, uint time, uint count)
+    {
+        if (await Collection.Business.CachingLogic.ResolveUid(null, friendUin) is not { } uid) return null;
+
+        var roamEvent = GetRoamMessageEvent.Create(uid, time, count); 
+        var results = await Collection.Business.SendEvent(roamEvent);
+        return results.Count != 0 ? ((GetRoamMessageEvent)results[0]).Chains : null;
+    }
 }

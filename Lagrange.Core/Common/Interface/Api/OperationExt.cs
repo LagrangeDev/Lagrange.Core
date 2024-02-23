@@ -118,7 +118,28 @@ public static class OperationExt
     /// <param name="groupUin">target GroupUin</param>
     /// <param name="startSequence">Start Sequence of the message</param>
     /// <param name="endSequence">End Sequence of the message</param>
-    /// <returns></returns>
     public static Task<List<MessageChain>?> GetGroupMessage(this BotContext bot, uint groupUin, uint startSequence, uint endSequence)
         => bot.ContextCollection.Business.OperationLogic.GetGroupMessage(groupUin, startSequence, endSequence);
+    
+    /// <summary>
+    /// Get the history message record for private message
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="friendUin">target FriendUin</param>
+    /// <param name="timestamp">timestamp of the message chain</param>
+    /// <param name="count">number of message to be fetched before timestamp</param>
+    public static Task<List<MessageChain>?> GetRoamMessage(this BotContext bot, uint friendUin, uint timestamp, uint count)
+        => bot.ContextCollection.Business.OperationLogic.GetRoamMessage(friendUin, timestamp, count);
+    
+    /// <summary>
+    /// Get the history message record for private message
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="targetChain">target chain</param>
+    /// <param name="count">number of message to be fetched before timestamp</param>
+    public static Task<List<MessageChain>?> GetRoamMessage(this BotContext bot, MessageChain targetChain, uint count)
+    {
+        uint timestamp = (uint)(targetChain.Time - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+        return bot.ContextCollection.Business.OperationLogic.GetRoamMessage(targetChain.FriendUin, timestamp, count);
+    }
 }
