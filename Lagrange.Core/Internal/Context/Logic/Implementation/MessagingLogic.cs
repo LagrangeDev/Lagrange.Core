@@ -12,6 +12,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 
 [EventSubscribe(typeof(PushMessageEvent))]
 [EventSubscribe(typeof(SendMessageEvent))]
+[EventSubscribe(typeof(GetGroupMessageEvent))]
 [EventSubscribe(typeof(GroupSysInviteEvent))]
 [EventSubscribe(typeof(GroupSysAdminEvent))]
 [EventSubscribe(typeof(GroupSysIncreaseEvent))]
@@ -50,6 +51,16 @@ internal class MessagingLogic : LogicBase
                 };
                 Collection.Invoker.PostEvent(args);
 
+                break;
+            }
+            case GetGroupMessageEvent get:
+            {
+                foreach (var chain in get.Chains)
+                {
+                    if (chain.Count == 0) return;
+                    await ResolveIncomingChain(chain);
+                    await ResolveChainMetadata(chain);
+                }
                 break;
             }
             case GroupSysInviteEvent invite:

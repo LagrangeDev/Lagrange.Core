@@ -278,4 +278,11 @@ internal class OperationLogic : LogicBase
         var results = await Collection.Business.SendEvent(inviteEvent);
         return results.Count != 0 && results[0].ResultCode == 0;
     }
+    
+    public async Task<List<MessageChain>?> GetGroupMessage(uint groupUin, uint startSequence, uint endSequence)
+    {
+        var getMsgEvent = GetGroupMessageEvent.Create(groupUin, startSequence, endSequence);
+        var results = await Collection.Business.SendEvent(getMsgEvent);
+        return results.Count != 0 ? ((GetGroupMessageEvent)results[0]).Chains : null;
+    }
 }

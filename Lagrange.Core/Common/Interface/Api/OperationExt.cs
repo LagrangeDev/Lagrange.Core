@@ -110,4 +110,15 @@ public static class OperationExt
     /// </summary>
     public static Task<string?> GetClientKey(this BotContext bot)
         => bot.ContextCollection.Business.OperationLogic.GetClientKey();
+
+    /// <summary>
+    /// Get the history message record, max 30 seqs
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="groupUin">target GroupUin</param>
+    /// <param name="startSequence">Start Sequence of the message</param>
+    /// <param name="endSequence">End Sequence of the message</param>
+    /// <returns></returns>
+    public static Task<List<MessageChain>?> GetGroupMessage(this BotContext bot, uint groupUin, uint startSequence, uint endSequence)
+        => bot.ContextCollection.Business.OperationLogic.GetGroupMessage(groupUin, startSequence, endSequence);
 }
