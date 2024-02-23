@@ -30,6 +30,7 @@ By using or accessing Lagrange.Core, the user acknowledges and agrees to release
 
 Please use Lagrange.Core responsibly and in accordance with the law.
 
+### Recommend [OpenShamrock](https://github.com/whitechi73/OpenShamrock) if applicable
 ## Features List
 
 | Protocol | Support | Login                     | Support | Messages  | Support | Operations        | Support | Events              | Support |
