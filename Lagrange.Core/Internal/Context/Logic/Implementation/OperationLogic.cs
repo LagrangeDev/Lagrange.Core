@@ -294,4 +294,11 @@ internal class OperationLogic : LogicBase
         var results = await Collection.Business.SendEvent(roamEvent);
         return results.Count != 0 ? ((GetRoamMessageEvent)results[0]).Chains : null;
     }
+    
+    public async Task<List<string>?> FetchCustomFace()
+    {
+        var fetchCustomFaceEvent = FetchCustomFaceEvent.Create();
+        var results = await Collection.Business.SendEvent(fetchCustomFaceEvent);
+        return results.Count != 0 ? ((FetchCustomFaceEvent)results[0]).Urls : null;
+    }
 }

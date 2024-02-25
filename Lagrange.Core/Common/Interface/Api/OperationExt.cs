@@ -142,4 +142,7 @@ public static class OperationExt
         uint timestamp = (uint)(targetChain.Time - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
         return bot.ContextCollection.Business.OperationLogic.GetRoamMessage(targetChain.FriendUin, timestamp, count);
     }
+    
+    public static Task<List<string>?> FetchCustomFace(this BotContext bot)
+        => bot.ContextCollection.Business.OperationLogic.FetchCustomFace();
 }
