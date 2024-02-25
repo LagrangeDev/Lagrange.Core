@@ -40,6 +40,7 @@ internal class PttUploader : IHighwayUploader
 
             record.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             record.Compat = metaResult.Compat;  // for legacy QQ
+            await record.AudioStream.DisposeAsync();
         }
     }
 
@@ -72,6 +73,7 @@ internal class PttUploader : IHighwayUploader
 
             record.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             record.Compat = metaResult.Compat;  // for legacy QQ
+            await record.AudioStream.DisposeAsync();
         }
     }
 
