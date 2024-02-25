@@ -4,9 +4,10 @@ title: '[Feature Request]: '
 labels: ["feat"]
 
 body:
+  # User's README
   - type: markdown
     attributes:
-      values: |
+      value: |
         ### 为了项目的长久稳定，请不要要求提供一些敏感操作的新功能
         ### 项目人手有限，如果您有能力，请考虑提交PR
         ### 当 Owner 或 Member 认为该 Feature Request 不合适，可能直接关闭 ISSUE
