@@ -4,6 +4,7 @@ using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Action.Response;
+using Lagrange.OneBot.Core.Operation.Converters;
 using Lagrange.OneBot.Database;
 
 namespace Lagrange.OneBot.Core.Operation.Message;
@@ -13,7 +14,7 @@ public sealed class SendGroupMessageOperation(MessageCommon common) : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        var chain = payload.Deserialize<OneBotGroupMessageBase>() switch
+        var chain = payload.Deserialize<OneBotGroupMessageBase>(SerializerOptions.DefaultOptions) switch
         {
             OneBotGroupMessage message => common.ParseChain(message).Build(),
             OneBotGroupMessageSimple messageSimple => common.ParseChain(messageSimple).Build(),

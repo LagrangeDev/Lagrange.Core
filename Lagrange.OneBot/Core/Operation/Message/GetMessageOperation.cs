@@ -5,6 +5,7 @@ using Lagrange.Core.Message;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Action.Response;
 using Lagrange.OneBot.Core.Entity.Message;
+using Lagrange.OneBot.Core.Operation.Converters;
 using Lagrange.OneBot.Database;
 using Lagrange.OneBot.Message;
 using LiteDB;
@@ -16,7 +17,7 @@ public class GetMessageOperation(LiteDatabase database, MessageService service) 
 {
     public Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload.Deserialize<OneBotGetMessage>() is { } getMsg)
+        if (payload.Deserialize<OneBotGetMessage>(SerializerOptions.DefaultOptions) is { } getMsg)
         {
             var record = database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == getMsg.MessageId);
             var chain = (MessageChain)record;

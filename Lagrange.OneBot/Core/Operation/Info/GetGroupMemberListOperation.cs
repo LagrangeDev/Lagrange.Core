@@ -4,6 +4,7 @@ using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core.Entity;
 using Lagrange.OneBot.Core.Entity.Action;
+using Lagrange.OneBot.Core.Operation.Converters;
 
 namespace Lagrange.OneBot.Core.Operation.Info;
 
@@ -12,7 +13,7 @@ public class GetGroupMemberListOperation : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload.Deserialize<OneBotGetGroupMemberInfo>() is { } message)
+        if (payload.Deserialize<OneBotGetGroupMemberInfo>(SerializerOptions.DefaultOptions) is { } message)
         {
             var result = await context.FetchMembers(message.GroupId, message.NoCache);
             return new OneBotResult(result.Select(x => new OneBotGroupMember(message.GroupId, x.Uin, x.Permission.ToString().ToLower(), x.GroupLevel.ToString(), x.MemberCard, x.MemberName, (uint)new DateTimeOffset(x.JoinTime).ToUnixTimeSeconds(), (uint)new DateTimeOffset(x.LastMsgTime).ToUnixTimeSeconds())), 0, "ok");

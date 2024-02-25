@@ -7,6 +7,7 @@ using Lagrange.Core.Message;
 using Lagrange.OneBot.Core.Entity;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Message;
+using Lagrange.OneBot.Core.Operation.Converters;
 
 namespace Lagrange.OneBot.Core.Operation.Message;
 
@@ -15,7 +16,7 @@ public class SendForwardMessageOperation(MessageCommon common) : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload.Deserialize<OneBotForward>() is { } forward)
+        if (payload.Deserialize<OneBotForward>(SerializerOptions.DefaultOptions) is { } forward)
         {
             List<MessageChain> chains = [];
             
