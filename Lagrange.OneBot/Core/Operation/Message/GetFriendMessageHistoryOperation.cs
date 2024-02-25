@@ -5,6 +5,7 @@ using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Message;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Message;
+using Lagrange.OneBot.Core.Operation.Converters;
 using Lagrange.OneBot.Database;
 using Lagrange.OneBot.Message;
 using LiteDB;
@@ -16,7 +17,7 @@ public class GetFriendMessageHistoryOperation(LiteDatabase database, MessageServ
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload.Deserialize<OneBotFriendMsgHistory>() is { } history)
+        if (payload.Deserialize<OneBotFriendMsgHistory>(SerializerOptions.DefaultOptions) is { } history)
         {
             var collection = database.GetCollection<MessageRecord>();
             var record = history.MessageId == 0 

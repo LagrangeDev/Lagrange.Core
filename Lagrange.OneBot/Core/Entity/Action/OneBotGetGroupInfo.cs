@@ -6,6 +6,6 @@ namespace Lagrange.OneBot.Core.Entity.Action;
 public class OneBotGetGroupInfo
 {
     [JsonPropertyName("group_id")] public uint GroupId { get; set; }
-    
+
     [JsonPropertyName("no_cache")] public bool NoCache { get; set; }
 }

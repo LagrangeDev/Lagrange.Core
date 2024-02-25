@@ -48,10 +48,17 @@ public sealed partial class HttpService : ILagrangeWebService
         Task.Run(() =>
         {
             _listener.Start();
-            while (_listener.IsListening)
+            while (true)
             {
-                var context = _listener.GetContext();
-                Task.Run(() => HandleRequest(context.Request, context.Response), cancellationToken);
+                try
+                {
+                    var context = _listener.GetContext();
+                    Task.Run(() => HandleRequest(context.Request, context.Response), cancellationToken);
+                }
+                catch (HttpListenerException)
+                {
+                    break;
+                }
             }
         }, cancellationToken);
 
@@ -122,6 +129,7 @@ public sealed partial class HttpService : ILagrangeWebService
     public Task StopAsync(CancellationToken cancellationToken)
     {
         _listener.Stop();
+        _listener.Close();
         return Task.CompletedTask;
     }
 
