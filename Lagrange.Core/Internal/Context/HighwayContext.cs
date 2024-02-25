@@ -98,7 +98,7 @@ internal class HighwayContext : ContextBase, IDisposable
         }
     }
 
-    public async Task<bool> UploadSrcByStreamAsync(int commonId, Stream data, string ticket, byte[] md5, byte[]? extendInfo = null)
+    public async Task<bool> UploadSrcByStreamAsync(int commonId, Stream data, byte[] ticket, byte[] md5, byte[]? extendInfo = null)
     {
         bool success = true;
         var upBlocks = new List<UpBlock>();
@@ -106,7 +106,7 @@ internal class HighwayContext : ContextBase, IDisposable
 
         long fileSize = data.Length;
         int offset = 0;
-        int chunkSize = fileSize is >= 1024 and <= 1048575 ? 8192 : 1024 * 1024;
+        int chunkSize = fileSize is >= 1024 and <= 1024 * 1024 - 1 ? 8192 : 1024 * 1024;
         int concurrent = commonId == 2 ? 1 : 8;
 
         data.Seek(0, SeekOrigin.Begin);
@@ -140,6 +140,7 @@ internal class HighwayContext : ContextBase, IDisposable
             Command = "PicUp.DataUp",
             Seq = upBlock.Sequence,
             AppId = (uint)AppInfo.SubAppId,
+            DataFlag = 16,
             CommandId = (uint)upBlock.CommandId,
         };
         var segHead = new SegHead
@@ -151,13 +152,19 @@ internal class HighwayContext : ContextBase, IDisposable
             Md5 = (await upBlock.Block.Md5Async()).UnHex(),
             FileMd5 = upBlock.FileMd5,
         };
-        
+        var loginHead = new LoginSigHead
+        {
+            Uint32LoginSigType = 8,
+            BytesLoginSig = Collection.Keystore.Session.Tgt,
+            AppId = (uint)Collection.AppInfo.AppId
+        };
         var highwayHead = new ReqDataHighwayHead
         {
             MsgBaseHead = head,
             MsgSegHead = segHead,
             BytesReqExtendInfo = upBlock.ExtendInfo,
             Timestamp = upBlock.Timestamp,
+            MsgLoginSigHead = loginHead
         };
 
         bool isEnd = upBlock.Offset + (ulong)upBlock.Block.Length == upBlock.FileSize;
@@ -222,7 +229,7 @@ internal class HighwayContext : ContextBase, IDisposable
         uint Sequence, 
         ulong FileSize,
         ulong Offset, 
-        string Ticket,
+        byte[] Ticket,
         byte[] FileMd5,
         byte[] Block, 
         byte[]? ExtendInfo = null,

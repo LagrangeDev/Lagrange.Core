@@ -1,6 +1,8 @@
+using Lagrange.Core.Internal.Packets.Message.Component;
 using Lagrange.Core.Internal.Packets.Message.Component.Extra;
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
+using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
@@ -18,27 +20,37 @@ public class RecordEntity : IMessageEntity
     public int AudioSize { get; set; }
     
     public string AudioUrl { get; set; } = string.Empty;
-    
-    internal Stream? AudioStream { get; set; }
 
-    internal string? Path { get; set; }
+    #region Internal Properties
+
+    internal Stream? AudioStream { get; set; }
     
     internal string? AudioUuid { get; set; }
     
     internal string? FileSha1 { get; set; }
     
+    internal MsgInfo? MsgInfo { get; set; }
+    
+    internal RichText? Compat { get; set; }
+
+    #endregion
+    
     internal RecordEntity() { }
     
-    public RecordEntity(string filePath)
+    public RecordEntity(string filePath, int audioLength = 0)
     {
         FilePath = filePath;
         AudioStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        AudioSize = (int)AudioStream.Length;
+        AudioLength = audioLength;
     }
 
-    public RecordEntity(byte[] file)
+    public RecordEntity(byte[] file, int audioLength = 0)
     {
         FilePath = string.Empty;
         AudioStream = new MemoryStream(file);
+        AudioSize = (int)AudioStream.Length;
+        AudioLength = audioLength;
     }
 
     internal RecordEntity(string audioUuid, string audioName)
@@ -49,11 +61,18 @@ public class RecordEntity : IMessageEntity
     
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
+        var common = MsgInfo.Serialize();
+        
         return new Elem[]
         {
             new()
             {
-                
+                CommonElem = new CommonElem
+                {
+                    ServiceType = 48,
+                    PbElem = common.ToArray(),
+                    BusinessType = 22
+                }
             }
         };
     }

@@ -130,9 +130,10 @@ public sealed class MessageBuilder
     /// Add a audio entity to the message chain
     /// </summary>
     /// <param name="file">The audio file that has already been converted to SilkCodec</param>
-    public MessageBuilder Record(byte[] file)
+    /// <param name="audioLength">The length of the audio file that directly shown</param>
+    public MessageBuilder Record(byte[] file, int audioLength = 0)
     {
-        var recordEntity = new RecordEntity(file);
+        var recordEntity = new RecordEntity(file, audioLength);
         _chain.Add(recordEntity);
 
         return this;
@@ -142,9 +143,10 @@ public sealed class MessageBuilder
     /// Add a audio entity to the message chain
     /// </summary>
     /// <param name="filePath">The audio file that has already been converted to SilkCodec</param>
-    public MessageBuilder Record(string filePath)
+    /// <param name="audioLength">The length of the audio file that directly shown</param>
+    public MessageBuilder Record(string filePath, int audioLength = 0)
     {
-        var recordEntity = new RecordEntity(filePath);
+        var recordEntity = new RecordEntity(filePath, audioLength);
         _chain.Add(recordEntity);
 
         return this;

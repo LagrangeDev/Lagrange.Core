@@ -15,7 +15,7 @@ internal class SegHead
     
     [ProtoMember(5)] public uint RetCode { get; set; }
 
-    [ProtoMember(6)] public string ServiceTicket { get; set; } = string.Empty;
+    [ProtoMember(6)] public byte[] ServiceTicket { get; set; } = Array.Empty<byte>();
     
     // [ProtoMember(7)] public uint Flag { get; set; }
     

@@ -74,6 +74,8 @@ internal static class MessagePacker
                 message.Body.MsgContent = stream.ToArray();
             }
         }
+        
+        BuildAdditional(chain, message);
 
         return message;
     }
@@ -100,6 +102,32 @@ internal static class MessagePacker
         }
 
         return message;
+    }
+
+    private static void BuildAdditional(MessageChain chain, Internal.Packets.Message.Message message)
+    {
+        if (message.Body?.RichText == null) return;
+        
+        foreach (var entity in chain)
+        {
+            switch (entity)
+            {
+                case RecordEntity record when chain.IsGroup && record.Compat is { } compat:  // Append Tag 04 -> Ptt
+                {
+                    message.Body.RichText.Ptt = compat.Ptt;
+                    message.Body.RichText.Elems.AddRange(compat.Elems);
+                    break;
+                }
+                case RecordEntity record when !chain.IsGroup:
+                {
+                    message.Body.RichText.Ptt = new Ptt
+                    {
+
+                    };
+                    break;
+                }
+            }
+        }
     }
     
     public static MessageChain Parse(PushMsgBody message, bool isFake = false)

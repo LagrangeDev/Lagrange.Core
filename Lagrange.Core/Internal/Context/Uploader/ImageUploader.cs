@@ -1,3 +1,4 @@
+using System.Text;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
@@ -8,8 +9,6 @@ namespace Lagrange.Core.Internal.Context.Uploader;
 [HighwayUploader(typeof(ImageEntity))]
 internal class ImageUploader : IHighwayUploader
 {
-    private const string Tag = nameof(ImageUploader);
-    
     public async Task UploadPrivate(ContextCollection context, MessageChain chain, IMessageEntity entity)
     {
         if (entity is ImageEntity { ImageStream: not null } image)
@@ -23,7 +22,8 @@ internal class ImageUploader : IHighwayUploader
                 var ticketResult = (ImageUploadEvent)results[0];
                 if (!ticketResult.IsExist)
                 {
-                    bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1, image.ImageStream, ticketResult.Ticket, @event.FileMd5.UnHex());
+                    var ticket = Encoding.UTF8.GetBytes(ticketResult.Ticket);
+                    bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1, image.ImageStream, ticket, @event.FileMd5.UnHex());
                     if (!hwSuccess) throw new Exception();
                 }
 
@@ -44,7 +44,8 @@ internal class ImageUploader : IHighwayUploader
                 var ticketResult = (ImageGroupUploadEvent)results[0];
                 if (!ticketResult.IsExist)
                 {
-                    bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(2, image.ImageStream, ticketResult.Ticket, @event.FileMd5.UnHex());
+                    var ticket = Encoding.UTF8.GetBytes(ticketResult.Ticket);
+                    bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1, image.ImageStream, ticket, @event.FileMd5.UnHex());
                     if (!hwSuccess) throw new Exception();
                 }
 

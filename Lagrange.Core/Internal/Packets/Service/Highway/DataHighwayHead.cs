@@ -17,7 +17,7 @@ internal class DataHighwayHead
     
     [ProtoMember(6)] public uint AppId { get; set; }
     
-    // [ProtoMember(7)] public uint DataFlag { get; set; }
+    [ProtoMember(7)] public uint DataFlag { get; set; }
     
     [ProtoMember(8)] public uint CommandId { get; set; }
     
