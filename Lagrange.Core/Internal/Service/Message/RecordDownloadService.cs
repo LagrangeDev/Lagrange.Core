@@ -34,7 +34,7 @@ internal class RecordDownloadService : BaseService<RecordDownloadEvent>
                     C2C = new C2CUserInfo
                     {
                         AccountType = 2,
-                        SelfUid = input.SelfUid
+                        TargetUid = input.SelfUid
                     }
                 },
                 Client = new ClientMeta

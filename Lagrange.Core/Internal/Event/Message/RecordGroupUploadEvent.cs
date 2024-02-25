@@ -6,11 +6,11 @@ using Lagrange.Core.Message.Entity;
 
 namespace Lagrange.Core.Internal.Event.Message;
 
-internal class RecordUploadEvent : ProtocolEvent
+internal class RecordGroupUploadEvent : ProtocolEvent
 {
     public RecordEntity Entity { get; }
     
-    public string? TargetUid { get; set; }
+    public uint GroupUin { get; }
     
     public string UKey { get; }
     
@@ -20,23 +20,23 @@ internal class RecordUploadEvent : ProtocolEvent
     
     public RichText Compat { get; }
 
-    private RecordUploadEvent(RecordEntity entity, string targetUid) : base(true)
+    private RecordGroupUploadEvent(RecordEntity entity, uint groupUin) : base(true)
     {
         Entity = entity;
-        TargetUid = targetUid;
+        GroupUin = groupUin;
     }
 
-    private RecordUploadEvent(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, RichText compat) : base(resultCode)
+    private RecordGroupUploadEvent(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, RichText compat) : base(resultCode)
     {
         UKey = uKey;
         MsgInfo = msgInfo;
         Network = network;
         Compat = compat;
     }
-    
-    public static RecordUploadEvent Create(RecordEntity entity, string targetUid)
-        => new(entity, targetUid);
 
-    public static RecordUploadEvent Result(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, RichText compat)
+    public static RecordGroupUploadEvent Create(RecordEntity entity, uint groupUin)
+        => new(entity, groupUin);
+
+    public static RecordGroupUploadEvent Result(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, RichText compat)
         => new(resultCode, uKey, msgInfo, network, compat);
 }

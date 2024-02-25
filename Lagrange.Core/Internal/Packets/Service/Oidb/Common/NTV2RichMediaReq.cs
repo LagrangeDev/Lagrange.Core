@@ -67,7 +67,7 @@ internal class C2CUserInfo
 {
     [ProtoMember(1)] public uint AccountType { get; set; } // 2
     
-    [ProtoMember(2)] public string SelfUid { get; set; }
+    [ProtoMember(2)] public string TargetUid { get; set; }
 }
 
 

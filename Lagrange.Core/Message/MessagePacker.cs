@@ -112,18 +112,10 @@ internal static class MessagePacker
         {
             switch (entity)
             {
-                case RecordEntity record when chain.IsGroup && record.Compat is { } compat:  // Append Tag 04 -> Ptt
+                case RecordEntity { Compat: { } compat }:  // Append Tag 04 -> Ptt
                 {
                     message.Body.RichText.Ptt = compat.Ptt;
                     message.Body.RichText.Elems.AddRange(compat.Elems);
-                    break;
-                }
-                case RecordEntity record when !chain.IsGroup:
-                {
-                    message.Body.RichText.Ptt = new Ptt
-                    {
-
-                    };
                     break;
                 }
             }

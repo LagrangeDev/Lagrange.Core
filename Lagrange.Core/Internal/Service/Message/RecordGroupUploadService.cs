@@ -8,14 +8,15 @@ using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 using FileInfo = Lagrange.Core.Internal.Packets.Service.Oidb.Common.FileInfo;
+using GroupInfo = Lagrange.Core.Internal.Packets.Service.Oidb.Common.GroupInfo;
 
 namespace Lagrange.Core.Internal.Service.Message;
 
-[EventSubscribe(typeof(RecordUploadEvent))]
-[Service("OidbSvcTrpcTcp.0x126d_100")]
-internal class RecordUploadService : BaseService<RecordUploadEvent>
+[EventSubscribe(typeof(RecordGroupUploadEvent))]
+[Service("OidbSvcTrpcTcp.0x126e_100")]
+internal class RecordGroupUploadService : BaseService<RecordGroupUploadEvent>
 {
-    protected override bool Build(RecordUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Build(RecordGroupUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
         if (input.Entity.AudioStream is null) throw new Exception();
@@ -29,19 +30,15 @@ internal class RecordUploadService : BaseService<RecordUploadEvent>
             {
                 Common = new CommonHead
                 {
-                    RequestId = 4u,
+                    RequestId = 1u,
                     Command = 100
                 },
                 Scene = new SceneInfo
                 {
                     RequestType = 2,
                     BusinessType = 3,
-                    SceneType = 1u,
-                    C2C = new C2CUserInfo
-                    {
-                        AccountType = 2,
-                        TargetUid = input.TargetUid ?? ""
-                    }
+                    SceneType = 2u,
+                    Group = new GroupInfo { GroupUin = input.GroupUin }
                 },
                 Client = new ClientMeta { AgentType = 2 },
             },
@@ -75,36 +72,37 @@ internal class RecordUploadService : BaseService<RecordUploadEvent>
                 TryFastUploadCompleted = true,
                 SrvSendMsg = false,
                 ClientRandomId = (ulong)Random.Shared.Next(),
-                CompatQMsgSceneType = 1u,
+                CompatQMsgSceneType = 2u,
                 ExtBizInfo = new ExtBizInfo
                 {
                     Pic = new PicExtBizInfo { TextSummary = "" },
                     Video = new VideoExtBizInfo { BytesPbReserve = Array.Empty<byte>() },
                     Ptt = new PttExtBizInfo
                     {
-                        BytesReserve = new byte[] { 0x08, 0x00, 0x38, 0x00 },
-                        BytesPbReserve = Array.Empty<byte>(),
-                        BytesGeneralFlags = new byte[] { 0x9a, 0x01, 0x0b, 0xaa, 0x03, 0x08, 0x08, 0x04, 0x12, 0x04, 0x00, 0x00, 0x00, 0x00 }
+                        BytesReserve = Array.Empty<byte>(),
+                        BytesPbReserve = new byte[] { 0x08, 0x00, 0x38, 0x00 },
+                        BytesGeneralFlags = new byte[] { 0x9a, 0x01, 0x07, 0xaa, 0x03, 0x04, 0x08, 0x08, 0x12, 0x00 }
                     }
                 },
                 ClientSeq = 0,
                 NoNeedCompatMsg = false
             }
-        }, 0x126d, 100, false, true);
-        
+        }, 0x126e, 100, false, true);
+
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
     }
 
     protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out RecordUploadEvent output, out List<ProtocolEvent>? extraEvents)
+        out RecordGroupUploadEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<NTV2RichMediaResp>>(input.AsSpan());
         var upload = packet.Body.Upload;
         var compat = Serializer.Deserialize<RichText>(upload.CompatQMsg.AsSpan());
         
-        output = RecordUploadEvent.Result((int)packet.ErrorCode, upload.UKey, upload.MsgInfo, upload.IPv4s, compat);
+        output = RecordGroupUploadEvent.Result((int)packet.ErrorCode, upload.UKey, upload.MsgInfo, upload.IPv4s, compat);
         extraEvents = null;
         return true;
     }
