@@ -23,7 +23,7 @@ body:
     attributes:
       label: 请确保您已阅读以上注意事项，并勾选下方的确认框。
       options:
-        - label: "我已经仔细阅读上述内容
+        - label: "我已经仔细阅读上述内容"
           required: true
         - label: "我已经使用 [最新构建](https://github.com/LagrangeDev/Lagrange.Core/actions/) 测试过，问题依旧存在。"
           required: true
