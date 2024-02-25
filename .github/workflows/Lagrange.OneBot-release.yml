@@ -1,6 +1,14 @@
 name: Lagrange.OneBot Release
 
 on:
+  push:
+    paths:
+      - "**.cs"
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+    paths:
+      - "**.cs"
   workflow_dispatch:
 
 jobs:
