@@ -1,0 +1,149 @@
+name: 错误报告
+description: 在使用 Lagrange 的过程中遇到了错误
+title: '[Bug?]: '
+labels: [ "bug?" ]
+
+body:
+  # User's README and agreement
+  - type: markdown
+    attributes:
+      value: |
+        ## 感谢您愿意填写错误回报！
+        ## 以下是一些注意事项，请务必阅读让我们能够更容易处理
+
+        ### ❗| 确定没有相同问题的ISSUE已被提出.
+        ### 🌎| 请准确填写环境信息
+        ### ❔| 修改配置文件中log参数为trace或debug，并提供出现问题前后的完整日志内容。**请自行删除日志内存在的个人信息及敏感内容。**
+        ### ⚠ | 如果您有能力，请使用VS提供更加详细的信息.
+
+        ## 如果您不知道如何有效、精准地表述，我们建议您先阅读[《提问的智慧》](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md)
+        ---
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: 请确保您已阅读以上注意事项，并勾选下方的确认框。
+      options:
+        - label: "我已经仔细阅读上述内容"
+          required: true
+        - label: "我已经使用 [最新构建](https://github.com/LagrangeDev/Lagrange.Core/actions/) 测试过，问题依旧存在。"
+          required: true
+        - label: "我已经在 [Issue Tracker](https://github.com/LagrangeDev/Lagrange.Core/issues) 中找过我要提出的问题，没有找到相同问题的ISSUE。"
+          required: true
+        - label: 我已知晓并同意，此处仅用于汇报程序中存在的问题。若这个 Issue 是关于其他非程序本身问题，则我的 Issue 可能会被无条件自动关闭或/并锁定。（其它疑问请考虑加入TG群询问或在discussions中提问）
+          required: true
+
+  # User's data
+  - type: markdown
+    attributes:
+      value: |
+        ## 环境信息
+        请根据实际使用环境修改以下信息。
+
+  # Env | Lagrange Project
+  - type: dropdown
+    id: lagrange-project
+    attributes:
+      label: Lagrange项目
+      description: 请选择具体使用/依赖的Lagrange项目
+      options:
+        - Audio
+        - Core
+        - OneBot
+        - 其它（请在下方说明）
+    validations:
+      required: true
+
+  # Env | Lagrange Commit
+  - type: input
+    id: lagrange-commit
+    attributes:
+      label: 所使用/依赖的Lagrange项目对应的commit
+    validations:
+      required: true
+
+  # Env | VM Version
+  - type: dropdown
+    id: env-vm-ver
+    attributes:
+      label: 运行环境
+      description: 选择运行 Lagrange 的系统版本
+      options:
+        - Windows
+        - MacOS
+        - Linux
+        - 其它（请在下方说明）
+    validations:
+      required: true
+
+  # Env | VM Arch
+  - type: dropdown
+    id: env-vm-arch
+    attributes:
+      label: 运行架构
+      description: 请选择运行 Lagrange 的系统架构
+      options:
+        - x64
+        - x86
+        - arm
+        - arm64
+        - 其它
+    validations:
+      required: true
+
+  # Env | Connection type
+  - type: dropdown
+    id: env-conn-type
+    attributes:
+      label: 连接方式
+      description: 如果有必要，请选择对接机器人的连接方式（例如使用Lagrange.OneBot）
+      options:
+        - HTTP
+        - 正向 WebSocket
+        - 反向 WebSocket
+
+  # Input | Reproduce
+  - type: textarea
+    id: reproduce-steps
+    attributes:
+      label: 重现步骤
+      description: |
+        我们需要执行哪些操作才能让 bug 出现？
+        简洁清晰的重现步骤能够帮助我们更迅速地定位问题所在。
+    validations:
+      required: true
+
+  # Input | Expected result
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望的结果是什么？
+    validations:
+      required: true
+
+  # Input | Actual result
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际的结果是什么？
+    validations:
+      required: true
+
+  # Optional | Reproduce code
+  - type: textarea
+    id: reproduce-code
+    attributes:
+      label: 简单的复现代码/链接（可选）
+      render: C#
+
+  # Optional | Logging
+  - type: textarea
+    id: logging
+    attributes:
+      label: 日志记录（可选）
+      render: Shell
+
+  # Optional | Extra description
+  - type: textarea
+    id: extra-desc
+    attributes:
+      label: 补充说明（可选）
