@@ -1,3 +1,5 @@
+using System.Buffers;
+using System.Buffers.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -11,13 +13,7 @@ public class BooleanConverter : JsonConverter<bool>
         {
             JsonTokenType.True => true,
             JsonTokenType.False => false,
-            JsonTokenType.String =>
-                reader.GetString() switch
-                {
-                    "true" => true,
-                    "false" => false,
-                    _ => throw new JsonException()
-                },
+            JsonTokenType.String when Utf8Parser.TryParse(reader.HasValueSequence ? reader.ValueSequence.ToArray() : reader.ValueSpan, out bool value, out _) => value,
             _ => throw new JsonException()
         };
     }
