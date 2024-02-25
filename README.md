@@ -37,7 +37,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 |----------|:-------:|---------------------------|:-------:|:----------|:-------:|:------------------|:-------:|:--------------------|:-------:|
 | Windows  |   🟢    | QrCode                    |   🟢    | Images    |   🟢    | ~~Poke~~          |   🔴    | Captcha             |   🟢    |
 | macOS    |   🟢    | Password                  |   🟢    | Text / At |   🟢    | Recall            |   🟡    | BotOnline           |   🟢    |
-| Linux    |   🟢    | EasyLogin                 |   🟢    | Records   |   🟡    | Leave Group       |   🟢    | BotOffline          |   🟢    |
+| Linux    |   🟢    | EasyLogin                 |   🟢    | Records   |   🟢    | Leave Group       |   🟢    | BotOffline          |   🟢    |
 |          |         | UnusalDevice<br/>Password |   🔴    | QFace     |   🟢    | ~~Special Title~~ |   🔴    | Message             |   🟢    |
 |          |         | UnusalDevice<br/>Easy     |   🟢    | Json      |   🟡    | Kick Member       |   🟢    | ~~Poke~~            |   🔴    |
 |          |         | NewDeviceVerify           |   🔴    | Xml       |   🟢    | Mute Member       |   🟢    | MessageRecall       |   🟢    |
@@ -62,7 +62,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [Text]           |   🟢    |
 | [Face]           |   🟢    |
 | [Image]          |   🟢    |
-| [Record]         |   🟡    |
+| [Record]         |   🟢    |
 | [Video]          |   🟡    |
 | [At]             |   🟢    |
 | [Rps]            |   🟢    |
