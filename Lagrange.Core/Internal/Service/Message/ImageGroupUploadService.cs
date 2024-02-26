@@ -1,27 +1,33 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
-using Lagrange.Core.Internal.Packets.Service.Highway;
+using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
+using Lagrange.Core.Internal.Packets.Service.Oidb;
+using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Utility;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
+using FileInfo = Lagrange.Core.Internal.Packets.Service.Oidb.Common.FileInfo;
+using GroupInfo = Lagrange.Core.Internal.Packets.Service.Oidb.Common.GroupInfo;
 
 namespace Lagrange.Core.Internal.Service.Message;
 
 [EventSubscribe(typeof(ImageGroupUploadEvent))]
-[Service("ImgStore.GroupPicUp")]
+[Service("OidbSvcTrpcTcp.0x11c4_100")]
 internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
 {
-    protected override bool Build(ImageGroupUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Build(ImageGroupUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
-        input.Stream.Seek(0, SeekOrigin.Begin);
+        if (input.Entity.ImageStream is null) throw new Exception();
+        
+        string md5 = input.Entity.ImageStream.Md5(true);
+        string sha1 = input.Entity.ImageStream.Sha1(true);
         
         var buffer = new byte[1024]; // parse image header
-        int _ = input.Stream.Read(buffer.AsSpan());
+        int _ = input.Entity.ImageStream.Read(buffer.AsSpan());
         var type = ImageResolver.Resolve(buffer, out var size);
-        
         string imageExt = type switch
         {
             ImageFormat.Jpeg => ".jpg",
@@ -32,30 +38,75 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
             ImageFormat.Tiff => ".tiff",
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
-        
-        var packet = new GroupPicUp<GroupPicUpRequest>
+        input.Entity.ImageStream.Position = 0;
+
+        var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq
         {
-            NetType = 3,
-            SubCmd = 1,
-            Body = new GroupPicUpRequest
+            ReqHead = new MultiMediaReqHead
             {
-                GroupUin = input.TargetGroupUin,
-                SrcUin = keystore.Uin,
-                FileId = 1,
-                FileMd5 = input.FileMd5.UnHex(),
-                FileSize = input.FileSize,
-                FileName = input.FileMd5 + imageExt,
-                SrcTerm = 2,
-                PlatformType = 8,
-                BuType = 212,
-                PicWidth = (uint)size.X,
-                PicHeight = (uint)size.Y,
-                PicType = 1001,
-                BuildVer = "1.0.0",
-                OriginalPic = 1,
-                SrvUpload = 0
+                Common = new CommonHead
+                {
+                    RequestId = 1,
+                    Command = 100
+                },
+                Scene = new SceneInfo
+                {
+                    RequestType = 2,
+                    BusinessType = 1,
+                    SceneType = 2,
+                    Group = new GroupInfo { GroupUin = input.GroupUin }
+                },
+                Client = new ClientMeta { AgentType = 2 },
             },
-        };
+            Upload = new UploadReq
+            {
+                UploadInfo = new List<UploadInfo>
+                {
+                    new()
+                    {
+                        FileInfo = new FileInfo
+                        {
+                            FileSize = (uint)input.Entity.ImageStream.Length,
+                            FileHash = md5,
+                            FileSha1 = sha1,
+                            FileName = md5 + imageExt,
+                            Type = new FileType
+                            {
+                                Type = 1,
+                                PicFormat = 1001,
+                                VideoFormat = 0,
+                                VoiceFormat = 0
+                            },
+                            Width = (uint)size.X,
+                            Height = (uint)size.Y,
+                            Time = 0,
+                            Original = 1
+                        },
+                        SubFileType = 0
+                    }
+                },
+                TryFastUploadCompleted = true,
+                SrvSendMsg = false,
+                ClientRandomId = (ulong)Random.Shared.Next(),
+                CompatQMsgSceneType = 1,
+                ExtBizInfo = new ExtBizInfo
+                {
+                    Pic = new PicExtBizInfo
+                    {
+                        BytesPbReserveTroop = "0800180020004a00500062009201009a0100aa010c080012001800200028003a00".UnHex()
+                    },
+                    Video = new VideoExtBizInfo { BytesPbReserve = Array.Empty<byte>() },
+                    Ptt = new PttExtBizInfo
+                    {
+                        BytesReserve = Array.Empty<byte>(),
+                        BytesPbReserve = Array.Empty<byte>(),
+                        BytesGeneralFlags = Array.Empty<byte>()
+                    }
+                },
+                ClientSeq = 0,
+                NoNeedCompatMsg = false
+            }
+        }, 0x11c4, 100, false, true);
         
         output = packet.Serialize();
         extraPackets = null;
@@ -65,13 +116,11 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
     protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out ImageGroupUploadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<GroupPicUp<GroupPicUpResponse>>(input.AsSpan());
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<NTV2RichMediaResp>>(input.AsSpan());
+        var upload = packet.Body.Upload;
+        var compat = Serializer.Deserialize<NotOnlineImage>(upload.CompatQMsg.AsSpan());
         
-        output = ImageGroupUploadEvent.Result((int)(packet.Body?.Result ?? 1),
-                                              packet.Body?.UpUkey?.Hex(true) ?? "",
-                                              packet.Body?.FileExit ?? false,
-                                              (uint)(packet.Body?.Fileid ?? 0));
-        
+        output = ImageGroupUploadEvent.Result((int)packet.ErrorCode, upload.UKey, upload.MsgInfo, upload.IPv4s, compat);
         extraEvents = null;
         return true;
     }

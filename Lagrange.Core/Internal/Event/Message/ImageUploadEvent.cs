@@ -1,4 +1,7 @@
-using Lagrange.Core.Utility.Extension;
+using Lagrange.Core.Internal.Packets.Message.Component;
+using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
+using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
+using Lagrange.Core.Message.Entity;
 
 #pragma warning disable CS8618
 
@@ -6,37 +9,35 @@ namespace Lagrange.Core.Internal.Event.Message;
 
 internal class ImageUploadEvent : ProtocolEvent
 {
-    public Stream Stream { get; }
+    public ImageEntity Entity { get; }
     
-    public string TargetUid { get; }
+    public string TargetUid { get; set; }
     
-    public uint FileSize { get; }
+    public string UKey { get; }
     
-    public string FileMd5 { get; }
+    public MsgInfo MsgInfo { get; }
     
-    public string Ticket { get; }
+    public List<IPv4> Network { get; }
     
-    public bool IsExist { get; }
-    
-    public string ServerPath { get; }
-    
-    private ImageUploadEvent(Stream stream, string targetUid) : base(true)
+    public NotOnlineImage Compat { get; }
+
+    private ImageUploadEvent(ImageEntity entity, string targetUid) : base(true)
     {
-        Stream = stream;
+        Entity = entity;
         TargetUid = targetUid;
-        FileSize = (uint)stream.Length;
-        FileMd5 = stream.Md5(true);
     }
-    
-    private ImageUploadEvent(int resultCode, string ticket, bool isExist, string serverPath) : base(resultCode)
+
+    private ImageUploadEvent(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, NotOnlineImage compat) : base(resultCode)
     {
-        IsExist = isExist;
-        Ticket = ticket;
-        ServerPath = serverPath;
+        UKey = uKey;
+        MsgInfo = msgInfo;
+        Network = network;
+        Compat = compat;
     }
     
-    public static ImageUploadEvent Create(Stream stream, string targetUid) => new(stream, targetUid);
-    
-    public static ImageUploadEvent Result(int resultCode, string ticket, bool isExist, string imagePath) 
-        => new(resultCode, ticket, isExist, imagePath);
+    public static ImageUploadEvent Create(ImageEntity entity, string targetUid)
+        => new(entity, targetUid);
+
+    public static ImageUploadEvent Result(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, NotOnlineImage compat)
+        => new(resultCode, uKey, msgInfo, network, compat);
 }

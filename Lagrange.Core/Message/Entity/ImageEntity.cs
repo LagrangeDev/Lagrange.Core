@@ -1,8 +1,7 @@
 using System.Numerics;
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
-using Lagrange.Core.Internal.Packets.Message.Element.Implementation.Extra;
-using Lagrange.Core.Utility;
+using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 using ImageExtra = Lagrange.Core.Internal.Packets.Message.Component.Extra.ImageExtra;
@@ -32,6 +31,10 @@ public class ImageEntity : IMessageEntity
     
     internal uint FileId { get; set; }
     
+    internal MsgInfo? MsgInfo { get; set; }
+    
+    internal NotOnlineImage? Compat { get; set; }
+    
     public ImageEntity() { }
     
     public ImageEntity(string filePath)
@@ -48,68 +51,20 @@ public class ImageEntity : IMessageEntity
     
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
-        if (ImageStream is null) throw new NullReferenceException(nameof(ImageStream));
-        ImageStream.Seek(0, SeekOrigin.Begin);
-        var buffer = new byte[1024]; // parse image header
-        int _ = ImageStream.Read(buffer.AsSpan());
-        var type = ImageResolver.Resolve(buffer, out var size);
-        
-        string imageExt = type switch
+        var common = MsgInfo.Serialize();
+        return new Elem[]
         {
-            ImageFormat.Jpeg => ".jpg",
-            ImageFormat.Png => ".png",
-            ImageFormat.Gif => ".gif",
-            ImageFormat.Webp => ".webp",
-            ImageFormat.Bmp => ".bmp",
-            ImageFormat.Tiff => ".tiff",
-            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-        };
-
-        ImageStream.Seek(0, SeekOrigin.Begin);
-        string md5 = ImageStream.Md5(true);
-        uint fileLen = (uint)ImageStream.Length;
-
-        ImageStream?.Close();
-        ImageStream?.Dispose();
-        
-        var targetElem = Path != null ? new Elem
-        {
-            NotOnlineImage = new NotOnlineImage
+            new() { NotOnlineImage = Compat },
+            new()
             {
-                FilePath = md5 + imageExt,
-                FileLen = fileLen,
-                DownloadPath = Path,
-                ImgType = 1001,
-                PicMd5 = md5.UnHex(),
-                PicHeight = (uint)size.Y,
-                PicWidth = (uint)size.X,
-                ResId = Path,
-                Original = 1, // true
-                PbRes = new NotOnlineImage.PbReserve { Field1 = 0 }
-            }
-        } : new Elem
-        {
-            CustomFace = new CustomFace
-            {
-                FilePath = $"{{{$"{md5[..8]}-{md5.Substring(8, 4)}-{md5.Substring(12, 4)}-{md5.Substring(16, 4)}-{md5.Substring(20, 12)}".ToUpper()}}}{imageExt}",
-                FileId = FileId,
-                ServerIp = 0,
-                ServerPort = 0,
-                FileType = 1001,
-                Useful = 1,
-                Md5 = md5.UnHex(),
-                ImageType = 1001,
-                Width = (int)size.X,
-                Height = (int)size.Y,
-                Size = fileLen,
-                Origin = 1,
-                ThumbWidth = 0,
-                ThumbHeight = 0,
-                PbReserve = new CustomFaceExtra { Field1 = 0 }
+                CommonElem = new CommonElem
+                {
+                    ServiceType = 48,
+                    PbElem = common.ToArray(),
+                    BusinessType = 10,
+                }
             }
         };
-        
-        return new[] { targetElem };
     }
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)

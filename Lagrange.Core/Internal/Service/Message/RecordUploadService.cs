@@ -2,10 +2,8 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Packets.Message.Component;
-using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
-using Lagrange.Core.Utility;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
@@ -13,32 +11,17 @@ using FileInfo = Lagrange.Core.Internal.Packets.Service.Oidb.Common.FileInfo;
 
 namespace Lagrange.Core.Internal.Service.Message;
 
-[EventSubscribe(typeof(ImageUploadEvent))]
-[Service("OidbSvcTrpcTcp.0x11c5_100")]
-internal class ImageUploadService : BaseService<ImageUploadEvent>
+[EventSubscribe(typeof(RecordUploadEvent))]
+[Service("OidbSvcTrpcTcp.0x126d_100")]
+internal class RecordUploadService : BaseService<RecordUploadEvent>
 {
-    protected override bool Build(ImageUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Build(RecordUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
-        if (input.Entity.ImageStream is null) throw new Exception();
+        if (input.Entity.AudioStream is null) throw new Exception();
         
-        string md5 = input.Entity.ImageStream.Md5(true);
-        string sha1 = input.Entity.ImageStream.Sha1(true);
-        
-        var buffer = new byte[1024]; // parse image header
-        int _ = input.Entity.ImageStream.Read(buffer.AsSpan());
-        var type = ImageResolver.Resolve(buffer, out var size);
-        string imageExt = type switch
-        {
-            ImageFormat.Jpeg => ".jpg",
-            ImageFormat.Png => ".png",
-            ImageFormat.Gif => ".gif",
-            ImageFormat.Webp => ".webp",
-            ImageFormat.Bmp => ".bmp",
-            ImageFormat.Tiff => ".tiff",
-            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-        };
-        input.Entity.ImageStream.Position = 0;
+        string md5 = input.Entity.AudioStream.Md5(true);
+        string sha1 = input.Entity.AudioStream.Sha1(true);
 
         var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq
         {
@@ -46,14 +29,14 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
             {
                 Common = new CommonHead
                 {
-                    RequestId = 1,
+                    RequestId = 4u,
                     Command = 100
                 },
                 Scene = new SceneInfo
                 {
                     RequestType = 2,
-                    BusinessType = 1,
-                    SceneType = 1,
+                    BusinessType = 3,
+                    SceneType = 1u,
                     C2C = new C2CUserInfo
                     {
                         AccountType = 2,
@@ -70,21 +53,21 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
                     {
                         FileInfo = new FileInfo
                         {
-                            FileSize = (uint)input.Entity.ImageStream.Length,
+                            FileSize = (uint)input.Entity.AudioStream.Length,
                             FileHash = md5,
                             FileSha1 = sha1,
-                            FileName = md5 + imageExt,
+                            FileName = md5 + ".amr",
                             Type = new FileType
                             {
-                                Type = 1,
-                                PicFormat = 1001,
+                                Type = 3,
+                                PicFormat = 0,
                                 VideoFormat = 0,
-                                VoiceFormat = 0
+                                VoiceFormat = 1
                             },
-                            Width = (uint)size.X,
-                            Height = (uint)size.Y,
-                            Time = 0,
-                            Original = 1
+                            Width = 0,
+                            Height = 0,
+                            Time = (uint)input.Entity.AudioLength,
+                            Original = 0
                         },
                         SubFileType = 0
                     }
@@ -95,22 +78,19 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
                 CompatQMsgSceneType = 1u,
                 ExtBizInfo = new ExtBizInfo
                 {
-                    Pic = new PicExtBizInfo
-                    {
-                        BytesPbReserveC2c = "0800180020004200500062009201009a0100a2010c080012001800200028003a00".UnHex()
-                    },
+                    Pic = new PicExtBizInfo { TextSummary = "" },
                     Video = new VideoExtBizInfo { BytesPbReserve = Array.Empty<byte>() },
                     Ptt = new PttExtBizInfo
                     {
-                        BytesReserve = Array.Empty<byte>(),
+                        BytesReserve = new byte[] { 0x08, 0x00, 0x38, 0x00 },
                         BytesPbReserve = Array.Empty<byte>(),
-                        BytesGeneralFlags = Array.Empty<byte>()
+                        BytesGeneralFlags = new byte[] { 0x9a, 0x01, 0x0b, 0xaa, 0x03, 0x08, 0x08, 0x04, 0x12, 0x04, 0x00, 0x00, 0x00, 0x00 }
                     }
                 },
                 ClientSeq = 0,
                 NoNeedCompatMsg = false
             }
-        }, 0x11c5, 100, false, true);
+        }, 0x126d, 100, false, true);
         
         output = packet.Serialize();
         extraPackets = null;
@@ -118,13 +98,13 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
     }
 
     protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out ImageUploadEvent output, out List<ProtocolEvent>? extraEvents)
+        out RecordUploadEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<NTV2RichMediaResp>>(input.AsSpan());
         var upload = packet.Body.Upload;
-        var compat = Serializer.Deserialize<NotOnlineImage>(upload.CompatQMsg.AsSpan());
+        var compat = Serializer.Deserialize<RichText>(upload.CompatQMsg.AsSpan());
         
-        output = ImageUploadEvent.Result((int)packet.ErrorCode, upload.UKey, upload.MsgInfo, upload.IPv4s, compat);
+        output = RecordUploadEvent.Result((int)packet.ErrorCode, upload.UKey, upload.MsgInfo, upload.IPv4s, compat);
         extraEvents = null;
         return true;
     }

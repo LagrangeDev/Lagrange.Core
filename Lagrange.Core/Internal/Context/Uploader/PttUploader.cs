@@ -28,7 +28,7 @@ internal class PttUploader : IHighwayUploader
             {
                 FileUuid = index.FileUuid,
                 UKey = metaResult.UKey,
-                Network = Convert(metaResult.Network),
+                Network = Common.Convert(metaResult.Network),
                 MsgInfoBody = metaResult.MsgInfo.MsgInfoBody,
                 BlockSize = 1024 * 1024,
                 Hash = new NTHighwayHash { FileSha1 = index.Info.FileSha1.UnHex() }
@@ -61,7 +61,7 @@ internal class PttUploader : IHighwayUploader
             {
                 FileUuid = index.FileUuid,
                 UKey = metaResult.UKey,
-                Network = Convert(metaResult.Network),
+                Network = Common.Convert(metaResult.Network),
                 MsgInfoBody = metaResult.MsgInfo.MsgInfoBody,
                 BlockSize = 1024 * 1024,
                 Hash = new NTHighwayHash { FileSha1 = index.Info.FileSha1.UnHex() }
@@ -75,24 +75,5 @@ internal class PttUploader : IHighwayUploader
             record.Compat = metaResult.Compat;  // for legacy QQ
             await record.AudioStream.DisposeAsync();
         }
-    }
-
-    private static NTHighwayNetwork Convert(List<IPv4> ipv4s) => new()
-    {
-        IPv4s = ipv4s.Select(x => new NTHighwayIPv4
-        {
-            Domain = new NTHighwayDomain
-            {
-                IsEnable = true,
-                IP = ConvertIP(x.OutIP)
-            },
-            Port = x.OutPort 
-        }).ToList()
-    };
-
-    private static string ConvertIP(uint raw)
-    {
-        var ip = BitConverter.GetBytes(raw);
-        return $"{ip[0]}.{ip[1]}.{ip[2]}.{ip[3]}";
     }
 }
