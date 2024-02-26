@@ -10,7 +10,7 @@ internal class RecordUploadEvent : ProtocolEvent
 {
     public RecordEntity Entity { get; }
     
-    public string? TargetUid { get; set; }
+    public string TargetUid { get; set; }
     
     public string UKey { get; }
     

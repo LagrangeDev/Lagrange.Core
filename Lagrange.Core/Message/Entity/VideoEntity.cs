@@ -34,18 +34,6 @@ public class VideoEntity : IMessageEntity
         VideoUuid = videoUuid;
     }
     
-    public VideoEntity(string filePath)
-    {
-        FilePath = filePath;
-        VideoStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-    }
-
-    public VideoEntity(byte[] file)
-    {
-        FilePath = string.Empty;
-        VideoStream = new MemoryStream(file);
-    }
-    
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
         return new Elem[]
