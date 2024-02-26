@@ -9,11 +9,11 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Action;
 
-[EventSubscribe(typeof(AcceptGroupRequestEvent))]
+[EventSubscribe(typeof(SetGroupRequestEvent))]
 [Service("OidbSvcTrpcTcp.0x10c8_1")]
-internal class AcceptGroupRequestService : BaseService<AcceptGroupRequestEvent>
+internal class SetGroupRequestService : BaseService<SetGroupRequestEvent>
 {
-    protected override bool Build(AcceptGroupRequestEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Build(SetGroupRequestEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x10C8_1>(new OidbSvcTrpcTcp0x10C8_1
@@ -22,9 +22,9 @@ internal class AcceptGroupRequestService : BaseService<AcceptGroupRequestEvent>
             Body = new OidbSvcTrpcTcp0x10C8_1Body
             {
                 Sequence = input.Sequence,
-                Field2 = 2,
+                EventType = 2,
                 GroupUin = input.GroupUin,
-                Field4 = ""
+                Message = ""
             }
         });
         
@@ -34,11 +34,11 @@ internal class AcceptGroupRequestService : BaseService<AcceptGroupRequestEvent>
     }
     
     protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
-        out AcceptGroupRequestEvent output, out List<ProtocolEvent>? extraEvents)
+        out SetGroupRequestEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<byte[]>>(input.AsSpan());
         
-        output = AcceptGroupRequestEvent.Result((int)payload.ErrorCode);
+        output = SetGroupRequestEvent.Result((int)payload.ErrorCode);
         extraEvents = null;
         return true;
     }

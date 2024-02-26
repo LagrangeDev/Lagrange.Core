@@ -173,9 +173,10 @@ internal class OperationLogic : LogicBase
 
         foreach (var result in resolved)
         {
-            uint invitorUin = await ResolveUid(result.InvitorMemberUid);
-            uint targetUin = await ResolveUid(result.TargetMemberUid);
-            uint operatorUin = await ResolveUid(result.OperatorUid);
+            var uins = await Task.WhenAll(ResolveUid(result.InvitorMemberUid), ResolveUid(result.TargetMemberUid), ResolveUid(result.OperatorUid));
+            uint invitorUin = uins[0];
+            uint targetUin = uins[1];
+            uint operatorUin = uins[2];
             
             results.Add(new BotGroupRequest(
                 result.GroupUin,
@@ -186,7 +187,8 @@ internal class OperationLogic : LogicBase
                 operatorUin,
                 result.OperatorName,
                 result.State,
-                result.Sequence));
+                result.Sequence,
+                result.EventType));
         }
 
         return results;
@@ -272,9 +274,9 @@ internal class OperationLogic : LogicBase
         return events.Count == 0 ? null : ((FetchClientKeyEvent)events[0]).ClientKey;
     }
 
-    public async Task<bool> GroupInvitationRequest(uint groupUin, ulong sequence, bool accept)
+    public async Task<bool> SetGroupRequest(uint groupUin, ulong sequence, uint type, bool accept)
     {
-        var inviteEvent = AcceptGroupRequestEvent.Create(accept, groupUin, sequence);
+        var inviteEvent = SetGroupRequestEvent.Create(accept, groupUin, sequence, type);
         var results = await Collection.Business.SendEvent(inviteEvent);
         return results.Count != 0 && results[0].ResultCode == 0;
     }

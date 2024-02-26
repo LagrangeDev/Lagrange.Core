@@ -21,9 +21,9 @@ internal class OidbSvcTrpcTcp0x10C8_1Body
 {
     [ProtoMember(1)] public ulong Sequence { get; set; } // 1
     
-    [ProtoMember(2)] public uint Field2 { get; set; } // 2
+    [ProtoMember(2)] public uint EventType { get; set; } // 2
     
     [ProtoMember(3)] public uint GroupUin { get; set; } // 3
     
-    [ProtoMember(4)] public string? Field4 { get; set; } // ""
+    [ProtoMember(4)] public string? Message { get; set; } // ""
 }

@@ -54,8 +54,8 @@ public static class GroupExt
     public static Task<bool> InviteGroup(this BotContext bot, uint groupUin, List<uint> invitedUins)
         => bot.ContextCollection.Business.OperationLogic.InviteGroup(groupUin, invitedUins);
     
-    public static Task<bool> GroupInvitationRequest(this BotContext bot, BotGroupRequest request, bool accept = true)
-        => bot.ContextCollection.Business.OperationLogic.GroupInvitationRequest(request.GroupUin, request.Sequence, accept);
+    public static Task<bool> SetGroupRequest(this BotContext bot, BotGroupRequest request, bool accept = true)
+        => bot.ContextCollection.Business.OperationLogic.SetGroupRequest(request.GroupUin, request.Sequence, (uint)request.EventType, accept);
 
     #region Group File System
 
