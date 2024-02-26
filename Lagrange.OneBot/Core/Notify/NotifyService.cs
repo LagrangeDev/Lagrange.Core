@@ -25,7 +25,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             var requests = await bot.FetchGroupRequests();
             if (requests?.FirstOrDefault() is { } request)
             {
-                string flag = request.Sequence.ToString();
+                string flag = $"{request.Sequence}-{request.GroupUin}-{(uint)request.EventType}";
                 await service.SendJsonAsync(new OneBotGroupRequest(bot.BotUin, @event.InvitorUin, @event.GroupUin, "invite", flag));
             }
         };
