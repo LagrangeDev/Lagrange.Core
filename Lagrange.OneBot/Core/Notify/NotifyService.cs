@@ -1,4 +1,5 @@
 using Lagrange.Core;
+using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core.Entity.Notify;
 using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Database;
@@ -13,7 +14,20 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
         bot.Invoker.OnFriendRequestEvent += async (_, @event) =>
         {
             logger.LogInformation(@event.ToString());
-            await service.SendJsonAsync(new OneBotFriendRequest(bot.BotUin, @event.SourceUin));
+            await service.SendJsonAsync(new OneBotFriendRequestNotice(bot.BotUin, @event.SourceUin));
+            await service.SendJsonAsync(new OneBotFriendRequest(bot.BotUin, @event.SourceUin, @event.SourceUid));
+        };
+
+        bot.Invoker.OnGroupInvitationReceived += async (_, @event) =>
+        {
+            logger.LogInformation(@event.ToString());
+
+            var requests = await bot.FetchGroupRequests();
+            if (requests?.FirstOrDefault() is { } request)
+            {
+                string flag = request.Sequence.ToString();
+                await service.SendJsonAsync(new OneBotGroupRequest(bot.BotUin, @event.InvitorUin, @event.GroupUin, "invite", flag));
+            }
         };
 
         bot.Invoker.OnGroupAdminChangedEvent += async (_, @event) =>

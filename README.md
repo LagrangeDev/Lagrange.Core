@@ -200,14 +200,14 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | Notice   | [Group Member Decrease]        |   🟢    |
 | Notice   | [Group Member Increase]        |   🟢    |
 | Notice   | [Group Mute]                   |   🟢    |
-| Notice   | [Friend Add]                   |   🔴    |
+| Notice   | [Friend Add]                   |   🟢    |
 | Notice   | [Group Recall Message]         |   🟢    |
 | Notice   | [Friend Recall Message]        |   🟢    |
 | Notice   | [Group Poke]                   |   🔴    |
 | Notice   | [Group red envelope luck king] |   🔴    |
 | Notice   | [Group Member Honor Changed]   |   🔴    |
 | Request  | [Add Friend Request]           |   🟢    |
-| Request  | [Group Request/Invitations]    |   🔴    |
+| Request  | [Group Request/Invitations]    |   🟡    |
 | Meta     | [LifeCycle]                    |   🟢    |
 | Meta     | [Heartbeat]                    |   🟢    |
 
