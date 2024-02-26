@@ -74,8 +74,8 @@ public static class OperationExt
     /// </summary>
     /// <param name="bot">target BotContext</param>
     /// <returns></returns>
-    public static Task<List<BotGroupRequest>?> FetchRequests(this BotContext bot)
-        => bot.ContextCollection.Business.OperationLogic.FetchRequests();
+    public static Task<List<BotGroupRequest>?> FetchGroupRequests(this BotContext bot)
+        => bot.ContextCollection.Business.OperationLogic.FetchGroupRequests();
 
     /// <summary>
     /// set status

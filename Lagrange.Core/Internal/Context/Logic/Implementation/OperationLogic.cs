@@ -162,13 +162,13 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((RecallGroupMessageEvent)events[0]).ResultCode == 0;
     }
 
-    public async Task<List<BotGroupRequest>?> FetchRequests()
+    public async Task<List<BotGroupRequest>?> FetchGroupRequests()
     {
-        var fetchRequestsEvent = FetchRequestsEvent.Create();
+        var fetchRequestsEvent = FetchGroupRequestsEvent.Create();
         var events = await Collection.Business.SendEvent(fetchRequestsEvent);
         if (events.Count == 0) return null;
 
-        var resolved = ((FetchRequestsEvent)events[0]).Events;
+        var resolved = ((FetchGroupRequestsEvent)events[0]).Events;
         var results = new List<BotGroupRequest>();
 
         foreach (var result in resolved)

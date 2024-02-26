@@ -10,11 +10,11 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.System;
 
-[EventSubscribe(typeof(FetchRequestsEvent))]
+[EventSubscribe(typeof(FetchGroupRequestsEvent))]
 [Service("OidbSvcTrpcTcp.0x10c0_1")]
-internal class FetchRequestsService : BaseService<FetchRequestsEvent>
+internal class FetchGroupRequestsService : BaseService<FetchGroupRequestsEvent>
 {
-    protected override bool Build(FetchRequestsEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Build(FetchGroupRequestsEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x10C0_1>(new OidbSvcTrpcTcp0x10C0_1
@@ -28,11 +28,11 @@ internal class FetchRequestsService : BaseService<FetchRequestsEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, out FetchRequestsEvent output,
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, out FetchGroupRequestsEvent output,
         out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x10C0_1Response>>(input.AsSpan());
-        var events = payload.Body.Requests.Select(x => new FetchRequestsEvent.RawEvent(
+        var events = payload.Body.Requests.Select(x => new FetchGroupRequestsEvent.RawEvent(
             x.Group.GroupUin,
             x.Invitor?.Uid,
             x.Invitor?.Name,
@@ -45,7 +45,7 @@ internal class FetchRequestsService : BaseService<FetchRequestsEvent>
             x.EventType
         )).ToList();
         
-        output = FetchRequestsEvent.Result((int)payload.ErrorCode, events);
+        output = FetchGroupRequestsEvent.Result((int)payload.ErrorCode, events);
         extraEvents = null;
         return true;
     }

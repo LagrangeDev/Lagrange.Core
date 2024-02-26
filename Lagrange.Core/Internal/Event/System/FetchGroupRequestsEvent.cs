@@ -2,20 +2,20 @@ namespace Lagrange.Core.Internal.Event.System;
 
 #pragma warning disable CS8618
 
-internal class FetchRequestsEvent : ProtocolEvent
+internal class FetchGroupRequestsEvent : ProtocolEvent
 {
     public List<RawEvent> Events { get; }
     
-    private FetchRequestsEvent() : base(true) { }
+    private FetchGroupRequestsEvent() : base(true) { }
 
-    private FetchRequestsEvent(int resultCode, List<RawEvent> events) : base(resultCode)
+    private FetchGroupRequestsEvent(int resultCode, List<RawEvent> events) : base(resultCode)
     {
         Events = events;
     }
 
-    public static FetchRequestsEvent Create() => new();
+    public static FetchGroupRequestsEvent Create() => new();
     
-    public static FetchRequestsEvent Result(int resultCode, List<RawEvent> events) => new(resultCode, events);
+    public static FetchGroupRequestsEvent Result(int resultCode, List<RawEvent> events) => new(resultCode, events);
 
     public record RawEvent(
         uint GroupUin,
