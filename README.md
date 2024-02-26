@@ -207,7 +207,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | Notice   | [Group red envelope luck king] |   🔴    |
 | Notice   | [Group Member Honor Changed]   |   🔴    |
 | Request  | [Add Friend Request]           |   🟢    |
-| Request  | [Group Request/Invitations]    |   🟡    |
+| Request  | [Group Request/Invitations]    |   🟢    |
 | Meta     | [LifeCycle]                    |   🟢    |
 | Meta     | [Heartbeat]                    |   🟢    |
 

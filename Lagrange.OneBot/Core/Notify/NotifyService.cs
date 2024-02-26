@@ -23,10 +23,34 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             logger.LogInformation(@event.ToString());
 
             var requests = await bot.FetchGroupRequests();
-            if (requests?.FirstOrDefault() is { } request)
+            if (requests?.FirstOrDefault(x => @event.GroupUin == x.GroupUin && @event.InvitorUin == x.InvitorMemberUin) is { } request)
             {
                 string flag = $"{request.Sequence}-{request.GroupUin}-{(uint)request.EventType}";
                 await service.SendJsonAsync(new OneBotGroupRequest(bot.BotUin, @event.InvitorUin, @event.GroupUin, "invite", flag));
+            }
+        };
+        
+        bot.Invoker.OnGroupJoinRequestEvent += async (_, @event) =>
+        {
+            logger.LogInformation(@event.ToString());
+
+            var requests = await bot.FetchGroupRequests();
+            if (requests?.FirstOrDefault(x => @event.GroupUin == x.GroupUin && @event.TargetUin == x.TargetMemberUin) is { } request)
+            {
+                string flag = $"{request.Sequence}-{request.GroupUin}-{(uint)request.EventType}";
+                await service.SendJsonAsync(new OneBotGroupRequest(bot.BotUin, @event.TargetUin, @event.GroupUin, "add", flag));
+            }
+        };
+        
+        bot.Invoker.OnGroupInvitationRequestEvent += async (_, @event) =>
+        {
+            logger.LogInformation(@event.ToString());
+
+            var requests = await bot.FetchGroupRequests();
+            if (requests?.FirstOrDefault(x => @event.GroupUin == x.GroupUin && @event.TargetUin == x.TargetMemberUin) is { } request)
+            {
+                string flag = $"{request.Sequence}-{request.GroupUin}-{(uint)request.EventType}";
+                await service.SendJsonAsync(new OneBotGroupRequest(bot.BotUin, @event.TargetUin, @event.GroupUin, "add", flag));
             }
         };
 
