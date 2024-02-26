@@ -45,7 +45,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 |          |         |                           |         | Video     |   🟡    | Friend Request    |   🟢    | GroupMemberIncrease |   🟢    |
 |          |         |                           |         | Reply.    |   🟢    | Group Request     |   🟢    | GroupPromoteAdmin   |   🟢    |
 |          |         |                           |         | File      |   🟡    | ~~Voice Call~~    |   🔴    | GroupInvite         |   🟢    |
-|          |         |                           |         | Poke      |   🟢    | Client Key        |   🟢    | GroupRequestJoin    |   🔴    |
+|          |         |                           |         | Poke      |   🟢    | Client Key        |   🟢    | GroupRequestJoin    |   🟢    |
 |          |         |                           |         | LightApp  |   🟢    | Cookies           |   🟢    | FriendRequest       |   🟢    |
 |          |         |                           |         |           |         | Send Message      |   🟢    | ~~FriendTyping~~    |   🔴    |
 |          |         |                           |         |           |         |                   |         | ~~FriendVoiceCall~~ |   🔴    |

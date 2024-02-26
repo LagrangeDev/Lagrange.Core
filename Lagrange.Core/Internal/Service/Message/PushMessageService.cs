@@ -27,7 +27,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         extraEvents = new List<ProtocolEvent>();
         switch (packetType)
         {
-            case PkgType.PrivateMessage or PkgType.GroupMessage or PkgType.TempMessage:
+            case PkgType.PrivateMessage or PkgType.GroupMessage or PkgType.TempMessage or PkgType.PrivateRecordMessage:
             {
                 var chain = MessagePacker.Parse(message.Message);
                 output = PushMessageEvent.Create(chain);
@@ -39,14 +39,11 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 output = PushMessageEvent.Create(chain);
                 break;
             }
-            case PkgType.PrivateRecordMessage:
-            {
-                var chain = MessagePacker.Parse(message.Message);
-                output = PushMessageEvent.Create(chain);
-                break;
-            }
             case PkgType.GroupRequestJoinNotice when message.Message.Body?.MsgContent is { } content:
             {
+                var join = Serializer.Deserialize<GroupJoin>(content.AsSpan());
+                var joinEvent = GroupSysRequestJoinEvent.Result(join.GroupUin, join.TargetUid);
+                extraEvents.Add(joinEvent);
                 break;
             }
             case PkgType.GroupRequestInvitationNotice when message.Message.Body?.MsgContent is { } content:
@@ -188,16 +185,16 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         GroupMessage = 82,
         TempMessage = 141,
         
-        Event0x210 = 528,
-        Event0x2DC = 732,
+        Event0x210 = 528,  // friend related event
+        Event0x2DC = 732,  // group related event
         
         PrivateRecordMessage = 208,
         PrivateFileMessage = 529,
         
         GroupRequestInvitationNotice = 525, // from group member invitation
         GroupRequestJoinNotice = 84, // directly entered
-        GroupInviteNotice = 87,
-        GroupAdminChangedNotice = 44,
+        GroupInviteNotice = 87,  // the bot self is being invited
+        GroupAdminChangedNotice = 44,  // admin change, both on and off
         GroupMemberIncreaseNotice = 33,
         GroupMemberDecreaseNotice = 34,
     }
@@ -212,5 +209,6 @@ internal class PushMessageService : BaseService<PushMessageEvent>
     {
         FriendRecallNotice = 138,
         FriendRequestNotice = 226,
+        FriendPokeNotice = 290,
     }
 }

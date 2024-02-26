@@ -4,6 +4,7 @@ using Lagrange.Core.Internal.Context.Attributes;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.Notify;
+using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Service;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
@@ -18,11 +19,12 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(GroupSysAdminEvent))]
 [EventSubscribe(typeof(GroupSysIncreaseEvent))]
 [EventSubscribe(typeof(GroupSysDecreaseEvent))]
-[EventSubscribe(typeof(FriendSysRequestEvent))]
 [EventSubscribe(typeof(GroupSysMuteEvent))]
 [EventSubscribe(typeof(GroupSysMemberMuteEvent))]
 [EventSubscribe(typeof(GroupSysRecallEvent))]
+[EventSubscribe(typeof(GroupSysRequestJoinEvent))]
 [EventSubscribe(typeof(FriendSysRecallEvent))]
+[EventSubscribe(typeof(FriendSysRequestEvent))]
 [BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
 internal class MessagingLogic : LogicBase
 {
@@ -136,6 +138,28 @@ internal class MessagingLogic : LogicBase
                 if (recall.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.OperatorUid) ?? 0;
                 var recallArgs = new GroupRecallEvent(recall.GroupUin, authorUin, operatorUin, recall.Sequence, recall.Time, recall.Random);
                 Collection.Invoker.PostEvent(recallArgs);
+                break;
+            }
+            case GroupSysRequestJoinEvent join:
+            {
+                var fetchUidEvent = FetchAvatarEvent.Create(join.TargetUid);
+                var results = await Collection.Business.SendEvent(fetchUidEvent);
+                uint targetUin = results.Count == 0 ? 0 : ((FetchAvatarEvent)results[0]).Uin;
+                
+                var joinArgs = new GroupJoinRequestEvent(join.GroupUin, targetUin);
+                Collection.Invoker.PostEvent(joinArgs);
+                break;
+            }
+            case GroupSysRequestInvitationEvent invitation:
+            {
+                uint invitorUin = await Collection.Business.CachingLogic.ResolveUin(invitation.GroupUin, invitation.InvitorUid) ?? 0;
+                
+                var fetchUidEvent = FetchAvatarEvent.Create(invitation.TargetUid);
+                var results = await Collection.Business.SendEvent(fetchUidEvent);
+                uint targetUin = results.Count == 0 ? 0 : ((FetchAvatarEvent)results[0]).Uin;
+                
+                var invitationArgs = new GroupInvitationRequestEvent(invitation.GroupUin, targetUin, invitorUin);
+                Collection.Invoker.PostEvent(invitationArgs);
                 break;
             }
             case FriendSysRecallEvent recall:
