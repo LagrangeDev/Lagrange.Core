@@ -22,7 +22,7 @@ internal class SetGroupRequestService : BaseService<SetGroupRequestEvent>
             Body = new OidbSvcTrpcTcp0x10C8_1Body
             {
                 Sequence = input.Sequence,
-                EventType = 2,
+                EventType = input.Type,
                 GroupUin = input.GroupUin,
                 Message = ""
             }

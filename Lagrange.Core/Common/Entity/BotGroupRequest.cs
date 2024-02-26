@@ -57,6 +57,7 @@ public class BotGroupRequest
     public enum Type
     {
         GroupRequest = 1,
+        SelfInvitation = 2,
         ExitGroup = 13,
         GroupInvitation = 22,
     }
