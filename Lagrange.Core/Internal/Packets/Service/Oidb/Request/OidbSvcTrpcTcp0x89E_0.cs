@@ -8,7 +8,7 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 
 [ProtoContract]
 [OidbSvcTrpcTcp(0x89e, 0)]
-internal class OidvSvcTrpcTcp0x89E_0
+internal class OidbSvcTrpcTcp0x89E_0
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
     

@@ -16,7 +16,7 @@ internal class GroupTransferService : BaseService<GroupTransferEvent>
     protected override bool Build(GroupTransferEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
-        var packet = new OidbSvcTrpcTcpBase<OidvSvcTrpcTcp0x89E_0>(new OidvSvcTrpcTcp0x89E_0
+        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x89E_0>(new OidbSvcTrpcTcp0x89E_0
         {
             GroupUin = input.GroupUin,
             SourceUid = input.SourceUid,

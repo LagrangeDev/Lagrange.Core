@@ -281,6 +281,13 @@ internal class OperationLogic : LogicBase
         return results.Count != 0 && results[0].ResultCode == 0;
     }
     
+    public async Task<bool> SetFriendRequest(string targetUid, bool accept)
+    {
+        var inviteEvent = SetFriendRequestEvent.Create(targetUid, accept);
+        var results = await Collection.Business.SendEvent(inviteEvent);
+        return results.Count != 0 && results[0].ResultCode == 0;
+    }
+    
     public async Task<List<MessageChain>?> GetGroupMessage(uint groupUin, uint startSequence, uint endSequence)
     {
         var getMsgEvent = GetGroupMessageEvent.Create(groupUin, startSequence, endSequence);
