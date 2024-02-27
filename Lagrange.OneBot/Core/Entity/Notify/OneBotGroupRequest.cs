@@ -8,7 +8,7 @@ public class OneBotGroupRequest(uint selfId, uint userId, uint groupId, string s
 {
     [JsonPropertyName("sub_type")] public string SubType { get; set; } = subType;
     
-    [JsonPropertyName("group_id")] public uint UserId { get; set; } = userId;
+    [JsonPropertyName("user_id")] public uint UserId { get; set; } = userId;
 
     [JsonPropertyName("group_id")] public uint GroupId { get; set; } = groupId;
 }
