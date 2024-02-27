@@ -12,11 +12,13 @@ internal class OidbSvcTrpcTcp0x758_1
     
     [ProtoMember(2)] public List<OidbSvcTrpcTcp0x758_1Uid>? UidList { get; set; }
     
-    [ProtoMember(10)] public uint Field10 { get; set; } // 0
+    [ProtoMember(10)] public uint? Field10 { get; set; } // 0
 }
 
 [ProtoContract]
 internal class OidbSvcTrpcTcp0x758_1Uid
 {
     [ProtoMember(1)] public string? InviteUid { get; set; }
+    
+    [ProtoMember(2)] public uint? SourceGroupUin { get; set; }
 }

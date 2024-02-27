@@ -19,7 +19,11 @@ internal class GroupInviteService : BaseService<GroupInviteEvent>
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x758_1>(new OidbSvcTrpcTcp0x758_1
         {
             GroupUin = input.GroupUin,
-            UidList = input.InviteUids.Select(x => new OidbSvcTrpcTcp0x758_1Uid { InviteUid = x }).ToList(),
+            UidList = input.InviteUids.Select(x => new OidbSvcTrpcTcp0x758_1Uid
+            {
+                InviteUid = x.Key,
+                SourceGroupUin = x.Value
+            }).ToList(),
             Field10 = 0
         });
 

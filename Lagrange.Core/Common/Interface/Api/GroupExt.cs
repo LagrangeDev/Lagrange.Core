@@ -52,7 +52,7 @@ public static class GroupExt
     public static Task<bool> LeaveGroup(this BotContext bot, uint groupUin)
         => bot.ContextCollection.Business.OperationLogic.LeaveGroup(groupUin);
 
-    public static Task<bool> InviteGroup(this BotContext bot, uint groupUin, List<uint> invitedUins)
+    public static Task<bool> InviteGroup(this BotContext bot, uint groupUin, Dictionary<uint, uint?> invitedUins)
         => bot.ContextCollection.Business.OperationLogic.InviteGroup(groupUin, invitedUins);
     
     public static Task<bool> SetGroupRequest(this BotContext bot, BotGroupRequest request, bool accept = true)

@@ -6,9 +6,9 @@ internal class GroupInviteEvent : ProtocolEvent
 {
     public uint GroupUin { get; set; }
     
-    public List<string> InviteUids { get; }
+    public Dictionary<string, uint?> InviteUids { get; }
 
-    private GroupInviteEvent(uint groupUin, List<string> inviteUids) : base(true)
+    private GroupInviteEvent(uint groupUin, Dictionary<string, uint?> inviteUids) : base(true)
     {
         GroupUin = groupUin;
         InviteUids = inviteUids;
@@ -16,7 +16,8 @@ internal class GroupInviteEvent : ProtocolEvent
 
     private GroupInviteEvent(int resultCode) : base(resultCode) { }
 
-    public static GroupInviteEvent Create(uint groupUin, List<string> inviteUids) => new(groupUin, inviteUids);
+    public static GroupInviteEvent Create(uint groupUin, Dictionary<string, uint?> inviteUids) 
+        => new(groupUin, inviteUids);
 
     public static GroupInviteEvent Result(int resultCode) => new(resultCode);
 }
