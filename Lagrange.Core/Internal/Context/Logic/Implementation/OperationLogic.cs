@@ -203,15 +203,6 @@ internal class OperationLogic : LogicBase
         }
     }
 
-    public async Task<List<dynamic>?> FetchFriendRequests()
-    {
-        var fetchRequestsEvent = FetchFriendRequestsEvent.Create();
-        var events = await Collection.Business.SendEvent(fetchRequestsEvent);
-        if (events.Count == 0) return null;
-
-        return null;
-    }
-
     public async Task<bool> GroupTransfer(uint groupUin, uint targetUin)
     {
         string? uid = await Collection.Business.CachingLogic.ResolveUid(groupUin, targetUin);
