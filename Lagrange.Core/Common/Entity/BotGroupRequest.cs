@@ -12,7 +12,8 @@ public class BotGroupRequest
         string? operatorName, 
         uint state,
         ulong sequence,
-        uint type)
+        uint type,
+        string? comment)
     {
         GroupUin = groupUin;
         InvitorMemberUin = invitorMemberUin;
@@ -24,6 +25,7 @@ public class BotGroupRequest
         EventState = (State)state;
         Sequence = sequence;
         EventType = (Type)type;
+        Comment = comment;
     }
 
     public uint GroupUin { get; set; }
@@ -45,6 +47,8 @@ public class BotGroupRequest
     public State EventState { get; set; }
     
     internal ulong Sequence { get; set; } // for internal use of Approving Requests
+    
+    public string? Comment { get; }
 
     public enum State
     {

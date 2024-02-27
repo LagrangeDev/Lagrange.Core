@@ -188,7 +188,8 @@ internal class OperationLogic : LogicBase
                 result.OperatorName,
                 result.State,
                 result.Sequence,
-                result.EventType));
+                result.EventType,
+                result.Comment));
         }
 
         return results;

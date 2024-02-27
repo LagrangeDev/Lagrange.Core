@@ -39,6 +39,8 @@ internal class OidbSvcTrpcTcp0x10C0_1ResponseRequests
     [ProtoMember(7)] public OidbSvcTrpcTcp0x10C0_1ResponseUser? Operator { get; set; }
     
     [ProtoMember(9)] public string Field9 { get; set; }
+    
+    [ProtoMember(10)] public string Comment { get; set; }
 }
 
 [ProtoContract]

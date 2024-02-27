@@ -42,7 +42,8 @@ internal class FetchGroupRequestsService : BaseService<FetchGroupRequestsEvent>
             x.Operator?.Name,
             x.Sequence,
             x.State,
-            x.EventType
+            x.EventType,
+            x.Comment
         )).ToList();
         
         output = FetchGroupRequestsEvent.Result((int)payload.ErrorCode, events);
