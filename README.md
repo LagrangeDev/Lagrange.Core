@@ -16,6 +16,9 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 
 </div>
 
+## Document
+[Lagrange.Doc](https://lagrangedev.github.io/Lagrange.Doc/)
+
 ## Disclaimer
 
 The Lagrange.Core project, including its developers, contributors, and affiliated individuals or entities, hereby explicitly disclaim any association with, support for, or endorsement of any form of illegal behavior. This disclaimer extends to any use or application of the Lagrange.Core project that may be contrary to local, national, or international laws, regulations, or ethical guidelines.
