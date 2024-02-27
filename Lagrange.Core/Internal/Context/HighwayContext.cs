@@ -21,6 +21,7 @@ internal class HighwayContext : ContextBase, IDisposable
     private readonly HttpClient _client;
     private uint _sequence;
     private static readonly RuntimeTypeModel Serializer;
+    private readonly int _chunkSize;
 
     static HighwayContext()
     {
@@ -28,7 +29,7 @@ internal class HighwayContext : ContextBase, IDisposable
         Serializer.UseImplicitZeroDefaults = false;
     }
     
-    public HighwayContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device)
+    public HighwayContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, BotConfig config)
         : base(collection, keystore, appInfo, device)
     {
         _uploaders = new Dictionary<Type, IHighwayUploader>();
@@ -48,6 +49,7 @@ internal class HighwayContext : ContextBase, IDisposable
         _client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2)");
 
         _sequence = 0;
+        _chunkSize = (int)config.HighwayChunkSize;
     }
 
     public async Task<bool> EchoAsync(uint uin)
@@ -106,13 +108,12 @@ internal class HighwayContext : ContextBase, IDisposable
 
         long fileSize = data.Length;
         int offset = 0;
-        int chunkSize = fileSize is >= 1024 and <= 1024 * 1024 - 1 ? 8192 : 1024 * 1024;
-        int concurrent = commonId == 2 ? 1 : 8;
+        const int concurrent = 1;
 
         data.Seek(0, SeekOrigin.Begin);
         while (offset < fileSize)
         {
-            var buffer = new byte[Math.Min(chunkSize, fileSize - offset)];
+            var buffer = new byte[Math.Min(_chunkSize, fileSize - offset)];
             int payload = await data.ReadAsync(buffer.AsMemory());
             var reqBody = new UpBlock(commonId, Collection.Keystore.Uin, Interlocked.Increment(ref _sequence), (ulong)fileSize, (ulong)offset, ticket, md5, buffer, extendInfo);
             upBlocks.Add(reqBody);

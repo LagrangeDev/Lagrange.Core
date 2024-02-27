@@ -28,7 +28,7 @@ internal class ContextCollection : IDisposable
         Service = new ServiceContext(this, keystore, appInfo, device);
         Business = new BusinessContext(this, keystore, appInfo, device);
         Log = new LogContext(this, keystore, appInfo, device, invoker);
-        Highway = new HighwayContext(this, keystore, appInfo, device);
+        Highway = new HighwayContext(this, keystore, appInfo, device, config);
 
         Keystore = keystore;
         AppInfo = appInfo;

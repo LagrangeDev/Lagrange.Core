@@ -32,6 +32,11 @@ public class BotConfig
     /// Custom Sign Provider
     /// </summary>
     public SignProvider? CustomSignProvider { get; set; } = null;
+
+    /// <summary>
+    /// The maximum size of the highway block in byte, max 1MB (1024 * 1024 byte)
+    /// </summary>
+    public uint HighwayChunkSize { get; set; } = 1024 * 1024;
 }
 
 /// <summary>
