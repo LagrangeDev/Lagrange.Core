@@ -25,4 +25,26 @@ public static class CommonResolver
 
         return null;
     }
+
+    public static Stream? ResolveStream(string url)
+    {
+        if (url.StartsWith("http"))
+        {
+            return Client.GetAsync(url).Result.Content.ReadAsStreamAsync().Result;
+        }
+                
+        if (url.StartsWith("file"))
+        {
+            string path = Path.GetFullPath(url.Replace("file://", ""));
+            return new FileStream(path, FileMode.Open);
+        }
+                
+        if (url.StartsWith("base64"))
+        {
+            string base64 = url.Replace("base64://", "");
+            return new MemoryStream(Convert.FromBase64String(base64));
+        }
+
+        return null;
+    }
 }

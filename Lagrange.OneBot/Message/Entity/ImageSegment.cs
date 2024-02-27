@@ -19,9 +19,13 @@ public partial class ImageSegment : SegmentBase
 {
     public override void Build(MessageBuilder builder, SegmentBase segment)
     {
-        if (segment is ImageSegment imageSegment and not { File: "" } && CommonResolver.Resolve(imageSegment.File) is { } image)
+        if (segment is ImageSegment imageSegment and not { File: "" } && CommonResolver.ResolveStream(imageSegment.File) is { } stream)
         {
-            builder.Image(image);
+            builder.Add(new ImageEntity
+            {
+                FilePath = "",
+                ImageStream = stream
+            });
         }
     }
 
