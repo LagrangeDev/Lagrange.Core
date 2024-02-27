@@ -22,6 +22,7 @@ internal class HighwayContext : ContextBase, IDisposable
     private uint _sequence;
     private static readonly RuntimeTypeModel Serializer;
     private readonly int _chunkSize;
+    private readonly uint _concurrent;
 
     static HighwayContext()
     {
@@ -50,6 +51,7 @@ internal class HighwayContext : ContextBase, IDisposable
 
         _sequence = 0;
         _chunkSize = (int)config.HighwayChunkSize;
+        _concurrent = config.HighwayConcurrent;
     }
 
     public async Task<bool> EchoAsync(uint uin)
@@ -108,7 +110,6 @@ internal class HighwayContext : ContextBase, IDisposable
 
         long fileSize = data.Length;
         int offset = 0;
-        const int concurrent = 1;
 
         data.Seek(0, SeekOrigin.Begin);
         while (offset < fileSize)
@@ -119,7 +120,7 @@ internal class HighwayContext : ContextBase, IDisposable
             upBlocks.Add(reqBody);
             offset += payload;
 
-            if (upBlocks.Count >= concurrent || data.Position == data.Length)
+            if (upBlocks.Count >= _concurrent || data.Position == data.Length)
             {
                 var tasks = upBlocks.Select(x => SendUpBlockAsync(x, uri)).ToArray();
                 var results = await Task.WhenAll(tasks);
