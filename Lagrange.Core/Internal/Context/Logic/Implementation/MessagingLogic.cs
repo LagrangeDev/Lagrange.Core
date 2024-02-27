@@ -23,7 +23,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(GroupSysMemberMuteEvent))]
 [EventSubscribe(typeof(GroupSysRecallEvent))]
 [EventSubscribe(typeof(GroupSysRequestJoinEvent))]
-[EventSubscribe(typeof(GroupInvitationRequestEvent))]
+[EventSubscribe(typeof(GroupSysRequestInvitationEvent))]
 [EventSubscribe(typeof(FriendSysRecallEvent))]
 [EventSubscribe(typeof(FriendSysRequestEvent))]
 [BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
