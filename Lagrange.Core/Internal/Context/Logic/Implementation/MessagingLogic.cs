@@ -254,12 +254,14 @@ internal class MessagingLogic : LogicBase
             if (chain is { IsGroup: true, GroupUin: not null })
             {
                 var members = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
-                mention.Name ??= members.FirstOrDefault(x => x.Uin == mention.Uin)?.MemberCard;
+                var member = members.FirstOrDefault(x => x.Uin == mention.Uin)?.MemberCard;
+                if (member != null) mention.Name = $"@{member}";
             }
             else
             {
                 var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
-                mention.Name ??= friends.FirstOrDefault(x => x.Uin == mention.Uin)?.Nickname;
+                var friend = friends.FirstOrDefault(x => x.Uin == mention.Uin)?.Nickname;
+                if (friend != null) mention.Name = $"@{friend}";
             }
         }
     }
