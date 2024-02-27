@@ -3,8 +3,8 @@ using System.Text.Json.Serialization;
 namespace Lagrange.OneBot.Core.Entity.Notify;
 
 [Serializable]
-public class OneBotGroupRequest(uint selfId, uint userId, uint groupId, string subType, string flag) 
-    : OneBotRequest(selfId, "group", "", flag)
+public class OneBotGroupRequest(uint selfId, uint userId, uint groupId, string subType, string? comment, string flag) 
+    : OneBotRequest(selfId, "group", comment, flag)
 {
     [JsonPropertyName("sub_type")] public string SubType { get; set; } = subType;
     
