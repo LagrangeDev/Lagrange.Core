@@ -27,6 +27,7 @@ internal class FetchGroupRequestsEvent : ProtocolEvent
         string? OperatorName,
         ulong Sequence,
         uint State,
-        uint EventType
+        uint EventType,
+        string? Comment
     );
 }
