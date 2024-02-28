@@ -1,9 +1,12 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine3.18 AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine3.18 AS build-env
 WORKDIR /App
+
+ARG TARGETARCH
 
 COPY . ./
 RUN dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj \
         -c Release \
+        -a $TARGETARCH \
         -o out \
         --no-self-contained \
         -p:PublishSingleFile=true \
