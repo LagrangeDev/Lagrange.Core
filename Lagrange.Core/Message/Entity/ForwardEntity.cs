@@ -15,7 +15,7 @@ public class ForwardEntity : IMessageEntity
 
     internal List<Elem> Elements { get; }
 
-    private string? SelfUin { get; set; }
+    private string? SelfUid { get; set; }
     
     public ForwardEntity()
     {
@@ -36,8 +36,8 @@ public class ForwardEntity : IMessageEntity
         var reserve = new SrcMsg.Preserve
         {
             Field3 = Random.Shared.Next(0, int.MaxValue),
-            ReceiverUid = Uid,
-            SenderUid = SelfUin,
+            ReceiverUid = SelfUid,
+            SenderUid = Uid,
             Field8 = Random.Shared.Next(0, 10000)
         };
         using var stream = new MemoryStream();
@@ -74,7 +74,7 @@ public class ForwardEntity : IMessageEntity
         return null;
     }
 
-    public void SetSelfUid(string selfUid) => SelfUin = selfUid;
+    public void SetSelfUid(string selfUid) => SelfUid = selfUid;
 
     public string ToPreviewString() => $"[Forward]: Sequence: {Sequence}";
 }
