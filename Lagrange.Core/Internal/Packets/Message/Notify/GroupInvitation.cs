@@ -7,9 +7,9 @@ namespace Lagrange.Core.Internal.Packets.Message.Notify;
 [ProtoContract]
 internal class GroupInvitation
 {
-    [ProtoMember(1)] public uint Cmd { get; set; }
+    [ProtoMember(1)] public string Cmd { get; set; }
     
-    [ProtoMember(2)] public InvitationInfo Info { get; set; }
+    [ProtoMember(2)] public InvitationInfo? Info { get; set; }
 }
 
 [ProtoContract]

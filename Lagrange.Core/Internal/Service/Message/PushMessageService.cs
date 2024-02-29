@@ -49,6 +49,8 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             case PkgType.GroupRequestInvitationNotice when message.Message.Body?.MsgContent is { } content:
             {
                 var invitation = Serializer.Deserialize<GroupInvitation>(content.AsSpan());
+                if (invitation == null) break;
+                
                 var info = invitation.Info;
                 var invitationEvent = GroupSysRequestInvitationEvent.Result(info.GroupUin, info.TargetUid, info.InvitorUid);
                 extraEvents.Add(invitationEvent);
