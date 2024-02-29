@@ -56,10 +56,10 @@ internal class SceneInfo
     
     [ProtoMember(200)] public uint SceneType { get; set; } // 1
     
-    [ProtoMember(201)] public C2CUserInfo C2C { get; set; }
+    [ProtoMember(201)] public C2CUserInfo? C2C { get; set; }
     
     
-    [ProtoMember(202)] public GroupInfo Group { get; set; }
+    [ProtoMember(202)] public GroupInfo? Group { get; set; }
 }
 
 [ProtoContract]

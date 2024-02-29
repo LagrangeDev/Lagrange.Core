@@ -87,7 +87,8 @@ public class RecordEntity : IMessageEntity
             return new RecordEntity(index.FileUuid, index.Info.FileName)
             {
                 AudioLength = (int)index.Info.Time,
-                FileSha1 = index.Info.FileSha1
+                FileSha1 = index.Info.FileSha1,
+                MsgInfo = extra
             };
         }
         

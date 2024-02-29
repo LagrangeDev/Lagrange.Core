@@ -10,11 +10,11 @@ using FileInfo = Lagrange.Core.Internal.Packets.Service.Oidb.Common.FileInfo;
 
 namespace Lagrange.Core.Internal.Service.Message;
 
-[EventSubscribe(typeof(RecordDownloadEvent))]
-[Service("OidbSvcTrpcTcp.0x126d_200")]
-internal class RecordDownloadService : BaseService<RecordDownloadEvent>
+[EventSubscribe(typeof(RecordGroupDownloadEvent))]
+[Service("OidbSvcTrpcTcp.0x126e_200")]
+internal class RecordGroupDownloadService : BaseService<RecordGroupDownloadEvent>
 {
-    protected override bool Build(RecordDownloadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Build(RecordGroupDownloadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq
@@ -23,19 +23,15 @@ internal class RecordDownloadService : BaseService<RecordDownloadEvent>
             {
                 Common = new CommonHead
                 {
-                    RequestId = 1,
+                    RequestId = 4,
                     Command = 200
                 },
                 Scene = new SceneInfo
                 {
                     RequestType = 1,
                     BusinessType = 3,
-                    SceneType = 1,
-                    C2C = new C2CUserInfo
-                    {
-                        AccountType = 2,
-                        TargetUid = input.SelfUid
-                    }
+                    SceneType = 2,
+                    Group = new GroupInfo { GroupUin = input.GroupUin }
                 },
                 Client = new ClientMeta { AgentType = 2 }
             },
@@ -51,21 +47,21 @@ internal class RecordDownloadService : BaseService<RecordDownloadEvent>
                     }
                 }
             }
-        }, 0x126d, 200, false, true);
+        }, 0x126e, 200, false, true);
         output = packet.Serialize();
         extraPackets = null;
         
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, out RecordDownloadEvent output,
-        out List<ProtocolEvent>? extraEvents)
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+        out RecordGroupDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<NTV2RichMediaResp>>(input.AsSpan());
         var body = payload.Body.Download;
         string url = $"https://{body.Info.Domain}{body.Info.UrlPath}{body.RKeyParam}";
         
-        output = RecordDownloadEvent.Result((int)payload.ErrorCode, url);
+        output = RecordGroupDownloadEvent.Result((int)payload.ErrorCode, url);
         extraEvents = null;
         return true;
     }

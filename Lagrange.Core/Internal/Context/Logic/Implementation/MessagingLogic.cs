@@ -218,12 +218,16 @@ internal class MessagingLogic : LogicBase
         if (chain.HasTypeOf<RecordEntity>())
         {
             var record = chain.GetEntity<RecordEntity>();
-            if (record?.AudioUuid == null) return;
+            if (record?.MsgInfo == null) return;
 
             string uid = (chain.IsGroup
                 ? await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin)
                 : chain.Uid) ?? "";
-            var @event = RecordDownloadEvent.Create(record.AudioUuid, uid, record.AudioName, record.FileSha1, chain.IsGroup);
+
+            var @event = chain.IsGroup 
+                ? RecordGroupDownloadEvent.Create(chain.GroupUin ?? 0, record.MsgInfo) 
+                : RecordDownloadEvent.Create(uid, record.MsgInfo);
+            
             var results = await Collection.Business.SendEvent(@event);
             if (results.Count != 0)
             {
