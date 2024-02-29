@@ -13,7 +13,7 @@ public static class CommonResolver
         return uri.Scheme switch
         {
             "http" or "https" => Client.GetAsync(uri).Result.Content.ReadAsByteArrayAsync().Result,
-            "file" => File.ReadAllBytes(Path.GetFullPath(uri.AbsolutePath)),
+            "file" => File.ReadAllBytes(Path.GetFullPath(uri.LocalPath)),
             _ => null,
         };
     }
@@ -27,7 +27,7 @@ public static class CommonResolver
         return uri.Scheme switch
         {
             "http" or "https" => Client.GetAsync(uri).Result.Content.ReadAsStreamAsync().Result,
-            "file" => new FileStream(Path.GetFullPath(uri.AbsolutePath), FileMode.Open),
+            "file" => new FileStream(Path.GetFullPath(uri.LocalPath), FileMode.Open),
             _ => null,
         };
     }
