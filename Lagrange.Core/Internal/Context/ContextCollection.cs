@@ -23,11 +23,11 @@ internal class ContextCollection : IDisposable
     public ContextCollection(BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, BotConfig config,
         EventInvoker invoker, TaskScheduler scheduler)
     {
+        Log = new LogContext(this, keystore, appInfo, device, invoker);
         Packet = new PacketContext(this, keystore, appInfo, device, config);
         Socket = new SocketContext(this, keystore, appInfo, device, config);
         Service = new ServiceContext(this, keystore, appInfo, device);
         Business = new BusinessContext(this, keystore, appInfo, device);
-        Log = new LogContext(this, keystore, appInfo, device, invoker);
         Highway = new HighwayContext(this, keystore, appInfo, device, config);
 
         Keystore = keystore;
