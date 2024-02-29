@@ -29,6 +29,7 @@ public class ForwardEntity : IMessageEntity
         Sequence = chain.Sequence;
         Uid = chain.Uid;
         Elements = chain.Elements;
+        TargetUin = chain.FriendUin;
     }
     
     IEnumerable<Elem> IMessageEntity.PackElement()
@@ -50,7 +51,7 @@ public class ForwardEntity : IMessageEntity
                 SrcMsg = new SrcMsg
                 {
                     OrigSeqs = new List<uint> { Sequence },
-                    SenderUin = 0,
+                    SenderUin = TargetUin,
                     Time = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                     Elems = Elements,
                     PbReserve = stream.ToArray(),
