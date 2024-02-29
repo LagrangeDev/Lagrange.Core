@@ -1,10 +1,10 @@
 using System.Numerics;
+using Lagrange.Core.Internal.Packets.Message.Component.Extra;
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
-using ImageExtra = Lagrange.Core.Internal.Packets.Message.Component.Extra.ImageExtra;
 
 namespace Lagrange.Core.Message.Entity;
 
@@ -71,14 +71,14 @@ public class ImageEntity : IMessageEntity
     {
         if (elems.NotOnlineImage is { } image)
         {
-            string baseUrl = image.OrigUrl.Contains("&rkey=") ? BaseUrl : LegacyBaseUrl;
+            if (image.OrigUrl.Contains("&rkey=")) return null; // NTQQ's shit
             
             return new ImageEntity
             {
                 PictureSize = new Vector2(image.PicWidth, image.PicHeight),
                 FilePath = image.FilePath,
                 ImageSize = image.FileLen,
-                ImageUrl = $"{baseUrl}{image.OrigUrl}"
+                ImageUrl = $"{LegacyBaseUrl}{image.OrigUrl}"
             };
         }
         
@@ -95,22 +95,25 @@ public class ImageEntity : IMessageEntity
             };
         }
 
-        if (elems.CommonElem is { ServiceType: 48 } common)
+        if (elems.CommonElem is { ServiceType: 48, BusinessType: 10 or 20 } common)  // 10 for private, 20 for group
         {
-            var extra = Serializer.Deserialize<ImageExtra>(common.PbElem.AsSpan());
+            var extra = Serializer.Deserialize<MsgInfo>(common.PbElem.AsSpan());
+            var meta = extra.MsgInfoBody[0];
+            var info = meta.Index.Info;
 
-            if (extra.Metadata.Urls != null)
+            var biz = extra.ExtBizInfo.Pic;
+            var reserve = biz.FromScene == 2 ? biz.BytesPbReserveTroop /*2*/ : biz.BytesPbReserveC2c /*1*/;
+            var rkey = Serializer.Deserialize<ImageExtraKey>(reserve.AsSpan());
+            
+            string url = $"https://{meta.Picture.Domain}{meta.Picture.UrlPath}{rkey.RKey}";
+            
+            return new ImageEntity
             {
-                string url = $"https://{extra.Metadata.Urls.Domain}{extra.Metadata.Urls.Suffix}{extra.Credential.Resp.GroupKey?.RKey ?? extra.Credential.Resp.FriendKey?.RKey}";
-                
-                return new ImageEntity
-                {
-                    PictureSize = new Vector2(extra.Metadata.File.FileInfo.PicWidth, extra.Metadata.File.FileInfo.PicHeight),
-                    FilePath = extra.Metadata.File.FileInfo.FilePath,
-                    ImageSize = (uint)extra.Metadata.File.FileInfo.FileSize,
-                    ImageUrl = url
-                };
-            }
+                PictureSize = new Vector2(info.Width, info.Height),
+                FilePath = info.FileName,
+                ImageSize = info.FileSize,
+                ImageUrl = url
+            };
         }
         
         return null;

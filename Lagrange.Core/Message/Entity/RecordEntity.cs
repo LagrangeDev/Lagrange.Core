@@ -79,17 +79,16 @@ public class RecordEntity : IMessageEntity
 
     IMessageEntity? IMessageEntity.UnpackElement(Elem elem)
     {
-        if (elem.CommonElem is { BusinessType:22, ServiceType: 48 } common) // businessType = 22 for Group
+        if (elem.CommonElem is { BusinessType: 22 or 12, ServiceType: 48 } common) // businessType = 22 for Group
         {
-            var extra = Serializer.Deserialize<ImageExtra>(common.PbElem.AsSpan());
+            var extra = Serializer.Deserialize<MsgInfo>(common.PbElem.AsSpan());
+            var index = extra.MsgInfoBody[0].Index;
 
-            if (extra.Metadata.File.FileUuid != null)
+            return new RecordEntity(index.FileUuid, index.Info.FileName)
             {
-                return new RecordEntity(extra.Metadata.File.FileUuid, extra.Metadata.File.FileInfo.FilePath)
-                {
-                    FileSha1 = extra.Metadata.File.FileInfo.FileSha1
-                };
-            }
+                AudioLength = (int)index.Info.Time,
+                FileSha1 = index.Info.FileSha1
+            };
         }
         
         return null;
