@@ -8,5 +8,5 @@ namespace Lagrange.OneBot.Core.Operation.Ability;
 public class CanSendImage : IOperation
 {
     public Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload) => 
-        Task.FromResult(new OneBotResult(new JsonObject { { "yes", true } }, 0, "ok"));
+        Task.FromResult(new OneBotResult(new JsonObject { { "yes", Constant.CanSendImage } }, 0, "ok"));
 }
