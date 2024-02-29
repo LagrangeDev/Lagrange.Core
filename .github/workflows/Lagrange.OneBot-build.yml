@@ -21,10 +21,7 @@ jobs:
         runtimeIdentifier: [ win-x64, win-x86, linux-x64, linux-arm, linux-arm64, osx-x64, osx-arm64, linux-musl-x64, linux-musl-arm64 ]
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
+      - uses: actions/checkout@v4
 
       - name: Install .NET
         uses: actions/setup-dotnet@v3
