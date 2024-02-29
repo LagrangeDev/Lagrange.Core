@@ -187,85 +187,92 @@ internal class MessagingLogic : LogicBase
 
     private async Task ResolveIncomingChain(MessageChain chain)
     {
-        if (chain.HasTypeOf<FileEntity>())
+        foreach (var entity in chain) switch (entity)
         {
-            var file = chain.GetEntity<FileEntity>();
-            if (file?.IsGroup != false || file.FileHash == null || file.FileUuid == null) return;
-
-            var @event = FileDownloadEvent.Create(file.FileUuid, file.FileHash, chain.Uid, chain.SelfUid);
-            var results = await Collection.Business.SendEvent(@event);
-            if (results.Count != 0)
+            case FileEntity { IsGroup: true, FileHash: not null, FileUuid: not null } file:
             {
-                var result = (FileDownloadEvent)results[0];
-                file.FileUrl = result.FileUrl;
+                var @event = FileDownloadEvent.Create(file.FileUuid, file.FileHash, chain.Uid, chain.SelfUid);
+                var results = await Collection.Business.SendEvent(@event);
+                if (results.Count != 0)
+                {
+                    var result = (FileDownloadEvent)results[0];
+                    file.FileUrl = result.FileUrl;
+                }
+                
+                break;
             }
-        }
-
-        if (chain.HasTypeOf<MultiMsgEntity>())
-        {
-            var multi = chain.GetEntity<MultiMsgEntity>();
-            if (multi?.ResId == null) return;
-
-            var @event = MultiMsgDownloadEvent.Create(chain.Uid ?? "", multi.ResId);
-            var results = await Collection.Business.SendEvent(@event);
-            if (results.Count != 0)
+            case MultiMsgEntity { ResId: not null } multi:
             {
-                var result = (MultiMsgDownloadEvent)results[0];
-                multi.Chains.AddRange((IEnumerable<MessageChain>?)result.Chains ?? Array.Empty<MessageChain>());
+                var @event = MultiMsgDownloadEvent.Create(chain.Uid ?? "", multi.ResId);
+                var results = await Collection.Business.SendEvent(@event);
+                if (results.Count != 0)
+                {
+                    var result = (MultiMsgDownloadEvent)results[0];
+                    multi.Chains.AddRange((IEnumerable<MessageChain>?)result.Chains ?? Array.Empty<MessageChain>());
+                }
+                
+                break;
             }
-        }
-
-        if (chain.HasTypeOf<RecordEntity>())
-        {
-            var record = chain.GetEntity<RecordEntity>();
-            if (record?.MsgInfo == null) return;
-
-            string uid = (chain.IsGroup
-                ? await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin)
-                : chain.Uid) ?? "";
-
-            var @event = chain.IsGroup 
-                ? RecordGroupDownloadEvent.Create(chain.GroupUin ?? 0, record.MsgInfo) 
-                : RecordDownloadEvent.Create(uid, record.MsgInfo);
+            case RecordEntity { MsgInfo: not null } record:
+            {
+                var @event = chain.IsGroup 
+                    ? RecordGroupDownloadEvent.Create(chain.GroupUin ?? 0, record.MsgInfo) 
+                    : RecordDownloadEvent.Create(chain.Uid ?? string.Empty, record.MsgInfo);
             
-            var results = await Collection.Business.SendEvent(@event);
-            if (results.Count != 0)
-            {
-                var result = (RecordDownloadEvent)results[0];
-                record.AudioUrl = result.AudioUrl;
+                var results = await Collection.Business.SendEvent(@event);
+                if (results.Count != 0)
+                {
+                    var result = (RecordDownloadEvent)results[0];
+                    record.AudioUrl = result.AudioUrl;
+                }
+                
+                break;
             }
-        }
-
-        if (chain.HasTypeOf<VideoEntity>())
-        {
-            var video = chain.GetEntity<VideoEntity>();
-            if (video?.VideoUuid == null) return;
-
-            string uid = (chain.IsGroup
-                ? await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin)
-                : chain.Uid) ?? "";
-            var @event = VideoDownloadEvent.Create(video.VideoUuid, uid, video.FilePath, "", "",chain.IsGroup);
-            var results = await Collection.Business.SendEvent(@event);
-            if (results.Count != 0)
+            case VideoEntity { VideoUuid: not null } video:
             {
-                var result = (VideoDownloadEvent)results[0];
-                video.VideoUrl = result.AudioUrl;
+                string uid = (chain.IsGroup
+                    ? await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin)
+                    : chain.Uid) ?? "";
+                var @event = VideoDownloadEvent.Create(video.VideoUuid, uid, video.FilePath, "", "",chain.IsGroup);
+                var results = await Collection.Business.SendEvent(@event);
+                if (results.Count != 0)
+                {
+                    var result = (VideoDownloadEvent)results[0];
+                    video.VideoUrl = result.AudioUrl;
+                }
+                
+                break;
             }
-        }
-
-        foreach (var mention in chain.OfType<MentionEntity>())
-        {
-            if (chain is { IsGroup: true, GroupUin: not null })
+            case MentionEntity mention when chain is { IsGroup: true, GroupUin: not null }:
             {
                 var members = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
-                var member = members.FirstOrDefault(x => x.Uin == mention.Uin)?.MemberCard;
+                string? member = members.FirstOrDefault(x => x.Uin == mention.Uin)?.MemberCard;
                 if (member != null) mention.Name = $"@{member}";
+                
+                break;
             }
-            else
+            case MentionEntity mention when chain is { IsGroup: false }:
             {
                 var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
-                var friend = friends.FirstOrDefault(x => x.Uin == mention.Uin)?.Nickname;
+                string? friend = friends.FirstOrDefault(x => x.Uin == mention.Uin)?.Nickname;
                 if (friend != null) mention.Name = $"@{friend}";
+                
+                break;
+            }
+            case ImageEntity image when !image.ImageUrl.Contains("&rkey=") && image.MsgInfo is not null:
+            {
+                var @event = chain.IsGroup 
+                    ? ImageGroupDownloadEvent.Create(chain.GroupUin ?? 0, image.MsgInfo) 
+                    : ImageDownloadEvent.Create(chain.Uid ?? string.Empty, image.MsgInfo);
+                
+                var results = await Collection.Business.SendEvent(@event);
+                if (results.Count != 0)
+                {
+                    var result = (ImageDownloadEvent)results[0];
+                    image.ImageUrl = result.ImageUrl;
+                }
+                
+                break;
             }
         }
     }

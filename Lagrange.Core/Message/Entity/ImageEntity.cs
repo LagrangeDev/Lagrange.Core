@@ -112,7 +112,8 @@ public class ImageEntity : IMessageEntity
                 PictureSize = new Vector2(info.Width, info.Height),
                 FilePath = info.FileName,
                 ImageSize = info.FileSize,
-                ImageUrl = url
+                ImageUrl = url,
+                MsgInfo = extra
             };
         }
         
