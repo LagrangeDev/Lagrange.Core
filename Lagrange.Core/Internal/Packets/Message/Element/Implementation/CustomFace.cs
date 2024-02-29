@@ -69,7 +69,7 @@ internal class CustomFace
     
     [ProtoMember(30)] public int DownloadLen { get; set; }
     
-    [ProtoMember(31)] public string X400Url { get; set; }
+    [ProtoMember(31)] public string? X400Url { get; set; }
     
     [ProtoMember(32)] public int X400Width { get; set; }
     

@@ -84,6 +84,17 @@ public class ImageEntity : IMessageEntity
         
         if (elems.CustomFace is { } face)
         {
+            if (face.PbReserve?.Hash != null)
+            {
+                return new ImageEntity // NTQQ Mobile
+                {
+                    PictureSize = new Vector2(face.Width, face.Height),
+                    FilePath = face.FilePath,
+                    ImageSize = face.Size,
+                    ImageUrl = $"{BaseUrl}{face.OrigUrl}"
+                };
+            }
+            
             if (face.OrigUrl.Contains("&rkey=")) return null; // NTQQ's shit
             
             return new ImageEntity
