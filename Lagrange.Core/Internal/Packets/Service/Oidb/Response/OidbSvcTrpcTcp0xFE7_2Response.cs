@@ -50,7 +50,7 @@ internal class OidbSvcTrpcTcp0xFE7_2Uin
 [ProtoContract]
 internal class OidbSvcTrpcTcp0xFE7_2Card
 {
-    [ProtoMember(2)] public string MemberCard { get; set; }
+    [ProtoMember(2)] public string? MemberCard { get; set; }
 }
 
 [ProtoContract]

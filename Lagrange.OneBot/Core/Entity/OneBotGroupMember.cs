@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace Lagrange.OneBot.Core.Entity;
 
 [Serializable]
-public class OneBotGroupMember(uint groupId, uint uin, string permission, string groupLevel, string memberCard,
+public class OneBotGroupMember(uint groupId, uint uin, string permission, string groupLevel, string? memberCard,
     string memberName, uint joinTime, uint lastMsgTime)
 {
     [JsonPropertyName("group_id")] public uint GroupId { get; set; } = groupId;
@@ -12,7 +12,7 @@ public class OneBotGroupMember(uint groupId, uint uin, string permission, string
 
     [JsonPropertyName("nickname")] public string MemberName { get; set; } = memberName;
 
-    [JsonPropertyName("card")] public string MemberCard { get; set; } = memberCard;
+    [JsonPropertyName("card")] public string? MemberCard { get; set; } = memberCard;
 
     [JsonPropertyName("sex")] public string Sex { get; set; } = "";
 

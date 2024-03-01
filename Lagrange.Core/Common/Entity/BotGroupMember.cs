@@ -13,7 +13,7 @@ public class BotGroupMember
         MemberName = string.Empty;
     }
     
-    internal BotGroupMember(uint uin, string uid, GroupMemberPermission permission, uint groupLevel, string memberCard, 
+    internal BotGroupMember(uint uin, string uid, GroupMemberPermission permission, uint groupLevel, string? memberCard, 
         string memberName, DateTime joinTime, DateTime lastMsgTime)
     {
         Uin = uin;
@@ -34,7 +34,7 @@ public class BotGroupMember
     
     public uint GroupLevel { get; set; }
     
-    public string MemberCard { get; set; }
+    public string? MemberCard { get; set; }
     
     public string MemberName { get; set; }
     
