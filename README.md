@@ -123,7 +123,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | ~~[/set_group_anonymous_ban]~~ |   🔴    |
 | [/set_group_whole_ban]         |   🟢    |
 | [/set_group_admin]             |   🟢    |
-| [/set_group_anonymous]         |   🔴    |
+| ~~[/set_group_anonymous]~~     |   🔴    |
 | [/set_group_card]              |   🟢    |
 | [/set_group_name]              |   🟢    |
 | [/set_group_leave]             |   🟢    |
