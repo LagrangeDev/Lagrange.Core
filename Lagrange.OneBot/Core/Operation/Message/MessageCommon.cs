@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity;
@@ -207,6 +208,23 @@ public partial class MessageCommon
                 Log.LogCQFailed(_logger, segment.Type, string.Empty);
             }
         }
+    }
+    
+    public List<MessageChain> BuildForwardChains(OneBotForward forward)
+    {
+        List<MessageChain> chains = [];
+
+        foreach (var segment in forward.Messages)
+        {
+            if (((JsonElement)segment.Data).Deserialize<OneBotFakeNode>() is { } element)
+            {
+                var chain = ParseFakeChain(element).Build();
+                chain.FriendInfo = new BotFriend(uint.Parse(element.Uin), string.Empty, element.Name, string.Empty, string.Empty);
+                chains.Add(chain);
+            }
+        }
+
+        return chains;
     }
 
     private static partial class Log
