@@ -16,13 +16,13 @@ public class LongMsgEntity : IMessageEntity
         Chain = MessageBuilder.Group(0).Build();
     }
 
-    internal LongMsgEntity(string resId)
+    public LongMsgEntity(string resId)
     {
         ResId = resId;
         Chain = MessageBuilder.Group(0).Build();
     }
     
-    internal LongMsgEntity(MessageChain chain)
+    public LongMsgEntity(MessageChain chain)
     {
         ResId = string.Empty;
         Chain = chain;

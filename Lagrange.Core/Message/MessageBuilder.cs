@@ -191,10 +191,20 @@ public sealed class MessageBuilder
         
         return this;
     }
-
-    public MessageBuilder Add(IMessageEntity entity)
+    
+    public MessageBuilder LongMsg(string resId)
     {
-        _chain.Add(entity);
+        var longMsgEntity = new LongMsgEntity(resId);
+        _chain.Add(longMsgEntity);
+        
+        return this;
+    }
+    
+    public MessageBuilder LongMsg(MessageChain chain)
+    {
+        var longMsgEntity = new LongMsgEntity(chain);
+        _chain.Add(longMsgEntity);
+        
         return this;
     }
     
@@ -227,6 +237,12 @@ public sealed class MessageBuilder
         var keyboardEntity = new KeyboardEntity(data);
         _chain.Add(keyboardEntity);
         
+        return this;
+    }
+    
+    public MessageBuilder Add(IMessageEntity entity)
+    {
+        _chain.Add(entity);
         return this;
     }
     
