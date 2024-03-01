@@ -58,5 +58,5 @@ internal partial class NotOnlineImage
     
     [ProtoMember(25)] public uint DownloadLen { get; set; }
     
-    [ProtoMember(29)] public PbReserve PbRes { get; set; }
+    [ProtoMember(29)] public byte[] PbRes { get; set; }
 }
