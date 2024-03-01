@@ -320,4 +320,11 @@ internal class OperationLogic : LogicBase
         var results = await Collection.Business.SendEvent(fetchCustomFaceEvent);
         return results.Count != 0 ? ((FetchCustomFaceEvent)results[0]).Urls : null;
     }
+    
+    public async Task<string?> UploadLongMessage(List<MessageChain> chains)
+    {
+        var multiMsgUploadEvent = MultiMsgUploadEvent.Create(null, chains);
+        var results = await Collection.Business.SendEvent(multiMsgUploadEvent);
+        return results.Count != 0 ? ((MultiMsgUploadEvent)results[0]).ResId : null;
+    }
 }

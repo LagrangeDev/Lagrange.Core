@@ -153,4 +153,7 @@ public static class OperationExt
     
     public static Task<List<string>?> FetchCustomFace(this BotContext bot)
         => bot.ContextCollection.Business.OperationLogic.FetchCustomFace();
+    
+    public static Task<string?> UploadLongMessage(this BotContext bot, List<MessageChain> chains)
+        => bot.ContextCollection.Business.OperationLogic.UploadLongMessage(chains);
 }

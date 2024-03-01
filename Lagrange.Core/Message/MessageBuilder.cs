@@ -198,5 +198,37 @@ public sealed class MessageBuilder
         return this;
     }
     
+    public MessageBuilder Markdown(string json)
+    {
+        var markdownEntity = new MarkdownEntity(json);
+        _chain.Add(markdownEntity);
+        
+        return this;
+    }
+    
+    public MessageBuilder Markdown(MarkdownData data)
+    {
+        var markdownEntity = new MarkdownEntity(data);
+        _chain.Add(markdownEntity);
+        
+        return this;
+    }
+    
+    public MessageBuilder Keyboard(string json)
+    {
+        var keyboardEntity = new KeyboardEntity(json);
+        _chain.Add(keyboardEntity);
+        
+        return this;
+    }
+    
+    public MessageBuilder Keyboard(KeyboardData data)
+    {
+        var keyboardEntity = new KeyboardEntity(data);
+        _chain.Add(keyboardEntity);
+        
+        return this;
+    }
+    
     public MessageChain Build() => _chain;
 }
