@@ -243,22 +243,6 @@ internal class MessagingLogic : LogicBase
                 
                 break;
             }
-            case MentionEntity mention when chain is { IsGroup: true, GroupUin: not null }:
-            {
-                var members = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
-                string? member = members.FirstOrDefault(x => x.Uin == mention.Uin)?.MemberCard;
-                if (member != null) mention.Name = $"@{member}";
-                
-                break;
-            }
-            case MentionEntity mention when chain is { IsGroup: false }:
-            {
-                var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
-                string? friend = friends.FirstOrDefault(x => x.Uin == mention.Uin)?.Nickname;
-                if (friend != null) mention.Name = $"@{friend}";
-                
-                break;
-            }
             case ImageEntity image when !image.ImageUrl.Contains("&rkey=") && image.MsgInfo is not null:
             {
                 var @event = chain.IsGroup 
@@ -279,58 +263,55 @@ internal class MessagingLogic : LogicBase
 
     private async Task ResolveOutgoingChain(MessageChain chain)
     {
-        foreach (var entity in chain)
+        foreach (var entity in chain) switch (entity)
         {
-            switch (entity)
+            case MentionEntity mention when mention.Uin != 0:
             {
-                case MentionEntity mention when mention.Uin != 0:
+                var cache = Collection.Business.CachingLogic;
+                mention.Uid = await cache.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
+                    
+                if (chain is { IsGroup: true, GroupUin: not null } && mention.Name is null)
                 {
-                    var cache = Collection.Business.CachingLogic;
-                    mention.Uid = await cache.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
+                    var members = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
+                    string? member = members.FirstOrDefault(x => x.Uin == mention.Uin)?.MemberCard;
+                    if (member != null) mention.Name = $"@{member}";
+                }
+                else if (chain is { IsGroup: false } && mention.Name is null)
+                {
+                    var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
+                    string? friend = friends.FirstOrDefault(x => x.Uin == mention.Uin)?.Nickname;
+                    if (friend != null) mention.Name = $"@{friend}";
+                }
+                
+                break;
+            }
+            case MultiMsgEntity { ResId: null } multiMsg:
+            {
+                foreach (var multi in multiMsg.Chains)
+                {
+                    await ResolveChainMetadata(multi);
+                    await Collection.Highway.UploadResources(multi);
+                }
 
-                    if (string.IsNullOrEmpty(mention.Name))
-                    {
-                        if (chain is { IsGroup: true, GroupUin: not null })
-                        {
-                            var member = (await cache.GetCachedMembers(chain.GroupUin.Value, false)).FirstOrDefault(x => x.Uin == chain.FriendUin);
-                            mention.Name = member?.MemberCard;
-                        }
-                        else
-                        {
-                            var friend = (await cache.GetCachedFriends(false)).FirstOrDefault(x => x.Uin == chain.FriendUin);
-                            mention.Name = friend?.Nickname;
-                        }
-                    }
-                    break;
-                }
-                case MultiMsgEntity { ResId: null } multiMsg:
+                var multiMsgEvent = MultiMsgUploadEvent.Create(multiMsg.GroupUin, multiMsg.Chains);
+                var results = await Collection.Business.SendEvent(multiMsgEvent);
+                if (results.Count != 0)
                 {
-                    foreach (var multi in multiMsg.Chains)
-                    {
-                        await ResolveChainMetadata(multi);
-                        await Collection.Highway.UploadResources(multi);
-                    }
-
-                    var multiMsgEvent = MultiMsgUploadEvent.Create(multiMsg.GroupUin, multiMsg.Chains);
-                    var results = await Collection.Business.SendEvent(multiMsgEvent);
-                    if (results.Count != 0)
-                    {
-                        var result = (MultiMsgUploadEvent)results[0];
-                        multiMsg.ResId = result.ResId;
-                    }
-                    break;
+                    var result = (MultiMsgUploadEvent)results[0];
+                    multiMsg.ResId = result.ResId;
                 }
-                case MultiMsgEntity { ResId: not null, Chains.Count: 0 } multiMsg:
+                break;
+            }
+            case MultiMsgEntity { ResId: not null, Chains.Count: 0 } multiMsg:
+            {
+                var @event = MultiMsgDownloadEvent.Create(chain.Uid ?? "", multiMsg.ResId);
+                var results = await Collection.Business.SendEvent(@event);
+                if (results.Count != 0)
                 {
-                    var @event = MultiMsgDownloadEvent.Create(chain.Uid ?? "", multiMsg.ResId);
-                    var results = await Collection.Business.SendEvent(@event);
-                    if (results.Count != 0)
-                    {
-                        var result = (MultiMsgDownloadEvent)results[0];
-                        multiMsg.Chains.AddRange((IEnumerable<MessageChain>?)result.Chains ?? Array.Empty<MessageChain>());
-                    }
-                    break;
+                    var result = (MultiMsgDownloadEvent)results[0];
+                    multiMsg.Chains.AddRange((IEnumerable<MessageChain>?)result.Chains ?? Array.Empty<MessageChain>());
                 }
+                break;
             }
         }
     }
