@@ -273,8 +273,8 @@ internal class MessagingLogic : LogicBase
                 if (chain is { IsGroup: true, GroupUin: not null } && mention.Name is null)
                 {
                     var members = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
-                    string? member = members.FirstOrDefault(x => x.Uin == mention.Uin)?.MemberCard;
-                    if (member != null) mention.Name = $"@{member}";
+                    var member = members.FirstOrDefault(x => x.Uin == mention.Uin);
+                    if (member != null) mention.Name = $"@{member.MemberCard ?? member.MemberName}";
                 }
                 else if (chain is { IsGroup: false } && mention.Name is null)
                 {
