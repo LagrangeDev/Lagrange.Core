@@ -13,7 +13,7 @@ internal class RecordGroupDownloadEvent : RecordDownloadEvent
 
     private RecordGroupDownloadEvent(int resultCode, string audioUrl) : base(resultCode, audioUrl) { }
     
-    public new static RecordGroupDownloadEvent Create(uint groupUin, MsgInfo info) => new(groupUin, info);
+    public static RecordGroupDownloadEvent Create(uint groupUin, MsgInfo info) => new(groupUin, info);
 
     public new static RecordGroupDownloadEvent Result(int resultCode, string url) => new(resultCode, url);
 }

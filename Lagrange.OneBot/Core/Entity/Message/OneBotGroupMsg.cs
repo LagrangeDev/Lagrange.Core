@@ -24,5 +24,5 @@ public class OneBotGroupMsg(uint selfId, uint groupUin, List<OneBotSegment> mess
 
     [JsonPropertyName("font")] public int Font { get; set; } = 0;
 
-    [JsonPropertyName("sender")] public OneBotGroupSender GroupSender { get; set; } = new(member.Uin, member.MemberName, member.MemberCard, (int)member.GroupLevel, member.Permission);
+    [JsonPropertyName("sender")] public OneBotGroupSender GroupSender { get; set; } = new(member.Uin, member.MemberName, member.MemberCard ?? string.Empty, (int)member.GroupLevel, member.Permission);
 }
