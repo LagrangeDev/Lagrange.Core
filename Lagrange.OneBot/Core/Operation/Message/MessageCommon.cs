@@ -6,6 +6,7 @@ using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Message;
+using Lagrange.OneBot.Core.Operation.Converters;
 using Lagrange.OneBot.Message;
 using LiteDB;
 using Microsoft.Extensions.Logging;
@@ -197,8 +198,14 @@ public partial class MessageCommon
     {
         if (_typeToSegment.TryGetValue(segment.Type, out var instance))
         {
-            if (((JsonElement)segment.Data).Deserialize(instance.GetType()) is SegmentBase cast) instance.Build(builder, cast);
-            else Log.LogCQFailed(_logger, segment.Type, string.Empty);
+            if (((JsonElement)segment.Data).Deserialize(instance.GetType(), SerializerOptions.DefaultOptions) is SegmentBase cast)
+            {
+                instance.Build(builder, cast);
+            }
+            else
+            {
+                Log.LogCQFailed(_logger, segment.Type, string.Empty);
+            }
         }
     }
 
