@@ -6,7 +6,7 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Response;
 // ReSharper disable InconsistentNaming
 
 [ProtoContract]
-internal class OidbSvcTrpcTco0x6D6Response
+internal class OidbSvcTrpcTcp0x6D6Response
 {
     [ProtoMember(3)] public OidbSvcTrpcTcp0x6D6_2Response Download { get; set; }
 }
