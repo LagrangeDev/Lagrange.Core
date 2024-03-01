@@ -38,7 +38,7 @@ internal class ImageUploader : IHighwayUploader
             if (!hwSuccess) throw new Exception();
             
             image.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
-            image.Compat = metaResult.Compat;  // for legacy QQ
+            image.CompatImage = metaResult.Compat;  // for legacy QQ
             await image.ImageStream.DisposeAsync();
         }
     }
@@ -71,7 +71,7 @@ internal class ImageUploader : IHighwayUploader
             if (!hwSuccess) throw new Exception();
             
             image.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
-            image.Compat = metaResult.Compat;  // for legacy QQ
+            image.CompatFace = metaResult.Compat;  // for legacy QQ
             await image.ImageStream.DisposeAsync();
         }
     }

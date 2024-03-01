@@ -18,7 +18,7 @@ internal class ImageGroupUploadEvent : ProtocolEvent
     
     public List<IPv4> Network { get; }
     
-    public NotOnlineImage Compat { get; }
+    public CustomFace Compat { get; }
 
     private ImageGroupUploadEvent(ImageEntity entity, uint groupUin) : base(true)
     {
@@ -26,7 +26,7 @@ internal class ImageGroupUploadEvent : ProtocolEvent
         GroupUin = groupUin;
     }
 
-    private ImageGroupUploadEvent(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, NotOnlineImage compat) : base(resultCode)
+    private ImageGroupUploadEvent(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, CustomFace compat) : base(resultCode)
     {
         UKey = uKey;
         MsgInfo = msgInfo;
@@ -37,6 +37,6 @@ internal class ImageGroupUploadEvent : ProtocolEvent
     public static ImageGroupUploadEvent Create(ImageEntity entity, uint groupUin)
         => new(entity, groupUin);
 
-    public static ImageGroupUploadEvent Result(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, NotOnlineImage compat)
+    public static ImageGroupUploadEvent Result(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, CustomFace compat)
         => new(resultCode, uKey, msgInfo, network, compat);
 }

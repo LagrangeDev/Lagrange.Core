@@ -88,7 +88,7 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
                 TryFastUploadCompleted = true,
                 SrvSendMsg = false,
                 ClientRandomId = (ulong)Random.Shared.Next(),
-                CompatQMsgSceneType = 1,
+                CompatQMsgSceneType = 2,
                 ExtBizInfo = new ExtBizInfo
                 {
                     Pic = new PicExtBizInfo
@@ -118,7 +118,7 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<NTV2RichMediaResp>>(input.AsSpan());
         var upload = packet.Body.Upload;
-        var compat = Serializer.Deserialize<NotOnlineImage>(upload.CompatQMsg.AsSpan());
+        var compat = Serializer.Deserialize<CustomFace>(upload.CompatQMsg.AsSpan());
         
         output = ImageGroupUploadEvent.Result((int)packet.ErrorCode, upload.UKey, upload.MsgInfo, upload.IPv4s, compat);
         extraEvents = null;

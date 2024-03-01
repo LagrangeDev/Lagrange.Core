@@ -75,5 +75,5 @@ internal class CustomFace
     
     [ProtoMember(33)] public int X400Height { get; set; }
     
-    [ProtoMember(34)] public CustomFaceExtra? PbReserve { get; set; }
+    [ProtoMember(34)] public byte[]? PbReserve { get; set; }
 }

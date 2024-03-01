@@ -2,6 +2,7 @@ using System.Numerics;
 using Lagrange.Core.Internal.Packets.Message.Component.Extra;
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
+using Lagrange.Core.Internal.Packets.Message.Element.Implementation.Extra;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
@@ -33,7 +34,9 @@ public class ImageEntity : IMessageEntity
     
     internal MsgInfo? MsgInfo { get; set; }
     
-    internal NotOnlineImage? Compat { get; set; }
+    internal NotOnlineImage? CompatImage { get; set; }
+    
+    internal CustomFace? CompatFace { get; set; }
     
     public ImageEntity() { }
     
@@ -52,9 +55,10 @@ public class ImageEntity : IMessageEntity
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
         var common = MsgInfo.Serialize();
-        return new Elem[]
+        
+        var elems = new Elem[]
         {
-            new() { NotOnlineImage = Compat },
+            new(),
             new()
             {
                 CommonElem = new CommonElem
@@ -65,6 +69,11 @@ public class ImageEntity : IMessageEntity
                 }
             }
         };
+
+        if (CompatFace != null) elems[0].CustomFace = CompatFace;
+        if (CompatImage != null) elems[0].NotOnlineImage = CompatImage;
+        
+        return elems;
     }
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
@@ -84,7 +93,7 @@ public class ImageEntity : IMessageEntity
         
         if (elems.CustomFace is { } face)
         {
-            if (face.PbReserve?.Hash != null)
+            if (face.PbReserve != null && Serializer.Deserialize<CustomFaceExtra>(face.PbReserve.AsSpan()).Hash != null)
             {
                 return new ImageEntity // NTQQ Mobile
                 {
