@@ -11,4 +11,6 @@ public class OneBotGroupRequest(uint selfId, uint userId, uint groupId, string s
     [JsonPropertyName("user_id")] public uint UserId { get; set; } = userId;
 
     [JsonPropertyName("group_id")] public uint GroupId { get; set; } = groupId;
+    
+    [JsonPropertyName("invitor_id")] public uint InvitorId { get; set; }
 }

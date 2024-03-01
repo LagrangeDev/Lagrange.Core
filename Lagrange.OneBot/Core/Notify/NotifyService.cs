@@ -50,7 +50,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             if (requests?.FirstOrDefault(x => @event.GroupUin == x.GroupUin && @event.TargetUin == x.TargetMemberUin) is { } request)
             {
                 string flag = $"{request.Sequence}-{request.GroupUin}-{(uint)request.EventType}";
-                await service.SendJsonAsync(new OneBotGroupRequest(bot.BotUin, @event.TargetUin, @event.GroupUin, "add", request.Comment, flag));
+                await service.SendJsonAsync(new OneBotGroupRequest(bot.BotUin, @event.TargetUin, @event.GroupUin, "add", request.Comment, flag) { InvitorId = @event.InvitorUin });
             }
         };
 
