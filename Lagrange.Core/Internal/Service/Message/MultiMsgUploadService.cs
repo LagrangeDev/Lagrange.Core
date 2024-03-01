@@ -38,7 +38,7 @@ internal class MultiMsgUploadService : BaseService<MultiMsgUploadEvent>
             Info = new SendLongMsgInfo
             {
                 Type = 3,
-                Uid = new LongMsgUid { Uid = input.GroupUin.ToString() ?? keystore.Uid },
+                Uid = new LongMsgUid { Uid = input.GroupUin?.ToString() ?? keystore.Uid },
                 GroupUin = input.GroupUin,
                 Payload = deflate
             },
