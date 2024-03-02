@@ -37,7 +37,7 @@ public class FileEntity : IMessageEntity
     
     /// <summary>
     /// This entity could not be directly sent via <see cref="MessageChain"/>,
-    /// it should be sent via <see cref="Lagrange.Core.Common.Interface.Api.GroupExt.UploadFile"/>
+    /// it should be sent via <see cref="Lagrange.Core.Common.Interface.Api.GroupExt.GroupFSUpload"/>
     /// </summary>
     public FileEntity(string path)
     {

@@ -19,7 +19,8 @@ internal class MarkMsgAsReadOperation(LiteDatabase database) : IOperation
         {
             var record = database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == getMsg.MessageId);
             var chain = (MessageChain)record;
-            await context.MarkAsRead(chain);
+            bool result = await context.MarkAsRead(chain);
+            return new OneBotResult(null, result ? 0 : 1, result ? "ok" : "failed");
         }
 
         throw new Exception();
