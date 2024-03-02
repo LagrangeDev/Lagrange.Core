@@ -1,5 +1,6 @@
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Event.EventArg;
+using Lagrange.Core.Message.Entity;
 
 namespace Lagrange.Core.Common.Interface.Api;
 
@@ -77,6 +78,9 @@ public static class GroupExt
 
     public static Task<bool> GroupFSMove(this BotContext bot, uint groupUin, string fileId, string parentDirectory, string targetDirectory)
         => bot.ContextCollection.Business.OperationLogic.GroupFSMove(groupUin, fileId, parentDirectory, targetDirectory);
+    
+    public static Task<bool> GroupFSUpload(this BotContext bot, uint groupUin, FileEntity fileEntity)
+        => bot.ContextCollection.Business.OperationLogic.GroupFSUpload(groupUin, fileEntity);
 
     #endregion
 }

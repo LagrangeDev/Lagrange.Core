@@ -1,9 +1,11 @@
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Internal.Context.Attributes;
+using Lagrange.Core.Internal.Context.Uploader;
 using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Message;
+using Lagrange.Core.Message.Entity;
 
 namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 
@@ -142,6 +144,18 @@ internal class OperationLogic : LogicBase
         var groupFSMoveEvent = GroupFSMoveEvent.Create(groupUin, fileId, parentDirectory, targetDirectory);
         var events = await Collection.Business.SendEvent(groupFSMoveEvent); 
         return events.Count != 0 && ((GroupFSMoveEvent)events[0]).ResultCode == 0;
+    }
+    
+    public Task<bool> GroupFSUpload(uint groupUin, FileEntity fileEntity)
+    {
+        try
+        {
+            return FileUploader.UploadGroup(Collection, MessageBuilder.Group(groupUin).Build(), fileEntity);
+        }
+        catch
+        {
+            return Task.FromResult(false);
+        }
     }
     
     public async Task<bool> RecallGroupMessage(uint groupUin, MessageResult result)
