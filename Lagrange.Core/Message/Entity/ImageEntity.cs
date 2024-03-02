@@ -93,18 +93,21 @@ public class ImageEntity : IMessageEntity
         
         if (elems.CustomFace is { } face)
         {
-            if (face.PbReserve != null && Serializer.Deserialize<CustomFaceExtra>(face.PbReserve.AsSpan()).Hash != null)
+            if (face.OrigUrl.Contains("&rkey="))
             {
-                return new ImageEntity // NTQQ Mobile
+                if (face.PbReserve is { } res && Serializer.Deserialize<CustomFaceExtra>(res.AsSpan()).Hash != null)
                 {
-                    PictureSize = new Vector2(face.Width, face.Height),
-                    FilePath = face.FilePath,
-                    ImageSize = face.Size,
-                    ImageUrl = $"{BaseUrl}{face.OrigUrl}"
-                };
+                    return new ImageEntity // NTQQ Mobile
+                    {
+                        PictureSize = new Vector2(face.Width, face.Height),
+                        FilePath = face.FilePath,
+                        ImageSize = face.Size,
+                        ImageUrl = $"{BaseUrl}{face.OrigUrl}"
+                    };
+                }
+
+                return null;
             }
-            
-            if (face.OrigUrl.Contains("&rkey=")) return null; // NTQQ's shit
             
             return new ImageEntity
             {
