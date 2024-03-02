@@ -21,14 +21,14 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 
 ```bash
 # 8081 port for ForwardWebSocket
-docker run -d -p 8081:8081 lagrangedev/lagrange.onebot:edge
+docker run -d -p 8081:8081 ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
 
 ## Persistence Storage
 
 ```bash
 docker volume create lagrange_data
-docker run -d -v lagrange_data:/app/data lagrangedev/lagrange.onebot:edge
+docker run -d -v lagrange_data:/app/data ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
 
 ## Configure appsettings.json in Docker
@@ -37,7 +37,7 @@ docker run -d -v lagrange_data:/app/data lagrangedev/lagrange.onebot:edge
 
 use bind mount to mount your `appsettings.json` to `/app/appsettings.json`		
 ```bash
-docker run -d -v /etc/appsettings.json:/app/appsettings.json lagrangedev/lagrange.onebot:edge
+docker run -d -v /etc/appsettings.json:/app/appsettings.json ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
 
 ### Using Environment Variables
@@ -45,10 +45,10 @@ docker run -d -v /etc/appsettings.json:/app/appsettings.json lagrangedev/lagrang
 use [Enviroment Variables](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-7.0#naming-of-environment-variables) to set your appsettings.json
 ```bash
 # disable reverse websocket
-docker run -d -e Implementations__1__Enable=false lagrangedev/lagrange.onebot:edge
+docker run -d -e Implementations__1__Enable=false ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
 
 ```bash
 # input username and password
-docker run -d -e Account__Uin=123456 -e Account__Password=1234 lagrangedev/lagrange.onebot:edge
+docker run -d -e Account__Uin=123456 -e Account__Password=1234 ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
