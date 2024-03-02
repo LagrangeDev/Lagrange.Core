@@ -327,4 +327,11 @@ internal class OperationLogic : LogicBase
         var results = await Collection.Business.SendEvent(multiMsgUploadEvent);
         return results.Count != 0 ? ((MultiMsgUploadEvent)results[0]).ResId : null;
     }
+
+    public async Task<bool> MarkAsRead(uint groupUin, string? targetUid, uint startSequence, uint time)
+    {
+        var markAsReadEvent = MarkReadedEvent.Create(groupUin, targetUid, startSequence, time);
+        var results = await Collection.Business.SendEvent(markAsReadEvent);
+        return results.Count != 0 && ((MarkReadedEvent)results[0]).ResultCode == 0;
+    }
 }
