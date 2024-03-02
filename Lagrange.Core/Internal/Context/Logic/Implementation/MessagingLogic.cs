@@ -290,6 +290,7 @@ internal class MessagingLogic : LogicBase
                 foreach (var multi in multiMsg.Chains)
                 {
                     await ResolveChainMetadata(multi);
+                    await ResolveOutgoingChain(multi);
                     await Collection.Highway.UploadResources(multi);
                 }
 
