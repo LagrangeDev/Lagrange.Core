@@ -36,10 +36,10 @@ public class ForwardEntity : IMessageEntity
     {
         var reserve = new SrcMsg.Preserve
         {
-            Field3 = Random.Shared.Next(0, int.MaxValue),
+            MessageId = Random.Shared.NextInt64(0, int.MaxValue) | 0x1000000000000000L,
             ReceiverUid = SelfUid,
             SenderUid = Uid,
-            Field8 = Random.Shared.Next(0, 10000)
+            MessageSequence = Sequence
         };
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, reserve);
