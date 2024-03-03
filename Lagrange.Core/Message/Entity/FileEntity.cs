@@ -78,14 +78,14 @@ public class FileEntity : IMessageEntity
         File = new NotOnlineFile
         { 
             FileType = 0, 
-            FileUuid = "",
+            FileUuid = FileUuid,
             FileMd5 = FileMd5,
             FileName = FileName,
             FileSize = FileSize,
             Subcmd = 1,
             DangerEvel = 0,
-            ExpireTime = DateTime.Now.AddDays(7).Second,
-            FileHash = "" // TODO: Send out Oidb
+            ExpireTime = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0) + TimeSpan.FromDays(7)).TotalSeconds,
+            FileHash = FileHash // TODO: Send out Oidb
         }
     };
     

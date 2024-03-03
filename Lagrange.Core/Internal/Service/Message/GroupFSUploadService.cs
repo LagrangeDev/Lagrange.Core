@@ -17,6 +17,8 @@ internal class GroupFSUploadService : BaseService<GroupFSUploadEvent>
     protected override bool Build(GroupFSUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
+        if (input.Entity.FileStream is null) throw new Exception();
+
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x6D6_0>(new OidbSvcTrpcTcp0x6D6_0
         {
             File = new OidbSvcTrpcTcp0x6D6_0Upload
@@ -29,7 +31,7 @@ internal class GroupFSUploadService : BaseService<GroupFSUploadEvent>
                 FileName = input.Entity.FileName,
                 LocalDirectory = $"/{input.Entity.FileName}",
                 FileSize = input.Entity.FileSize,
-                FileSha1 = input.Entity.FileStream?.Sha1().UnHex() ?? Array.Empty<byte>(),
+                FileSha1 = input.Entity.FileStream.Sha1().UnHex(),
                 FileSha3 = Array.Empty<byte>(),
                 FileMd5 = input.Entity.FileMd5,
                 Field15 = true

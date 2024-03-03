@@ -11,19 +11,21 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 [OidbSvcTrpcTcp(0xE37, 1700)]
 internal class OidbSvcTrpcTcp0xE37_1700
 {
-    [ProtoMember(1)] public uint SubCommand => 1700;
+    [ProtoMember(1)] public uint Command { get; set; } // 1700
     
-    [ProtoMember(2)] public int Field2 { get; set; } // Unknown
+    [ProtoMember(2)] public int Seq { get; set; } // 0
     
-    [ProtoMember(101)] public int Field101 { get; set; } // Unknown
+    [ProtoMember(19)] public ApplyUploadReqV3 Upload { get; set; }
     
-    [ProtoMember(102)] public int Field102 { get; set; } // Unknown
+    [ProtoMember(101)] public int BusinessId { get; set; } // 3
     
-    [ProtoMember(200)] public int Field200 { get; set; } // Unknown
+    [ProtoMember(102)] public int ClientType { get; set; } // 1
+    
+    [ProtoMember(200)] public int FlagSupportMediaPlatform { get; set; } // 1
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0xE37_1700Body
+internal class ApplyUploadReqV3
 {
     [ProtoMember(10)] public string SenderUid { get; set; }
     

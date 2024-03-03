@@ -1,5 +1,6 @@
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Message;
+using Lagrange.Core.Message.Entity;
 
 namespace Lagrange.Core.Common.Interface.Api;
 
@@ -162,4 +163,8 @@ public static class OperationExt
         uint timestamp = (uint)(targetChain.Time - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
         return bot.ContextCollection.Business.OperationLogic.MarkAsRead(targetChain.GroupUin ?? 0, targetChain.Uid, targetChain.Sequence, timestamp);
     }
+    
+    public static Task<bool> UploadFriendFile(this BotContext bot, uint targetUin, FileEntity fileEntity) 
+        => bot.ContextCollection.Business.OperationLogic.UploadFriendFile(targetUin, fileEntity);
+
 }

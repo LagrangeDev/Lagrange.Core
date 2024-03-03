@@ -158,6 +158,21 @@ internal class OperationLogic : LogicBase
         }
     }
     
+    public async Task<bool> UploadFriendFile(uint targetUin, FileEntity fileEntity)
+    {
+        string? uid = await Collection.Business.CachingLogic.ResolveUid(null, targetUin);
+        var chain = new MessageChain(targetUin, Collection.Keystore.Uid ?? "", uid ?? "") { fileEntity };
+        
+        try
+        {
+            return await FileUploader.UploadPrivate(Collection, chain, fileEntity);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+    
     public async Task<bool> RecallGroupMessage(uint groupUin, MessageResult result)
     {
         if (result.Sequence == null) return false;
