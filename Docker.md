@@ -53,3 +53,13 @@ docker run -d -e Implementations__1__Enable=false ghcr.io/lagrangedev/lagrange.o
 # input username and password
 docker run -d -e Account__Uin=123456 -e Account__Password=1234 ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
+
+## Migration from older versions
+
+Move `appsettings.json`, `device.json`, `keystore.json`, `lagrange-*.db` to the same folder where you want to put them.
+
+Use this command to start the
+```bash
+docker run -d -v /path-to-data:/root/data ghcr.io/lagrangedev/lagrange.onebot:edge
+```
+Don't forget to add your port mapping parameter, `-p`.
