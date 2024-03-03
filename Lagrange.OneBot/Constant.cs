@@ -6,7 +6,7 @@ internal static class Constant
 
     public const int OneBotProtocolVersion = 11;
     
-    public const string OneBotImplVersion = "0.0.2-alpha";
+    public const string OneBotImplVersion = "0.0.3";
 
     public const bool CanSendImage = true;
     
