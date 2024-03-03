@@ -175,7 +175,7 @@ internal static class MessagePacker
     {
         RoutingHead = new RoutingHead
         {
-            C2C = chain.IsGroup ? null : new C2C
+            C2C = chain.IsGroup || chain.HasTypeOf<FileEntity>() ? null : new C2C
             {
                 Uid = chain.FriendInfo?.Uid,
                 Uin = chain.FriendUin
