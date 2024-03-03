@@ -33,7 +33,7 @@ jobs:
         run: dotnet nuget add source --username Linwenxuan05 --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/LagrangeDev/index.json"
 
       - name: Push generated package to GitHub registry
-        run: dotnet nuget push .\Lagrange.Core\bin\Release\*.nupkg --source "github" --api-key ${{ secrets.GIT_TOKEN }}
+        run: dotnet nuget push ./Lagrange.Core/bin/Release/*.nupkg --source "github" --api-key ${{ secrets.GIT_TOKEN }}
 
       - name: Push generated package to NuGet
-        run: dotnet nuget push .\Lagrange.Core\bin\Release\*.nupkg --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key ${{ secrets.NUGETAPIKEY }}
+        run: dotnet nuget push ./Lagrange.Core/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key ${{ secrets.NUGETAPIKEY }}
