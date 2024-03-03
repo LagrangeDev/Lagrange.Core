@@ -3,25 +3,26 @@ name: Lagrange.OneBot Build
 on:
   push:
     branches:
-      - "master"
+      - master
     paths:
-      - "/Lagrange.Core/**"
-      - "/Lagrange.OneBot/**"
-      - "/Lagrange.Core.sln"
-      - "/LICENSE"
-      - "/README.md"
-      - "!/Lagrange.OneBot/Resources/.dockerignore"
-      - "!/Lagrange.OneBot/Resources/Dockerfile"
+      - "Lagrange.Core/**"
+      - "Lagrange.OneBot/**"
+      - "Lagrange.Core.sln"
+      - "LICENSE"
+      - "README.md"
+      - "!Lagrange.OneBot/Resources/.dockerignore"
+      - "!Lagrange.OneBot/Resources/Dockerfile"
   pull_request:
-    branches: ["master"]
+    branches: 
+      - master
     paths:
-      - "/Lagrange.Core/**"
-      - "/Lagrange.OneBot/**"
-      - "/Lagrange.Core.sln"
-      - "/LICENSE"
-      - "/README.md"
-      - "!/Lagrange.OneBot/Resources/.dockerignore"
-      - "!/Lagrange.OneBot/Resources/Dockerfile"
+      - "Lagrange.Core/**"
+      - "Lagrange.OneBot/**"
+      - "Lagrange.Core.sln"
+      - "LICENSE"
+      - "README.md"
+      - "!Lagrange.OneBot/Resources/.dockerignore"
+      - "!Lagrange.OneBot/Resources/Dockerfile"
   workflow_dispatch:
 
 jobs:

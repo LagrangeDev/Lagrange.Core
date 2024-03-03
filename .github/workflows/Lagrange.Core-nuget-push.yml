@@ -3,12 +3,12 @@ name: Lagrange.Core NuGet Push
 on:
   push:
     branches:
-      - "master"
+      - master
     paths:
-      - "/Lagrange.Core/**"
-      - "/Lagrange.Core.sln"
-      - "/LICENSE"
-      - "/README.md"
+      - "Lagrange.Core/**"
+      - "Lagrange.Core.sln"
+      - "LICENSE"
+      - "README.md"
   workflow_dispatch:
 
 jobs:
