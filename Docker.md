@@ -15,7 +15,7 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 
 **Tips:**
 
->Before creating the container, it is essential to mount the data folder`/app/data` to avoid the need for reauthentication every time you start the container. Additionally, it is advisable to also mount configuration file `/app/appsettings.json`.
+>Before creating the container, it is essential to mount the data folder`/app/data` to avoid the need for reauthentication every time you start the container.
 
 > If you encounter network issues, you can try using `--network=host`.
 
