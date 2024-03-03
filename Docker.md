@@ -39,6 +39,7 @@ use bind mount to mount your `data` folder
 ```bash
 docker run -d -v /path-to-data:/root/data ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
+Edit `/path-to-data/appsettings.json` with your favorite editor
 
 ### Using Environment Variables
 
