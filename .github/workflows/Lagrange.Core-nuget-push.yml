@@ -3,7 +3,7 @@ name: Lagrange.Core NuGet Push
 on:
   push:
     branches:
-      - "master"
+      - master
     paths:
       - "Lagrange.Core/**"
       - "Lagrange.Core.sln"

@@ -3,7 +3,7 @@ name: Lagrange.OneBot Build
 on:
   push:
     branches:
-      - "master"
+      - master
     paths:
       - "Lagrange.Core/**"
       - "Lagrange.OneBot/**"
@@ -13,7 +13,8 @@ on:
       - "!Lagrange.OneBot/Resources/.dockerignore"
       - "!Lagrange.OneBot/Resources/Dockerfile"
   pull_request:
-    branches: ["master"]
+    branches: 
+      - master
     paths:
       - "Lagrange.Core/**"
       - "Lagrange.OneBot/**"
