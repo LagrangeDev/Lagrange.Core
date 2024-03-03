@@ -2,35 +2,47 @@ name: Lagrange.OneBot Docker Push
 
 on:
   push:
-      tags:
-        - '*'
-      branches:
-        - 'master'
-      paths:
-        - "**.cs"
-        - "Lagrange.OneBot/Resources/Dockerfile"
-        - "**.csproj"
-        - "appsettings.onebot.json"
+    branches:
+      - "master"
+    paths:
+      - "/Lagrange.Core/**"
+      - "/Lagrange.OneBot/**"
+      - "Docker.md"
+      - "/Lagrange.Core.sln"
+      - "/LICENSE"
+      - "/README.md"
+  pull_request:
+    branches:
+      - "master"
+    paths:
+      - "/Lagrange.Core/**"
+      - "/Lagrange.OneBot/**"
+      - "Docker.md"
+      - "/Lagrange.Core.sln"
+      - "/LICENSE"
+      - "/README.md"
   workflow_dispatch:
 
 jobs:
-  build_push:
-     runs-on: ubuntu-latest
-     permissions:
-        contents: read
-        packages: write
-     steps:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
       - uses: actions/checkout@v4
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
       - name: Login to Github Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GIT_TOKEN }}
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
@@ -41,8 +53,8 @@ jobs:
             type=edge
             type=sha,event=branch
             type=ref,event=tag
+
       - name: Build and push
-        id: docker_build
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -51,4 +63,3 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64, linux/arm64, linux/arm
-

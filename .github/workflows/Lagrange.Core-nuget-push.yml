@@ -2,47 +2,34 @@ name: Lagrange.Core NuGet Push
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    types:
-      - closed
-    branches: [ "master" ]
+    branches:
+      - "master"
+    paths:
+      - "/Lagrange.Core/**"
+      - "/Lagrange.Core.sln"
+      - "/LICENSE"
+      - "/README.md"
 
 jobs:
   build:
-    if: github.event_name == 'push' || github.event.pull_request.merged == true
-    
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.0.100
+          dotnet-version: '8.0.x'
 
-      - name: Build and Pack
-        run: |
-          cd ./Lagrange.Core
-          dotnet build --configuration Release
-          dotnet pack --configuration Release
-          dotnet pack --configuration Release -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
-          ls
-          ls ./bin/Release/
-
-      - name: Install Nuget
-        uses: nuget/setup-nuget@v1
-        with:
-          nuget-version: '5.x'
+      - name: Pack
+        run: dotnet pack -c Release -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg Lagrange.Core
 
       - name: Add private GitHub registry to NuGet
-        if: ${{ !github.head_ref }}
-        run: |
-          dotnet nuget add source --username Linwenxuan05 --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/LagrangeDev/index.json"
+        run: dotnet nuget add source --username Linwenxuan05 --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/LagrangeDev/index.json"
 
-      - name: Push generated package to GitHub registry and NuGet
-        if: ${{ !github.head_ref }}
-        run: |
-          dotnet nuget push .\Lagrange.Core\bin\Release\*.nupkg --source "github" --api-key ${{ secrets.GIT_TOKEN }}
-          nuget push .\Lagrange.Core\bin\Release\*.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate -ApiKey ${{ secrets.NUGETAPIKEY }}
+      - name: Push generated package to GitHub registry
+        run: dotnet nuget push .\Lagrange.Core\bin\Release\*.nupkg --source "github" --api-key ${{ secrets.GIT_TOKEN }}
+
+      - name: Push generated package to NuGet
+        run: dotnet nuget push .\Lagrange.Core\bin\Release\*.nupkg --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key ${{ secrets.NUGETAPIKEY }}

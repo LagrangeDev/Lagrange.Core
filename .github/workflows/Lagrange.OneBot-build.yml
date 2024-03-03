@@ -2,52 +2,71 @@ name: Lagrange.OneBot Build
 
 on:
   push:
+    branches:
+      - "master"
     paths:
-      - "**.cs"
-    branches: ["master"]
+      - "/Lagrange.Core/**"
+      - "/Lagrange.OneBot/**"
+      - "/Lagrange.Core.sln"
+      - "/LICENSE"
+      - "/README.md"
+      - "!/Lagrange.OneBot/Resources/.dockerignore"
+      - "!/Lagrange.OneBot/Resources/Dockerfile"
   pull_request:
     branches: ["master"]
     paths:
-      - "**.cs"
-
+      - "/Lagrange.Core/**"
+      - "/Lagrange.OneBot/**"
+      - "/Lagrange.Core.sln"
+      - "/LICENSE"
+      - "/README.md"
+      - "!/Lagrange.OneBot/Resources/.dockerignore"
+      - "!/Lagrange.OneBot/Resources/Dockerfile"
   workflow_dispatch:
 
 jobs:
-  Build:
-    runs-on: windows-latest
+  build:
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        runtimeIdentifier: [ win-x64, win-x86, linux-x64, linux-arm, linux-arm64, osx-x64, osx-arm64, linux-musl-x64, linux-musl-arm64 ]
+        runtimeIdentifier:
+          [
+            win-x64,
+            win-x86,
+            linux-x64,
+            linux-arm,
+            linux-arm64,
+            osx-x64,
+            osx-arm64,
+            linux-musl-x64,
+            linux-musl-arm64,
+          ]
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Install .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
-          
+          dotnet-version: '8.0.x'
+
       - name: Build Lagrange.OneBot .NET 7.0
-        shell: powershell
-        run: |
-          dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeContentInSingleFile=true -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net7.0
+        run: dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --no-self-contained -p:PublishSingleFile=true -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net7.0
 
       - name: Build Lagrange.OneBot .NET 8.0
-        shell: powershell
-        run: |
-          dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeContentInSingleFile=true -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
-
-      - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 8.0
-        uses: actions/upload-artifact@v3
-        if: ${{ !github.head_ref }}
-        with:
-          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0
-          path: Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
+        run: dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --no-self-contained -p:PublishSingleFile=true -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
 
       - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 7.0
         uses: actions/upload-artifact@v3
-        if: ${{ !github.head_ref }}
+        if: github.event_name != 'pull_request'
         with:
           name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_7.0
           path: Lagrange.OneBot/bin/Debug/net7.0/${{ matrix.runtimeIdentifier }}/publish
+
+      - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 8.0
+        uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0
+          path: Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
