@@ -37,10 +37,12 @@ jobs:
           nuget-version: '5.x'
 
       - name: Add private GitHub registry to NuGet
+        if: ${{ !github.head_ref }}
         run: |
           dotnet nuget add source --username Linwenxuan05 --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/LagrangeDev/index.json"
 
       - name: Push generated package to GitHub registry and NuGet
+        if: ${{ !github.head_ref }}
         run: |
           dotnet nuget push .\Lagrange.Core\bin\Release\*.nupkg --source "github" --api-key ${{ secrets.GIT_TOKEN }}
           nuget push .\Lagrange.Core\bin\Release\*.nupkg -Source https://api.nuget.org/v3/index.json -SkipDuplicate -ApiKey ${{ secrets.NUGETAPIKEY }}
