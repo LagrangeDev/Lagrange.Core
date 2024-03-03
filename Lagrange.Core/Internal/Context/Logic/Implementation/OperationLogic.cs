@@ -146,11 +146,11 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupFSMoveEvent)events[0]).ResultCode == 0;
     }
     
-    public Task<bool> GroupFSUpload(uint groupUin, FileEntity fileEntity)
+    public Task<bool> GroupFSUpload(uint groupUin, FileEntity fileEntity, string targetDirectory)
     {
         try
         {
-            return FileUploader.UploadGroup(Collection, MessageBuilder.Group(groupUin).Build(), fileEntity);
+            return FileUploader.UploadGroup(Collection, MessageBuilder.Group(groupUin).Build(), fileEntity, targetDirectory);
         }
         catch
         {

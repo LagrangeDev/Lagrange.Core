@@ -85,11 +85,11 @@ internal static class FileUploader
         return sendResult.Count != 0 && ((SendMessageEvent)sendResult[0]).MsgResult.Result == 0;
     }
 
-    public static async Task<bool> UploadGroup(ContextCollection context, MessageChain chain, IMessageEntity entity)
+    public static async Task<bool> UploadGroup(ContextCollection context, MessageChain chain, IMessageEntity entity, string targetDirectory)
     {
         if (entity is not FileEntity { FileStream: not null } file) return false;
         
-        var uploadEvent = GroupFSUploadEvent.Create(chain.GroupUin ?? 0, file);
+        var uploadEvent = GroupFSUploadEvent.Create(chain.GroupUin ?? 0, targetDirectory, file);
         var result = await context.Business.SendEvent(uploadEvent);
         var uploadResp = (GroupFSUploadEvent)result[0];
         

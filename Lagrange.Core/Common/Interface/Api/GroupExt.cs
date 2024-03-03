@@ -79,8 +79,8 @@ public static class GroupExt
     public static Task<bool> GroupFSMove(this BotContext bot, uint groupUin, string fileId, string parentDirectory, string targetDirectory)
         => bot.ContextCollection.Business.OperationLogic.GroupFSMove(groupUin, fileId, parentDirectory, targetDirectory);
     
-    public static Task<bool> GroupFSUpload(this BotContext bot, uint groupUin, FileEntity fileEntity)
-        => bot.ContextCollection.Business.OperationLogic.GroupFSUpload(groupUin, fileEntity);
+    public static Task<bool> GroupFSUpload(this BotContext bot, uint groupUin, FileEntity fileEntity, string targetDirectory = "/")
+        => bot.ContextCollection.Business.OperationLogic.GroupFSUpload(groupUin, fileEntity, targetDirectory);
 
     #endregion
 }

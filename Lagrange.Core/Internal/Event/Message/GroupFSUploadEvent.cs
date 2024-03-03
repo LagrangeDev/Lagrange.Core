@@ -7,6 +7,8 @@ namespace Lagrange.Core.Internal.Event.Message;
 internal class GroupFSUploadEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
+
+    public string TargetDirectory { get; }
     
     public FileEntity Entity { get; }
     
@@ -20,9 +22,10 @@ internal class GroupFSUploadEvent : ProtocolEvent
     
     public uint Port { get; }
 
-    private GroupFSUploadEvent(uint groupUin, FileEntity entity) : base(true)
+    private GroupFSUploadEvent(uint groupUin, string targetDirectory, FileEntity entity) : base(true)
     {
         GroupUin = groupUin;
+        TargetDirectory = targetDirectory;
         Entity = entity;
     }
 
@@ -35,7 +38,8 @@ internal class GroupFSUploadEvent : ProtocolEvent
         Port = port;
     }
 
-    public static GroupFSUploadEvent Create(uint groupUin, FileEntity entity) => new(groupUin, entity);
+    public static GroupFSUploadEvent Create(uint groupUin, string targetDirectory, FileEntity entity) 
+        => new(groupUin, targetDirectory, entity);
 
     public static GroupFSUploadEvent Result(int resultCode, string fileId, byte[] uploadKey, byte[] checkKey, string ip, uint port) 
         => new(resultCode, fileId, uploadKey, checkKey, ip, port);
