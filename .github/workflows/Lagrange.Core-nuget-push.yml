@@ -24,7 +24,10 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Pack
-        run: dotnet pack -c Release -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg Lagrange.Core
+        run: |
+            dotnet build -c Release Lagrange.Core
+            dotnet pack -c Release Lagrange.Core
+            dotnet pack -c Release -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg Lagrange.Core
 
       - name: Add private GitHub registry to NuGet
         run: dotnet nuget add source --username Linwenxuan05 --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/LagrangeDev/index.json"
