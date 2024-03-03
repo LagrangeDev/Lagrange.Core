@@ -61,14 +61,13 @@ internal static class MessagePacker
         foreach (var entity in chain)
         {
             entity.SetSelfUid(selfUid);
-            
+            message.Body?.RichText?.Elems.AddRange(entity.PackElement());
+
             if (message.Body != null)
             {
-                message.Body.RichText?.Elems.AddRange(entity.PackElement());
-                
                 if (entity.PackMessageContent() is not { } content) continue;
                 if (message.Body.MsgContent is not null) throw new InvalidOperationException("Message content is not null, conflicting with the message entity.");
-                    
+
                 using var stream = new MemoryStream();
                 Serializer.Serialize(stream, content);
                 message.Body.MsgContent = stream.ToArray();
@@ -87,14 +86,13 @@ internal static class MessagePacker
         foreach (var entity in chain)
         {
             entity.SetSelfUid(selfUid);
+            message.Body?.RichText?.Elems.AddRange(entity.PackElement());
             
             if (message.Body != null)
             {
-                message.Body.RichText?.Elems.AddRange(entity.PackElement());
-
                 if (entity.PackMessageContent() is not { } content) continue;
                 if (message.Body.MsgContent is not null) throw new InvalidOperationException("Message content is not null, conflicting with the message entity.");
-                    
+
                 using var stream = new MemoryStream();
                 Serializer.Serialize(stream, content);
                 message.Body.MsgContent = stream.ToArray();
