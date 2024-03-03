@@ -1,7 +1,7 @@
 name: 新功能提议
 description: 希望拥有新的功能
 title: '[Feature Request]: '
-labels: ["feat"]
+labels: ["enhancement"]
 
 body:
   # User's README
