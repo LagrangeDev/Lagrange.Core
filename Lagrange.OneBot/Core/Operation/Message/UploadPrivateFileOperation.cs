@@ -8,17 +8,17 @@ using Lagrange.OneBot.Core.Operation.Converters;
 
 namespace Lagrange.OneBot.Core.Operation.Message;
 
-[Operation("upload_group_file")]
-public class UploadGroupFileOperation : IOperation
+[Operation("upload_private_file")]
+public class UploadPrivateFile : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload.Deserialize<OneBotUploadGroupFile>(SerializerOptions.DefaultOptions) is { } file)
+        if (payload.Deserialize<OneBotUploadPrivateFile>(SerializerOptions.DefaultOptions) is { } file)
         {
             var entity = new FileEntity(file.File);
-            if (file.Name != null) entity.FileName = file.Name;  // TODO: Implement Folder Parameter
+            if (file.Name != null) entity.FileName = file.Name;
 
-            bool result = await context.GroupFSUpload(file.GroupId, entity);
+            bool result = await context.UploadFriendFile(file.UserId, entity);
             return new OneBotResult(null, result ? 0 : 1, result ? "ok" : "failed");
         }
         
