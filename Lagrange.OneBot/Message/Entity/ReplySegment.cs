@@ -25,6 +25,11 @@ public partial class ReplySegment : SegmentBase
         if (segment is ReplySegment reply && Database is not null)
         {
             reply.TargetChain ??= (MessageChain)Database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == int.Parse(reply.MessageId));
+
+            var build = MessagePacker.Build(reply.TargetChain, "");
+            var virtualElem = build.Body?.RichText?.Elems;
+            if (virtualElem != null) reply.TargetChain.Elements.AddRange(virtualElem);
+            
             builder.Forward(reply.TargetChain);
         }
     }
