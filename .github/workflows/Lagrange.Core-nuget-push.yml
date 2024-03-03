@@ -9,6 +9,7 @@ on:
       - "/Lagrange.Core.sln"
       - "/LICENSE"
       - "/README.md"
+  workflow_dispatch:
 
 jobs:
   build:
