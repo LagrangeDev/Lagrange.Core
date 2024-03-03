@@ -28,16 +28,16 @@ docker run -d -p 8081:8081 ghcr.io/lagrangedev/lagrange.onebot:edge
 
 ```bash
 docker volume create lagrange_data
-docker run -d -v lagrange_data:/app/data ghcr.io/lagrangedev/lagrange.onebot:edge
+docker run -d -v lagrange_data:/root/data ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
 
 ## Configure appsettings.json in Docker
 
 ### Using Mount
 
-use bind mount to mount your `appsettings.json` to `/app/appsettings.json`		
+use bind mount to mount your `data` folder		
 ```bash
-docker run -d -v /etc/appsettings.json:/app/appsettings.json ghcr.io/lagrangedev/lagrange.onebot:edge
+docker run -d -v /path-to-data:/root/data ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
 
 ### Using Environment Variables
