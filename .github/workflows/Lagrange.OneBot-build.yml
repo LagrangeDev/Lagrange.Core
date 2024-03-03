@@ -30,13 +30,26 @@ jobs:
 
     strategy:
       matrix:
-        runtimeIdentifier: [ win-x64, win-x86, linux-x64, linux-arm, linux-arm64, osx-x64, osx-arm64, linux-musl-x64, linux-musl-arm64 ]
+        runtimeIdentifier:
+          [
+            win-x64,
+            win-x86,
+            linux-x64,
+            linux-arm,
+            linux-arm64,
+            osx-x64,
+            osx-arm64,
+            linux-musl-x64,
+            linux-musl-arm64,
+          ]
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Install .NET
         uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
 
       - name: Build Lagrange.OneBot .NET 7.0
         run: dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --no-self-contained -p:PublishSingleFile=true -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net7.0
