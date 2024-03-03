@@ -9,6 +9,7 @@
         <Authors>Linwenxuan04, Tiger0132, LXY1226, TheSnowfield, and KonataDev/Contributors</Authors>
         <Description>The Implementation of NTQQ for Pure C#, Event Driven, derived from Konata.Core</Description>
         <LangVersion>10</LangVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Version>0.1.17-alpha</Version>
         <Copyright>Linwenxuan04 2023</Copyright>
         <RepositoryUrl>https://github.com/LagrangeDev/Lagrange.Core</RepositoryUrl>
