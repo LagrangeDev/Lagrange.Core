@@ -15,10 +15,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 8.0.x
-          
+        uses: actions/setup-dotnet@v4
+
       - name: Build Lagrange.OneBot .NET 8.0
         shell: powershell
         run: |
@@ -29,7 +27,7 @@ jobs:
         with:
           name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0
           path: Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
-          
+
       - name: Compress files (Not Windows)
         if: matrix.runtimeIdentifier != 'win-x64' && matrix.runtimeIdentifier != 'win-x86'
         run: |
@@ -38,13 +36,13 @@ jobs:
         if: matrix.runtimeIdentifier == 'win-x64' || matrix.runtimeIdentifier == 'win-x86'
         run: |
           Compress-Archive -Path 'Lagrange.OneBot\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish\Lagrange.OneBot.exe' -DestinationPath  'Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip'
-          
+
       - name: Prepare release files
         uses: actions/upload-artifact@v3
         with:
           name: Lagrange.OneBot_all
           path: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip
-  
+
   NightlyRelease:
     name: Nightly Release
     runs-on: ubuntu-latest
@@ -68,14 +66,14 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: nightly
-          name: 'Nightly Release'
+          name: "Nightly Release"
           prerelease: true
-          body: '> ⚠️This is a nightly release.'
+          body: "> ⚠️This is a nightly release."
           artifacts: |
             ./bin/*
           allowUpdates: true
           removeArtifacts: true
-  
+
   ClearTempArtifacts:
     name: Clear Temp Artifacts
     if: always()
