@@ -11,5 +11,5 @@ public class OneBotUploadGroupFile
 
     [JsonPropertyName("name")] public string? Name { get; set; }
 
-    [JsonPropertyName("folder")] public string Folder { get; set; } = string.Empty;
+    [JsonPropertyName("folder")] public string? Folder { get; set; } = string.Empty;
 }

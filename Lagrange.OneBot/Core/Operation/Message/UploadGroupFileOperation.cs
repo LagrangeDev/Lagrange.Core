@@ -16,9 +16,9 @@ public class UploadGroupFileOperation : IOperation
         if (payload.Deserialize<OneBotUploadGroupFile>(SerializerOptions.DefaultOptions) is { } file)
         {
             var entity = new FileEntity(file.File);
-            if (file.Name != null) entity.FileName = file.Name;  // TODO: Implement Folder Parameter
+            if (file.Name != null) entity.FileName = file.Name;
 
-            bool result = await context.GroupFSUpload(file.GroupId, entity);
+            bool result = await context.GroupFSUpload(file.GroupId, entity, file.Folder ?? "/");
             return new OneBotResult(null, result ? 0 : 1, result ? "ok" : "failed");
         }
         
