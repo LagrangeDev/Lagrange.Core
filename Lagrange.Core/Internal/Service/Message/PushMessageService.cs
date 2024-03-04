@@ -222,8 +222,8 @@ internal class PushMessageService : BaseService<PushMessageEvent>
     private enum Event0x210SubType
     {
         FriendRequestNotice = 35,
+        FriendDeleteNotice = 39,
         FriendRecallNotice = 138,
-        FriendRequestNotice = 226,
         FriendPokeNotice = 290,
         GroupKickNotice = 212,
     }
