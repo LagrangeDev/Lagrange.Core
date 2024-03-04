@@ -25,7 +25,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
         {
             logger.LogInformation(@event.ToString());
             await service.SendJsonAsync(new OneBotFriendRequestNotice(bot.BotUin, @event.SourceUin));
-            await service.SendJsonAsync(new OneBotFriendRequest(bot.BotUin, @event.SourceUin, @event.SourceUid));
+            await service.SendJsonAsync(new OneBotFriendRequest(bot.BotUin, @event.SourceUin, @event.Message, @event.SourceUid));
         };
 
         bot.Invoker.OnGroupInvitationReceived += async (_, @event) =>
