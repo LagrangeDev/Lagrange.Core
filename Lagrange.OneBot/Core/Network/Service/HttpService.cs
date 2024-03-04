@@ -94,7 +94,7 @@ public sealed partial class HttpService : ILagrangeWebService
             if (request.ContentType == "application/json")
             {
                 using var reader = new StreamReader(request.InputStream);
-                payload = $"{{\"action\":\"{action}\",\"params\":{reader.ReadToEnd()}}}";
+                payload = reader.ReadToEnd();
             }
             else if (request.ContentType == "application/x-www-form-urlencoded")
             {
