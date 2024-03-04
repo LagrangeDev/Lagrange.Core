@@ -7,7 +7,6 @@ using Lagrange.Core.Internal.Service;
 
 namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 
-[EventSubscribe(typeof(InfoPushGroupEvent))]
 [EventSubscribe(typeof(GroupSysDecreaseEvent))]
 [EventSubscribe(typeof(GroupSysIncreaseEvent))]
 [BusinessLogic("CachingLogic", "Cache Uin to Uid")]
@@ -21,8 +20,6 @@ internal class CachingLogic : LogicBase
     
     private readonly List<BotFriend> _cachedFriends;
     private readonly Dictionary<uint, List<BotGroupMember>> _cachedGroupMembers;
-
-    private TaskCompletionSource<List<BotGroup>>? _initCompletionSource;
     
     internal CachingLogic(ContextCollection collection) : base(collection)
     {
@@ -38,18 +35,6 @@ internal class CachingLogic : LogicBase
     {
         switch (e)
         {
-            case InfoPushGroupEvent infoPushGroupEvent:
-                _cachedGroupEntities.Clear();
-                _cachedGroupEntities.AddRange(infoPushGroupEvent.Groups);
-                
-                if (_initCompletionSource != null)
-                {
-                    _initCompletionSource.SetResult(_cachedGroupEntities);
-                    _initCompletionSource = null;
-                }
-                
-                Collection.Log.LogVerbose(Tag, $"Caching group entities: {infoPushGroupEvent.Groups.Count}");
-                break;
             case GroupSysDecreaseEvent groupSysDecreaseEvent:
                 return CacheUid(groupSysDecreaseEvent.GroupUin, true);
             case GroupSysIncreaseEvent groupSysIncreaseEvent:
@@ -59,14 +44,21 @@ internal class CachingLogic : LogicBase
         return Task.CompletedTask;
     }
     
-    public Task<List<BotGroup>> GetCachedGroups()
+    public async Task<List<BotGroup>> GetCachedGroups(bool refreshCache)
     {
-        if (_cachedGroupEntities.Count == 0)
+        if (_cachedGroupEntities.Count == 0 || refreshCache)
         {
-            _initCompletionSource = new TaskCompletionSource<List<BotGroup>>();
-            return _initCompletionSource.Task;
+            _cachedGroupEntities.Clear();
+            
+            var fetchGroupsEvent = FetchGroupsEvent.Create();
+            var events = await Collection.Business.SendEvent(fetchGroupsEvent);
+            var groups = ((FetchGroupsEvent)events[0]).Groups;
+            
+            _cachedGroupEntities.AddRange(groups);
+            return groups;
         }
-        return Task.FromResult(_cachedGroupEntities);
+        
+        return _cachedGroupEntities;
     }
 
     public async Task<string?> ResolveUid(uint? groupUin, uint friendUin)
