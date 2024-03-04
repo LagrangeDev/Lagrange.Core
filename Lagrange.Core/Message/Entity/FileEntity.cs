@@ -50,7 +50,7 @@ public class FileEntity : IMessageEntity
 
     /// <summary>
     /// This entity could not be directly sent via <see cref="MessageChain"/>,
-    /// it should be sent via <see cref="Lagrange.Core.Common.Interface.Api.GroupExt.UploadFile"/>
+    /// it should be sent via <see cref="Lagrange.Core.Common.Interface.Api.GroupExt.GroupFSUpload"/>
     /// </summary>
     public FileEntity(byte[] payload, string fileName)
     {
@@ -85,7 +85,7 @@ public class FileEntity : IMessageEntity
             Subcmd = 1,
             DangerEvel = 0,
             ExpireTime = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0) + TimeSpan.FromDays(7)).TotalSeconds,
-            FileHash = FileHash // TODO: Send out Oidb
+            FileHash = FileHash
         }
     };
     
