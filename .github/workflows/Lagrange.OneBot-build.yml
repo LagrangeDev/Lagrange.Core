@@ -59,7 +59,7 @@ jobs:
         run: dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --no-self-contained -p:PublishSingleFile=true -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
 
       - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 7.0
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: github.event_name != 'pull_request'
         with:
           name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_7.0
