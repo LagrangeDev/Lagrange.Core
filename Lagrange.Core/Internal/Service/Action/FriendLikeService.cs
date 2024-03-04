@@ -20,7 +20,7 @@ internal class FriendLikeService : BaseService<FriendLikeEvent>
         {
             TargetUid = input.TargetUid,
             Field2 = 71,
-            Field3 = 1
+            Field3 = input.Count
         });
         output = packet.Serialize();
         
