@@ -3,7 +3,6 @@ using System.Text.Json.Nodes;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core.Entity.Action;
-using Lagrange.OneBot.Core.Entity.Action.Response;
 
 namespace Lagrange.OneBot.Core.Operation.Group;
 
@@ -15,7 +14,7 @@ public class GetGroupFileUrlOperation : IOperation
         if (payload.Deserialize<OneBotGetFileUrl>() is { } url)
         {
             string raw = await context.FetchGroupFSDownload(url.GroupId, url.FileId);
-            return new OneBotResult(raw, 0, "ok");
+            return new OneBotResult(new JsonObject { { "url", raw } }, 0, "ok");
         }
 
         throw new Exception();

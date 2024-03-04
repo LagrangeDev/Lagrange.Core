@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Lagrange.OneBot.Core.Entity.Action.Response;
+namespace Lagrange.OneBot.Core.Entity.Action;
 
 [Serializable]
 public class OneBotGetFileUrl
