@@ -10,8 +10,6 @@ namespace Lagrange.Core.Message.Entity;
 [MessageElement(typeof(TransElem))]
 public class FileEntity : IMessageEntity
 {
-    public bool IsGroup { get; internal set; }
-    
     public long FileSize { get; internal set; }
     
     public string FileName { get; internal set; }
@@ -96,7 +94,10 @@ public class FileEntity : IMessageEntity
             var payload = new BinaryPacket(trans.ElemValue);
             payload.Skip(1);
             var protobuf = payload.ReadBytes(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
-            Console.WriteLine(protobuf.Hex());
+
+            return new FileEntity
+            {
+            };
         }
 
         return null;

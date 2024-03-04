@@ -189,7 +189,7 @@ internal class MessagingLogic : LogicBase
     {
         foreach (var entity in chain) switch (entity)
         {
-            case FileEntity { IsGroup: true, FileHash: not null, FileUuid: not null } file:
+            case FileEntity { FileHash: not null, FileUuid: not null } file:
             {
                 var @event = FileDownloadEvent.Create(file.FileUuid, file.FileHash, chain.Uid, chain.SelfUid);
                 var results = await Collection.Business.SendEvent(@event);
