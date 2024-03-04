@@ -8,16 +8,16 @@ internal class FriendSysRequestEvent : ProtocolEvent
     
     public string Message { get; }
     
-    public string Name { get; }
+    public string Source { get; }
 
-    private FriendSysRequestEvent(uint sourceUin, string sourceUid, string message, string name) : base(0)
+    private FriendSysRequestEvent(uint sourceUin, string sourceUid, string message, string source) : base(0)
     {
         SourceUin = sourceUin;
         SourceUid = sourceUid;
         Message = message;
-        Name = name;
+        Source = source;
     }
 
-    public static FriendSysRequestEvent Result(uint sourceUin, string sourceUid, string message, string name) =>
-        new(sourceUin, sourceUid, message, name);
+    public static FriendSysRequestEvent Result(uint sourceUin, string sourceUid, string message, string source) =>
+        new(sourceUin, sourceUid, message, source);
 }

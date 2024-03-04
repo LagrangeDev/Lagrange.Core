@@ -112,7 +112,7 @@ internal class MessagingLogic : LogicBase
             }
             case FriendSysRequestEvent info:
             {
-                var requestArgs = new FriendRequestEvent(info.SourceUin, info.SourceUid, info.Name, info.Message);
+                var requestArgs = new FriendRequestEvent(info.SourceUin, info.SourceUid, info.Message, info.Source);
                 Collection.Invoker.PostEvent(requestArgs);
                 break;
             }
