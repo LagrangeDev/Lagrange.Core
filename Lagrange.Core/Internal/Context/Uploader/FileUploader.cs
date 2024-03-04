@@ -80,6 +80,7 @@ internal static class FileUploader
         bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(95, file.FileStream, ticketResult.SigSession, file.FileMd5, ext.Serialize().ToArray());
         if (!hwSuccess) return false;
 
+        await file.FileStream.DisposeAsync();
         var sendEvent = SendMessageEvent.Create(chain);
         var sendResult = await context.Business.SendEvent(sendEvent);
         return sendResult.Count != 0 && ((SendMessageEvent)sendResult[0]).MsgResult.Result == 0;
@@ -151,6 +152,7 @@ internal static class FileUploader
         bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(71, file.FileStream, ticketResult.SigSession, file.FileMd5, ext.Serialize().ToArray());
         if (!hwSuccess) return false;
         
+        await file.FileStream.DisposeAsync();
         var sendEvent = GroupSendFileEvent.Create(chain.GroupUin ?? 0, uploadResp.FileId);
         var sendResult = await context.Business.SendEvent(sendEvent);
         return sendResult.Count != 0 && ((GroupSendFileEvent)sendResult[0]).ResultCode == 0;
