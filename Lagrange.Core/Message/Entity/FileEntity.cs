@@ -4,6 +4,7 @@ using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
+using ProtoBuf;
 
 namespace Lagrange.Core.Message.Entity;
 
@@ -17,6 +18,11 @@ public class FileEntity : IMessageEntity
     public byte[] FileMd5 { get; internal set; }
     
     public string? FileUrl { get; internal set; }
+    
+    /// <summary>
+    /// Only Group File has such field
+    /// </summary>
+    public string? FileId { get; set; }
     
     internal string? FileUuid { get; set; }
     
@@ -93,10 +99,14 @@ public class FileEntity : IMessageEntity
         {
             var payload = new BinaryPacket(trans.ElemValue);
             payload.Skip(1);
-            var protobuf = payload.ReadBytes(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
+            var data = payload.ReadBytes(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
+            var extra = Serializer.Deserialize<GroupFileExtra>(data.AsSpan()).Inner.Info;
 
             return new FileEntity
             {
+                FileSize = extra.FileSize,
+                FileMd5 = extra.FileMd5.UnHex(),
+                FileId = extra.FileId
             };
         }
 

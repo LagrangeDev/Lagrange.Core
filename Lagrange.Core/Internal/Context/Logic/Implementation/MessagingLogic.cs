@@ -2,6 +2,7 @@ using Lagrange.Core.Event;
 using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Internal.Context.Attributes;
 using Lagrange.Core.Internal.Event;
+using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.Notify;
 using Lagrange.Core.Internal.Event.System;
@@ -189,13 +190,25 @@ internal class MessagingLogic : LogicBase
     {
         foreach (var entity in chain) switch (entity)
         {
-            case FileEntity { FileHash: not null, FileUuid: not null } file:
+            case FileEntity { FileHash: not null, FileUuid: not null } file:  // private
             {
                 var @event = FileDownloadEvent.Create(file.FileUuid, file.FileHash, chain.Uid, chain.SelfUid);
                 var results = await Collection.Business.SendEvent(@event);
                 if (results.Count != 0)
                 {
                     var result = (FileDownloadEvent)results[0];
+                    file.FileUrl = result.FileUrl;
+                }
+                
+                break;
+            }
+            case FileEntity { FileId: not null } file when chain.GroupUin is not null:  // group
+            {
+                var @event = GroupFSDownloadEvent.Create(chain.GroupUin.Value, file.FileId);
+                var results = await Collection.Business.SendEvent(@event);
+                if (results.Count != 0)
+                {
+                    var result = (GroupFSDownloadEvent)results[0];
                     file.FileUrl = result.FileUrl;
                 }
                 
