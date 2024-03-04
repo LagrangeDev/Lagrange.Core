@@ -35,7 +35,11 @@ internal class ImageUploader : IHighwayUploader
             var extStream = extend.Serialize();
             
             bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1003, image.ImageStream, ticketResult.SigSession, index.Info.FileHash.UnHex(), extStream.ToArray());
-            if (!hwSuccess) throw new Exception();
+            if (!hwSuccess)
+            {
+                await image.ImageStream.DisposeAsync();
+                throw new Exception();
+            }
             
             image.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             image.CompatImage = metaResult.Compat;  // for legacy QQ
@@ -68,7 +72,11 @@ internal class ImageUploader : IHighwayUploader
             var extStream = extend.Serialize();
             
             bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1004, image.ImageStream, ticketResult.SigSession, index.Info.FileHash.UnHex(), extStream.ToArray());
-            if (!hwSuccess) throw new Exception();
+            if (!hwSuccess)
+            {
+                await image.ImageStream.DisposeAsync();
+                throw new Exception();
+            }
             
             image.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             image.CompatFace = metaResult.Compat;  // for legacy QQ

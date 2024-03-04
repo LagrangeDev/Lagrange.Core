@@ -36,7 +36,11 @@ internal class PttUploader : IHighwayUploader
             var extStream = extend.Serialize();
 
             bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1007, record.AudioStream, ticketResult.SigSession, index.Info.FileHash.UnHex(), extStream.ToArray());
-            if (!hwSuccess) throw new Exception();
+            if (!hwSuccess)
+            {
+                await record.AudioStream.DisposeAsync();
+                throw new Exception();
+            }
 
             record.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             record.Compat = metaResult.Compat;  // for legacy QQ
@@ -69,8 +73,12 @@ internal class PttUploader : IHighwayUploader
             var extStream = extend.Serialize();
 
             bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1008, record.AudioStream, ticketResult.SigSession, index.Info.FileHash.UnHex(), extStream.ToArray());
-            if (!hwSuccess) throw new Exception();
-
+            if (!hwSuccess)
+            {
+                await record.AudioStream.DisposeAsync();
+                throw new Exception();
+            }
+            
             record.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             record.Compat = metaResult.Compat;  // for legacy QQ
             await record.AudioStream.DisposeAsync();
