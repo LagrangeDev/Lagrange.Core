@@ -308,7 +308,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
     },
     {
       "Type": "Http",
-      "Host": "127.0.0.1",
+      "Host": "*",
       "Port": 8083,
       "AccessToken": ""
     }
