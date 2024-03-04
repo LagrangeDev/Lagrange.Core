@@ -19,14 +19,6 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 ## Document
 [Lagrange.Doc](https://lagrangedev.github.io/Lagrange.Doc/)
 
-## Out of Active Feature Requesting
-
-Lagrange.Core has completed nearly all the function and task scheduled by Linwenxuan05, so mostly enhance to the library would be concentrated to the repo for next.
-
-Feature request would be accepted but implemented with a long duration.
-
-The new function of NTQQ supported in following versions would be added as well.
-
 ## Disclaimer
 
 The Lagrange.Core project, including its developers, contributors, and affiliated individuals or entities, hereby explicitly disclaim any association with, support for, or endorsement of any form of illegal behavior. This disclaimer extends to any use or application of the Lagrange.Core project that may be contrary to local, national, or international laws, regulations, or ethical guidelines.
@@ -55,7 +47,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 |          |         |                           |         | Forward   |   🟢    | Set Admin         |   🟢    | GroupMemberDecrease |   🟢    |
 |          |         |                           |         | Video     |   🟡    | Friend Request    |   🟢    | GroupMemberIncrease |   🟢    |
 |          |         |                           |         | Reply.    |   🟢    | Group Request     |   🟢    | GroupPromoteAdmin   |   🟢    |
-|          |         |                           |         | File      |   🟢    | ~~Voice Call~~    |   🔴    | GroupInvite         |   🟢    |
+|          |         |                           |         | File      |   🟡    | ~~Voice Call~~    |   🔴    | GroupInvite         |   🟢    |
 |          |         |                           |         | Poke      |   🟢    | Client Key        |   🟢    | GroupRequestJoin    |   🟢    |
 |          |         |                           |         | LightApp  |   🟢    | Cookies           |   🟢    | FriendRequest       |   🟢    |
 |          |         |                           |         |           |         | Send Message      |   🟢    | ~~FriendTyping~~    |   🔴    |
@@ -206,7 +198,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 |----------|--------------------------------|:-------:|
 | Message  | [Private Message]              |   🟢    |
 | Message  | [Group Message]                |   🟢    |
-| Notice   | [Group File Upload]            |   🟢    |
+| Notice   | [Group File Upload]            |   🔴    |
 | Notice   | [Group Admin Change]           |   🟢    |
 | Notice   | [Group Member Decrease]        |   🟢    |
 | Notice   | [Group Member Increase]        |   🟢    |
@@ -296,6 +288,20 @@ Please use Lagrange.Core responsibly and in accordance with the law.
       "Host": "127.0.0.1",
       "Port": 8081,
       "HeartBeatInterval": 5000,
+      "AccessToken": ""
+    },
+    {
+      "Type": "HttpPost",
+      "Host": "127.0.0.1",
+      "Port": 8082,
+      "Suffix": "/",
+      "HeartBeatInterval": 5000,
+      "AccessToken": ""
+    },
+    {
+      "Type": "Http",
+      "Host": "127.0.0.1",
+      "Port": 8083,
       "AccessToken": ""
     }
   ]
