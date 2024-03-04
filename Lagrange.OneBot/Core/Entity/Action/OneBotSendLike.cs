@@ -7,5 +7,5 @@ public class OneBotSendLike
 {
     [JsonPropertyName("user_id")] public uint UserId { get; set; }
     
-    [JsonPropertyName("times")] public uint Times { get; set; }
+    [JsonPropertyName("times")] public uint? Times { get; set; }
 }
