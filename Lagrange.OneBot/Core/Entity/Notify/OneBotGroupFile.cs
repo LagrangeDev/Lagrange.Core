@@ -3,11 +3,11 @@ using System.Text.Json.Serialization;
 namespace Lagrange.OneBot.Core.Entity.Notify;
 
 [Serializable]
-public class OneBotGroupFile(uint selfId, uint userId, OneBotFileInfo fileInfo) : OneBotNotify(selfId, "group_upload")
+public class OneBotGroupFile(uint selfId, uint groupId, uint userId, OneBotFileInfo fileInfo) : OneBotNotify(selfId, "group_upload")
 {
-    [JsonPropertyName("group_id")] public uint GroupId { get; set; }
-    
-    [JsonPropertyName("user_id")] public uint UserId { get; set; }
+    [JsonPropertyName("group_id")] public uint GroupId { get; set; } = groupId;
+
+    [JsonPropertyName("user_id")] public uint UserId { get; set; } = userId;
 
     [JsonPropertyName("file")] public OneBotFileInfo Info { get; set; } = fileInfo;
 }

@@ -17,7 +17,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             if (@event.Chain.GetEntity<FileEntity>() is { FileId: { } id } file)
             {
                 var fileInfo = new OneBotFileInfo(id, file.FileName, (ulong)file.FileSize);
-                await service.SendJsonAsync(new OneBotGroupFile(bot.BotUin, @event.Chain.FriendUin, fileInfo));
+                await service.SendJsonAsync(new OneBotGroupFile(bot.BotUin, @event.Chain.GroupUin ?? 0, @event.Chain.FriendUin, fileInfo));
             }
         };
         
