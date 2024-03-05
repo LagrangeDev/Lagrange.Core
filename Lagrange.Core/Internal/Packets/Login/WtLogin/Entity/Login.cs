@@ -1,65 +1,61 @@
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Packets.Tlv;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Binary.Tlv;
 
 namespace Lagrange.Core.Internal.Packets.Login.WtLogin.Entity;
 
-internal class Login : WtLoginBase
+internal abstract class Login : WtLoginBase
 {
+    private readonly ushort _loginCommand;
+
     private const string PacketCommand = "wtlogin.login";
-
     private const ushort WtLoginCommand = 2064;
+    private const byte WtLoginCmdVer = 135;
+    private const byte WtLoginPubId = 2;
 
-    private const ushort InternalCommand = 0x09;
-
-    private static readonly ushort[] ConstructTlvs =
-    {
-        0x106, 0x144, 0x116, 0x142, 0x145, 0x018, 0x141, 0x177, 0x191, 0x100, 0x107, 0x318, 0x16A, 0x166, 0x521
-    };
-    
-    public Login(BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device)
-        : base(PacketCommand, WtLoginCommand, keystore, appInfo, device) { }
+    public Login(ushort loginCommand, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device)
+        : base(PacketCommand, WtLoginCommand, WtLoginCmdVer, WtLoginPubId, keystore, appInfo, device)
+        => _loginCommand = loginCommand;
 
     protected override BinaryPacket ConstructBody()
     {
         var packet = new BinaryPacket()
-            .WriteUshort(InternalCommand, false)
-            .WritePacket(TlvPacker.Pack(ConstructTlvs));
-        
+            .WriteUshort(_loginCommand, false)
+            .WritePacket(ConstructLogin());
+
         return packet;
     }
 
-    public static Dictionary<ushort, TlvBody> Deserialize(BinaryPacket packet, BotKeystore keystore, out State state)
+    public static Dictionary<ushort, TlvBody> Deserialize(BinaryPacket packet, BotKeystore keystore, out ushort loginCommand, out State state)
     {
         packet = DeserializePacket(keystore, packet);
-        
-        ushort command = packet.ReadUshort(false);
-        if (command != InternalCommand) throw new Exception("Invalid command");
-        
-        state = (State)packet.ReadByte();
-        if (state == State.Success)
-        {
-            var tlvs = TlvPacker.ReadTlvCollections(packet);
-            if (tlvs[0x119] is Tlv119 tlv119)
-            {
-                var decrypted = keystore.TeaImpl.Decrypt(tlv119.EncryptedTlv, keystore.Stub.TgtgtKey);
-                var tlv119Packet = new BinaryPacket(decrypted);
-                return TlvPacker.ReadTlvCollections(tlv119Packet);
-            }
-        }
-        else
-        {
-            return TlvPacker.ReadTlvCollections(packet);
-        }
 
-        return new Dictionary<ushort, TlvBody>();
+        loginCommand = packet.ReadUshort(false);
+        state = (State)packet.ReadByte();
+        return TlvPacker.ReadTlvCollections(packet);
     }
+
+    protected abstract BinaryPacket ConstructLogin();
+
 
     public enum State : byte
     {
         Success = 0,
-        Slider = 2,
+        CaptchaVerify = 2,
         SmsRequired = 160,
+        DeviceLock = 204,
+        DeviceLockViaSmsNewArea = 239,
+
+        PreventByIncorrectPassword = 1,
+        PreventByReceiveIssue = 3,
+        PreventByTokenExpired = 15,
+        PreventByAccountBanned = 40,
+        PreventByOperationTimeout = 155,
+        PreventBySmsSentFailed = 162,
+        PreventByIncorrectSmsCode = 163,
+        PreventByLoginDenied = 167,
+        PreventByOutdatedVersion = 235,
+        PreventByHighRiskOfEnvironment = 237,
+        Unknown = 240,
     }
 }

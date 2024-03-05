@@ -71,11 +71,11 @@ internal partial class ServiceContext : ContextBase
 
             if (success && binary != null)
             {
-                result.Add(new SsoPacket(attribute.PacketType, attribute.Command, (uint)_sequenceProvider.GetNewSequence(), binary));
+                result.Add(new SsoPacket(attribute.PacketType, attribute.EncodeType, attribute.Command, Keystore.Session.MsgCookie, (uint)_sequenceProvider.GetNewSequence(), binary));
                 
                 if (extraPackets != null)
                 {
-                    result.AddRange(extraPackets.Select(extra => new SsoPacket(attribute.PacketType, attribute.Command, (uint)_sequenceProvider.GetNewSequence(), extra)));
+                    result.AddRange(extraPackets.Select(extra => new SsoPacket(attribute.PacketType, attribute.EncodeType, attribute.Command, Keystore.Session.MsgCookie, (uint)_sequenceProvider.GetNewSequence(), extra)));
                 }
                 
                 Collection.Log.LogDebug(Tag, $"Outgoing SSOFrame: {attribute.Command}");

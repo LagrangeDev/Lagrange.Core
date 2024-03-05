@@ -23,13 +23,13 @@ internal static class SsoNTLoginCommon
                 System = new SsoNTLoginSystem
                 {
                     Os = appInfo.Os,
-                    DeviceName = device.DeviceName,
+                    DeviceName = device.Model.DeviceName,
                     Type = appInfo.NTLoginType,
-                    Guid = device.Guid.ToByteArray()
+                    Guid = device.System.Guid.ToByteArray()
                 },
                 Version = new SsoNTLoginVersion
                 {
-                    KernelVersion = device.KernelVersion,
+                    KernelVersion = device.System.OsVersion,
                     AppId = appInfo.AppId,
                     PackageName = appInfo.PackageName
                 },

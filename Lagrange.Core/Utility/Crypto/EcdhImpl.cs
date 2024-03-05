@@ -5,13 +5,13 @@ namespace Lagrange.Core.Utility.Crypto;
 internal partial class EcdhImpl : ICryptoImpl
 {
     private readonly EcdhProvider _ecdhProvider;
-    
+
     private readonly TeaImpl _teaImpl;
-    
+
     public CryptMethod Method { get; }
-    
+
     public CryptId MethodId { get; }
-    
+
     public byte[] ShareKey { get; private set; }
 
     public EcdhImpl(CryptMethod method, bool isHash = true)
@@ -23,9 +23,10 @@ internal partial class EcdhImpl : ICryptoImpl
 
         _ecdhProvider = new EcdhProvider(crypt.Curve);
         MethodId = crypt.Id;
-        ShareKey = GenerateShared(crypt.PubKey, isHash);
+
+        GenerateShared(crypt.PubKey, isHash);
     }
-    
+
     public byte[] GenerateShared(byte[] bobPublic, bool isHash = true)
     {
         var unpack = _ecdhProvider.UnpackPublic(bobPublic);
@@ -33,17 +34,14 @@ internal partial class EcdhImpl : ICryptoImpl
 
         return ShareKey;
     }
-    
+
     public byte[] GetPublicKey(bool compress = true) => _ecdhProvider.PackPublic(compress);
-    
-    public byte[] Encrypt(byte[] data, byte[] key)
-    {
-        throw new NotImplementedException();
-    }
 
     public byte[] Encrypt(byte[] data) => _teaImpl.Encrypt(data, ShareKey);
 
     public byte[] Decrypt(byte[] data) => _teaImpl.Decrypt(data, ShareKey);
 
-    public byte[] Decrypt(byte[] data, byte[] key) => Decrypt(data);
+    public byte[] Encrypt(byte[] data, byte[] key) => throw new NotImplementedException();
+
+    public byte[] Decrypt(byte[] data, byte[] key) => throw new NotImplementedException();
 }

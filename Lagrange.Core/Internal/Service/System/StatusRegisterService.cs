@@ -17,16 +17,16 @@ internal class StatusRegisterService : BaseService<StatusRegisterEvent>
     {
         var packet = new ServiceRegister
         {
-            Guid = device.Guid.ToByteArray().Hex(true),
+            Guid = device.System.Guid.ToByteArray().Hex(true),
             Type = 0,
             CurrentVersion = appInfo.CurrentVersion,
             Field4 = 0,
             LocaleId = 2052,
             Online = new OnlineOsInfo
             {
-                User = device.DeviceName,
+                User = device.Model.DeviceName,
                 Os = appInfo.Kernel,
-                OsVer = device.SystemKernel,
+                OsVer = device.System.OsType,
                 VendorName = "",
                 OsLower = appInfo.VendorOs,
             },

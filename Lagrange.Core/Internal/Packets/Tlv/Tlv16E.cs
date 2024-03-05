@@ -8,7 +8,7 @@ namespace Lagrange.Core.Internal.Packets.Tlv;
 [Tlv(0x16E)]
 internal class Tlv16E : TlvBody
 {
-    public Tlv16E(BotDeviceInfo deviceInfo) => DeviceName = deviceInfo.DeviceName;
+    public Tlv16E(BotDeviceInfo deviceInfo) => DeviceName = deviceInfo.Model.DeviceName;
 
     [BinaryProperty(Prefix.None)] public string DeviceName { get; set; }
 }

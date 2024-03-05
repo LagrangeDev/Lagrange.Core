@@ -2,14 +2,11 @@ namespace Lagrange.Core.Event.EventArg;
 
 public class BotNewDeviceVerifyEvent : EventBase
 {
-    public string Url { get; }
+    public string PhoneNumber { get; }
     
-    public byte[] QrCode { get; }
-    
-    public BotNewDeviceVerifyEvent(string url, byte[] qrCode) 
+    public BotNewDeviceVerifyEvent(string phoneNumber) 
     {
-        Url = url;
-        EventMessage = $"[{nameof(BotNewDeviceVerifyEvent)}]: Url: {url}";
-        QrCode = qrCode;
+        PhoneNumber = phoneNumber;
+        EventMessage = $"[{nameof(BotNewDeviceVerifyEvent)}]: PhoneNumber: {phoneNumber}";
     }
 }

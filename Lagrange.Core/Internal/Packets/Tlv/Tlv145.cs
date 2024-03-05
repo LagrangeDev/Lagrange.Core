@@ -8,7 +8,7 @@ namespace Lagrange.Core.Internal.Packets.Tlv;
 [Tlv(0x145)]
 internal class Tlv145 : TlvBody
 {
-    public Tlv145(BotDeviceInfo deviceInfo) => Guid = deviceInfo.Guid.ToByteArray();
+    public Tlv145(BotDeviceInfo deviceInfo) => Guid = deviceInfo.System.Guid.ToByteArray();
 
     [BinaryProperty(Prefix.None)] public byte[] Guid { get; set; }
 }

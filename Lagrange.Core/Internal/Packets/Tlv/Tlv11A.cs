@@ -5,7 +5,7 @@ using Lagrange.Core.Utility.Binary.Tlv.Attributes;
 
 namespace Lagrange.Core.Internal.Packets.Tlv;
 
-[Tlv(0X11A)]
+[Tlv(0x11A)]
 internal class Tlv11A : TlvBody
 {
     [BinaryProperty] public ushort FaceId { get; set; }

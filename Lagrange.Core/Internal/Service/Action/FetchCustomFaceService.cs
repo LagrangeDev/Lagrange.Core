@@ -20,7 +20,7 @@ internal class FetchCustomFaceService : BaseService<FetchCustomFaceEvent>
             Comm = new PlatInfo
             {
                 ImPlat = 1,
-                OsVersion = device.KernelVersion,
+                OsVersion = device.System.OsVersion,
                 QVersion = appInfo.CurrentVersion
             },
             SelfUin = keystore.Uin,

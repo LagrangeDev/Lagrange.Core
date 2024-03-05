@@ -24,7 +24,7 @@ internal class ContextCollection : IDisposable
         EventInvoker invoker, TaskScheduler scheduler)
     {
         Log = new LogContext(this, keystore, appInfo, device, invoker);
-        Packet = new PacketContext(this, keystore, appInfo, device, config);
+        Packet = new PacketContext(this, keystore, appInfo, device);
         Socket = new SocketContext(this, keystore, appInfo, device, config);
         Service = new ServiceContext(this, keystore, appInfo, device);
         Business = new BusinessContext(this, keystore, appInfo, device);

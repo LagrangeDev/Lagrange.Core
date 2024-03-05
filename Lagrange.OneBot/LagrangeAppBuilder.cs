@@ -41,12 +41,14 @@ public sealed class LagrangeAppBuilder
         string deviceInfoPath = Configuration["ConfigPath:DeviceInfo"] ?? "device.json";
         
         bool isSuccess = Enum.TryParse<Protocols>(Configuration["Account:Protocol"], out var protocol);
+        Services.AddSingleton<SignProvider, OneBotSigner>();
         var config = new BotConfig
         {
             Protocol = isSuccess ? protocol : Protocols.Linux,
             AutoReconnect = bool.Parse(Configuration["Account:AutoReconnect"] ?? "true"),
             UseIPv6Network = bool.Parse(Configuration["Account:UseIPv6Network"] ?? "false"),
-            GetOptimumServer = bool.Parse(Configuration["Account:GetOptimumServer"] ?? "true")
+            GetOptimumServer = bool.Parse(Configuration["Account:GetOptimumServer"] ?? "true"),
+            CustomSignProvider = new OneBotSigner(Configuration),
         };
 
         BotKeystore keystore;
@@ -107,8 +109,7 @@ public sealed class LagrangeAppBuilder
             return services.GetRequiredService<ILagrangeWebServiceFactory>().Create() ?? throw new Exception("Invalid conf detected");
         });
 
-        Services.AddSingleton<LiteDatabase>(x => new LiteDatabase(Configuration["ConfigPath:Database"] ?? $"lagrange-{Configuration["Account:Uin"]}.db"));
-        Services.AddSingleton<SignProvider, OneBotSigner>();
+        Services.AddSingleton(x => new LiteDatabase(Configuration["ConfigPath:Database"] ?? $"lagrange-{Configuration["Account:Uin"]}.db"));
 
         Services.AddSingleton<NotifyService>();
         Services.AddSingleton<MessageService>();

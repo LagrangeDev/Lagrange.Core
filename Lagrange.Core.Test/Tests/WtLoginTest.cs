@@ -1,79 +1,44 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Lagrange.Core.Common;
-using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Common.Interface.Api;
 
 namespace Lagrange.Core.Test.Tests;
 
 public class WtLoginTest
 {
-    public async Task FetchQrCode()
+    public async Task LoginByPassword(BotContext bot)
     {
-        var deviceInfo = GetDeviceInfo();
-        var keyStore = LoadKeystore() ?? new BotKeystore();
-        
-        var bot = BotFactory.Create(new BotConfig 
+        bot.Invoker.OnBotCaptchaEvent += (context, @event) =>
         {
-            UseIPv6Network = false,
-            GetOptimumServer = true,
-            AutoReconnect = true,
-            Protocol = Protocols.Linux
-        }, deviceInfo, keyStore);
-
-        bot.Invoker.OnBotLogEvent += (context, @event) =>
-        {
-            Utility.Console.ChangeColorByTitle(@event.Level);
-            Console.WriteLine(@event.ToString());
-        };
-        
-        bot.Invoker.OnBotOnlineEvent += (context, @event) =>
-        {
-            Console.WriteLine(@event.ToString());
-            SaveKeystore(bot.UpdateKeystore());
+            Console.WriteLine(@event.Url);
+            var ticket = Console.ReadLine();
+            if (ticket != null)
+                bot.SubmitCaptcha(ticket);
         };
 
+        bot.Invoker.OnBotNewDeviceVerify += async (context, @event) =>
+        {
+            Console.WriteLine(@event.PhoneNumber);
+            if (await bot.SendSmsCode())
+            {
+                var smsCode = Console.ReadLine();
+                if (smsCode != null)
+                    bot.SubmitSmsCode(smsCode);
+            }
+            else
+            {
+                Console.WriteLine("Send SmsCode Fail");
+            }
+        };
+
+        _ = bot.LoginByPassword();
+    }
+
+    public async Task LoginByQrCode(BotContext bot)
+    {
         var qrCode = await bot.FetchQrCode();
         if (qrCode != null)
         {
             await File.WriteAllBytesAsync("qr.png", qrCode.Value.QrCode);
             await bot.LoginByQrCode();
-        }
-    }
-
-    public static BotDeviceInfo GetDeviceInfo()
-    {
-        if (File.Exists("Test/DeviceInfo.json"))
-        {
-            var info = JsonSerializer.Deserialize<BotDeviceInfo>(File.ReadAllText("Test/DeviceInfo.json"));
-            if (info != null) return info;
-
-            info = BotDeviceInfo.GenerateInfo();
-            File.WriteAllText("Test/DeviceInfo.json", JsonSerializer.Serialize(info));
-            return info;
-        }
-        
-        var deviceInfo = BotDeviceInfo.GenerateInfo();
-        File.WriteAllText("Test/DeviceInfo.json", JsonSerializer.Serialize(deviceInfo));
-        return deviceInfo;
-    }
-    
-    public static void SaveKeystore(BotKeystore keystore) => 
-        File.WriteAllText("Test/Keystore.json", JsonSerializer.Serialize(keystore));
-    
-    public static BotKeystore? LoadKeystore()
-    {
-        try
-        {
-            var text = File.ReadAllText("Test/Keystore.json");
-            return JsonSerializer.Deserialize<BotKeystore>(text, new JsonSerializerOptions()
-            {
-                ReferenceHandler = ReferenceHandler.Preserve
-            });
-        }
-        catch
-        {
-            return null;
         }
     }
 }

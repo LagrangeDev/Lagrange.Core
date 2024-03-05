@@ -48,7 +48,7 @@ internal class KeyExchangeService : BaseService<KeyExchangeEvent>
         var plain1 = new SsoKeyExchangePlain
         {
             Uin = keystore.Uin.ToString(),
-            Guid = deviceInfo.Guid.ToByteArray()
+            Guid = deviceInfo.System.Guid.ToByteArray()
         };
         Serializer.Serialize(stream, plain1);
         var gcmCalc1 = new AesGcmImpl().Encrypt(stream.ToArray(), keystore.PrimeImpl.ShareKey);
