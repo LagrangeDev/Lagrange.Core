@@ -10,59 +10,23 @@
 
 An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 
-
 # Using with Docker
-
-**Tips:**
-
-> Before creating the container, it is essential to mount the data folder`/root/data` to avoid the need for reauthentication every time you start the container.
-
-> On first startup, `appsettings.json` is automatically generated and waits for any key to continue.  
-> You can change `appsettings.json` and restart the container to continue.
-
-> If you encounter network issues, you can try using `--network=host`.
 
 ```bash
 # 8081 port for ForwardWebSocket
-docker run -d -p 8081:8081 ghcr.io/lagrangedev/lagrange.onebot:edge
+# /path-to-data is used to store the files needed for the runtime
+# UID Env and GID Env are used to set file permissions
+docker run -id -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -g) ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
 
-## Persistence Storage
-
-```bash
-docker volume create lagrange_data
-docker run -d -v lagrange_data:/root/data ghcr.io/lagrangedev/lagrange.onebot:edge
-```
-
-## Configure appsettings.json in Docker
-
-### Using Mount
-
-use bind mount to mount your `data` folder		
-```bash
-docker run -d -v /path-to-data:/root/data ghcr.io/lagrangedev/lagrange.onebot:edge
-```
-Edit `/path-to-data/appsettings.json` with your favorite editor
-
-### Using Environment Variables
-
-use [Enviroment Variables](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-7.0#naming-of-environment-variables) to set your appsettings.json
-```bash
-# disable reverse websocket
-docker run -d -e Implementations__1__Enable=false ghcr.io/lagrangedev/lagrange.onebot:edge
-```
-
-```bash
-# input username and password
-docker run -d -e Account__Uin=123456 -e Account__Password=1234 ghcr.io/lagrangedev/lagrange.onebot:edge
-```
+> The first time you run it, you will be prompted `Please Edit the appsettings.json to set configs and press any key to continue`.
+>
+> 1. Restart the container after modifying `/path-to-data/appsettings.json`
+> 2. Modify `/path-to-data/appsettings.json` and use `docker attach` to enter the container and press any key, then use `Ctrl`+`P`;`Ctrl`+`Q` to exit the container.
 
 ## Migration from older versions
 
-Move `appsettings.json`, `device.json`, `keystore.json`, `lagrange-*.db` to the same folder where you want to put them.
+Move `appsettings.json`, `device.json`, `keystore.json`, `lagrange-*.db` to the same folder where you want to put them.  
+For example /path-to-save
 
-Use this command to start the
-```bash
-docker run -d -v /path-to-data:/root/data ghcr.io/lagrangedev/lagrange.onebot:edge
-```
-Don't forget to add your port mapping parameter, `-p`.
+Start the container according to [Using with Docker](#using-with-docker)

@@ -2,13 +2,10 @@
 
 USER=user
 
-usermod -g ${GID} ${USER}
-umask ${UMASK} > /dev/null
+usermod -o -u ${UID} ${USER} > /dev/null
+groupmod -o -g ${GID} ${USER} > /dev/null
+usermod -g ${GID} ${USER} > /dev/null
 
-chown -R ${UID}:${GID} /root/bin
-chown -R ${UID}:${GID} /root/bin/Lagrange.OneBot
-chown -R ${UID}:${GID} /root/data
+chown -R ${UID}:${GID} /app > /dev/null
 
-chmod +x /root/bin/Lagrange.OneBot
-
-su-exec $USER /root/bin/Lagrange.OneBot "$@"
+exec su-exec $USER /app/bin/Lagrange.OneBot "$@"

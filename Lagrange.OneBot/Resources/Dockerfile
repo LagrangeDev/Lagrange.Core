@@ -1,8 +1,10 @@
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine3.18 AS build-env
-WORKDIR /root/build
+
+COPY . /root/build
+
 ARG TARGETARCH
 
-COPY . ./
+WORKDIR /root/build
 RUN dotnet publish Lagrange.OneBot \
         -c Release \
         -a $TARGETARCH \
@@ -13,18 +15,18 @@ RUN dotnet publish Lagrange.OneBot \
 
 FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine3.18
 
-COPY --from=build-env /root/out/Lagrange.OneBot /root/bin/Lagrange.OneBot
+COPY --from=build-env /root/out/Lagrange.OneBot /app/bin/Lagrange.OneBot
 
-COPY Lagrange.OneBot/Resources/docker-entrypoint.sh /root/bin/docker-entrypoint.sh
+COPY Lagrange.OneBot/Resources/docker-entrypoint.sh /app/bin/docker-entrypoint.sh
 
 ENV UID=100
 ENV GID=100
-ENV UAMSK=0022
 
+RUN sed -i "s@https://dl-cdn.alpinelinux.org/@https://mirrors.huaweicloud.com/@g" /etc/apk/repositories
 RUN apk --no-cache add shadow su-exec \
- && mkdir /root/data \
+ && mkdir /app/data \
  && adduser -D user \
- && chmod +x /root/bin/docker-entrypoint.sh
+ && chmod +x /app/bin/docker-entrypoint.sh
 
-WORKDIR /root/data
-ENTRYPOINT ["/root/bin/docker-entrypoint.sh"]
+WORKDIR /app/data
+ENTRYPOINT ["/app/bin/docker-entrypoint.sh"]
