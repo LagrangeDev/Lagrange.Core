@@ -18,7 +18,7 @@ namespace Lagrange.OneBot.Core.Operation.Message;
 public partial class MessageCommon
 {
     private readonly ILogger<MessageCommon> _logger;
-    
+
     private readonly Dictionary<string, SegmentBase> _typeToSegment;
 
     public MessageCommon(LiteDatabase database, ILogger<MessageCommon> logger)
@@ -36,8 +36,24 @@ public partial class MessageCommon
             }
         }
     }
-    
+
     public MessageBuilder ParseFakeChain(OneBotFakeNode message)
+    {
+        var builder = MessageBuilder.Friend(uint.Parse(message.Uin));
+        BuildMessages(builder, message.Content);
+
+        return builder;
+    }
+
+    public MessageBuilder ParseFakeChain(OneBotFakeNodeSimple message)
+    {
+        var builder = MessageBuilder.Friend(uint.Parse(message.Uin));
+        BuildMessages(builder, message.Content);
+
+        return builder;
+    }
+
+    public MessageBuilder ParseFakeChain(OneBotFakeNodeText message)
     {
         var builder = MessageBuilder.Friend(uint.Parse(message.Uin));
         BuildMessages(builder, message.Content);
@@ -70,7 +86,7 @@ public partial class MessageCommon
         var builder = message.MessageType == "private" || message.GroupId == null
             ? MessageBuilder.Friend(message.UserId ?? 0)
             : MessageBuilder.Group(message.GroupId.Value);
-        
+
         if (message.AutoEscape == true)
         {
             builder.Text(message.Messages);
@@ -174,7 +190,7 @@ public partial class MessageCommon
                     var pair = capture.Value.Split('=', 2);
                     if (pair.Length == 2) data[pair[0]] = UnescapeCQ(pair[1]);
                 }
-                
+
                 if (JsonSerializer.SerializeToElement(data).Deserialize(instance.GetType()) is SegmentBase cast) instance.Build(builder, cast);
                 else Log.LogCQFailed(_logger, type, string.Empty);
             }
@@ -209,16 +225,22 @@ public partial class MessageCommon
             }
         }
     }
-    
+
     public List<MessageChain> BuildForwardChains(OneBotForward forward)
     {
         List<MessageChain> chains = [];
 
         foreach (var segment in forward.Messages)
         {
-            if (((JsonElement)segment.Data).Deserialize<OneBotFakeNode>() is { } element)
+            if (((JsonElement)segment.Data).Deserialize<OneBotFakeNodeBase>(SerializerOptions.DefaultOptions) is { } element)
             {
-                var chain = ParseFakeChain(element).Build();
+                var chain = element switch
+                {
+                    OneBotFakeNode message => ParseFakeChain(message).Build(),
+                    OneBotFakeNodeSimple messageSimple => ParseFakeChain(messageSimple).Build(),
+                    OneBotFakeNodeText messageText => ParseFakeChain(messageText).Build(),
+                    _ => throw new Exception()
+                };
                 chain.FriendInfo = new BotFriend(uint.Parse(element.Uin), string.Empty, element.Name, string.Empty, string.Empty);
                 chains.Add(chain);
             }
