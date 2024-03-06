@@ -15,7 +15,7 @@ public class SendForwardMessageOperation(MessageCommon common) : IOperation
     {
         if (payload.Deserialize<OneBotForward>(SerializerOptions.DefaultOptions) is { } forward)
         {
-            var chains = common.BuildForwardChains(forward);
+            var chains = common.BuildForwardChains(context, forward);
 
             var @event = MultiMsgUploadEvent.Create(null, chains);
             var result = await context.ContextCollection.Business.SendEvent(@event);

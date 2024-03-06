@@ -18,7 +18,7 @@ public class SendPrivateForwardOperation(MessageCommon common) : IOperation
     {
         if (payload.Deserialize<OneBotPrivateForward>(SerializerOptions.DefaultOptions) is { } forward)
         {
-            var chains = common.BuildForwardChains(forward);
+            var chains = common.BuildForwardChains(context, forward);
 
             var multi = new MultiMsgEntity(null, [.. chains]);
             var chain = MessageBuilder.Friend(forward.UserId).Add(multi).Build();

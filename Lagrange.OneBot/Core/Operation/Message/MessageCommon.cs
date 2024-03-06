@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Lagrange.Core;
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Extension;
@@ -226,7 +227,7 @@ public partial class MessageCommon
         }
     }
 
-    public List<MessageChain> BuildForwardChains(OneBotForward forward)
+    public List<MessageChain> BuildForwardChains(BotContext context, OneBotForward forward)
     {
         List<MessageChain> chains = [];
 
@@ -241,8 +242,9 @@ public partial class MessageCommon
                     OneBotFakeNodeText messageText => ParseFakeChain(messageText).Build(),
                     _ => throw new Exception()
                 };
-                chain.FriendInfo = new BotFriend(uint.Parse(element.Uin), string.Empty, element.Name, string.Empty, string.Empty);
-                chains.Add(chain);
+                string uid = context.ContextCollection.Keystore.Uid ?? throw new InvalidOperationException();
+                chain.FriendInfo = new BotFriend(uint.Parse(element.Uin), uid, element.Name, string.Empty, string.Empty);
+                chains.Add(chain);  // as fake is constructed, use uid from bot itself to upload image
             }
         }
 
