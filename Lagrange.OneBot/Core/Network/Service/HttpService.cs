@@ -17,19 +17,16 @@ public sealed partial class HttpService : ILagrangeWebService
 
     private readonly ILogger _logger;
 
-    private readonly BotContext _context;
-
     private readonly HttpListener _listener;
 
     private readonly ConcurrentDictionary<string, HttpListenerResponse> _responses;
 
     private readonly string _accessToken;
 
-    public HttpService(IOptionsSnapshot<HttpServiceOptions> options, ILogger<HttpService> logger, BotContext context)
+    public HttpService(IOptionsSnapshot<HttpServiceOptions> options, ILogger<HttpService> logger, BotContext _)
     {
         _options = options.Value;
         _logger = logger;
-        _context = context;
         _listener = new HttpListener();
         _listener.Prefixes.Add($"http://{_options.Host}:{_options.Port}/");
         _responses = new ConcurrentDictionary<string, HttpListenerResponse>();
@@ -128,8 +125,11 @@ public sealed partial class HttpService : ILagrangeWebService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _listener.Stop();
-        _listener.Close();
+        if (_listener.IsListening)
+        {
+            _listener.Stop();
+            _listener.Close();
+        }
         return Task.CompletedTask;
     }
 
