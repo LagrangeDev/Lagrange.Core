@@ -22,7 +22,6 @@ COPY Lagrange.OneBot/Resources/docker-entrypoint.sh /app/bin/docker-entrypoint.s
 ENV UID=100
 ENV GID=100
 
-RUN sed -i "s@https://dl-cdn.alpinelinux.org/@https://mirrors.huaweicloud.com/@g" /etc/apk/repositories
 RUN apk --no-cache add shadow su-exec \
  && mkdir /app/data \
  && adduser -D user \
