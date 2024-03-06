@@ -22,16 +22,10 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
 
     private readonly ILogger _logger = logger;
 
-    protected ConnectionContext? UniversalConnCtx;
-    protected ConnectionContext? ApiConnCtx;
-    protected ConnectionContext? EventConnCtx;
+    protected ConnectionContext? ConnCtx;
 
-
-
-    protected sealed class ConnectionContext(ClientWebSocket webSocket, Task connectTask) : IDisposable
+    protected abstract class ConnectionContext(Task connectTask) : IDisposable
     {
-        public readonly ClientWebSocket WebSocket = webSocket;
-
         public readonly Task ConnectTask = connectTask;
 
         private readonly CancellationTokenSource _cts = new();
@@ -41,24 +35,31 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         public void Dispose() => _cts.Cancel();
     }
 
+    protected sealed class GeneralConnectionContext(ClientWebSocket apiWebSocket, ClientWebSocket eventWebSocket, Task connectTask) : ConnectionContext(connectTask)
+    {
+        public readonly ClientWebSocket ApiWebSocket = apiWebSocket;
+        public readonly ClientWebSocket EventWebSocket = eventWebSocket;
+    }
+
+    protected sealed class UniversalConnectionContext(ClientWebSocket webSocket, Task connectTask) : ConnectionContext(connectTask)
+    {
+        public readonly ClientWebSocket WebSocket = webSocket;
+    }
+
     public ValueTask SendJsonAsync<T>(T payload, string? identifier, CancellationToken cancellationToken = default)
     {
-        ConnectionContext connCtx;
-        if (_options.UseUniversalClient)
-            connCtx = UniversalConnCtx ?? throw new InvalidOperationException("Reverse webSocket service was not running");
-        else
+        var ctx = ConnCtx ?? throw new InvalidOperationException("Reverse webSocket service was not running");
+        var ws = ctx switch
         {
-            connCtx = payload switch
-            {
-                OneBotResult => ApiConnCtx ?? throw new InvalidOperationException("Reverse webSocket service was not running"),
-                _ => EventConnCtx ?? throw new InvalidOperationException("Reverse webSocket service was not running"),
-            };
-        }
-        var connTask = connCtx.ConnectTask;
+            UniversalConnectionContext universalCtx => universalCtx.WebSocket,
+            GeneralConnectionContext generalCtx => payload is OneBotResult ? generalCtx.ApiWebSocket : generalCtx.EventWebSocket,
+            _ => throw new InvalidOperationException("The connection context is not supported")
+        };
+        var connTask = ctx.ConnectTask;
 
         return !connTask.IsCompletedSuccessfully
-            ? SendJsonAsync(connCtx.WebSocket, connTask, payload, connCtx.Token)
-            : SendJsonAsync(connCtx.WebSocket, payload, connCtx.Token);
+            ? SendJsonAsync(ws, connTask, payload, ctx.Token)
+            : SendJsonAsync(ws, payload, ctx.Token);
     }
 
     protected async ValueTask SendJsonAsync<T>(ClientWebSocket ws, Task connectTask, T payload, CancellationToken token)
@@ -120,8 +121,8 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                 {
                     using var ws = CreateDefaultWebSocket();
                     var connTask = ws.ConnectAsync(url, stoppingToken);
-                    using var connCtx = new ConnectionContext(ws, connTask);
-                    UniversalConnCtx = connCtx;
+                    using var connCtx = new UniversalConnectionContext(ws, connTask);
+                    ConnCtx = connCtx;
                     await connTask;
 
                     var lifecycle = new OneBotLifecycle(context.BotUin, "connect");
@@ -142,15 +143,14 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                 {
                     using var wsApi = CreateDefaultWebSocket();
                     var apiConnTask = wsApi.ConnectAsync(apiUrl, stoppingToken);
-                    using var apiConnCtx = new ConnectionContext(wsApi, apiConnTask);
-                    ApiConnCtx = apiConnCtx;
 
                     using var wsEvent = CreateDefaultWebSocket();
                     var eventConnTask = wsEvent.ConnectAsync(eventUrl, stoppingToken);
-                    using var eventConnCtx = new ConnectionContext(wsEvent, eventConnTask);
-                    EventConnCtx = eventConnCtx;
 
-                    await Task.WhenAll(apiConnTask, eventConnTask);
+                    var connTask = Task.WhenAll(apiConnTask, eventConnTask);
+                    ConnCtx = new GeneralConnectionContext(wsApi, wsEvent, connTask);
+
+                    await connTask;
 
                     var lifecycle = new OneBotLifecycle(context.BotUin, "connect");
                     await SendJsonAsync(wsEvent, lifecycle, stoppingToken);
@@ -170,7 +170,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
-                UniversalConnCtx = ApiConnCtx = EventConnCtx = null;
+                ConnCtx = null;
                 break;
             }
             catch (WebSocketException e) when (e.InnerException is HttpRequestException)
