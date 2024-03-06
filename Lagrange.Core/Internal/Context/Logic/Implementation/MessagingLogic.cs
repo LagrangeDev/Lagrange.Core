@@ -14,6 +14,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 
 [EventSubscribe(typeof(PushMessageEvent))]
 [EventSubscribe(typeof(SendMessageEvent))]
+[EventSubscribe(typeof(MultiMsgUploadEvent))]
 [EventSubscribe(typeof(GetRoamMessageEvent))]
 [EventSubscribe(typeof(GetGroupMessageEvent))]
 [EventSubscribe(typeof(GroupSysInviteEvent))]
@@ -178,11 +179,23 @@ internal class MessagingLogic : LogicBase
     {
         switch (e)
         {
+            case MultiMsgUploadEvent { Chains: { } chains }:
+            {
+                foreach (var chain in chains)
+                {
+                    await ResolveChainMetadata(chain);
+                    await ResolveOutgoingChain(chain);
+                    await Collection.Highway.UploadResources(chain);
+                }
+                break;
+            }
             case SendMessageEvent send: // resolve Uin to Uid
+            {
                 await ResolveChainMetadata(send.Chain);
                 await ResolveOutgoingChain(send.Chain);
                 await Collection.Highway.UploadResources(send.Chain);
                 break;
+            }
         }
     }
 
@@ -300,13 +313,6 @@ internal class MessagingLogic : LogicBase
             }
             case MultiMsgEntity { ResId: null } multiMsg:
             {
-                foreach (var multi in multiMsg.Chains)
-                {
-                    await ResolveChainMetadata(multi);
-                    await ResolveOutgoingChain(multi);
-                    await Collection.Highway.UploadResources(multi);
-                }
-
                 var multiMsgEvent = MultiMsgUploadEvent.Create(multiMsg.GroupUin, multiMsg.Chains);
                 var results = await Collection.Business.SendEvent(multiMsgEvent);
                 if (results.Count != 0)
