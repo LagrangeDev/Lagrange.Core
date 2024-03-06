@@ -84,6 +84,7 @@ public sealed partial class HttpService : ILagrangeWebService
             var @params = request.QueryString.AllKeys
                                  .Where(key => key is not null)
                                  .ToDictionary(key => key!, key => request.QueryString[key]);
+            Log.LogReceived(_logger, identifier, request.Url.Query);
             payload = JsonSerializer.Serialize(new { action, @params });
         }
         else if (request.HttpMethod == "POST")
@@ -91,12 +92,15 @@ public sealed partial class HttpService : ILagrangeWebService
             if (request.ContentType == "application/json")
             {
                 using var reader = new StreamReader(request.InputStream);
-                payload = $"{{\"action\":\"{action}\",\"params\":{reader.ReadToEnd()}}}";
+                var body = reader.ReadToEnd();
+                Log.LogReceived(_logger, identifier, body);
+                payload = $"{{\"action\":\"{action}\",\"params\":{body}}}";
             }
             else if (request.ContentType == "application/x-www-form-urlencoded")
             {
                 using var reader = new StreamReader(request.InputStream);
                 var body = reader.ReadToEnd();
+                Log.LogReceived(_logger, identifier, body);
                 var @params = body.Split('&')
                                  .Select(pair => pair.Split('='))
                                  .ToDictionary(pair => pair[0], pair => pair[1]);
