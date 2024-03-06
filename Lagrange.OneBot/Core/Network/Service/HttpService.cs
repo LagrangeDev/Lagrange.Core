@@ -17,19 +17,16 @@ public sealed partial class HttpService : ILagrangeWebService
 
     private readonly ILogger _logger;
 
-    private readonly BotContext _context;
-
     private readonly HttpListener _listener;
 
     private readonly ConcurrentDictionary<string, HttpListenerResponse> _responses;
 
     private readonly string _accessToken;
 
-    public HttpService(IOptionsSnapshot<HttpServiceOptions> options, ILogger<HttpService> logger, BotContext context)
+    public HttpService(IOptionsSnapshot<HttpServiceOptions> options, ILogger<HttpService> logger, BotContext _)
     {
         _options = options.Value;
         _logger = logger;
-        _context = context;
         _listener = new HttpListener();
         _listener.Prefixes.Add($"http://{_options.Host}:{_options.Port}/");
         _responses = new ConcurrentDictionary<string, HttpListenerResponse>();
@@ -87,6 +84,7 @@ public sealed partial class HttpService : ILagrangeWebService
             var @params = request.QueryString.AllKeys
                                  .Where(key => key is not null)
                                  .ToDictionary(key => key!, key => request.QueryString[key]);
+            Log.LogReceived(_logger, identifier, request.Url.Query);
             payload = JsonSerializer.Serialize(new { action, @params });
         }
         else if (request.HttpMethod == "POST")
@@ -94,12 +92,15 @@ public sealed partial class HttpService : ILagrangeWebService
             if (request.ContentType == "application/json")
             {
                 using var reader = new StreamReader(request.InputStream);
-                payload = reader.ReadToEnd();
+                var body = reader.ReadToEnd();
+                Log.LogReceived(_logger, identifier, body);
+                payload = $"{{\"action\":\"{action}\",\"params\":{body}}}";
             }
             else if (request.ContentType == "application/x-www-form-urlencoded")
             {
                 using var reader = new StreamReader(request.InputStream);
                 var body = reader.ReadToEnd();
+                Log.LogReceived(_logger, identifier, body);
                 var @params = body.Split('&')
                                  .Select(pair => pair.Split('='))
                                  .ToDictionary(pair => pair[0], pair => pair[1]);
@@ -128,8 +129,11 @@ public sealed partial class HttpService : ILagrangeWebService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _listener.Stop();
-        _listener.Close();
+        if (_listener.IsListening)
+        {
+            _listener.Stop();
+            _listener.Close();
+        }
         return Task.CompletedTask;
     }
 
