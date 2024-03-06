@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.OneBot.Core.Entity.Common;
+using Lagrange.OneBot.Core.Operation.Converters;
 
 namespace Lagrange.OneBot.Message.Entity;
 
@@ -23,6 +24,8 @@ public partial class LocationSegment(float latitude, float longitude)
 [SegmentSubscriber(typeof(LightAppEntity), "location")]
 public partial class LocationSegment : SegmentBase
 {
+    private static readonly JsonSerializerOptions Options = new() { Converters = { new AutosizeConverter() } };
+    
     public override void Build(MessageBuilder builder, SegmentBase segment)
     {
         if (segment is not LocationSegment location) return;
@@ -64,7 +67,7 @@ public partial class LocationSegment : SegmentBase
     {
         if (entity is not LightAppEntity lightApp) throw new ArgumentException("Invalid entity type.");
 
-        if (JsonSerializer.Deserialize<LightApp>(lightApp.Payload) is { App: "com.tencent.map" } app)
+        if (JsonSerializer.Deserialize<LightApp>(lightApp.Payload, Options) is { App: "com.tencent.map" } app)
         {
             return new LocationSegment
             {
