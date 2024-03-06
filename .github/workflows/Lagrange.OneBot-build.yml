@@ -10,8 +10,8 @@ on:
       - "Lagrange.Core.sln"
       - "LICENSE"
       - "README.md"
-      - "!Lagrange.OneBot/Resources/.dockerignore"
       - "!Lagrange.OneBot/Resources/Dockerfile"
+      - "!Lagrange.OneBot/Resources/docker-entrypoint.sh"
   pull_request:
     branches: 
       - master
@@ -21,8 +21,8 @@ on:
       - "Lagrange.Core.sln"
       - "LICENSE"
       - "README.md"
-      - "!Lagrange.OneBot/Resources/.dockerignore"
       - "!Lagrange.OneBot/Resources/Dockerfile"
+      - "!Lagrange.OneBot/Resources/docker-entrypoint.sh"
   workflow_dispatch:
 
 jobs:
