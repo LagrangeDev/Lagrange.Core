@@ -57,7 +57,7 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
                     C2C = new C2CUserInfo
                     {
                         AccountType = 2,
-                        TargetUid = input.TargetUid ?? ""
+                        TargetUid = input.TargetUid
                     }
                 },
                 Client = new ClientMeta { AgentType = 2 },
