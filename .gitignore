@@ -269,3 +269,6 @@ docs/node_modules
 docs/.vitepress/dist
 docs/.vitepress/cache
 docs/api
+
+# code style
+.editorconfig
