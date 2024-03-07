@@ -24,7 +24,7 @@ internal class WtExchangeLogic : LogicBase
     private const string Tag = nameof(WtExchangeLogic);
 
     private readonly TaskCompletionSource<bool> _transEmpTask;
-    private TaskCompletionSource<string>? _captchaTask;
+    private TaskCompletionSource<(string, string)>? _captchaTask;
 
     private const string Interface = "https://ntlogin.qq.com/qr/getFace";
 
@@ -194,9 +194,9 @@ internal class WtExchangeLogic : LogicBase
                             Collection.Invoker.PostEvent(captchaEvent);
                             
                             string aid = Collection.Keystore.Session.CaptchaUrl.Split("&sid=")[1].Split("&")[0];
-                            _captchaTask = new TaskCompletionSource<string>();
-                            string ticket = await _captchaTask.Task;
-                            Collection.Keystore.Session.Captcha = new ValueTuple<string, string>(ticket, aid);
+                            _captchaTask = new TaskCompletionSource<(string, string)>();
+                            var (ticket, randStr) = await _captchaTask.Task;
+                            Collection.Keystore.Session.Captcha = new ValueTuple<string, string, string>(ticket, randStr, aid);
 
                             return await LoginByPassword();
                         }
@@ -379,5 +379,5 @@ internal class WtExchangeLogic : LogicBase
         return result.Count != 0 && ((NewDeviceLoginEvent)result[0]).Success;
     }
     
-    public bool SubmitCaptcha(string ticket) => _captchaTask?.TrySetResult(ticket) ?? false;
+    public bool SubmitCaptcha(string ticket, string randStr) => _captchaTask?.TrySetResult((ticket, randStr)) ?? false;
 }

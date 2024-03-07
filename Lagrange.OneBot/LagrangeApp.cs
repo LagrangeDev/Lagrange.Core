@@ -100,7 +100,9 @@ public class LagrangeApp : IHost
                 await Task.Run(() =>
                 {
                     var ticket = Console.ReadLine();
-                    if (ticket != null) Instance.SubmitCaptcha(ticket);
+                    var randomString = Console.ReadLine();
+
+                    if (ticket != null && randomString != null) Instance.SubmitCaptcha(ticket, randomString);
                 }, cancellationToken);
             };
 

@@ -40,11 +40,11 @@ internal static class SsoNTLoginCommon
 
         if (keystore.Session.Captcha is not null)
         {
-            var (ticket, aid) = keystore.Session.Captcha.Value;
+            var (ticket, randStr, aid) = keystore.Session.Captcha.Value;
             packet.Body.Captcha = new SsoNTLoginCaptchaSubmit
             {
                 Ticket = ticket,
-                RandStr = "",
+                RandStr = randStr,
                 Aid = aid
             };
         }
