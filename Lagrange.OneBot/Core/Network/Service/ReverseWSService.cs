@@ -2,6 +2,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using Lagrange.Core;
+using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Meta;
 using Lagrange.OneBot.Core.Network.Options;
 using Microsoft.Extensions.Hosting;
@@ -23,10 +24,8 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
 
     protected ConnectionContext? ConnCtx;
 
-    protected sealed class ConnectionContext(ClientWebSocket webSocket, Task connectTask) : IDisposable
+    protected abstract class ConnectionContext(Task connectTask) : IDisposable
     {
-        public readonly ClientWebSocket WebSocket = webSocket;
-
         public readonly Task ConnectTask = connectTask;
 
         private readonly CancellationTokenSource _cts = new();
@@ -36,14 +35,31 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         public void Dispose() => _cts.Cancel();
     }
 
+    protected sealed class GeneralConnectionContext(ClientWebSocket apiWebSocket, ClientWebSocket eventWebSocket, Task connectTask) : ConnectionContext(connectTask)
+    {
+        public readonly ClientWebSocket ApiWebSocket = apiWebSocket;
+        public readonly ClientWebSocket EventWebSocket = eventWebSocket;
+    }
+
+    protected sealed class UniversalConnectionContext(ClientWebSocket webSocket, Task connectTask) : ConnectionContext(connectTask)
+    {
+        public readonly ClientWebSocket WebSocket = webSocket;
+    }
+
     public ValueTask SendJsonAsync<T>(T payload, string? identifier, CancellationToken cancellationToken = default)
     {
-        var connCtx = ConnCtx ?? throw new InvalidOperationException("Reverse webSocket service was not running");
-        var connTask = connCtx.ConnectTask;
+        var ctx = ConnCtx ?? throw new InvalidOperationException("Reverse webSocket service was not running");
+        var ws = ctx switch
+        {
+            UniversalConnectionContext universalCtx => universalCtx.WebSocket,
+            GeneralConnectionContext generalCtx => payload is OneBotResult ? generalCtx.ApiWebSocket : generalCtx.EventWebSocket,
+            _ => throw new InvalidOperationException("The connection context is not supported")
+        };
+        var connTask = ctx.ConnectTask;
 
         return !connTask.IsCompletedSuccessfully
-            ? SendJsonAsync(connCtx.WebSocket, connTask, payload, connCtx.Token)
-            : SendJsonAsync(connCtx.WebSocket, payload, connCtx.Token);
+            ? SendJsonAsync(ws, connTask, payload, ctx.Token)
+            : SendJsonAsync(ws, payload, ctx.Token);
     }
 
     protected async ValueTask SendJsonAsync<T>(ClientWebSocket ws, Task connectTask, T payload, CancellationToken token)
@@ -78,9 +94,22 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         {
             urlstr = "ws://" + urlstr;
         }
+        string apiurlstr = $"{urlstr}{_options.ApiSuffix}";
+        string eventurlstr = $"{urlstr}{_options.EventSuffix}";
+
         if (!Uri.TryCreate(urlstr, UriKind.Absolute, out var url))
         {
             Log.LogInvalidUrl(_logger, Tag, urlstr);
+            return;
+        }
+        if (!Uri.TryCreate(apiurlstr, UriKind.Absolute, out var apiUrl))
+        {
+            Log.LogInvalidUrl(_logger, Tag, apiurlstr);
+            return;
+        }
+        if (!Uri.TryCreate(eventurlstr, UriKind.Absolute, out var eventUrl))
+        {
+            Log.LogInvalidUrl(_logger, Tag, eventurlstr);
             return;
         }
 
@@ -88,25 +117,56 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         {
             try
             {
-                using var ws = CreateDefaultWebSocket();
-                var connTask = ws.ConnectAsync(url, stoppingToken);
-                using var connCtx = new ConnectionContext(ws, connTask);
-                ConnCtx = connCtx;
-                await connTask;
-
-                var lifecycle = new OneBotLifecycle(context.BotUin, "connect");
-                await SendJsonAsync(ws, lifecycle, stoppingToken);
-
-                var recvTask = ReceiveLoop(ws, stoppingToken);
-                if (_options.HeartBeatInterval > 0)
+                if (_options.UseUniversalClient)
                 {
-                    var heartbeatTask = HeartbeatLoop(ws, stoppingToken);
-                    await Task.WhenAll(recvTask, heartbeatTask);
+                    using var ws = CreateDefaultWebSocket();
+                    var connTask = ws.ConnectAsync(url, stoppingToken);
+                    using var connCtx = new UniversalConnectionContext(ws, connTask);
+                    ConnCtx = connCtx;
+                    await connTask;
+
+                    var lifecycle = new OneBotLifecycle(context.BotUin, "connect");
+                    await SendJsonAsync(ws, lifecycle, stoppingToken);
+
+                    var recvTask = ReceiveLoop(ws, stoppingToken);
+                    if (_options.HeartBeatInterval > 0)
+                    {
+                        var heartbeatTask = HeartbeatLoop(ws, stoppingToken);
+                        await Task.WhenAll(recvTask, heartbeatTask);
+                    }
+                    else
+                    {
+                        await recvTask;
+                    }
                 }
                 else
                 {
-                    await recvTask;
+                    using var wsApi = CreateDefaultWebSocket();
+                    var apiConnTask = wsApi.ConnectAsync(apiUrl, stoppingToken);
+
+                    using var wsEvent = CreateDefaultWebSocket();
+                    var eventConnTask = wsEvent.ConnectAsync(eventUrl, stoppingToken);
+
+                    var connTask = Task.WhenAll(apiConnTask, eventConnTask);
+                    ConnCtx = new GeneralConnectionContext(wsApi, wsEvent, connTask);
+
+                    await connTask;
+
+                    var lifecycle = new OneBotLifecycle(context.BotUin, "connect");
+                    await SendJsonAsync(wsEvent, lifecycle, stoppingToken);
+
+                    var recvTask = ReceiveLoop(wsApi, stoppingToken);
+                    if (_options.HeartBeatInterval > 0)
+                    {
+                        var heartbeatTask = HeartbeatLoop(wsEvent, stoppingToken);
+                        await Task.WhenAll(recvTask, heartbeatTask);
+                    }
+                    else
+                    {
+                        await recvTask;
+                    }
                 }
+
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
