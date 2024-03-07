@@ -1,3 +1,4 @@
+using System.Net.Sockets;
 using System.Net.WebSockets;
 using Lagrange.OneBot.Core.Network.Service;
 using Lagrange.OneBot.Core.Operation;
@@ -100,11 +101,15 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
             {
                 // ignore due to connection failed
             }
-            catch (Exception e)
-            {
-                Log.LogWebServiceSendFailed(logger, e, Tag);
+		    catch (WebSocketException e) when (e.InnerException is SocketException)
+		    {
+			    // ignore due to connection closed
+		    }
+		    catch (Exception e)
+                {
+                    Log.LogWebServiceSendFailed(logger, e, Tag);
+                }
             }
-        }
     }
 
     private static partial class Log
