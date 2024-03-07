@@ -27,8 +27,8 @@ public static class BotExt
     /// Submit the captcha of the url given by the <see cref="EventInvoker.OnBotCaptchaEvent"/>
     /// </summary>
     /// <returns>Whether the captcha is submitted successfully</returns>
-    public static bool SubmitCaptcha(this BotContext bot, string ticket, string randStr)
-        => bot.ContextCollection.Business.WtExchangeLogic.SubmitCaptcha(ticket, randStr);
+    public static bool SubmitCaptcha(this BotContext bot, string ticket)
+        => bot.ContextCollection.Business.WtExchangeLogic.SubmitCaptcha(ticket);
     
     /// <summary>
     /// Use this method to update keystore, so EasyLogin may be preformed next time by using this keystore
