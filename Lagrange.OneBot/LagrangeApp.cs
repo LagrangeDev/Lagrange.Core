@@ -84,7 +84,7 @@ public class LagrangeApp : IHost
 
             if (await Instance.FetchQrCode() is { } qrCode)
             {
-                QrCodeHelper.Output(qrCode.Url ?? "");
+                QrCodeHelper.Output(qrCode.Url ?? "", Configuration.GetValue<bool>("QrCode:ConsoleCompatibilityMode"));
                 await File.WriteAllBytesAsync($"qr-{Instance.BotUin}.png", qrCode.QrCode ?? Array.Empty<byte>(), cancellationToken);
                 
                 _ = Task.Run(Instance.LoginByQrCode, cancellationToken);
@@ -100,9 +100,7 @@ public class LagrangeApp : IHost
                 await Task.Run(() =>
                 {
                     var ticket = Console.ReadLine();
-                    var randomString = Console.ReadLine();
-
-                    if (ticket != null && randomString != null) Instance.SubmitCaptcha(ticket, randomString);
+                    if (ticket != null) Instance.SubmitCaptcha(ticket);
                 }, cancellationToken);
             };
 

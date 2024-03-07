@@ -82,7 +82,7 @@ public class BotKeystore
         internal string? UnusualCookies { get; set; }
         internal string? CaptchaUrl { get; set; }
         internal string? NewDeviceVerifyUrl { get; set; }
-        internal (string, string, string)? Captcha { get; set; }
+        internal (string, string)? Captcha { get; set; }
         
         public byte[]? TempPassword { get; set; }
         internal byte[]? NoPicSig { get; set; } // size: 16, may be from Tlv19, for Tlv16A
