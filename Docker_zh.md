@@ -29,7 +29,7 @@ docker run -id -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -
 ## 从旧版本迁移
 
 将`appsettings.json`, `device.json`, `keystore.json`, `lagrange-*.db` 放在你想要放的目录里.  
-例如 "/path-to-save"
+例如 `/path-to-data`
 
 删除 `/path-to-data/appsettings.json` 中的 `ConfigPath` 配置
 

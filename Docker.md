@@ -29,7 +29,7 @@ docker run -id -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -
 ## Migration from older versions
 
 Move `appsettings.json`, `device.json`, `keystore.json`, `lagrange-*.db` to the same folder where you want to put them.  
-For example /path-to-save
+For example `/path-to-data`
 
 Delete the `ConfigPath` configuration entry in `/path-to-data/appsettings.json`
 
