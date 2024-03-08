@@ -10,7 +10,7 @@
 
 基于 NTQQ协议 的实现，纯 C# 编写，源自 Konata.Core
 
-# 与 Docker 一起使用
+# 使用Docker
 
 ```bash
 # 8081 port for ForwardWebSocket
@@ -33,4 +33,4 @@ docker run -id -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -
 
 删除 `/path-to-data/appsettings.json` 中的 `ConfigPath` 配置
 
-按照 [Using with Docker](#using-with-docker) 启动容器
+按照 [上文](#使用Docker) 启动容器
