@@ -19,17 +19,17 @@
 ## 文档
 [Lagrange.Doc](https://lagrangedev.github.io/Lagrange.Doc/)
 
-[Docker中文文档](Docker_zh.md)
+[Docker guide](Docker.md) | [Docker 使用指南](Docker_zh.md)
 
-[English Readme](README_zh.md)
+[English Readme](README.md) | [中文 Readme](README_zh.md)
 
 ## 减缓新功能的实现
 
-Lagrange.Core已经实现了Linwenxuan05计划的几乎所有功能和任务，所以接下来对库的大部分改动将集中在repo中。
+Lagrange.Core 已经实现了 Linwenxuan05 计划的几乎所有功能和任务，所以接下来对库的大部分改动将集中在 repo 中。
 
 功能请求会被接受，但需要较长时间的等待。
 
-后续版本也会添加NTQQ支持的新功能。
+后续版本也会添加 NTQQ 支持的新功能。
 
 ## 免责声明
 
@@ -53,12 +53,12 @@ Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式
 
 | 协议 | 支持情况 | 登录类型                      | 支持情况 | 消息段          | 支持情况 |  操作               | 支持情况 | 事件              | 支持情况 |
 |----------|:-------:|---------------------------|:-------:|:----------------|:-------:|:--------------------|:-------:|:--------------------|:-------:|
-| Windows  |   🟢    | QrCode 扫码登录           |   🟢    | 图片            |   🟢    | ~~戳一戳~~          |   🔴    | 验证码             |   🟢    |
-| macOS    |   🟢    | Password 密码登录         |   🟢    | 文本 / At       |   🟢    | 撤回消息            |   🟢    | 机器人在线          |   🟢    |
-| Linux    |   🟢    | EasyLogin 快速登录        |   🟢    | 语音            |   🟢    | 退出群组            |   🟢    | 机器人离线          |   🟢    |
-|          |         | UnusalDevice<br/>Password |   🔴    | QQ黄脸表情      |   🟢    | ~~特殊头衔~~         |   🔴    | 消息事件           |   🟢    |
+| Windows  |   🟢    | 扫码登录           |   🟢    | 图片            |   🟢    | ~~戳一戳~~          |   🔴    | 验证码             |   🟢    |
+| macOS    |   🟢    | 密码登录         |   🟢    | 文本 / At       |   🟢    | 撤回消息            |   🟢    | 机器人在线          |   🟢    |
+| Linux    |   🟢    | EasyLogin        |   🟢    | 语音            |   🟢    | 退出群组            |   🟢    | 机器人离线          |   🟢    |
+|          |         | UnusalDevice<br/>Password |   🔴    | QQ 黄脸表情      |   🟢    | ~~特殊头衔~~         |   🔴    | 消息事件           |   🟢    |
 |          |         | UnusalDevice<br/>Easy     |   🟢    | Json           |   🟢    | 移除群成员           |   🟢    | ~~戳一戳事件~~      |   🔴    |
-|          |         | NewDeviceVerify 新设备验证 |   🔴    | Xml            |   🟢    | 禁言群成员           |   🟢    | 消息撤回事件        |   🟢    |
+|          |         | 新设备验证 |   🔴    | Xml            |   🟢    | 禁言群成员           |   🟢    | 消息撤回事件        |   🟢    |
 |          |         |                           |         | 合并转发        |   🟢    | 设置管理员           |   🟢    | 群成员减少          |   🟢    |
 |          |         |                           |         | 视频            |   🟡    | 发送添加好友请求     |   🟢    | 群成员增加          |   🟢    |
 |          |         |                           |         | 回复            |   🟢    | 发送加群请求         |   🟢    | 群管理员变动        |   🟢    |
@@ -207,7 +207,7 @@ Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式
 </Details>
 
 <Details>
-<Summary>事件Event</Summary>
+<Summary>事件</Summary>
 
 | 推送类型 | 事件名                      | 支持情况 |
 |----------|--------------------------------|:-------:|
@@ -256,14 +256,14 @@ Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式
 | 通信方式  | 支持情况 |
 |--------------------|:-------:|
 | [HTTP API]             |   🟢    |
-| [反向HTTP POST]        |   🟢    |
-| [正向WebSocket] |   🟢    |
-| [反向WebSocket] |   🟢    |
+| [HTTP POST]        |   🟢    |
+| [正向 WebSocket] |   🟢    |
+| [反向 WebSocket] |   🟢    |
 
 [HTTP API]: https://github.com/botuniverse/onebot-11/blob/master/communication/http.md
-[反向HTTP POST]: https://github.com/botuniverse/onebot-11/blob/master/communication/http-post.md
-[正向WebSocket]: https://github.com/botuniverse/onebot-11/blob/master/communication/ws.md
-[反向WebSocket]: https://github.com/botuniverse/onebot-11/blob/master/communication/ws-reverse.md
+[HTTP POST]: https://github.com/botuniverse/onebot-11/blob/master/communication/http-post.md
+[正向 WebSocket]: https://github.com/botuniverse/onebot-11/blob/master/communication/ws.md
+[反向 WebSocket]: https://github.com/botuniverse/onebot-11/blob/master/communication/ws-reverse.md
 
 </Details>
 
@@ -327,16 +327,16 @@ Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式
 - 如果此处密码为空，则使用扫码登录
 - 在通过扫码登录后，将 Uin 写回 appsettings.json 以使用 EasyLogin
 ## 登录前须知
-- 由于 NewDeviceLogin 尚未实现，建议首次使用二维码登录。
-- 建议使用 Linux 协议，因为仅提供了该协议的 SignServer
+- 由于新设备登录尚未实现，建议首次使用二维码登录。
+- 建议使用 Linux 协议，因为仅提供了该协议的签名服务器
 - 在使用扫码登录后，将 密码 和 uin 写入 appsettings.json
 
 ## 已知问题
 
-- ~~[ ] 目前尚未使用签名服务，因此容易登录失败，返回码可能为45，您可以通过重写 `Signature` 静态类来使用自己的签名服务。~~
+- ~~[ ] 目前尚未使用签名服务，因此容易登录失败，返回码可能为45，您可以通过重写 `Signature` 静态类以使用自己的签名服务。~~
 
 ~~感谢 KonataDev/TheSnowfield 提供的签名 API~~
 
-暂不提供签名API，您可能需要在某个地方找到它并在 `BotConfig` 继承 `SignProvider` 类的 `CustomSignProviderBotConfig`
+暂不提供签名 API，您可能需要在某个地方找到它并在 `BotConfig` 继承 `SignProvider` 类的 `CustomSignProviderBotConfig`
 
-- 如需使用Windows和macOS协议，你需要自行解决签名
+- 如需使用 Windows 和 macOS 协议，你需要自行解决签名

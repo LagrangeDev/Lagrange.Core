@@ -19,11 +19,9 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 ## Document
 [Lagrange.Doc](https://lagrangedev.github.io/Lagrange.Doc/)
 
-[Docker guide EN](Docker.md)
+[Docker guide](Docker.md) | [Docker 使用指南](Docker_zh.md)
 
-[Docker使用指南 ZH](Docker_zh.md)
-
-[中文Readme](README_zh.md)
+[English Readme](README.md) | [中文 Readme](README_zh.md)
 ## Out of Active Feature Requesting
 
 Lagrange.Core has completed nearly all the function and task scheduled by Linwenxuan05, so mostly enhance to the library would be concentrated to the repo for next.
