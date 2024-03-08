@@ -71,7 +71,7 @@ public sealed class LagrangeAppBuilder
         BotDeviceInfo deviceInfo;
         if (!File.Exists(deviceInfoPath))
         {
-            deviceInfo = BotDeviceInfo.GenerateInfo();
+            deviceInfo = BotDeviceInfo.GenerateInfo(config.Protocol);
             string json = JsonSerializer.Serialize(deviceInfo);
             string? directoryPath = Path.GetDirectoryName(deviceInfoPath);
             if (!string.IsNullOrEmpty(directoryPath))
@@ -82,7 +82,7 @@ public sealed class LagrangeAppBuilder
         }
         else
         {
-            deviceInfo = JsonSerializer.Deserialize<BotDeviceInfo>(File.ReadAllText(deviceInfoPath)) ?? BotDeviceInfo.GenerateInfo();
+            deviceInfo = JsonSerializer.Deserialize<BotDeviceInfo>(File.ReadAllText(deviceInfoPath)) ?? BotDeviceInfo.GenerateInfo(config.Protocol);
         }
 
         Services.AddSingleton(BotFactory.Create(config, deviceInfo, keystore));

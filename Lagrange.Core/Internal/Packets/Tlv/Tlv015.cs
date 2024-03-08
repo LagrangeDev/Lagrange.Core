@@ -4,8 +4,8 @@ using Lagrange.Core.Utility.Binary.Tlv.Attributes;
 
 namespace Lagrange.Core.Internal.Packets.Tlv;
 
-[Tlv(0x007)]
-internal class Tlv007 : TlvBody
+[Tlv(0x015)]
+internal class Tlv015 : TlvBody
 {
     [BinaryProperty] public uint u1 { get; set; }
 }

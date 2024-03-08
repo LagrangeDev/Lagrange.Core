@@ -13,6 +13,8 @@ namespace Lagrange.Core.Internal.Service.Login;
 [Service("wtlogin.exchange_emp", 10, 2)]
 internal class ExchangeEmpService : BaseService<ExchangeEmpEvent>
 {
+    private ExchangeEmp exchangeEmp;
+
     protected override bool Build(ExchangeEmpEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
@@ -21,6 +23,7 @@ internal class ExchangeEmpService : BaseService<ExchangeEmpEvent>
             case ExchangeEmpEvent.State.RefreshToken:
                 {
                     var packet = new ExchangeEmp0x000F(keystore, appInfo, device, 0); // Todo: ssoseq
+                    exchangeEmp = packet;
                     output = packet.ConstructPacket();
                     break;
                 }
@@ -38,7 +41,7 @@ internal class ExchangeEmpService : BaseService<ExchangeEmpEvent>
         out ExchangeEmpEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = BitConverter.GetBytes(input.Length, false).Concat(input).ToArray();
-        var tlvs = ExchangeEmp.Deserialize(new BinaryPacket(payload), keystore, out var loginCommand, out var state);
+        var tlvs = exchangeEmp.Deserialize(new BinaryPacket(payload), keystore, out var loginCommand, out var state);
 
         if (state == ExchangeEmp.State.Success)
         {

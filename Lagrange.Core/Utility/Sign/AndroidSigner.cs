@@ -6,6 +6,7 @@ using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Network;
 using ProtoBuf;
 using Lagrange.Core.Common;
+using Lagrange.Core.Utility.Generator;
 
 namespace Lagrange.Core.Utility.Sign;
 
@@ -29,8 +30,15 @@ internal class AndroidSigner : SignProvider
 
     public override byte[] Sign(BotDeviceInfo device, BotKeystore keystore, string cmd, uint seq, byte[] body)
     {
-        if (!WhiteListCommand.Contains(cmd)) return Array.Empty<byte>();
-        if (!Available || string.IsNullOrEmpty(Url)) return Array.Empty<byte>();
+        var signature = new ReserveFields
+        {
+            TraceParent = StringGen.GenerateTrace(),
+            Uid = keystore.Uid
+        };
+        var stream = new MemoryStream();
+        Serializer.Serialize(stream, signature);
+        if (!WhiteListCommand.Contains(cmd)) return stream.ToArray();
+        if (!Available || string.IsNullOrEmpty(Url)) return stream.ToArray();
 
         try
         {
@@ -48,22 +56,18 @@ internal class AndroidSigner : SignProvider
             var secDeviceToken = json?["data"]?["token"]?.ToString().UnHex();
             var secExtra = json?["data"]?["extra"]?.ToString().UnHex();
 
-            var signature = new ReserveFields
+            signature = new ReserveFields
             {
                 Flag = 1,
                 LocaleId = 2052,
                 Qimei = keystore.Session.QImei?.Q36,
                 NewconnFlag = 0,
-                TraceParent = "",
+                TraceParent = StringGen.GenerateTrace(),
                 Uid = keystore.Uid,
                 Imsi = 0,
                 NetworkType = 1,
                 IpStackType = 1,
                 MsgType = 0,
-                TransInfo = new()
-                {
-                    { "client_conn_seq" ,  "1709470839"}
-                },
                 SecInfo = new()
                 {
                     SecSig = secSig,
@@ -73,7 +77,7 @@ internal class AndroidSigner : SignProvider
                 NtCoreVersion = 100,
                 SsoIpOrigin = 3
             };
-            var stream = new MemoryStream();
+            stream = new MemoryStream();
             Serializer.Serialize(stream, signature);
             return stream.ToArray();
         }
@@ -83,7 +87,7 @@ internal class AndroidSigner : SignProvider
             _timer.Change(0, 5000);
 
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(AndroidSigner)}] Failed to get signature, using dummy signature");
-            return Array.Empty<byte>();
+            return stream.ToArray();
         }
     }
 

@@ -6,7 +6,6 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Packets.System;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Generator;
-using Lagrange.Core.Utility.Network;
 using ProtoBuf;
 
 namespace Lagrange.Core.Utility.Sign;
@@ -19,8 +18,15 @@ internal class MacSigner : SignProvider
     
     public override byte[] Sign(BotDeviceInfo device, BotKeystore keystore, string cmd, uint seq, byte[] body)
     {
-        if (!WhiteListCommand.Contains(cmd)) return Array.Empty<byte>();
-        if (!Available || string.IsNullOrEmpty(MacOsUrl)) return Array.Empty<byte>(); // Dummy signature
+        var signature = new ReserveFields
+        {
+            TraceParent = StringGen.GenerateTrace(),
+            Uid = keystore.Uid
+        };
+        var stream = new MemoryStream();
+        Serializer.Serialize(stream, signature);
+        if (!WhiteListCommand.Contains(cmd)) return stream.ToArray();
+        if (!Available || string.IsNullOrEmpty(MacOsUrl)) return stream.ToArray();
 
         try
         {
@@ -38,23 +44,13 @@ internal class MacSigner : SignProvider
             var secDeviceToken = json?["value"]?["token"]?.ToString().UnHex();
             var secExtra = json?["value"]?["extra"]?.ToString().UnHex();
 
-            var signature = new ReserveFields
+            signature.SecInfo = new()
             {
-                TraceParent = StringGen.GenerateTrace(),
-                Uid = keystore.Uid,
-                TransInfo = new()
-                {
-                    { "client_conn_seq" ,  "1709470839"}
-                },
-                SecInfo = new()
-                {
-                    SecSig = secSig,
-                    SecDeviceToken = Encoding.UTF8.GetString(secDeviceToken),
-                    SecExtra = secExtra,
-                },
-                NtCoreVersion = 101
+                SecSig = secSig,
+                SecDeviceToken = secDeviceToken == null ? null : Encoding.UTF8.GetString(secDeviceToken),
+                SecExtra = secExtra,
             };
-            var stream = new MemoryStream();
+            stream = new MemoryStream();
             Serializer.Serialize(stream, signature);
             return stream.ToArray();
         }
@@ -62,8 +58,8 @@ internal class MacSigner : SignProvider
         {
             Available = false;
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(MacSigner)}] Failed to get signature, using dummy signature");
-            
-            return Array.Empty<byte>(); // Dummy signature
+
+            return stream.ToArray();
         }
     }
 

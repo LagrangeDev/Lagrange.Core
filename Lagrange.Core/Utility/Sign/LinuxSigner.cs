@@ -30,8 +30,15 @@ internal class LinuxSigner : SignProvider
 
     public override byte[] Sign(BotDeviceInfo device, BotKeystore keystore, string cmd, uint seq, byte[] body)
     {
-        if (!WhiteListCommand.Contains(cmd)) return Array.Empty<byte>();
-        if (!Available || string.IsNullOrEmpty(Url)) return Array.Empty<byte>(); // Dummy signature
+        var signature = new ReserveFields
+        {
+            TraceParent = StringGen.GenerateTrace(),
+            Uid = keystore.Uid
+        };
+        var stream = new MemoryStream();
+        Serializer.Serialize(stream, signature);
+        if (!WhiteListCommand.Contains(cmd)) return stream.ToArray();
+        if (!Available || string.IsNullOrEmpty(Url)) return stream.ToArray();
 
         try
         {
@@ -46,22 +53,16 @@ internal class LinuxSigner : SignProvider
             var json = JsonSerializer.Deserialize<JsonObject>(response);
 
             var secSig = json?["value"]?["sign"]?.ToString().UnHex();
+            var secDeviceToken = json?["value"]?["token"]?.ToString().UnHex();
+            var secExtra = json?["value"]?["extra"]?.ToString().UnHex();
 
-            var signature = new ReserveFields
+            signature.SecInfo = new()
             {
-                TraceParent = StringGen.GenerateTrace(),
-                Uid = keystore.Uid,
-                TransInfo = new()
-                {
-                    { "client_conn_seq" ,  "1709470839"}
-                },
-                SecInfo = new()
-                {
-                    SecSig = secSig
-                },
-                NtCoreVersion = 101
+                SecSig = secSig,
+                SecDeviceToken = secDeviceToken == null ? null : Encoding.UTF8.GetString(secDeviceToken),
+                SecExtra = secExtra,
             };
-            var stream = new MemoryStream();
+            stream = new MemoryStream();
             Serializer.Serialize(stream, signature);
             return stream.ToArray();
         }
@@ -71,7 +72,7 @@ internal class LinuxSigner : SignProvider
             _timer.Change(0, 5000);
 
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(LinuxSigner)}] Failed to get signature, using dummy signature");
-            return Array.Empty<byte>(); // Dummy signature
+            return stream.ToArray(); // Dummy signature
         }
     }
 

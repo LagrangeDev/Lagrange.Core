@@ -13,7 +13,7 @@ internal class Tlv116 : TlvBody
     {
         MiscBitmap = appInfo.WtLoginSdk.MiscBitmap;
         SubSigMap = appInfo.WtLoginSdk.SubSigBitmap;
-        SubAppIdCount = (byte)appInfo.WtLoginSdk.SubAppIdList.Length;
+        SubAppIdCount = (byte)(appInfo.WtLoginSdk.SubAppIdList?.Length ?? 0);
         SubAppIdBody = new byte[SubAppIdCount * 4];
         for (var i = 0; i < SubAppIdCount; i++)
             BitConverter.GetBytes(appInfo.WtLoginSdk.SubAppIdList[i], false).CopyTo(SubAppIdBody, i * 4);

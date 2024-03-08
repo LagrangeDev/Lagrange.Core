@@ -18,16 +18,31 @@ internal class TransEmp0x0031 : TransEmp
             .WriteUshort(0, false)
             .WriteUlong(0, false)
             .WriteByte(0);
-        if (Keystore.Session.UnusualSign != null)
-            packet.WritePacket(new TlvPacket(0x011, new Tlv011(Keystore)));
 
-        packet.WritePacket(new TlvPacket(0x016, new Tlv016(AppInfo, Device)))
-            .WritePacket(new TlvPacket(0x01B, new Tlv01B()))
-            .WritePacket(new TlvPacket(0x01D, new Tlv01D(AppInfo)))
-            .WritePacket(new TlvPacket(0x033, new Tlv033(Device)))
-            .WritePacket(new TlvPacket(0x035, new Tlv035(AppInfo)))
-            .WritePacket(new TlvPacket(0x066, new Tlv066(AppInfo)))
-            .WritePacket(new TlvPacket(0x0D1, new Tlv0D1(AppInfo, Device)));
+
+        if (Keystore.Session.UnusualSign != null)
+        {
+            packet.WriteUshort(8, false)
+                .WritePacket(new TlvPacket(0x011, new Tlv011(Keystore)))
+                .WritePacket(new TlvPacket(0x016, new Tlv016(AppInfo, Device)))
+                .WritePacket(new TlvPacket(0x01B, new Tlv01B()))
+                .WritePacket(new TlvPacket(0x01D, new Tlv01D(AppInfo)))
+                .WritePacket(new TlvPacket(0x033, new Tlv033(Device)))
+                .WritePacket(new TlvPacket(0x035, new Tlv035(AppInfo)))
+                .WritePacket(new TlvPacket(0x066, new Tlv066(AppInfo)))
+                .WritePacket(new TlvPacket(0x0D1, new Tlv0D1(AppInfo, Device)));
+        }
+        else
+        {
+            packet.WriteUshort(7, false)
+                .WritePacket(new TlvPacket(0x016, new Tlv016(AppInfo, Device)))
+                .WritePacket(new TlvPacket(0x01B, new Tlv01B()))
+                .WritePacket(new TlvPacket(0x01D, new Tlv01D(AppInfo)))
+                .WritePacket(new TlvPacket(0x033, new Tlv033(Device)))
+                .WritePacket(new TlvPacket(0x035, new Tlv035(AppInfo)))
+                .WritePacket(new TlvPacket(0x066, new Tlv066(AppInfo)))
+                .WritePacket(new TlvPacket(0x0D1, new Tlv0D1(AppInfo, Device)));
+        }
 
         return packet;
     }
@@ -36,8 +51,6 @@ internal class TransEmp0x0031 : TransEmp
     {
         byte dummy = packet.ReadByte();
         signature = packet.ReadBytes(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
-        keystore.Session.QrSign = signature;
-
         return TlvPacker.ReadTlvCollections(packet);
     }
 }

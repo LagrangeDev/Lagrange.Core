@@ -39,11 +39,12 @@ internal class WtLoginEvent : ProtocolEvent
     public static WtLoginEvent Result(int result, string tag, string message)
         => new(result, tag, message);
 
-    public enum State : byte
+    public enum State : ushort
     {
         SubmitCaptcha = 2,
         SubmitSmsCode = 7,
         RequestSendSms = 8,
-        Login = 9
+        Login = 9,
+        LoginWithA2 = 9999,
     }
 }

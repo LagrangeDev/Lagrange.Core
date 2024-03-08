@@ -57,7 +57,7 @@ internal static class SsoPacker
                         .WriteString(packet.Command, Prefix.Uint32 | Prefix.WithPrefix)
                         .WriteBytes(keystore.Session.MsgCookie, Prefix.Uint32 | Prefix.WithPrefix)
                         .WriteString(device.System.Guid.ToByteArray().Hex(true), Prefix.Uint32 | Prefix.WithPrefix)
-                        .WriteBytes(keystore.Session.Ksid, Prefix.Uint32 | Prefix.WithPrefix)
+                        .WriteBytes(Array.Empty<byte>(), Prefix.Uint32 | Prefix.WithPrefix)
                         .WriteString(appInfo.CurrentVersion, Prefix.Uint16 | Prefix.WithPrefix) // Actually at wtlogin.trans_emp, this string is empty and only prefix 00 02 is given, but we can just simply ignore that situation
                         .WriteBytes(signature, Prefix.Uint32 | Prefix.WithPrefix), false, true);
                     break;

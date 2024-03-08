@@ -1,5 +1,5 @@
-#pragma warning disable CS8618
 namespace Lagrange.Core.Internal.Event.Login;
+#pragma warning disable CS8618
 
 internal class TransEmpEvent : ProtocolEvent
 {
@@ -9,51 +9,27 @@ internal class TransEmpEvent : ProtocolEvent
     public byte[] QrCode { get; }
     public uint Expiration { get; }
     public string Url { get; }
-    public string QrSig { get; }
-    public byte[] Signature { get; }
-    #endregion
-
-    #region TransEmp CMD0x12
-    public byte[]? TgtgtKey { get; }
-    public byte[]? TempPassword { get; }
-    public byte[]? NoPicSig { get; }
     #endregion
 
     private TransEmpEvent(State eventState) : base(true) => EventState = eventState;
 
-    private TransEmpEvent(int result) : base(result) => EventState = State.FetchQrCode;
+    private TransEmpEvent(int result) : base(result) { }
 
-    private TransEmpEvent(int result, byte[] qrCode, uint expiration, string url, string qrSig, byte[] signature) : base(result)
+    private TransEmpEvent(int result, byte[] qrCode, uint expiration, string url) : base(result)
     {
-        EventState = State.FetchQrCode;
-
         QrCode = qrCode;
         Expiration = expiration;
         Url = url;
-        QrSig = qrSig;
-        Signature = signature;
-    }
-
-    private TransEmpEvent(int result, byte[]? tgtgtKey, byte[]? tempPassword, byte[]? noPicSig) : base(result)
-    {
-        EventState = State.QueryResult;
-
-        TgtgtKey = tgtgtKey;
-        TempPassword = tempPassword;
-        NoPicSig = noPicSig;
     }
 
     public static TransEmpEvent Create(State eventState) => new(eventState);
 
     public static TransEmpEvent Result(int result) => new(result);
 
-    public static TransEmpEvent Result(byte[] qrCode, uint expiration, string url, string qrSig, byte[] signature) =>
-        new(0, qrCode, expiration, url, qrSig, signature);
+    public static TransEmpEvent Result(byte[] qrCode, uint expiration, string url) =>
+        new(0, qrCode, expiration, url);
 
-    public static TransEmpEvent Result(int result, byte[]? tgtgtKey, byte[]? tempPassword, byte[]? noPicSig) =>
-        new(result, tgtgtKey, tempPassword, noPicSig);
-
-    public enum State : byte
+    public enum State : ushort
     {
         FetchQrCode = 0x31,
         QueryResult = 0x12

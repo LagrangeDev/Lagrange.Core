@@ -26,7 +26,7 @@ internal abstract class ExchangeEmp : WtLoginBase
         return packet;
     }
 
-    public static Dictionary<ushort, TlvBody> Deserialize(BinaryPacket packet, BotKeystore keystore, out ushort exchangeCommand, out State state)
+    public Dictionary<ushort, TlvBody> Deserialize(BinaryPacket packet, BotKeystore keystore, out ushort exchangeCommand, out State state)
     {
         packet = DeserializePacket(keystore, packet);
 

@@ -38,8 +38,8 @@ internal class ExchangeEmpEvent : ProtocolEvent
 
     public static ExchangeEmpEvent Result(int result, string tag, string message) => new(result, tag, message);
 
-    public enum State : byte
+    public enum State : ushort
     {
-        RefreshToken = 15
+        RefreshToken = 0x0F
     }
 }

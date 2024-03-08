@@ -1,6 +1,7 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Binary.Tlv;
+using Lagrange.Core.Utility.Crypto;
 using static Lagrange.Core.Utility.Binary.BinaryPacket;
 
 namespace Lagrange.Core.Internal.Packets.Login.WtLogin;
@@ -15,7 +16,7 @@ internal abstract class WtLoginBase
     protected readonly BotAppInfo AppInfo;
     protected readonly BotDeviceInfo Device;
 
-    protected readonly TlvPacker TlvPacker;
+    protected readonly EcdhImpl EcdhImpl;
 
     protected WtLoginBase(string command, ushort cmd, byte cmdVar, byte pubId, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device)
     {
@@ -26,6 +27,20 @@ internal abstract class WtLoginBase
         Keystore = keystore;
         AppInfo = appInfo;
         Device = device;
+
+        switch (AppInfo.Os)
+        {
+            case "Android":
+                EcdhImpl = new EcdhImpl(EcdhImpl.CryptMethod.Prime256V1);
+                break;
+            case "Linux":
+            case "Mac":
+            case "Windows":
+                EcdhImpl = new EcdhImpl(EcdhImpl.CryptMethod.Secp192K1);
+                break;
+            default:
+                throw new Exception($"Unknown os: {AppInfo.Os}");
+        }
     }
 
     public BinaryPacket ConstructPacket()
@@ -35,11 +50,15 @@ internal abstract class WtLoginBase
         switch (Command)
         {
             case "wtlogin.login":
+            case "wtlogin.trans_emp":
                 {
+                    EcdhImpl.GenerateShared(AppInfo.WtLoginSdk.PubKey, true);
                     var body = ConstructBody();
-                    var encrypt = Keystore.PrimeImpl.Encrypt(body.ToArray());
+                    var encrypt = Keystore.TeaImpl.Encrypt(body.ToArray(), EcdhImpl.ShareKey);
 
-                    packet.Barrier(typeof(ushort), () => new BinaryPacket()
+                    packet.Barrier(typeof(ushort), () =>
+                    {
+                        var writer = new BinaryPacket()
                         .WriteUshort(8001, false) // ver
                         .WriteUshort(Cmd, false) // cmd: [wtlogin.login, wtlogin.exchange_emp]: 2064, wtlogin.trans_emp: 2066
                         .WriteUshort(Keystore.Session.Sequence, false) // unique wtLoginSequence for wtlogin packets only, should be stored in KeyStore
@@ -50,14 +69,27 @@ internal abstract class WtLoginBase
                         .WriteByte(PubId) // pubId (android: 2? other 19)
                         .WriteUshort(0, false) // insId
                         .WriteUshort(AppInfo.AppClientVersion, false) // cliType
-                        .WriteUint(0, false) // retryTime
-                        .WriteByte((byte)(AppInfo.Os == "Android" ? 2 : 1)) // const (android: 2)
-                        .WriteByte(1) // const
-                        .WriteBytes(Keystore.Stub.RandomKey.AsSpan()) // randKey
-                        .WriteUshort(0x0131, false) // android: 0x0131 other: 0
-                        .WriteUshort(0x0001, false) // public_key_ver(custom: 0x0001, default: 0x0002)
-                        .WriteBytes(AppInfo.Os == "Android" ? Keystore.PrimeImpl.GetPublicKey(false) : Keystore.PrimeImpl.GetPublicKey(true), Prefix.Uint16 | Prefix.LengthOnly) // pubKey
-                        .WriteBytes(encrypt.AsSpan()), false, true, 2);
+                        .WriteUint(0, false); // retryTime
+                        if (AppInfo.Os == "Android")
+                        {
+                            writer.WriteByte(2) // const
+                                .WriteByte(1) // const
+                                .WriteBytes(Keystore.Stub.RandomKey, Prefix.None) // randKey
+                                .WriteUshort(0x0131, false) // android: 0x0131 other: 0
+                                .WriteUshort(0x0001, false) // public_key_ver(custom: 0x0001, default: 0x0002)
+                                .WriteBytes(EcdhImpl.GetPublicKey(false), Prefix.Uint16 | Prefix.LengthOnly); // pubKey
+                        }
+                        else
+                        {
+                            writer.WriteByte(1) // const
+                                .WriteByte(1) // const
+                                .WriteBytes(Keystore.Stub.RandomKey, Prefix.None) // randKey
+                                .WriteUshort(0x0102, false)
+                                .WriteBytes(AppInfo.Os == "Android" ? EcdhImpl.GetPublicKey(false) : EcdhImpl.GetPublicKey(true), Prefix.Uint16 | Prefix.LengthOnly); // pubKey
+                        }
+                        writer.WriteBytes(encrypt, Prefix.None);
+                        return writer;
+                    }, false, true, 2);
                     break;
                 }
             case "wtlogin.exchange_emp":
@@ -78,32 +110,7 @@ internal abstract class WtLoginBase
                         .WriteUshort(AppInfo.AppClientVersion, false) // cliType
                         .WriteUint(0, false) // retryTime
                         .WriteBytes(Keystore.Session.WtSessionTicket, Prefix.Uint16 | Prefix.LengthOnly) // pubKey
-                        .WriteBytes(encrypt.AsSpan()), false, true, 2);
-                    break;
-                }
-            case "wtlogin.trans_emp":
-                {
-                    var body = ConstructBody();
-                    var encrypt = Keystore.PrimeImpl.Encrypt(body.ToArray());
-
-                    packet.Barrier(typeof(ushort), () => new BinaryPacket()
-                        .WriteUshort(8001, false) // ver
-                        .WriteUshort(Cmd, false) // cmd: [wtlogin.login, wtlogin.exchange_emp]: 2064, wtlogin.trans_emp: 2066
-                        .WriteUshort(Keystore.Session.Sequence, false) // unique wtLoginSequence for wtlogin packets only, should be stored in KeyStore
-                        .WriteUint(Keystore.Uin, false) // uin, 0 for wtlogin.trans_emp
-                        .WriteByte(3) // extVer
-                        .WriteByte(CmdVer) // cmdVer: [wtlogin.trans_emp, wtlogin.login]: 135, wtlogin.exchange_emp: 69
-                        .WriteUint(0, false) // actually unknown const 0
-                        .WriteByte(PubId) // pubId (android: 2? other 19)
-                        .WriteUshort(0, false) // insId
-                        .WriteUshort(AppInfo.AppClientVersion, false) // cliType
-                        .WriteUint(0, false) // retryTime
-                        .WriteByte((byte)(AppInfo.Os == "Android" ? 2 : 1)) // const (android: 2)
-                        .WriteByte(1) // const
-                        .WriteBytes(Keystore.Stub.RandomKey.AsSpan()) // randKey
-                        .WriteUshort(0x0102, false)
-                        .WriteBytes(AppInfo.Os == "Android" ? Keystore.PrimeImpl.GetPublicKey(false) : Keystore.PrimeImpl.GetPublicKey(true), Prefix.Uint16 | Prefix.LengthOnly) // pubKey
-                        .WriteBytes(encrypt.AsSpan()), false, true, 2);
+                        .WriteBytes(encrypt, Prefix.None), false, true, 2);
                     break;
                 }
             default: throw new Exception($"Unknown wtlogin cmd: {Command}");
@@ -113,7 +120,7 @@ internal abstract class WtLoginBase
         return packet;
     }
 
-    protected static BinaryPacket DeserializePacket(BotKeystore keystore, BinaryPacket packet)
+    protected BinaryPacket DeserializePacket(BotKeystore keystore, BinaryPacket packet)
     {
         uint packetLength = packet.ReadUint(false);
         if (packet.ReadByte() != 0x02) return new BinaryPacket(); // packet header
@@ -136,7 +143,7 @@ internal abstract class WtLoginBase
                     if (state == 180)
                         decrypted = new BinaryPacket(keystore.TeaImpl.Decrypt(encrypted, keystore.Stub.RandomKey));
                     else
-                        decrypted = new BinaryPacket(keystore.PrimeImpl.Decrypt(encrypted));
+                        decrypted = new BinaryPacket(keystore.TeaImpl.Decrypt(encrypted, EcdhImpl.ShareKey));
                     break;
                 }
             case 3:
@@ -147,9 +154,11 @@ internal abstract class WtLoginBase
                 }
             case 4:
                 {
-                    var bobPublic = packet.ReadBytes(Prefix.Uint16);
-                    keystore.PrimeImpl.GenerateShared(bobPublic);
-                    decrypted = new BinaryPacket(keystore.PrimeImpl.Decrypt(encrypted));
+                    decrypted = new BinaryPacket(keystore.TeaImpl.Decrypt(encrypted, EcdhImpl.ShareKey));
+
+                    var bobPublic = decrypted.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
+                    EcdhImpl.GenerateShared(bobPublic, true);
+                    decrypted = new BinaryPacket(keystore.TeaImpl.Decrypt(decrypted.ReadBytes((int)decrypted.Remaining), EcdhImpl.ShareKey));
                     break;
                 }
             default:

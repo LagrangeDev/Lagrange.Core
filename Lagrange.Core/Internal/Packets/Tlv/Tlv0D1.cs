@@ -28,7 +28,7 @@ internal class Tlv0D1 : TlvBody
 
 [Tlv(0x0D1, true)]
 [ProtoContract]
-internal class TlvQrCodeD1Resp : TlvBody
+internal class Tlv0D1Response : TlvBody
 {
     [ProtoMember(2)] public string Url { get; set; }
     

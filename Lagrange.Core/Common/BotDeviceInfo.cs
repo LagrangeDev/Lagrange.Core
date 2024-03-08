@@ -1,5 +1,4 @@
 using Lagrange.Core.Utility.Generator;
-using Lagrange.Core.Utils.Tencent;
 
 #pragma warning disable CS8618
 
@@ -14,9 +13,9 @@ public class BotDeviceInfo
 
         public string Brand { get; set; }
 
-        public string Imei { get; set; }
+        public string Imei { get; set; } = "";
 
-        public string Imsi { get; set; }
+        public string Imsi { get; set; } = "";
 
         public string BaseBand { get; set; }
 
@@ -35,7 +34,7 @@ public class BotDeviceInfo
 
         public string BootLoader { get; set; }
 
-        public string AndroidId { get; set; }
+        public string AndroidId { get; set; } = "";
 
         public string Incremental { get; set; }
 
@@ -86,7 +85,7 @@ public class BotDeviceInfo
 
     public NetworkInfo Network { get; set; }
 
-    public static BotDeviceInfo GenerateInfo() => new()
+    public static BotDeviceInfo GenerateInfo(Protocols protocol) => new()
     {
         Model = new()
         {
@@ -112,18 +111,39 @@ public class BotDeviceInfo
             Apn = "wifi"
         },
 
-        System = new()
+        System = protocol switch
         {
-            OsType = "android",
-            OsVersion = "14",
-            Version = "V816.0.24.2.20.DEV",
-            BootId = "REL",
-            BootLoader = "V816.0.24.2.20.DEV",
-            AndroidId = StringGen.GenerateHex(16),
-            Incremental = StringGen.GenerateHex(16),
-            InnerVer = "",
-            FingerPrint = Guid.NewGuid().ToString(),
-            Guid = Guid.NewGuid()
+            Protocols.Linux => new()
+            {
+                OsType = "Ubuntu 22.04",
+                OsVersion = "22.04",
+                Guid = Guid.NewGuid()
+            },
+            Protocols.MacOs => new()
+            {
+                OsType = "MacOs",
+                OsVersion = "",
+                Guid = Guid.NewGuid()
+            },
+            Protocols.Windows => new()
+            {
+                OsType = "Windows 10.0.19042",
+                OsVersion = "10.0.19042.0",
+                Guid = Guid.NewGuid()
+            },
+            Protocols.AndroidPhone | Protocols.AndroidPad => new()
+            {
+                OsType = "android",
+                OsVersion = "14",
+                Version = "V816.0.24.2.20.DEV",
+                BootId = "REL",
+                BootLoader = "V816.0.24.2.20.DEV",
+                AndroidId = StringGen.GenerateHex(16),
+                Incremental = StringGen.GenerateHex(16),
+                InnerVer = "",
+                FingerPrint = Guid.NewGuid().ToString(),
+                Guid = Guid.NewGuid()
+            }
         },
     };
 }

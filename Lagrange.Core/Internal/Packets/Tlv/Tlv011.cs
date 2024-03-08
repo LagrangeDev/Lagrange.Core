@@ -10,7 +10,7 @@ internal class Tlv011 : TlvBody
 {
     public Tlv011(BotKeystore keystore)
     {
-        UnusualSign = keystore.Session.UnusualSign ?? throw new InvalidOperationException();
+        UnusualSign = keystore.Session.UnusualSign!;
     }
 
     [BinaryProperty(Prefix.None)] public byte[] UnusualSign { get; set; }

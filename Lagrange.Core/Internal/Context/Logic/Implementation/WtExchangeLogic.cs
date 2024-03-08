@@ -7,6 +7,7 @@ using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Packets.Login.NTLogin;
 using Lagrange.Core.Internal.Packets.Login.WtLogin.Entity;
 using Lagrange.Core.Internal.Service;
+using Lagrange.Core.Utility.Crypto;
 using Lagrange.Core.Utility.Network;
 
 // ReSharper disable AsyncVoidLambda
@@ -236,10 +237,10 @@ internal class WtExchangeLogic : LogicBase
 
                                 Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => await QueryTransEmpState(async e =>
                                 {
-                                    if (e.TempPassword != null)
+                                    if (e.ResultCode == 0)
                                     {
-                                        Collection.Keystore.Session.TempPassword = e.TempPassword;
-                                        return await DoUnusualEasyLogin();
+                                        if (await DoWtLogin())
+                                            return await DoUnusualEasyLogin();
                                     }
 
                                     return false;
@@ -250,10 +251,18 @@ internal class WtExchangeLogic : LogicBase
                             }
                         default:
                             {
-                                Collection.Log.LogWarning(Tag, $"Fast Login Failed with code {easyLoginResult[0].ResultCode}, trying to Login by Password...");
+                                if (Collection.Keystore.PasswordMd5 != null && Collection.Keystore.PasswordMd5.Length == 16)
+                                {
+                                    Collection.Log.LogWarning(Tag, $"Fast Login Failed with code {easyLoginResult[0].ResultCode}, trying to Login by Password...");
 
-                                Collection.Keystore.Session.TempPassword = null; // clear temp password
-                                return await LoginByPassword(); // try password login
+                                    Collection.Keystore.Session.TempPassword = null; // clear temp password
+                                    return await LoginByPassword(); // try password login
+                                }
+                                else
+                                {
+                                    Collection.Log.LogWarning(Tag, $"Fast Login Failed with code {easyLoginResult[0].ResultCode}");
+                                    return false;
+                                }
                             }
                     }
                 }
@@ -377,7 +386,7 @@ internal class WtExchangeLogic : LogicBase
         Collection.Log.LogInfo(Tag, "Doing Login...");
         Collection.Keystore.Session.Sequence = 0;
 
-        var loginEvent = WtLoginEvent.Create(WtLoginEvent.State.Login);
+        var loginEvent = WtLoginEvent.Create(WtLoginEvent.State.LoginWithA2);
         var result = await Collection.Business.SendEvent(loginEvent);
 
         if (result.Count != 0)
@@ -401,12 +410,12 @@ internal class WtExchangeLogic : LogicBase
 
     private async Task QueryTransEmpState(Func<TransEmpEvent, Task<bool>> callback)
     {
-        if (Collection.Keystore.Session.QrString != null)
+        if (Collection.Keystore.Session.QrSig != null)
         {
             var request = new NTLoginHttpRequest
             {
                 Appid = Collection.AppInfo.AppId,
-                Qrsig = Collection.Keystore.Session.QrString,
+                Qrsig = Collection.Keystore.Session.QrSig,
                 FaceUpdateTime = 0
             };
 
@@ -504,7 +513,7 @@ internal class WtExchangeLogic : LogicBase
         var result = await Collection.Business.SendEvent(unusualEvent);
         return result.Count != 0 && ((NewDeviceLoginEvent)result[0]).Success;
     }
-    
+
     public bool SubmitCaptcha(string ticket, string randStr) => _captchaTask?.TrySetResult((ticket, randStr)) ?? false;
     public bool SubmitSmsCode(string smsCode) => _newDeviceTask?.TrySetResult(smsCode) ?? false;
 }

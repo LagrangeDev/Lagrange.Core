@@ -55,7 +55,7 @@ internal static class Program
         */
 
 
-        
+
         if (keyStore == null)
         {
             Console.WriteLine("KeyStore is not found");
@@ -83,16 +83,16 @@ internal static class Program
             SaveDeviceInfo(bot.UpdateDeviceInfo());
             SaveKeystore(bot.UpdateKeystore());
         };
-        await new WtLoginTest().LoginByQrCode(bot);
 
         if (keyStore.Session.TempPassword == null)
         {
+            await new WtLoginTest().LoginByQrCode(bot);
             Console.WriteLine("Please login by QrCode first");
             return;
         }
 
         await new NTLoginTest().LoginByPassword(bot);
-        
+
 
         /*
         bot.Invoker.OnGroupInvitationReceived += (_, @event) =>
@@ -121,11 +121,11 @@ internal static class Program
         try
         {
             var text = File.ReadAllText("Test/DeviceInfo.json");
-            return JsonSerializer.Deserialize<BotDeviceInfo>(text) ?? BotDeviceInfo.GenerateInfo();
+            return JsonSerializer.Deserialize<BotDeviceInfo>(text) ?? BotDeviceInfo.GenerateInfo(Protocols.Linux);
         }
         catch
         {
-            return BotDeviceInfo.GenerateInfo();
+            return BotDeviceInfo.GenerateInfo(Protocols.Linux);
         }
     }
 

@@ -14,6 +14,8 @@ namespace Lagrange.Core.Internal.Service.Login;
 [Service("wtlogin.login", 10, 2)]
 internal class WtLoginService : BaseService<WtLoginEvent>
 {
+    private Packets.Login.WtLogin.Entity.Login login;
+
     protected override bool Build(WtLoginEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
@@ -22,24 +24,35 @@ internal class WtLoginService : BaseService<WtLoginEvent>
             case WtLoginEvent.State.SubmitCaptcha:
                 {
                     var packet = new Login0x0002(keystore, appInfo, device);
+                    login = packet;
                     output = packet.ConstructPacket();
                     break;
                 }
             case WtLoginEvent.State.SubmitSmsCode:
                 {
                     var packet = new Login0x0007(keystore, appInfo, device);
+                    login = packet;
                     output = packet.ConstructPacket();
                     break;
                 }
             case WtLoginEvent.State.RequestSendSms:
                 {
                     var packet = new Login0x0008(keystore, appInfo, device);
+                    login = packet;
                     output = packet.ConstructPacket();
                     break;
                 }
             case WtLoginEvent.State.Login:
                 {
                     var packet = new Login0x0009(keystore, appInfo, device, 0); // Todo: ssoseq
+                    login = packet;
+                    output = packet.ConstructPacket();
+                    break;
+                }
+            case WtLoginEvent.State.LoginWithA2:
+                {
+                    var packet = new Login0x0009V2(keystore, appInfo, device);
+                    login = packet;
                     output = packet.ConstructPacket();
                     break;
                 }
@@ -57,7 +70,7 @@ internal class WtLoginService : BaseService<WtLoginEvent>
         out WtLoginEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = BitConverter.GetBytes(input.Length, false).Concat(input).ToArray();
-        var tlvs = Packets.Login.WtLogin.Entity.Login.Deserialize(new BinaryPacket(payload), keystore, out var loginCommand, out var state);
+        var tlvs = login.Deserialize(new BinaryPacket(payload), keystore, out var loginCommand, out var state);
 
         if (state == Packets.Login.WtLogin.Entity.Login.State.Success)
         {
@@ -67,66 +80,69 @@ internal class WtLoginService : BaseService<WtLoginEvent>
             var decrypted = keystore.TeaImpl.Decrypt(tlv119.EncryptedTlv, keystore.Stub.TgtgtKey);
             tlvs = TlvPacker.ReadTlvCollections(new BinaryPacket(decrypted));
 
+            if (tlvs.TryGetValue(0x108, out var tlv108))
+                keystore.Session.Ksid = ((Tlv108Response)tlv108).Ksid;
             var tlv16A = (Tlv16AResponse)tlvs[0x16A];
+            keystore.Session.NoPicSig = tlv16A.NoPicSig;
             var tlv106 = (Tlv106Response)tlvs[0x106];
+            keystore.Session.TempPassword = tlv106.TempPassword;
             var tlv10C = (Tlv10C)tlvs[0x10C];
+            keystore.Session.Tgtgt = tlv10C.Tgtgt;
             var tlv10A = (Tlv10A)tlvs[0x10A];
+            keystore.Session.Tgt = tlv10A.Tgt;
             var tlv10D = (Tlv10D)tlvs[0x10D];
+            keystore.Session.TgtKey = tlv10D.TgtKey;
             //var tlv114 = (Tlv114)tlvs[0x114];
             var tlv10E = (Tlv10E)tlvs[0x10E];
+            keystore.Session.StKey = tlv10E.StKey;
             var tlv103 = (Tlv103)tlvs[0x103];
-            var tlv133 = (Tlv133)tlvs[0x133];
-            var tlv134 = (Tlv134)tlvs[0x134];
+            keystore.Session.StWebSig = tlv103.StWebSig;
+            if (tlvs.TryGetValue(0x133, out var tlv133))
+                keystore.Session.WtSessionTicket = ((Tlv133)tlv133).WtSessionTicket;
+            if (tlvs.TryGetValue(0x134, out var tlv134))
+                keystore.Session.WtSessionTicketKey = ((Tlv134)tlv134).WtSessionTicketKey;
             //var tlv528 = (Tlv528)tlvs[0x528];
-            //var tlv322 = (Tlv322)tlvs[0x322];
+            if (tlvs.TryGetValue(0x322, out var tlv322))
+                keystore.Session.DeviceToken = ((Tlv322)tlv322).DeviceToken;
             //var tlv11D = (Tlv11D)tlvs[0x11D];
             //var tlv11F = (Tlv11F)tlvs[0x11F];
             //var Tlv138 = (Tlv138)tlvs[0x138];
             var tlv11A = (Tlv11A)tlvs[0x11A];
-            //var tlv522 = (Tlv522)tlvs[0x522];
-            //var tlv537 = (Tlv537)tlvs[0x537];
-            //var tlv550 = (Tlv550)tlvs[0x550];
-            //var tlv203 = (Tlv203)tlvs[0x203];
-            var tlv120 = (Tlv120)tlvs[0x120];
-            var tlv16D = (Tlv16D)tlvs[0x16D];
-            var tlv512 = (Tlv512)tlvs[0x512];
-            var tlv305 = (Tlv305)tlvs[0x305];
-            var tlv143 = (Tlv143)tlvs[0x143];
-            //var tlv118 = (Tlv118)tlvs[0x118];
-            var tlv543 = (Tlv543)tlvs[0x543];
-            //var tlv163 = (Tlv163)tlvs[0x163];
-            //var tlv138 = (Tlv138)tlvs[0x138];
-            //var tlv130 = (Tlv130)tlvs[0x130];
-
-
-            keystore.Session.NoPicSig = tlv16A.NoPicSig;
-            keystore.Session.TempPassword = tlv106.TempPassword;
-            keystore.Session.Tgtgt = tlv10C.Tgtgt;
-            keystore.Session.Tgt = tlv10A.Tgt;
-            keystore.Session.TgtKey = tlv10D.TgtKey;
-            keystore.Session.StKey = tlv10E.StKey;
-            keystore.Session.StWebSig = tlv103.StWebSig;
-            keystore.Session.WtSessionTicket = tlv133.WtSessionTicket;
-            keystore.Session.WtSessionTicketKey = tlv134.WtSessionTicketKey;
-            //keystore.Session.DeviceToken = tlv322.DeviceToken;
             keystore.Info = new()
             {
                 Age = tlv11A.Age,
                 Gender = tlv11A.Gender,
                 Name = tlv11A.Nickname
             };
-            keystore.Session.Skey = tlv120.Skey;
+            //var tlv522 = (Tlv522)tlvs[0x522];
+            //var tlv537 = (Tlv537)tlvs[0x537];
+            //var tlv550 = (Tlv550)tlvs[0x550];
+            //var tlv203 = (Tlv203)tlvs[0x203];
+            if (tlvs.TryGetValue(0x120, out var tlv120))
+                keystore.Session.Skey = ((Tlv120)tlv120).Skey;
+            var tlv16D = (Tlv16D)tlvs[0x16D];
             keystore.Session.SuperKey = tlv16D.SuperKey;
-            var tmp = new BinaryPacket(tlv512.DomainBody);
-            for (int i = 0; i < tlv512.DomainCount; i++)
+            if (tlvs.TryGetValue(0x512, out var tlv512))
             {
-                var host = tmp.ReadString(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
-                var pskey = tmp.ReadString(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
-                keystore.Session.PSkey[host] = pskey;
+                var tmp = new BinaryPacket(((Tlv512)tlv512).DomainBody);
+                for (int i = 0; i < ((Tlv512)tlv512).DomainCount; i++)
+                {
+                    var host = tmp.ReadString(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
+                    var pskey = tmp.ReadString(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
+                    keystore.Session.PSkey[host] = pskey;
+                }
+
             }
+            var tlv305 = (Tlv305)tlvs[0x305];
             keystore.Session.D2Key = tlv305.D2Key;
+            var tlv143 = (Tlv143)tlvs[0x143];
             keystore.Session.D2 = tlv143.D2;
+            //var tlv118 = (Tlv118)tlvs[0x118];
+            var tlv543 = (Tlv543)tlvs[0x543];
             keystore.Uid = tlv543.Layer1.Layer2.Uid;
+            //var tlv163 = (Tlv163)tlvs[0x163];
+            //var tlv138 = (Tlv138)tlvs[0x138];
+            //var tlv130 = (Tlv130)tlvs[0x130];
 
             output = WtLoginEvent.Result(tlv11A.Age, tlv11A.Gender, tlv11A.Nickname);
             extraEvents = null;

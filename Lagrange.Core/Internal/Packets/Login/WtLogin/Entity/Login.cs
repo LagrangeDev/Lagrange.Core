@@ -26,7 +26,7 @@ internal abstract class Login : WtLoginBase
         return packet;
     }
 
-    public static Dictionary<ushort, TlvBody> Deserialize(BinaryPacket packet, BotKeystore keystore, out ushort loginCommand, out State state)
+    public Dictionary<ushort, TlvBody> Deserialize(BinaryPacket packet, BotKeystore keystore, out ushort loginCommand, out State state)
     {
         packet = DeserializePacket(keystore, packet);
 

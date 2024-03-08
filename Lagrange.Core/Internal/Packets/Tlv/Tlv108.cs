@@ -14,3 +14,9 @@ internal class Tlv108 : TlvBody
     }
     [BinaryProperty(Prefix.None)] public byte[] Ksid { get; set; }
 }
+
+[Tlv(0x108, true)]
+internal class Tlv108Response : TlvBody
+{
+    [BinaryProperty(Prefix.None)] public byte[] Ksid { get; set; }
+}

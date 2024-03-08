@@ -17,9 +17,10 @@ internal class TransEmp0x0012 : TransEmp
         {
             return new BinaryPacket()
                 .WriteBytes(Keystore.Session.QrSign, BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly)
-                .WriteUlong(0, false) // const 0
-                .WriteUint(0, false) // const 0
-                .WriteByte(0); // const 0
+                .WriteUshort(0, false)
+                .WriteUlong(0, false)
+                .WriteByte(0)
+                .WriteUshort(0);
         }
 
         throw new Exception("QrSign is null");

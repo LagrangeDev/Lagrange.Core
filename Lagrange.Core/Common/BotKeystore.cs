@@ -13,14 +13,23 @@ namespace Lagrange.Core.Common;
 [Serializable]
 public class BotKeystore
 {
-    public BotKeystore() : this(0, "") { }
+    /// <summary>
+    /// Create the Bot keystore for QrCode login
+    /// </summary>
+    public BotKeystore()
+    {
+        TeaImpl = new TeaImpl();
+
+        Stub = new KeyCollection();
+        Session = new WtLoginSession();
+    }
 
     /// <summary>
     /// Create the Bot keystore
     /// </summary>
-    /// <param name="uin">Set this field 0 to use QrCode Login</param>
+    /// <param name="uin">QQ</param>
     /// <param name="password">Password Raw</param>
-    internal BotKeystore(uint uin, string password)
+    internal BotKeystore(uint uin, string password) : this()
     {
         Uin = uin;
         PasswordMd5 = Encoding.UTF8.GetBytes(password).Md5().UnHex();
@@ -30,13 +39,6 @@ public class BotKeystore
             .WriteUint(uin, false)
             .ToArray();
         PasswordWithSalt = tmp.Md5().UnHex();
-
-        Stub = new KeyCollection();
-        Session = new WtLoginSession();
-
-        //SecpImpl = new EcdhImpl(EcdhImpl.CryptMethod.Secp192K1);
-        PrimeImpl = new EcdhImpl(EcdhImpl.CryptMethod.Prime256V1);
-        TeaImpl = new TeaImpl();
     }
 
     public uint Uin { get; set; }
@@ -46,8 +48,6 @@ public class BotKeystore
     public byte[] PasswordMd5 { get; set; }
     public byte[] PasswordWithSalt { get; set; }
 
-    //internal EcdhImpl SecpImpl { get; set; }
-    internal EcdhImpl PrimeImpl { get; set; }
     internal TeaImpl TeaImpl { get; set; }
 
     internal KeyCollection Stub { get; }
@@ -77,8 +77,8 @@ public class BotKeystore
         public byte[] D2Key { get; set; } = Array.Empty<byte>(); // from tlv305, size: 16
         public byte[] DeviceToken { get; set; } = Array.Empty<byte>(); // from tlv322, size: 16
 
-        internal string Skey { get; set; } // from tlv120, size: 10
-        internal string SuperKey { get; set; } // from tlv16D, size: 44
+        internal string Skey { get; set; } = ""; // from tlv120, size: 10
+        internal string SuperKey { get; set; } = ""; // from tlv16D, size: 44
         internal Dictionary<string, string> PSkey { get; set; } = new(); // from tlv512
 
         internal string? T104 { get; set; } // from tlv104, size: 44
@@ -97,7 +97,7 @@ public class BotKeystore
         internal string? SmsCode { get; set; }
 
         internal byte[]? QrSign { get; set; } // size: 24
-        internal string? QrString { get; set; }
+        internal string? QrSig { get; set; }
         internal string? QrUrl { get; set; }
 
         internal byte[]? ExchangeKey { get; set; }

@@ -2,11 +2,9 @@ using Lagrange.Core.Utility.Crypto.Provider.Ecdh;
 
 namespace Lagrange.Core.Utility.Crypto;
 
-internal partial class EcdhImpl : ICryptoImpl
+internal partial class EcdhImpl
 {
     private readonly EcdhProvider _ecdhProvider;
-
-    private readonly TeaImpl _teaImpl;
 
     public CryptMethod Method { get; }
 
@@ -17,14 +15,11 @@ internal partial class EcdhImpl : ICryptoImpl
     public EcdhImpl(CryptMethod method, bool isHash = true)
     {
         Method = method;
-        _teaImpl = new TeaImpl();
 
         var crypt = CurveTable[method]; // Select the curve
 
         _ecdhProvider = new EcdhProvider(crypt.Curve);
         MethodId = crypt.Id;
-
-        GenerateShared(crypt.PubKey, isHash);
     }
 
     public byte[] GenerateShared(byte[] bobPublic, bool isHash = true)
@@ -36,12 +31,4 @@ internal partial class EcdhImpl : ICryptoImpl
     }
 
     public byte[] GetPublicKey(bool compress = true) => _ecdhProvider.PackPublic(compress);
-
-    public byte[] Encrypt(byte[] data) => _teaImpl.Encrypt(data, ShareKey);
-
-    public byte[] Decrypt(byte[] data) => _teaImpl.Decrypt(data, ShareKey);
-
-    public byte[] Encrypt(byte[] data, byte[] key) => throw new NotImplementedException();
-
-    public byte[] Decrypt(byte[] data, byte[] key) => throw new NotImplementedException();
 }
