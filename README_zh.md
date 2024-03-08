@@ -12,7 +12,7 @@
 
 <a href="https://trendshift.io/repositories/3486" target="_blank"><img src="https://trendshift.io/api/badge/repositories/3486" alt="Linwenxuan05%2FLagrange.Core | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
+基于 NTQQ协议 的实现，纯 C# 编写，源自 Konata.Core
 
 </div>
 
@@ -73,47 +73,47 @@ Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式
 
 | 消息段 | Support |
 |------------------|:-------:|
-| [Text]           |   🟢    |
-| [Face]           |   🟢    |
-| [Image]          |   🟢    |
-| [Record]         |   🟢    |
-| [Video]          |   🟡    |
-| [At]             |   🟢    |
-| [Rps]            |   🟢    |
-| [Dice]           |   🟢    |
-| [Shake]          |   🔴    |
-| [Poke]           |   🟢    |
-| [Anonymous]      |   🔴    |
-| [Share]          |   🔴    |
-| [Contact]        |   🔴    |
-| [Location]       |   🟢    |
-| [Music]          |   🔴    |
-| [Reply]          |   🟢    |
-| [Forward]        |   🟢    |
-| [Node]           |   🟢    |
-| [Xml]            |   🔴    |
-| [Json]           |   🔴    |
+| [纯文本]           |   🟢    |
+| [QQ 表情]           |   🟢    |
+| [图片]          |   🟢    |
+| [语音]         |   🟢    |
+| [短视频]          |   🟡    |
+| [@某人]             |   🟢    |
+| [猜拳魔法表情]            |   🟢    |
+| [掷骰子魔法表情]           |   🟢    |
+| [窗口抖动（戳一戳）]          |   🔴    |
+| [戳一戳]           |   🟢    |
+| [匿名发消息]      |   🔴    |
+| [链接分享]          |   🔴    |
+| [推荐好友]        |   🔴    |
+| [位置]       |   🟢    |
+| [音乐分享]          |   🔴    |
+| [回复]          |   🟢    |
+| [合并转发]        |   🟢    |
+| [合并转发节点]           |   🟢    |
+| [XML 消息]            |   🔴    |
+| [JSON 消息]           |   🔴    |
 
-[Text]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#qq-%E8%A1%A8%E6%83%85
-[Record]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E8%AF%AD%E9%9F%B3
-[Face]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#qq-%E8%A1%A8%E6%83%85
-[Image]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E5%9B%BE%E7%89%87
-[Shake]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E7%AA%97%E5%8F%A3%E6%8A%96%E5%8A%A8%E6%88%B3%E4%B8%80%E6%88%B3-
-[Poke]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E6%88%B3%E4%B8%80%E6%88%B3
-[Anonymous]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E5%8C%BF%E5%90%8D%E5%8F%91%E6%B6%88%E6%81%AF-
-[Location]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E4%BD%8D%E7%BD%AE
-[Video]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E7%9F%AD%E8%A7%86%E9%A2%91
-[At]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E6%9F%90%E4%BA%BA
-[Rps]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E7%8C%9C%E6%8B%B3%E9%AD%94%E6%B3%95%E8%A1%A8%E6%83%85
-[Dice]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E6%8E%B7%E9%AA%B0%E5%AD%90%E9%AD%94%E6%B3%95%E8%A1%A8%E6%83%85
-[share]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E9%93%BE%E6%8E%A5%E5%88%86%E4%BA%AB
-[Music]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E9%9F%B3%E4%B9%90%E5%88%86%E4%BA%AB-
-[Contact]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E6%8E%A8%E8%8D%90%E5%A5%BD%E5%8F%8B
-[Reply]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E5%9B%9E%E5%A4%8D
-[Forward]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E5%90%88%E5%B9%B6%E8%BD%AC%E5%8F%91-
-[Node]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E5%90%88%E5%B9%B6%E8%BD%AC%E5%8F%91%E8%8A%82%E7%82%B9-
-[Xml]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#xml-%E6%B6%88%E6%81%AF
-[Json]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#json-%E6%B6%88%E6%81%AF
+[纯文本]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#qq-%E8%A1%A8%E6%83%85
+[语音]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E8%AF%AD%E9%9F%B3
+[QQ 表情]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#qq-%E8%A1%A8%E6%83%85
+[图片]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E5%9B%BE%E7%89%87
+[窗口抖动（戳一戳）]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E7%AA%97%E5%8F%A3%E6%8A%96%E5%8A%A8%E6%88%B3%E4%B8%80%E6%88%B3-
+[戳一戳]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E6%88%B3%E4%B8%80%E6%88%B3
+[匿名发消息]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E5%8C%BF%E5%90%8D%E5%8F%91%E6%B6%88%E6%81%AF-
+[位置]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E4%BD%8D%E7%BD%AE
+[短视频]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E7%9F%AD%E8%A7%86%E9%A2%91
+[@某人]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E6%9F%90%E4%BA%BA
+[猜拳魔法表情]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E7%8C%9C%E6%8B%B3%E9%AD%94%E6%B3%95%E8%A1%A8%E6%83%85
+[掷骰子魔法表情]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E6%8E%B7%E9%AA%B0%E5%AD%90%E9%AD%94%E6%B3%95%E8%A1%A8%E6%83%85
+[链接分享]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E9%93%BE%E6%8E%A5%E5%88%86%E4%BA%AB
+[音乐分享]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E9%9F%B3%E4%B9%90%E5%88%86%E4%BA%AB-
+[推荐好友]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E6%8E%A8%E8%8D%90%E5%A5%BD%E5%8F%8B
+[回复]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E5%9B%9E%E5%A4%8D
+[合并转发]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E5%90%88%E5%B9%B6%E8%BD%AC%E5%8F%91-
+[合并转发节点]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E5%90%88%E5%B9%B6%E8%BD%AC%E5%8F%91%E8%8A%82%E7%82%B9-
+[XML 消息]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#xml-%E6%B6%88%E6%81%AF
+[JSON 消息]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#json-%E6%B6%88%E6%81%AF
 
 </Details>
 
@@ -203,45 +203,45 @@ Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式
 </Details>
 
 <Details>
-<Summary>Event</Summary>
+<Summary>事件Event</Summary>
 
 | PostType | EventName                      | Support |
 |----------|--------------------------------|:-------:|
-| Message  | [Private Message]              |   🟢    |
-| Message  | [Group Message]                |   🟢    |
-| Notice   | [Group File Upload]            |   🟢    |
-| Notice   | [Group Admin Change]           |   🟢    |
-| Notice   | [Group Member Decrease]        |   🟢    |
-| Notice   | [Group Member Increase]        |   🟢    |
-| Notice   | [Group Mute]                   |   🟢    |
-| Notice   | [Friend Add]                   |   🟢    |
-| Notice   | [Group Recall Message]         |   🟢    |
-| Notice   | [Friend Recall Message]        |   🟢    |
-| Notice   | [Group Poke]                   |   🔴    |
-| Notice   | [Group red envelope luck king] |   🔴    |
-| Notice   | [Group Member Honor Changed]   |   🔴    |
-| Request  | [Add Friend Request]           |   🟢    |
-| Request  | [Group Request/Invitations]    |   🟢    |
-| Meta     | [LifeCycle]                    |   🟢    |
-| Meta     | [Heartbeat]                    |   🟢    |
+| Message  | [私聊消息]              |   🟢    |
+| Message  | [群消息]                |   🟢    |
+| Notice   | [群文件上传]            |   🟢    |
+| Notice   | [群管理员变动]           |   🟢    |
+| Notice   | [群成员减少]        |   🟢    |
+| Notice   | [群成员增加]        |   🟢    |
+| Notice   | [群禁言]                   |   🟢    |
+| Notice   | [好友添加]                   |   🟢    |
+| Notice   | [群消息撤回]         |   🟢    |
+| Notice   | [好友消息撤回]        |   🟢    |
+| Notice   | [群内戳一戳]                   |   🔴    |
+| Notice   | [群红包运气王] |   🔴    |
+| Notice   | [群成员荣誉变更]   |   🔴    |
+| Request  | [加好友请求]           |   🟢    |
+| Request  | [加群请求／邀请]    |   🟢    |
+| Meta     | [生命周期]                    |   🟢    |
+| Meta     | [心跳]                    |   🟢    |
 
-[Private Message]: https://github.com/botuniverse/onebot-11/blob/master/event/message.md#%E7%A7%81%E8%81%8A%E6%B6%88%E6%81%AF
-[Group Message]: https://github.com/botuniverse/onebot-11/blob/master/event/message.md#%E7%BE%A4%E6%B6%88%E6%81%AF
-[Group File Upload]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0
-[Group Admin Change]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E7%AE%A1%E7%90%86%E5%91%98%E5%8F%98%E5%8A%A8
-[Group Member Decrease]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E6%88%90%E5%91%98%E5%87%8F%E5%B0%91
-[Group Member Increase]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E6%88%90%E5%91%98%E5%A2%9E%E5%8A%A0
-[Group Mute]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E7%A6%81%E8%A8%80
-[Friend Add]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E5%A5%BD%E5%8F%8B%E6%B7%BB%E5%8A%A0
-[Group Recall Message]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E6%B6%88%E6%81%AF%E6%92%A4%E5%9B%9E
-[Friend Recall Message]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E5%A5%BD%E5%8F%8B%E6%B6%88%E6%81%AF%E6%92%A4%E5%9B%9E
-[Group Poke]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E5%86%85%E6%88%B3%E4%B8%80%E6%88%B3
-[Group red envelope luck king]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E7%BA%A2%E5%8C%85%E8%BF%90%E6%B0%94%E7%8E%8B
-[Group Member Honor Changed]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E6%88%90%E5%91%98%E8%8D%A3%E8%AA%89%E5%8F%98%E6%9B%B4
-[Add Friend Request]: https://github.com/botuniverse/onebot-11/blob/master/event/request.md#%E5%8A%A0%E5%A5%BD%E5%8F%8B%E8%AF%B7%E6%B1%82
-[Group Request/Invitations]: https://github.com/botuniverse/onebot-11/blob/master/event/request.md#%E5%8A%A0%E7%BE%A4%E8%AF%B7%E6%B1%82%E9%82%80%E8%AF%B7
-[LifeCycle]: https://github.com/botuniverse/onebot-11/blob/master/event/meta.md#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F
-[Heartbeat]: https://github.com/botuniverse/onebot-11/blob/master/event/meta.md#%E5%BF%83%E8%B7%B3
+[私聊消息]: https://github.com/botuniverse/onebot-11/blob/master/event/message.md#%E7%A7%81%E8%81%8A%E6%B6%88%E6%81%AF
+[群消息]: https://github.com/botuniverse/onebot-11/blob/master/event/message.md#%E7%BE%A4%E6%B6%88%E6%81%AF
+[群文件上传]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0
+[群管理员变动]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E7%AE%A1%E7%90%86%E5%91%98%E5%8F%98%E5%8A%A8
+[群成员减少]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E6%88%90%E5%91%98%E5%87%8F%E5%B0%91
+[群成员增加]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E6%88%90%E5%91%98%E5%A2%9E%E5%8A%A0
+[群禁言]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E7%A6%81%E8%A8%80
+[好友添加]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E5%A5%BD%E5%8F%8B%E6%B7%BB%E5%8A%A0
+[群消息撤回]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E6%B6%88%E6%81%AF%E6%92%A4%E5%9B%9E
+[好友消息撤回]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E5%A5%BD%E5%8F%8B%E6%B6%88%E6%81%AF%E6%92%A4%E5%9B%9E
+[群内戳一戳]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E5%86%85%E6%88%B3%E4%B8%80%E6%88%B3
+[群红包运气王]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E7%BA%A2%E5%8C%85%E8%BF%90%E6%B0%94%E7%8E%8B
+[群成员荣誉变更]: https://github.com/botuniverse/onebot-11/blob/master/event/notice.md#%E7%BE%A4%E6%88%90%E5%91%98%E8%8D%A3%E8%AA%89%E5%8F%98%E6%9B%B4
+[加好友请求]: https://github.com/botuniverse/onebot-11/blob/master/event/request.md#%E5%8A%A0%E5%A5%BD%E5%8F%8B%E8%AF%B7%E6%B1%82
+[加群请求／邀请]: https://github.com/botuniverse/onebot-11/blob/master/event/request.md#%E5%8A%A0%E7%BE%A4%E8%AF%B7%E6%B1%82%E9%82%80%E8%AF%B7
+[生命周期]: https://github.com/botuniverse/onebot-11/blob/master/event/meta.md#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F
+[心跳]: https://github.com/botuniverse/onebot-11/blob/master/event/meta.md#%E5%BF%83%E8%B7%B3
 
 </Details>
 
@@ -250,15 +250,15 @@ Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式
 
 | 通信方式  | Support |
 |--------------------|:-------:|
-| [Http]             |   🟢    |
-| [Http-Post]        |   🟢    |
-| [ForwardWebSocket] |   🟢    |
-| [ReverseWebSocket] |   🟢    |
+| [HTTP API]             |   🟢    |
+| [反向HTTP POST]        |   🟢    |
+| [正向WebSocket] |   🟢    |
+| [反向WebSocket] |   🟢    |
 
-[Http]: https://github.com/botuniverse/onebot-11/blob/master/communication/http.md
-[Http-Post]: https://github.com/botuniverse/onebot-11/blob/master/communication/http-post.md
-[ForwardWebSocket]: https://github.com/botuniverse/onebot-11/blob/master/communication/ws.md
-[ReverseWebSocket]: https://github.com/botuniverse/onebot-11/blob/master/communication/ws-reverse.md
+[HTTP API]: https://github.com/botuniverse/onebot-11/blob/master/communication/http.md
+[反向HTTP POST]: https://github.com/botuniverse/onebot-11/blob/master/communication/http-post.md
+[正向WebSocket]: https://github.com/botuniverse/onebot-11/blob/master/communication/ws.md
+[反向WebSocket]: https://github.com/botuniverse/onebot-11/blob/master/communication/ws-reverse.md
 
 </Details>
 
