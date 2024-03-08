@@ -13,9 +13,9 @@
 # 使用Docker
 
 ```bash
-# 8081 port for ForwardWebSocket
-# /path-to-data is used to store the files needed for the runtime
-# UID Env and GID Env are used to set file permissions
+# 8081 端口用于 正向WebSocket 和 Http-post
+# /path-to-data 被用于存储程序运行时产生的文件
+# UID Env 和 GID Env用于设置文件权限
 docker run -id -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -g) ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
 
@@ -24,7 +24,7 @@ docker run -id -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -
 >    1. 修改 `/path-to-data/appsettings.json` 后重启容器
 >    2. 修改 `/path-to-data/appsettings.json` 然后使用 `docker attach` 进入容器，然后按任意键，然后按 `Ctrl`+`P`，`Ctrl`+`Q` 退出容器。
 >
-> 2. 在`Implementations`里修改`host`，确保您想要向容器外部打开的 `Host` 被配置为`0.0.0.0` 或者 `*`
+> 2. 在 `Implementations` 里修改 `host` ，确保您想要向容器外部打开的 `Host` 被配置为`0.0.0.0` 或者 `*`
 
 ## 从旧版本迁移
 

@@ -13,7 +13,7 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 # Using with Docker
 
 ```bash
-# 8081 port for ForwardWebSocket
+# 8081 port for ForwardWebSocket and Http-Post
 # /path-to-data is used to store the files needed for the runtime
 # UID Env and GID Env are used to set file permissions
 docker run -id -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -g) ghcr.io/lagrangedev/lagrange.onebot:edge

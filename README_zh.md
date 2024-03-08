@@ -19,10 +19,11 @@
 ## 文档
 [Lagrange.Doc](https://lagrangedev.github.io/Lagrange.Doc/)
 
-[Docker文档](Docker.md)
+[Docker中文文档](Docker_zh.md)
 
 [English Readme](README_zh.md)
-## 降低新功能的实现速度
+
+## 减缓新功能的实现
 
 Lagrange.Core已经实现了Linwenxuan05计划的几乎所有功能和任务，所以接下来对库的大部分改动将集中在repo中。
 
@@ -36,32 +37,35 @@ Lagrange.Core 项目，包括其开发者、贡献者以及附属个人或实体
 
 Lagrange.Core 是一个开源软件项目，旨在促进其预期用例中的合法和道德应用。每个用户都有责任确保其对 Lagrange.Core 的使用符合其管辖范围内的所有适用法律和法规。
 
-Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式非法活动的任何行为不承担任何责任。用户对自己的行为以及使用Lagrange.Core可能产生的任何后果承担全部责任。
+Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式非法活动的任何行为不承担任何责任。用户对自己的行为以及使用 Lagrange.Core 可能产生的任何后果承担全部责任。
 
 此外，Lagrange.Core 社区（包括其开发人员、贡献者和用户）提供的任何讨论、建议或指导不应被解释为法律建议。强烈建议用户寻求独立的法律顾问，以了解其行为的法律影响并确保遵守相关法律法规。
 
 通过使用或访问 Lagrange.Core，用户承认并同意免除开发者、贡献者以及关联个人或实体因使用或滥用该项目而产生的任何及所有责任，包括因其行为而产生的任何法律后果。行动。
 
-请负责任地并依法使用Lagrange.Core。
+请负责任地并依法使用 Lagrange.Core。
 
-### 如果能够部署 推荐使用 [OpenShamrock](https://github.com/whitechi73/OpenShamrock) 
+### 如果 [OpenShamrock] 可行, 推荐使用 [OpenShamrock]
+
+[OpenShamrock]:(https://github.com/whitechi73/OpenShamrock) 
+
 ## 功能列表
 
 | Protocol | Support | Login                     | Support | Messages  | Support | Operations        | Support | Events              | Support |
 |----------|:-------:|---------------------------|:-------:|:----------|:-------:|:------------------|:-------:|:--------------------|:-------:|
-| Windows  |   🟢    | QrCode                    |   🟢    | Images    |   🟢    | ~~Poke~~          |   🔴    | Captcha             |   🟢    |
-| macOS    |   🟢    | Password                  |   🟢    | Text / At |   🟢    | Recall            |   🟢    | BotOnline           |   🟢    |
-| Linux    |   🟢    | EasyLogin                 |   🟢    | Records   |   🟢    | Leave Group       |   🟢    | BotOffline          |   🟢    |
-|          |         | UnusalDevice<br/>Password |   🔴    | QFace     |   🟢    | ~~Special Title~~ |   🔴    | Message             |   🟢    |
-|          |         | UnusalDevice<br/>Easy     |   🟢    | Json      |   🟢    | Kick Member       |   🟢    | ~~Poke~~            |   🔴    |
-|          |         | NewDeviceVerify           |   🔴    | Xml       |   🟢    | Mute Member       |   🟢    | MessageRecall       |   🟢    |
-|          |         |                           |         | Forward   |   🟢    | Set Admin         |   🟢    | GroupMemberDecrease |   🟢    |
-|          |         |                           |         | Video     |   🟡    | Friend Request    |   🟢    | GroupMemberIncrease |   🟢    |
-|          |         |                           |         | Reply.    |   🟢    | Group Request     |   🟢    | GroupPromoteAdmin   |   🟢    |
-|          |         |                           |         | File      |   🟢    | ~~Voice Call~~    |   🔴    | GroupInvite         |   🟢    |
-|          |         |                           |         | Poke      |   🟢    | Client Key        |   🟢    | GroupRequestJoin    |   🟢    |
-|          |         |                           |         | LightApp  |   🟢    | Cookies           |   🟢    | FriendRequest       |   🟢    |
-|          |         |                           |         |           |         | Send Message      |   🟢    | ~~FriendTyping~~    |   🔴    |
+| Windows  |   🟢    | QrCode                    |   🟢    | Images    |   🟢    | ~~戳一戳~~          |   🔴    | 验证码             |   🟢    |
+| macOS    |   🟢    | Password                  |   🟢    | Text / At |   🟢    | 撤回消息            |   🟢    | 机器人在线           |   🟢    |
+| Linux    |   🟢    | EasyLogin                 |   🟢    | Records   |   🟢    | 退出群组       |   🟢    | 机器人离线          |   🟢    |
+|          |         | UnusalDevice<br/>Password |   🔴    | QFace     |   🟢    | ~~特殊头衔~~ |   🔴    | 消息事件             |   🟢    |
+|          |         | UnusalDevice<br/>Easy     |   🟢    | Json      |   🟢    | 移除群成员       |   🟢    | ~~戳一戳事件~~            |   🔴    |
+|          |         | NewDeviceVerify           |   🔴    | Xml       |   🟢    | 禁言群成员       |   🟢    | 消息撤回事件       |   🟢    |
+|          |         |                           |         | Forward   |   🟢    | 设置管理员         |   🟢    | 群成员减少 |   🟢    |
+|          |         |                           |         | Video     |   🟡    | 发送添加好友请求    |   🟢    | 群成员增加 |   🟢    |
+|          |         |                           |         | Reply.    |   🟢    | 发送加群请求     |   🟢    | GroupPromoteAdmin   |   🟢    |
+|          |         |                           |         | File      |   🟢    | ~~语音通话~~    |   🔴    | 群组邀请         |   🟢    |
+|          |         |                           |         | Poke      |   🟢    | Client Key        |   🟢    | 入群请求    |   🟢    |
+|          |         |                           |         | LightApp  |   🟢    | Cookies           |   🟢    | 好友请求       |   🟢    |
+|          |         |                           |         |           |         | 发送消息      |   🟢    | ~~FriendTyping~~    |   🔴    |
 |          |         |                           |         |           |         |                   |         | ~~FriendVoiceCall~~ |   🔴    |
 
 ## Lagrange.OneBot
@@ -71,7 +75,7 @@ Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式
 <Details>
 <Summary>消息段</Summary>
 
-| 消息段 | Support |
+| 消息段 | 支持情况 |
 |------------------|:-------:|
 | [纯文本]           |   🟢    |
 | [QQ 表情]           |   🟢    |
@@ -120,7 +124,7 @@ Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式
 <Details>
 <Summary>API</Summary>
 
-| API                            | Support |
+| API                            | 支持情况 |
 |--------------------------------|:-------:|
 | [/send_private_msg]            |   🟢    |
 | [/send_group_msg]              |   🟢    |
@@ -205,25 +209,25 @@ Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式
 <Details>
 <Summary>事件Event</Summary>
 
-| PostType | EventName                      | Support |
+| 推送类型 | 事件名                      | 支持情况 |
 |----------|--------------------------------|:-------:|
-| Message  | [私聊消息]              |   🟢    |
-| Message  | [群消息]                |   🟢    |
-| Notice   | [群文件上传]            |   🟢    |
-| Notice   | [群管理员变动]           |   🟢    |
-| Notice   | [群成员减少]        |   🟢    |
-| Notice   | [群成员增加]        |   🟢    |
-| Notice   | [群禁言]                   |   🟢    |
-| Notice   | [好友添加]                   |   🟢    |
-| Notice   | [群消息撤回]         |   🟢    |
-| Notice   | [好友消息撤回]        |   🟢    |
-| Notice   | [群内戳一戳]                   |   🔴    |
-| Notice   | [群红包运气王] |   🔴    |
-| Notice   | [群成员荣誉变更]   |   🔴    |
-| Request  | [加好友请求]           |   🟢    |
-| Request  | [加群请求／邀请]    |   🟢    |
-| Meta     | [生命周期]                    |   🟢    |
-| Meta     | [心跳]                    |   🟢    |
+| 消息事件  | [私聊消息]              |   🟢    |
+| 消息事件  | [群消息]                |   🟢    |
+| 通知事件   | [群文件上传]            |   🟢    |
+| 通知事件   | [群管理员变动]           |   🟢    |
+| 通知事件   | [群成员减少]        |   🟢    |
+| 通知事件   | [群成员增加]        |   🟢    |
+| 通知事件   | [群禁言]                   |   🟢    |
+| 通知事件   | [好友添加]                   |   🟢    |
+| 通知事件   | [群消息撤回]         |   🟢    |
+| 通知事件   | [好友消息撤回]        |   🟢    |
+| 通知事件   | [群内戳一戳]                   |   🔴    |
+| 通知事件   | [群红包运气王] |   🔴    |
+| 通知事件   | [群成员荣誉变更]   |   🔴    |
+| 请求事件  | [加好友请求]           |   🟢    |
+| 请求事件  | [加群请求／邀请]    |   🟢    |
+| 元事件     | [生命周期]                    |   🟢    |
+| 元事件     | [心跳]                    |   🟢    |
 
 [私聊消息]: https://github.com/botuniverse/onebot-11/blob/master/event/message.md#%E7%A7%81%E8%81%8A%E6%B6%88%E6%81%AF
 [群消息]: https://github.com/botuniverse/onebot-11/blob/master/event/message.md#%E7%BE%A4%E6%B6%88%E6%81%AF
@@ -328,10 +332,10 @@ Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式
 
 ## 已知问题
 
-- ~~[ ] 目前尚未建立签名服务，因此容易登录失败，返回码可能为45，您可以通过重写 `Signature` 静态类来建立自己的签名服务。~~
+- ~~[ ] 目前尚未使用签名服务，因此容易登录失败，返回码可能为45，您可以通过重写 `Signature` 静态类来使用自己的签名服务。~~
 
 ~~感谢 KonataDev/TheSnowfield 提供的签名 API~~
 
-现在不提供签名API，您可能需要在某个地方找到它在 `BotConfig` 并继承 `SignProvider` 类的 `CustomSignProviderBotConfig`
+暂不提供签名API，您可能需要在某个地方找到它并在 `BotConfig` 继承 `SignProvider` 类的 `CustomSignProviderBotConfig`
 
 - 如需使用Windows和macOS协议，你需要自行解决签名
