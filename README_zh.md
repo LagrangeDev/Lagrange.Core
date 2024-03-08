@@ -16,36 +16,36 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 
 </div>
 
-## Document
+## 文档
 [Lagrange.Doc](https://lagrangedev.github.io/Lagrange.Doc/)
 
-[Docker](Docker.md)
+[Docker文档](Docker.md)
 
-[中文Readme](README_zh.md)
-## Out of Active Feature Requesting
+[English Readme](README_zh.md)
+## 降低新功能的实现速度
 
-Lagrange.Core has completed nearly all the function and task scheduled by Linwenxuan05, so mostly enhance to the library would be concentrated to the repo for next.
+Lagrange.Core已经实现了Linwenxuan05计划的几乎所有功能和任务，所以接下来对库的大部分改动将集中在repo中。
 
-Feature request would be accepted but implemented with a long duration.
+功能请求会被接受，但需要较长时间的等待。
 
-The new function of NTQQ supported in following versions would be added as well.
+后续版本也会添加NTQQ支持的新功能。
 
-## Disclaimer
+## 免责声明
 
-The Lagrange.Core project, including its developers, contributors, and affiliated individuals or entities, hereby explicitly disclaim any association with, support for, or endorsement of any form of illegal behavior. This disclaimer extends to any use or application of the Lagrange.Core project that may be contrary to local, national, or international laws, regulations, or ethical guidelines.
+Lagrange.Core 项目，包括其开发者、贡献者以及附属个人或实体，特此明确否认与任何形式的非法行为有任何关联、支持或认可。本免责声明适用于可能违反当地、国家或国际法律、法规或道德准则的 Lagrange.Core 项目的任何使用或应用。
 
-Lagrange.Core is an open-source software project designed to facilitate lawful and ethical applications in its intended use cases. It is the responsibility of each user to ensure that their usage of Lagrange.Core complies with all applicable laws and regulations in their jurisdiction.
+Lagrange.Core 是一个开源软件项目，旨在促进其预期用例中的合法和道德应用。每个用户都有责任确保其对 Lagrange.Core 的使用符合其管辖范围内的所有适用法律和法规。
 
-The developers and contributors of Lagrange.Core assume no liability whatsoever for any actions taken by users that violate the law or engage in any form of illicit activity. Users are solely responsible for their own actions and any consequences that may arise from the use of Lagrange.Core.
+Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式非法活动的任何行为不承担任何责任。用户对自己的行为以及使用Lagrange.Core可能产生的任何后果承担全部责任。
 
-Furthermore, any discussions, suggestions, or guidance provided by the Lagrange.Core community, including its developers, contributors, and users, should not be interpreted as legal advice. It is strongly recommended that users seek independent legal counsel to understand the legal implications of their actions and ensure compliance with the relevant laws and regulations.
+此外，Lagrange.Core 社区（包括其开发人员、贡献者和用户）提供的任何讨论、建议或指导不应被解释为法律建议。强烈建议用户寻求独立的法律顾问，以了解其行为的法律影响并确保遵守相关法律法规。
 
-By using or accessing Lagrange.Core, the user acknowledges and agrees to release the developers, contributors, and affiliated individuals or entities from any and all liability arising from the use or misuse of the project, including any legal consequences incurred as a result of their actions.
+通过使用或访问 Lagrange.Core，用户承认并同意免除开发者、贡献者以及关联个人或实体因使用或滥用该项目而产生的任何及所有责任，包括因其行为而产生的任何法律后果。行动。
 
-Please use Lagrange.Core responsibly and in accordance with the law.
+请负责任地并依法使用Lagrange.Core。
 
-### Recommend [OpenShamrock](https://github.com/whitechi73/OpenShamrock) if applicable
-## Features List
+### 如果能够部署 推荐使用 [OpenShamrock](https://github.com/whitechi73/OpenShamrock) 
+## 功能列表
 
 | Protocol | Support | Login                     | Support | Messages  | Support | Operations        | Support | Events              | Support |
 |----------|:-------:|---------------------------|:-------:|:----------|:-------:|:------------------|:-------:|:--------------------|:-------:|
@@ -66,12 +66,12 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 ## Lagrange.OneBot
 
-### Implementation - OneBot v11
-#### The Binary for development could be found in Actions Artifacts
+### 实现 - OneBot v11
+#### 二进制文件可以在 Actions 产物中找到
 <Details>
-<Summary>Message Segement</Summary>
+<Summary>消息段</Summary>
 
-| Message Segement | Support |
+| 消息段 | Support |
 |------------------|:-------:|
 | [Text]           |   🟢    |
 | [Face]           |   🟢    |
@@ -246,9 +246,9 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 </Details>
 
 <Details>
-<Summary>Communication</Summary>
+<Summary>通信方式</Summary>
 
-| CommunicationType  | Support |
+| 通信方式  | Support |
 |--------------------|:-------:|
 | [Http]             |   🟢    |
 | [Http-Post]        |   🟢    |
@@ -262,7 +262,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 </Details>
 
-#### appsettings.json Example
+#### 一个 appsettings.json 例子
 
 ```json
 {
@@ -319,20 +319,19 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 }
 ```
 
-- As the Password is empty here, this indicates that QRCode login is used
-- After the QRCode Login, write Uin back to perform EasyLogin
+- 如果此处密码为空，则使用扫码登录
+- 在通过扫码登录后，将Uin写回appsettings.json以使用EasyLogin
+## 登录前须知
+- 由于NewDeviceLogin尚未实现，建议首次使用二维码登录。
+- 建议使用 Linux 协议，因为仅提供了该协议的 SignServer
+- 在使用扫码登录后，将密码和uin写入appsettings.json
 
-## NOTICE BEFORE LOGIN
-- It is recommended that use QRCode Login for the first time as NewDeviceLogin is not implemented.
-- Linux Protocol is recommended as only SignServer for such is provided
-- After QRCode Login, write password and uin back to appsettings.json
+## 已知问题
 
-## Known Problem
+- ~~[ ] 目前尚未建立签名服务，因此容易登录失败，返回码可能为45，您可以通过重写 `Signature` 静态类来建立自己的签名服务。~~
 
-- ~~[ ] Signature Service is currently not established, so the login tend to be failed and return code may be 45, you can establish your own sign service by rewriting the `Signature` static class.~~
+~~感谢 KonataDev/TheSnowfield 提供的签名 API~~
 
-~~Thanks KonataDev/TheSnowfield for Provision of Signature API~~
+现在不提供签名API，您可能需要在某个地方找到它在 `BotConfig` 并继承 `SignProvider` 类的 `CustomSignProviderBotConfig`
 
-Signature API is now not provided, you may need to find it somewhere and inherit `SignProvider` class for `CustomSignProvider` in  `BotConfig`
-
-- Signature of Windows and macOS is missing, you need to figure out by your self
+- 如需使用Windows和macOS协议，你需要自行解决签名
