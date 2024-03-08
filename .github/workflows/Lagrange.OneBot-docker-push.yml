@@ -7,20 +7,16 @@ on:
     paths:
       - "Lagrange.Core/**"
       - "Lagrange.OneBot/**"
-      - "Docker.md"
       - "Lagrange.Core.sln"
       - "LICENSE"
-      - "README.md"
   pull_request:
     branches:
       - master
     paths:
       - "Lagrange.Core/**"
       - "Lagrange.OneBot/**"
-      - "Docker.md"
       - "Lagrange.Core.sln"
       - "LICENSE"
-      - "README.md"
   workflow_dispatch:
 
 jobs:

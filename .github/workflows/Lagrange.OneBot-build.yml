@@ -9,7 +9,6 @@ on:
       - "Lagrange.OneBot/**"
       - "Lagrange.Core.sln"
       - "LICENSE"
-      - "README.md"
       - "!Lagrange.OneBot/Resources/Dockerfile"
       - "!Lagrange.OneBot/Resources/docker-entrypoint.sh"
   pull_request:
@@ -20,7 +19,6 @@ on:
       - "Lagrange.OneBot/**"
       - "Lagrange.Core.sln"
       - "LICENSE"
-      - "README.md"
       - "!Lagrange.OneBot/Resources/Dockerfile"
       - "!Lagrange.OneBot/Resources/docker-entrypoint.sh"
   workflow_dispatch:
