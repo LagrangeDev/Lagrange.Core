@@ -19,10 +19,12 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 docker run -id -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -g) ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
 
-> The first time you run it, you will be prompted `Please Edit the appsettings.json to set configs and press any key to continue`.
+> 1. The first time you run it, you will be prompted `Please Edit the appsettings.json to set configs and press any key to continue`.Please choose one of the following methods to execute.
 >
-> 1. Restart the container after modifying `/path-to-data/appsettings.json`
-> 2. Modify `/path-to-data/appsettings.json` and use `docker attach` to enter the container and press any key, then use `Ctrl`+`P`;`Ctrl`+`Q` to exit the container.
+>    1. Restart the container after modifying `/path-to-data/appsettings.json`
+>    2. Modify `/path-to-data/appsettings.json` and use `docker attach` to enter the container and press any key, then use `Ctrl`+`P`; `Ctrl`+`Q` to exit the container.
+>
+> 2. Make sure that the `Host` in the `Implementations` that you want to open to outside the container is configured as `0.0.0.0` or `*`.
 
 ## Migration from older versions
 
