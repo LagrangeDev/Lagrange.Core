@@ -13,6 +13,6 @@ internal partial class SrcMsg
         
         [ProtoMember(7)] public string? ReceiverUid { get; set; }
         
-        [ProtoMember(8)] public uint? MessageSequence { get; set; }
+        [ProtoMember(8)] public uint? ClientSequence { get; set; }
     }
 }

@@ -39,7 +39,7 @@ public class ForwardEntity : IMessageEntity
             MessageId = Random.Shared.NextInt64(0, int.MaxValue) | 0x1000000000000000L,
             ReceiverUid = SelfUid,
             SenderUid = Uid,
-            MessageSequence = Sequence
+            ClientSequence = 0
         };
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, reserve);
