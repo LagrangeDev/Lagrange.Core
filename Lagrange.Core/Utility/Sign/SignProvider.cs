@@ -1,11 +1,12 @@
 using Lagrange.Core.Common;
+using Lagrange.Core.Internal.Context;
 
 namespace Lagrange.Core.Utility.Sign;
 
 public abstract class SignProvider
 {
     protected bool Available = true;
-    
+
     protected static readonly string[] WhiteListCommand =
     {
         "MessageSvc.PbSendMsg",
@@ -44,7 +45,7 @@ public abstract class SignProvider
         "OidbSvcTrpcTcp.0xf67_1",
         "OidbSvcTrpcTcp.0xf67_5"
     };
-    
+
     public abstract byte[] Sign(BotDeviceInfo device, BotKeystore keystore, string cmd, uint seq, byte[] body);
 
     public virtual byte[] Energy(string sdkVersion, uint uin, Guid guid, string data) => throw new NotImplementedException();

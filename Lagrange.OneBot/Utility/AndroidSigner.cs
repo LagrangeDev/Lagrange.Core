@@ -3,48 +3,46 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Packets.System;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Network;
-using Lagrange.Core.Utility.Sign;
-using Microsoft.Extensions.Configuration;
 using ProtoBuf;
+using Lagrange.Core.Common;
+using Lagrange.Core.Utility.Generator;
+using Microsoft.Extensions.Configuration;
 
-namespace Lagrange.OneBot.Utility;
+namespace Lagrange.Core.Utility.Sign;
 
-public class OneBotSigner : SignProvider
+internal class AndroidSigner : SignProvider
 {
-    private readonly string _signServer;
-    private readonly string _signUrl;
-    private readonly string _energyUrl;
-    private readonly string _getXwDebugIdUrl;
+    private readonly string Url;
+    private readonly string SignUrl;
+    private readonly string EnergyUrl;
+    private readonly string GetXwDebugIdUrl;
+    private readonly string TestUrl;
 
+    private readonly HttpClient _client;
     private readonly Timer _timer;
-
-    private readonly HttpClient _client;
-
-    private readonly HttpClient _client;
 
     public OneBotSigner(IConfiguration config)
     {
-        _signServer = config["SignServerUrl"] ?? "";
-        _signUrl = $"{_signServer}/sign";
-        _energyUrl = $"{_signServer}/energy";
-        _getXwDebugIdUrl = $"{_signServer}/get_xw_debug_id";
-/*
-        _timer = new Timer(_ =>
-        {
-            bool reconnect = Available = Test();
-            if (reconnect) _timer?.Change(-1, 5000);
-        });*/
+        Url = config["AndroidSignServerUrl"] ?? "";
+        SignUrl = $"{Url}/sign";
+        EnergyUrl = $"{Url}/energy";
+        GetXwDebugIdUrl = $"{Url}/get_xw_debug_id";
+        TestUrl = $"{Url}/ping";
     }
 
     public override byte[] Sign(BotDeviceInfo device, BotKeystore keystore, string cmd, uint seq, byte[] body)
     {
-        if (!WhiteListCommand.Contains(cmd)) return Array.Empty<byte>();
-        // if (!Available || string.IsNullOrEmpty(_signUrl)) return Array.Empty<byte>();
-
+        var signature = new ReserveFields
+        {
+            TraceParent = StringGen.GenerateTrace(),
+            Uid = keystore.Uid
+        };
+        var stream = new MemoryStream();
+        Serializer.Serialize(stream, signature);
+        if (!WhiteListCommand.Contains(cmd)) return stream.ToArray();
 
         try
         {
@@ -53,10 +51,10 @@ public class OneBotSigner : SignProvider
                 { "uin", keystore.Uin },
                 { "cmd", cmd },
                 { "seq", seq },
-                { "src", body.Hex() },
+                { "buffer", body.Hex() },
             };
             
-            var message = _client.PostAsJsonAsync(_signServer, payload).Result;
+            var message = _client.PostAsJsonAsync(SignUrl, payload).Result;
             string response = message.Content.ReadAsStringAsync().Result;
             var json = JsonSerializer.Deserialize<JsonObject>(response);
 
@@ -64,22 +62,18 @@ public class OneBotSigner : SignProvider
             var secDeviceToken = json?["data"]?["token"]?.ToString().UnHex();
             var secExtra = json?["data"]?["extra"]?.ToString().UnHex();
 
-            var signature = new ReserveFields
+            signature = new ReserveFields
             {
                 Flag = 1,
                 LocaleId = 2052,
                 Qimei = keystore.Session.QImei?.Q36,
                 NewconnFlag = 0,
-                TraceParent = "",
+                TraceParent = StringGen.GenerateTrace(),
                 Uid = keystore.Uid,
                 Imsi = 0,
                 NetworkType = 1,
                 IpStackType = 1,
                 MsgType = 0,
-                TransInfo = new()
-                {
-                    { "client_conn_seq" ,  "1709470839"}
-                },
                 SecInfo = new()
                 {
                     SecSig = secSig,
@@ -89,19 +83,18 @@ public class OneBotSigner : SignProvider
                 NtCoreVersion = 100,
                 SsoIpOrigin = 3
             };
-            var stream = new MemoryStream();
+            stream = new MemoryStream();
             Serializer.Serialize(stream, signature);
             return stream.ToArray();
         }
-        catch
+        catch (Exception)
         {
             Available = false;
             _timer.Change(0, 5000);
 
-            return Array.Empty<byte>();
+            return stream.ToArray();
         }
     }
-
 
     public override byte[] Energy(string sdkVersion, uint uin, Guid guid, string data)
     {
@@ -114,7 +107,7 @@ public class OneBotSigner : SignProvider
                 { "guid", guid.ToByteArray().Hex() },
                 { "data", data },
             };
-            string response = Http.GetAsync(_energyUrl, payload).GetAwaiter().GetResult();
+            string response = Http.GetAsync(EnergyUrl, payload).GetAwaiter().GetResult();
             var json = JsonSerializer.Deserialize<JsonObject>(response);
 
             return json?["data"].ToString().UnHex();
@@ -134,7 +127,7 @@ public class OneBotSigner : SignProvider
                 { "uin", uin.ToString() },
                 { "data", data },
             };
-            string response = Http.GetAsync(_getXwDebugIdUrl, payload).GetAwaiter().GetResult();
+            string response = Http.GetAsync(GetXwDebugIdUrl, payload).GetAwaiter().GetResult();
             var json = JsonSerializer.Deserialize<JsonObject>(response);
 
             return json?["data"].ToString().UnHex();
@@ -149,7 +142,7 @@ public class OneBotSigner : SignProvider
     {
         try
         {
-            string response = Http.GetAsync($"{_signServer}/ping").GetAwaiter().GetResult();
+            string response = Http.GetAsync(TestUrl).GetAwaiter().GetResult();
             if (JsonSerializer.Deserialize<JsonObject>(response)?["code"]?.GetValue<int>() == 0)
                 return true;
         }

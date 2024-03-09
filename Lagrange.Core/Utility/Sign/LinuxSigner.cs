@@ -14,9 +14,10 @@ namespace Lagrange.Core.Utility.Sign;
 internal class LinuxSigner : SignProvider
 {
     private const string Url = "";
+    private const string SignUrl = $"{Url}/sign";
+    private const string TestUrl = $"{Url}/ping";
+
     private readonly HttpClient _client = new();
-
-
     private readonly Timer _timer;
 
     public LinuxSigner()
@@ -48,7 +49,8 @@ internal class LinuxSigner : SignProvider
                 { "seq", seq },
                 { "src", body.Hex() },
             };
-            var message = _client.PostAsJsonAsync(Url, payload).Result;
+            
+            var message = _client.PostAsJsonAsync(SignUrl, payload).Result;
             string response = message.Content.ReadAsStringAsync().Result;
             var json = JsonSerializer.Deserialize<JsonObject>(response);
 
@@ -71,7 +73,6 @@ internal class LinuxSigner : SignProvider
             Available = false;
             _timer.Change(0, 5000);
 
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(LinuxSigner)}] Failed to get signature, using dummy signature");
             return stream.ToArray(); // Dummy signature
         }
     }
@@ -80,7 +81,7 @@ internal class LinuxSigner : SignProvider
     {
         try
         {
-            string response = Http.GetAsync($"{Url}/ping").GetAwaiter().GetResult();
+            string response = Http.GetAsync(TestUrl).GetAwaiter().GetResult();
             if (JsonSerializer.Deserialize<JsonObject>(response)?["code"]?.GetValue<int>() == 0) return true;
         }
         catch

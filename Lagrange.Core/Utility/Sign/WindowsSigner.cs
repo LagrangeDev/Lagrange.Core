@@ -12,9 +12,10 @@ namespace Lagrange.Core.Utility.Sign;
 
 internal class WindowsSigner : SignProvider
 {
+    private const string Url = "";
+    private const string SignUrl = $"{Url}/sign";
+
     private readonly HttpClient _client = new();
-    
-    private const string WindowsUrl = "";
 
     public override byte[] Sign(BotDeviceInfo device, BotKeystore keystore, string cmd, uint seq, byte[] body)
     {
@@ -26,7 +27,7 @@ internal class WindowsSigner : SignProvider
         var stream = new MemoryStream();
         Serializer.Serialize(stream, signature);
         if (!WhiteListCommand.Contains(cmd)) return stream.ToArray();
-        if (!Available || string.IsNullOrEmpty(WindowsUrl)) return stream.ToArray();
+        if (!Available || string.IsNullOrEmpty(Url)) return stream.ToArray();
 
         try
         {
@@ -37,7 +38,7 @@ internal class WindowsSigner : SignProvider
                 { "src", body.Hex() },
             };
 
-            var message = _client.PostAsJsonAsync(WindowsUrl, payload).Result;
+            var message = _client.PostAsJsonAsync(SignUrl, payload).Result;
             string response = message.Content.ReadAsStringAsync().Result;
             var json = JsonSerializer.Deserialize<JsonObject>(response);
 
@@ -58,7 +59,6 @@ internal class WindowsSigner : SignProvider
         catch (Exception)
         {
             Available = false;
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(WindowsSigner)}] Failed to get signature, using dummy signature");
             return stream.ToArray();
         }
     }

@@ -12,7 +12,7 @@ using ProtoBuf;
 namespace Lagrange.Core.Internal.Service.Login;
 
 [EventSubscribe(typeof(PasswordLoginEvent))]
-[Service("trpc.login.ecdh.EcdhService.SsoNTLoginPasswordLogin")]
+[Service("trpc.login.ecdh.EcdhService.SsoNTLoginPasswordLogin", 12, 2)]
 internal class PasswordLoginService : BaseService<PasswordLoginEvent>
 {
     protected override bool Build(PasswordLoginEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,

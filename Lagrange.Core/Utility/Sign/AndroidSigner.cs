@@ -16,6 +16,7 @@ internal class AndroidSigner : SignProvider
     private const string SignUrl = $"{Url}/sign";
     private const string EnergyUrl = $"{Url}/energy";
     private const string GetXwDebugIdUrl = $"{Url}/get_xw_debug_id";
+    private const string TestUrl = $"{Url}/ping";
 
     private readonly Timer _timer;
 
@@ -86,7 +87,6 @@ internal class AndroidSigner : SignProvider
             Available = false;
             _timer.Change(0, 5000);
 
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(AndroidSigner)}] Failed to get signature, using dummy signature");
             return stream.ToArray();
         }
     }
@@ -109,7 +109,6 @@ internal class AndroidSigner : SignProvider
         }
         catch (Exception)
         {
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(AndroidSigner)}] Failed to get signature, using dummy signature");
             return Array.Empty<byte>();
         }
     }
@@ -130,7 +129,6 @@ internal class AndroidSigner : SignProvider
         }
         catch (Exception)
         {
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(AndroidSigner)}] Failed to get signature, using dummy signature");
             return Array.Empty<byte>();
         }
     }
@@ -139,7 +137,7 @@ internal class AndroidSigner : SignProvider
     {
         try
         {
-            string response = Http.GetAsync($"{Url}/ping").GetAwaiter().GetResult();
+            string response = Http.GetAsync(TestUrl).GetAwaiter().GetResult();
             if (JsonSerializer.Deserialize<JsonObject>(response)?["code"]?.GetValue<int>() == 0)
                 return true;
         }
