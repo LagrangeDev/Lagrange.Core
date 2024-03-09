@@ -75,17 +75,19 @@ public sealed class MessageService
     public object ConvertToPrivateMsg(uint uin, MessageChain chain, int hash)
     {
         var segments = Convert(chain);
+        string raw = ToRawMessage(segments);
         object request = _stringPost ? new OneBotPrivateStringMsg(uin, new OneBotSender(chain.FriendUin, chain.FriendInfo?.Nickname ?? string.Empty), "friend")
             {
                 MessageId = hash,
                 UserId = chain.FriendUin,
-                Message = ToRawMessage(segments)
+                Message = raw,
+                RawMessage = raw
             } : new OneBotPrivateMsg(uin, new OneBotSender(chain.FriendUin, chain.FriendInfo?.Nickname ?? string.Empty), "friend")
             {
                 MessageId = hash,
                 UserId = chain.FriendUin,
                 Message = segments,
-                RawMessage = ToRawMessage(segments)
+                RawMessage = raw
             };
         return request;
     }
