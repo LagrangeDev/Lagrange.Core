@@ -7,11 +7,11 @@ namespace Lagrange.Core.Message.Entity;
 [MessageElement(typeof(SrcMsg))]
 public class ForwardEntity : IMessageEntity
 {
-    public uint Sequence { get; internal set; }
+    public uint Sequence { get; set; }
     
-    public string? Uid { get; internal set; }
+    public string? Uid { get; set; }
 
-    public uint TargetUin { get; internal set; }
+    public uint TargetUin { get; set; }
 
     internal List<Elem> Elements { get; }
 
