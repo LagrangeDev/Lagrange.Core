@@ -13,7 +13,7 @@ internal class ImageGroupDownloadEvent : ImageDownloadEvent
 
     private ImageGroupDownloadEvent(int resultCode, string imageUrl) : base(resultCode, imageUrl) { }
     
-    public new static ImageGroupDownloadEvent Create(uint groupUin, MsgInfo info) => new(groupUin, info);
+    public static ImageGroupDownloadEvent Create(uint groupUin, MsgInfo info) => new(groupUin, info);
 
     public new static ImageGroupDownloadEvent Result(int resultCode, string url) => new(resultCode, url);
 }
