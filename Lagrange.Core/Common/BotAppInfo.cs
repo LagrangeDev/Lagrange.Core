@@ -94,7 +94,8 @@ public class BotAppInfo
             }
         },
 
-        NTLoginType = 1
+        NTLoginType = 1,
+        SignProvider = new LinuxSigner()
     };
 
     private static readonly BotAppInfo MacOs = new()
@@ -133,7 +134,8 @@ public class BotAppInfo
             }
         },
 
-        NTLoginType = 5
+        NTLoginType = 5,
+        SignProvider = new MacSigner()
     };
 
     private static readonly BotAppInfo Windows = new()
@@ -172,7 +174,8 @@ public class BotAppInfo
             }
         },
 
-        NTLoginType = 5
+        NTLoginType = 5,
+        SignProvider = new WindowsSigner()
     };
 
     private static readonly BotAppInfo AndroidPhone = new()
@@ -213,7 +216,9 @@ public class BotAppInfo
                 0x08, 0xDA, 0x7C, 0x65, 0x22, 0xCD, 0xB0, 0x71,
                 0x9A, 0x30, 0x51, 0x80, 0xCC, 0x54, 0xA8, 0x2E
             }
-        }
+        },
+
+        SignProvider = new AndroidSigner()
     };
 
     private static readonly BotAppInfo AndroidPad = new()
@@ -254,7 +259,9 @@ public class BotAppInfo
                 0x08, 0xDA, 0x7C, 0x65, 0x22, 0xCD, 0xB0, 0x71,
                 0x9A, 0x30, 0x51, 0x80, 0xCC, 0x54, 0xA8, 0x2E
             }
-        }
+        },
+
+        SignProvider = new AndroidSigner()
     };
 
     public static readonly Dictionary<Protocols, BotAppInfo> ProtocolToAppInfo = new()

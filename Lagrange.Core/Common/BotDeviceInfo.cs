@@ -131,7 +131,7 @@ public class BotDeviceInfo
                 OsVersion = "10.0.19042.0",
                 Guid = Guid.NewGuid()
             },
-            Protocols.AndroidPhone | Protocols.AndroidPad => new()
+            Protocols.AndroidPhone or Protocols.AndroidPad => new()
             {
                 OsType = "android",
                 OsVersion = "14",
@@ -143,7 +143,8 @@ public class BotDeviceInfo
                 InnerVer = "",
                 FingerPrint = Guid.NewGuid().ToString(),
                 Guid = Guid.NewGuid()
-            }
+            },
+            _ => throw new NotImplementedException()
         },
     };
 }

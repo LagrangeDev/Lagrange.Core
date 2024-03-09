@@ -24,6 +24,13 @@ internal class PacketContext : ContextBase
     private byte[] BuildPacket(BotAppInfo appInfo, SsoPacket packet)
     {
         var sso = SsoPacker.Build(packet, AppInfo, DeviceInfo, Keystore, appInfo.SignProvider);
+        var encrypted = (packet.EncodeType) switch
+        {
+            0 => sso,
+            1 => Keystore.TeaImpl.Encrypt(sso, Keystore.Session.D2Key),
+            2 => Keystore.TeaImpl.Encrypt(sso, new byte[16]),
+            _ => throw new Exception($"Unknown encode type: {packet.EncodeType}")
+        };
 
         var frame = new BinaryPacket();
         switch (packet.PacketType)
@@ -36,13 +43,7 @@ internal class PacketContext : ContextBase
                         .WriteBytes(packet.EncodeType == 1 ? Keystore.Session.D2 : Array.Empty<byte>(), Prefix.Uint32 | Prefix.WithPrefix)
                         .WriteByte(0) // unknown
                         .WriteString(Keystore.Uin.ToString(), Prefix.Uint32 | Prefix.WithPrefix) // ˧
-                        .WriteBytes((packet.EncodeType) switch
-                        {
-                            0 => sso,
-                            1 => Keystore.TeaImpl.Encrypt(sso, Keystore.Session.D2Key),
-                            2 => Keystore.TeaImpl.Encrypt(sso, new byte[16]),
-                            _ => throw new Exception($"Unknown encode type: {packet.EncodeType}")
-                        }, Prefix.None), false, true);
+                        .WriteBytes(encrypted, Prefix.None), false, true);
                     break;
                 }
             case 11:
@@ -53,13 +54,7 @@ internal class PacketContext : ContextBase
                         .WriteUint(packet.Sequence, false)
                         .WriteByte(0)
                         .WriteString(Keystore.Uin.ToString(), Prefix.Uint32 | Prefix.WithPrefix)
-                        .WriteBytes((packet.EncodeType) switch
-                        {
-                            0 => sso,
-                            1 => Keystore.TeaImpl.Encrypt(sso, Keystore.Session.D2Key),
-                            2 => Keystore.TeaImpl.Encrypt(sso, new byte[16]),
-                            _ => throw new Exception($"Unknown encode type: {packet.EncodeType}")
-                        }, Prefix.None), false, true);
+                        .WriteBytes(encrypted, Prefix.None), false, true);
                     break;
                 }
             case 12:
@@ -70,13 +65,7 @@ internal class PacketContext : ContextBase
                         .WriteBytes(packet.EncodeType == 1 ? Keystore.Session.D2 : Array.Empty<byte>(), Prefix.Uint32 | Prefix.WithPrefix)
                         .WriteByte(0) // unknown
                         .WriteString(Keystore.Uin.ToString(), Prefix.Uint32 | Prefix.WithPrefix)
-                        .WriteBytes((packet.EncodeType) switch
-                        {
-                            0 => sso,
-                            1 => Keystore.TeaImpl.Encrypt(sso, Keystore.Session.D2Key),
-                            2 => Keystore.TeaImpl.Encrypt(sso, new byte[16]),
-                            _ => throw new Exception($"Unknown encode type: {packet.EncodeType}")
-                        }, Prefix.None), false, true);
+                        .WriteBytes(encrypted, Prefix.None), false, true);
                     break;
                 }
             case 13:
@@ -87,13 +76,7 @@ internal class PacketContext : ContextBase
                         .WriteUint(packet.Sequence, false)
                         .WriteByte(0)
                         .WriteString("0", Prefix.Uint32 | Prefix.WithPrefix)
-                        .WriteBytes((packet.EncodeType) switch
-                        {
-                            0 => sso,
-                            1 => Keystore.TeaImpl.Encrypt(sso, Keystore.Session.D2Key),
-                            2 => Keystore.TeaImpl.Encrypt(sso, new byte[16]),
-                            _ => throw new Exception($"Unknown encode type: {packet.EncodeType}")
-                        }, Prefix.None), false, true);
+                        .WriteBytes(encrypted, Prefix.None), false, true);
                     break;
                 }
         }

@@ -11,7 +11,7 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Utility.Sign;
 
-internal class LinuxSigner : SignProvider
+internal class OnebotLinuxSigner : SignProvider
 {
     private readonly string Url;
     private readonly string SignUrl;
@@ -19,7 +19,7 @@ internal class LinuxSigner : SignProvider
 
     private readonly Timer _timer;
 
-    public LinuxSigner(IConfiguration config)
+    public OnebotLinuxSigner(IConfiguration config)
     {
         Url = config["LinuxSignServerUrl"] ?? "";
         SignUrl = $"{Url}/sign";

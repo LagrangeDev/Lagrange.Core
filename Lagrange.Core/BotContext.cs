@@ -33,24 +33,6 @@ public class BotContext : IDisposable
         _appInfo = BotAppInfo.ProtocolToAppInfo[config.Protocol];
         if (config.CustomSignProvider != null)
             _appInfo.SignProvider = config.CustomSignProvider;
-        else switch (config.Protocol)
-            {
-                case Protocols.AndroidPhone:
-                case Protocols.AndroidPad:
-                    _appInfo.SignProvider = new Utility.Sign.AndroidSigner();
-                    break;
-                case Protocols.Linux:
-                    _appInfo.SignProvider = new Utility.Sign.LinuxSigner();
-                    break;
-                case Protocols.MacOs:
-                    _appInfo.SignProvider = new Utility.Sign.MacSigner();
-                    break;
-                case Protocols.Windows:
-                    _appInfo.SignProvider = new Utility.Sign.WindowsSigner();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         _deviceInfo = deviceInfo;
         _keystore = keystore;
 

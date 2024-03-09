@@ -49,9 +49,8 @@ public sealed class LagrangeAppBuilder
             GetOptimumServer = bool.Parse(Configuration["Account:GetOptimumServer"] ?? "true"),
             CustomSignProvider = protocol switch
             {
-                Protocols.AndroidPhone => new AndroidSigner(Configuration),
-                Protocols.AndroidPad => new AndroidSigner(Configuration),
-                Protocols.Linux => new LinuxSigner(Configuration),
+                Protocols.AndroidPhone or Protocols.AndroidPad => new OnebotAndroidSigner(Configuration),
+                Protocols.Linux => new OnebotLinuxSigner(Configuration),
                 _ => null
             }
         };

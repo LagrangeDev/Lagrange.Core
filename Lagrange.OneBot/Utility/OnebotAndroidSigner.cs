@@ -13,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Lagrange.Core.Utility.Sign;
 
-internal class AndroidSigner : SignProvider
+internal class OnebotAndroidSigner : SignProvider
 {
     private readonly string Url;
     private readonly string SignUrl;
@@ -24,7 +24,7 @@ internal class AndroidSigner : SignProvider
     private readonly HttpClient _client;
     private readonly Timer _timer;
 
-    public OneBotSigner(IConfiguration config)
+    public OnebotAndroidSigner(IConfiguration config)
     {
         Url = config["AndroidSignServerUrl"] ?? "";
         SignUrl = $"{Url}/sign";
