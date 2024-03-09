@@ -117,7 +117,19 @@ public sealed partial class ForwardWSService : ILagrangeWebService
 
         if (identifier == null)
         {
-            foreach (var (_, connection) in _connections.Where(conn => conn.Value.ConnectionInfo.Path != "/api")) await connection.Send(payload);
+            foreach (var (id, connection) in _connections.Where(conn => conn.Value.ConnectionInfo.Path != "/api"))
+            {
+                try
+                {
+                    await connection.Send(payload);
+                }
+                catch (Fleck.ConnectionNotAvailableException)
+                {
+                    Log.LogDisconnected(_logger, id);
+                    _connections.TryRemove(id, out _);
+                    if (_heartbeats.TryRemove(id, out var timer)) timer.Dispose();
+                }
+            }
         }
         else
         {
