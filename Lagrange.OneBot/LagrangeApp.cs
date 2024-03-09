@@ -99,6 +99,20 @@ public class LagrangeApp : IHost
                 }, cancellationToken);
             };
 
+            Instance.Invoker.OnBotNewDeviceVerify += async (_, args) =>
+            {
+                Logger.LogWarning($"Phone number: {args.PhoneNumber}");
+                Logger.LogWarning("Please input sms code:");
+
+                await Task.Run(() =>
+                {
+                    Instance.SendSmsCode();
+                    var smsCode = Console.ReadLine();
+
+                    if (smsCode != null) Instance.SubmitSmsCode(smsCode);
+                }, cancellationToken);
+            };
+
             _ = Task.Run(Instance.LoginByPassword, cancellationToken);
         }
     }
