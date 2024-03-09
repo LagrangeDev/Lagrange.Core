@@ -12,6 +12,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "SolutionItem", "{ACE96E15-65D1-471B-913A-A1014F0D003E}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		README_zh.md = README_zh.md
+		Docker.md = Docker.md
+		Docker_zh.md = Docker_zh.md
 		LICENSE = LICENSE
 	EndProjectSection
 EndProject
