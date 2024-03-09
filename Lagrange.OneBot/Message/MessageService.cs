@@ -25,6 +25,7 @@ public sealed class MessageService
     private readonly LiteDatabase _context;
     private readonly IConfiguration _config;
     private readonly Dictionary<Type, List<(string Type, SegmentBase Factory)>> _entityToFactory;
+    private readonly bool _stringPost;
     
     private static readonly JsonSerializerOptions Options;
     
@@ -38,6 +39,7 @@ public sealed class MessageService
         _service = service;
         _context = context;
         _config = config;
+        _stringPost = config.GetValue<bool>("Message:StringPost");
 
         var invoker = bot.Invoker;
 
@@ -70,16 +72,21 @@ public sealed class MessageService
         _ = _service.SendJsonAsync(request);
     }
 
-    public OneBotPrivateMsg ConvertToPrivateMsg(uint uin, MessageChain chain, int hash)
+    public object ConvertToPrivateMsg(uint uin, MessageChain chain, int hash)
     {
         var segments = Convert(chain);
-        var request = new OneBotPrivateMsg(uin, new OneBotSender(chain.FriendUin, chain.FriendInfo?.Nickname ?? string.Empty), "friend")
-        {
-            MessageId = hash,
-            UserId = chain.FriendUin,
-            Message = segments,
-            RawMessage = ToRawMessage(segments)
-        };
+        object request = _stringPost ? new OneBotPrivateStringMsg(uin, new OneBotSender(chain.FriendUin, chain.FriendInfo?.Nickname ?? string.Empty), "friend")
+            {
+                MessageId = hash,
+                UserId = chain.FriendUin,
+                Message = ToRawMessage(segments)
+            } : new OneBotPrivateMsg(uin, new OneBotSender(chain.FriendUin, chain.FriendInfo?.Nickname ?? string.Empty), "friend")
+            {
+                MessageId = hash,
+                UserId = chain.FriendUin,
+                Message = segments,
+                RawMessage = ToRawMessage(segments)
+            };
         return request;
     }
 
@@ -95,11 +102,12 @@ public sealed class MessageService
         _ = _service.SendJsonAsync(request);
     }
 
-    public OneBotGroupMsg ConvertToGroupMsg(uint uin, MessageChain chain, int hash)
+    public object ConvertToGroupMsg(uint uin, MessageChain chain, int hash)
     {
         var segments = Convert(chain);
-        var request = new OneBotGroupMsg(uin, chain.GroupUin ?? 0, segments, ToRawMessage(segments),
-            chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash);
+        object request = _stringPost 
+            ? new OneBotGroupStringMsg(uin, chain.GroupUin ?? 0, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash)
+            : new OneBotGroupMsg(uin, chain.GroupUin ?? 0, segments, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash);
         return request;
     }
 

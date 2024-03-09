@@ -21,3 +21,21 @@ public class OneBotPrivateMsg(uint selfId, OneBotSender groupSender, string subT
 
     [JsonPropertyName("sender")] public OneBotSender GroupSender { get; set; } = groupSender;
 }
+
+[Serializable]
+public class OneBotPrivateStringMsg(uint selfId, OneBotSender groupSender, string subType) : OneBotEntityBase(selfId, "message")
+{
+    [JsonPropertyName("message_type")] public string MessageType { get; set; } = "private";
+
+    [JsonPropertyName("sub_type")] public string SubType { get; set; } = subType;
+
+    [JsonPropertyName("message_id")] public int MessageId { get; set; }
+    
+    [JsonPropertyName("user_id")] public uint UserId { get; set; }
+    
+    [JsonPropertyName("message")] public string Message { get; set; } = string.Empty;
+
+    [JsonPropertyName("font")] public int Font { get; set; } = 0;
+
+    [JsonPropertyName("sender")] public OneBotSender GroupSender { get; set; } = groupSender;
+}

@@ -287,7 +287,11 @@ Lagrange.Core 的开发者和贡献者对用户违反法律或从事任何形式
     "GetOptimumServer": true
   },
   "Message": {
-    "IgnoreSelf": true
+    "IgnoreSelf": true,
+    "StringPost": false
+  },
+  "QrCode": {
+    "ConsoleCompatibilityMode": false
   },
   "Implementations": [
     {

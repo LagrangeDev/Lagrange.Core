@@ -282,7 +282,11 @@ Please use Lagrange.Core responsibly and in accordance with the law.
     "GetOptimumServer": true
   },
   "Message": {
-    "IgnoreSelf": true
+    "IgnoreSelf": true,
+    "StringPost": false
+  },
+  "QrCode": {
+    "ConsoleCompatibilityMode": false
   },
   "Implementations": [
     {
