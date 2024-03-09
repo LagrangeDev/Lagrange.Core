@@ -13,13 +13,13 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 # Using with Docker
 
 ```bash
-# 8081 port for ForwardWebSocket
+# 8081 port for ForwardWebSocket and Http-Post
 # /path-to-data is used to store the files needed for the runtime
 # UID Env and GID Env are used to set file permissions
 docker run -id -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -g) ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
 
-> 1. The first time you run it, you will be prompted `Please Edit the appsettings.json to set configs and press any key to continue`.Please choose one of the following methods to execute.
+> 1. The first time you run it, you will be prompted `Please Edit the appsettings.json to set configs and press any key to continue` Please choose one of the following methods to execute.
 >
 >    1. Restart the container after modifying `/path-to-data/appsettings.json`
 >    2. Modify `/path-to-data/appsettings.json` and use `docker attach` to enter the container and press any key, then use `Ctrl`+`P`; `Ctrl`+`Q` to exit the container.
@@ -29,8 +29,8 @@ docker run -id -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -
 ## Migration from older versions
 
 Move `appsettings.json`, `device.json`, `keystore.json`, `lagrange-*.db` to the same folder where you want to put them.  
-For example /path-to-save
+For example `/path-to-data`
 
-Delete the `ConfigPath` configuration entry in `/path-to-data/appsettings.json
+Delete the `ConfigPath` configuration entry in `/path-to-data/appsettings.json`
 
 Start the container according to [Using with Docker](#using-with-docker)
