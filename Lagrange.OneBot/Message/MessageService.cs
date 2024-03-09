@@ -79,8 +79,7 @@ public sealed class MessageService
             {
                 MessageId = hash,
                 UserId = chain.FriendUin,
-                Message = ToRawMessage(segments),
-                RawMessage = ToRawMessage(segments)
+                Message = ToRawMessage(segments)
             } : new OneBotPrivateMsg(uin, new OneBotSender(chain.FriendUin, chain.FriendInfo?.Nickname ?? string.Empty), "friend")
             {
                 MessageId = hash,
@@ -107,7 +106,7 @@ public sealed class MessageService
     {
         var segments = Convert(chain);
         object request = _stringPost 
-            ? new OneBotGroupStringMsg(uin, chain.GroupUin ?? 0, ToRawMessage(segments), ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash)
+            ? new OneBotGroupStringMsg(uin, chain.GroupUin ?? 0, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash)
             : new OneBotGroupMsg(uin, chain.GroupUin ?? 0, segments, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash);
         return request;
     }
