@@ -35,6 +35,8 @@ public class OneBotPrivateStringMsg(uint selfId, OneBotSender groupSender, strin
     
     [JsonPropertyName("message")] public string Message { get; set; } = string.Empty;
 
+    [JsonPropertyName("raw_message")] public string RawMessage { get; set; } = string.Empty;
+
     [JsonPropertyName("font")] public int Font { get; set; } = 0;
 
     [JsonPropertyName("sender")] public OneBotSender GroupSender { get; set; } = groupSender;

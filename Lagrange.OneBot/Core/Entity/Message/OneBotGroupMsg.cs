@@ -28,7 +28,7 @@ public class OneBotGroupMsg(uint selfId, uint groupUin, List<OneBotSegment> mess
 }
 
 [Serializable]
-public class OneBotGroupStringMsg(uint selfId, uint groupUin, string message, BotGroupMember member, int messageId) : OneBotEntityBase(selfId, "message")
+public class OneBotGroupStringMsg(uint selfId, uint groupUin, string message, string rawMessage, BotGroupMember member, int messageId) : OneBotEntityBase(selfId, "message")
 {
     [JsonPropertyName("message_type")] public string MessageType { get; set; } = "group";
 
@@ -43,6 +43,8 @@ public class OneBotGroupStringMsg(uint selfId, uint groupUin, string message, Bo
     [JsonPropertyName("anonymous")] public object? Anonymous { get; set; } = null;
     
     [JsonPropertyName("message")] public string Message { get; set; } = message;
+
+    [JsonPropertyName("raw_message")] public string RawMessage { get; set; } = rawMessage;
 
     [JsonPropertyName("font")] public int Font { get; set; } = 0;
 
