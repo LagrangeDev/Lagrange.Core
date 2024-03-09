@@ -44,6 +44,8 @@ public class OneBotGroupStringMsg(uint selfId, uint groupUin, string message, Bo
     
     [JsonPropertyName("message")] public string Message { get; set; } = message;
 
+    [JsonPropertyName("raw_message")] public string RawMessage { get; set; } = message;
+
     [JsonPropertyName("font")] public int Font { get; set; } = 0;
 
     [JsonPropertyName("sender")] public OneBotGroupSender GroupSender { get; set; } = new(member.Uin, member.MemberName, member.MemberCard ?? string.Empty, (int)member.GroupLevel, member.Permission);
