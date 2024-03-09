@@ -92,7 +92,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [Forward]        |   🟢    |
 | [Node]           |   🟢    |
 | [Xml]            |   🔴    |
-| [Json]           |   🔴    |
+| [Json]           |   🟢    |
 
 [Text]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#qq-%E8%A1%A8%E6%83%85
 [Record]: https://github.com/botuniverse/onebot-11/blob/master/message/segment.md#%E8%AF%AD%E9%9F%B3
