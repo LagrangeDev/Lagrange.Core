@@ -7,6 +7,8 @@ namespace Lagrange.Core.Message.Entity;
 [MessageElement(typeof(SrcMsg))]
 public class ForwardEntity : IMessageEntity
 {
+    public DateTime Time { get; set; }
+    
     public uint Sequence { get; set; }
     
     public string? Uid { get; set; }
@@ -26,6 +28,7 @@ public class ForwardEntity : IMessageEntity
 
     public ForwardEntity(MessageChain chain)
     {
+        Time = chain.Time;
         Sequence = chain.Sequence;
         Uid = chain.Uid;
         Elements = chain.Elements;
@@ -52,7 +55,7 @@ public class ForwardEntity : IMessageEntity
                 {
                     OrigSeqs = new List<uint> { Sequence },
                     SenderUin = TargetUin,
-                    Time = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    Time = (int)(Time - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds,
                     Elems = Elements,
                     PbReserve = stream.ToArray(),
                     ToUin = 0
