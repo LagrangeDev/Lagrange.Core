@@ -1,5 +1,11 @@
 <div align="center">
 
+<span></span>|<span></span>
+-|-
+[Lagrange.Core](https://github.com/LagrangeDev/Lagrange.Core)|NTQQ 的协议实现（👈你在这里
+[OpenShamrock](https://github.com/whitechi73/OpenShamrock)|基于 Xposed 实现 OneBot 标准的机器人框架
+[Chronocat](https://github.com/chrononeko/chronocat)|基于 Electron 的、模块化的 Satori 框架
+
 # Lagrange.Core
 
 [![Core](https://img.shields.io/badge/Lagrange-Core-blue)](#)

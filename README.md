@@ -1,5 +1,14 @@
 <div align="center">
 
+
+<span></span>|<span></span>
+-|-
+[Lagrange.Core](https://github.com/LagrangeDev/Lagrange.Core)|NTQQ Protocol Implementation（👈Here
+[OpenShamrock](https://github.com/whitechi73/OpenShamrock)|Based on Xposed, OneBot Bot Framework
+[Chronocat](https://github.com/chrononeko/chronocat)|Based on Electron, modular Satori Bot Framework
+
+
+
 # Lagrange.Core
 
 [![Core](https://img.shields.io/badge/Lagrange-Core-blue)](#)
