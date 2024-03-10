@@ -13,7 +13,7 @@ public class OneBotGroupFile(uint selfId, uint groupId, uint userId, OneBotFileI
 }
 
 [Serializable]
-public class OneBotFileInfo(string id, string name, ulong size)
+public class OneBotFileInfo(string id, string name, ulong size, string url)
 {
     [JsonPropertyName("id")] public string Id { get; set; } = id;
 
@@ -22,4 +22,6 @@ public class OneBotFileInfo(string id, string name, ulong size)
     [JsonPropertyName("size")] public ulong Size { get; set; } = size;
     
     [JsonPropertyName("busid")] public uint BusId { get; set; }
+
+    [JsonPropertyName("url")] public string Url { get; set; } = url;
 }
