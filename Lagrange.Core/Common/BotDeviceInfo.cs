@@ -13,9 +13,9 @@ public class BotDeviceInfo
 
         public string Brand { get; set; }
 
-        public string Imei { get; set; } = "";
+        public string Imei { get; set; }
 
-        public string Imsi { get; set; } = "";
+        public string Imsi { get; set; }
 
         public string BaseBand { get; set; }
 
