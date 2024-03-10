@@ -23,7 +23,7 @@ internal class PokeService : BaseService<FriendPokeEvent>
             {
                 var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xED3_1>(new OidbSvcTrpcTcp0xED3_1
                 {
-                    FriendUin = group.FriendUin,
+                    Uin = group.FriendUin,
                     GroupUin = group.GroupUin,
                     Ext = 0
                 });
@@ -34,8 +34,8 @@ internal class PokeService : BaseService<FriendPokeEvent>
             {
                 var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xED3_1>(new OidbSvcTrpcTcp0xED3_1
                 {
+                    Uin = friend.FriendUin,
                     FriendUin = friend.FriendUin,
-                    GroupUin = friend.FriendUin,
                     Ext = 0
                 });
                 output = packet.Serialize();
