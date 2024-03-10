@@ -21,7 +21,7 @@ internal class OnebotLinuxSigner : SignProvider
 
     public OnebotLinuxSigner(IConfiguration config)
     {
-        Url = config["LinuxSignServerUrl"] ?? "";
+        Url = config["LinuxSignServerUrl"] ?? config["SignServerUrl"] ?? "";
         SignUrl = $"{Url}/sign";
         TestUrl = $"{Url}/ping";
     }

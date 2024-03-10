@@ -6,7 +6,6 @@ using Lagrange.OneBot.Core.Network.Service;
 using Lagrange.OneBot.Core.Notify;
 using Lagrange.OneBot.Core.Operation;
 using Lagrange.OneBot.Message;
-using Lagrange.OneBot.Utility;
 using LiteDB;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
