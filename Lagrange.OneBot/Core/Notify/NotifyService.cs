@@ -20,6 +20,12 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 await service.SendJsonAsync(new OneBotGroupFile(bot.BotUin, @event.Chain.GroupUin ?? 0, @event.Chain.FriendUin, fileInfo));
             }
         };
+
+        bot.Invoker.OnGroupMuteEvent += async (_, @event) =>
+        {
+            logger.LogInformation(@event.ToString());
+            await service.SendJsonAsync(new OneBotGroupMute(bot.BotUin, @event.IsMuted ? "ban" : "lift", @event.GroupUin, @event.OperatorUin ?? 0, 0, -1));
+        };
         
         bot.Invoker.OnFriendRequestEvent += async (_, @event) =>
         {
