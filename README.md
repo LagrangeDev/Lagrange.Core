@@ -1,12 +1,19 @@
 <div align="center">
 
-
-<span></span>|<span></span>
--|-
-[Lagrange.Core](https://github.com/LagrangeDev/Lagrange.Core)|NTQQ Protocol Implementation（👈Here
-[OpenShamrock](https://github.com/whitechi73/OpenShamrock)|Based on Xposed, OneBot Bot Framework
-[Chronocat](https://github.com/chrononeko/chronocat)|Based on Electron, modular Satori Bot Framework
-
+<table>
+<tr>
+  <td><a href="https://github.com/LagrangeDev/Lagrange.Core">Lagrange.Core</a></td>
+  <td>NTQQ Protocol Implementation（👈Here</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/whitechi73/OpenShamrock">OpenShamrock</a></td>
+  <td>Based on Xposed, OneBot Bot Framework</td>
+</tr>
+<tr>
+  <td><a href="https://github.com/chrononeko/chronocat">Chronocat</a></td>
+  <td>Based on Electron, modular Satori Bot Framework</td>
+</tr>
+</table>
 
 
 # Lagrange.Core
