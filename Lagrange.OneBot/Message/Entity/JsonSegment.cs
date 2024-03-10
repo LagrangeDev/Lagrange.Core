@@ -9,7 +9,7 @@ public partial class JsonSegment(string data)
 {
     public JsonSegment(): this("") { }
 
-    [JsonPropertyName("data")] public string Data { get; set; } = data;
+    [JsonPropertyName("data")] [CQProperty] public string Data { get; set; } = data;
 }
 
 [SegmentSubscriber(typeof(LightAppEntity), "json")]
