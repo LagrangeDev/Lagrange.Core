@@ -62,6 +62,9 @@ public static class GroupExt
     public static Task<bool> SetFriendRequest(this BotContext bot, FriendRequestEvent request, bool accept = true)
         => bot.ContextCollection.Business.OperationLogic.SetFriendRequest(request.SourceUid, accept);
 
+    public static Task<bool> GroupPoke(this BotContext bot, uint groupUin, uint friendUin)
+        => bot.ContextCollection.Business.OperationLogic.GroupPoke(groupUin, friendUin);
+
     #region Group File System
 
     public static Task<ulong> FetchGroupFSSpace(this BotContext bot, uint groupUin)

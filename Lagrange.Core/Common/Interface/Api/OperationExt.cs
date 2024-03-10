@@ -166,5 +166,8 @@ public static class OperationExt
     
     public static Task<bool> UploadFriendFile(this BotContext bot, uint targetUin, FileEntity fileEntity) 
         => bot.ContextCollection.Business.OperationLogic.UploadFriendFile(targetUin, fileEntity);
+    
+    public static Task<bool> FriendPoke(this BotContext bot, uint friendUin)
+        => bot.ContextCollection.Business.OperationLogic.FriendPoke(friendUin);
 
 }
