@@ -17,16 +17,16 @@ internal class GroupFSDownloadService : BaseService<GroupFSDownloadEvent>
     protected override bool Build(GroupFSDownloadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
-        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x6D6_2>(new OidbSvcTrpcTcp0x6D6_2
+        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x6D6>(new OidbSvcTrpcTcp0x6D6
         {
-            Download = new OidbSvcTrpcTcp0x6D6_2Download
+            Download = new OidbSvcTrpcTcp0x6D6Download
             {
                 GroupUin = input.GroupUin,
                 AppId = 7,
                 BusId = 102,
                 FileId = input.FileId
             }
-        }, false, true);
+        }, 0x6D6, 2, false, true);
 
         output = packet.Serialize();
         extraPackets = null;

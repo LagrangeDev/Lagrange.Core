@@ -5,18 +5,18 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 #pragma warning disable CS8618
 // ReSharper disable InconsistentNaming
 
-/// <summary>
-/// Group File List
-/// </summary>
 [ProtoContract]
-[OidbSvcTrpcTcp(0x6d8, 1)]
-internal class OidbSvcTrpcTcp0x6D8_1
+internal class OidbSvcTrpcTcp0x6D8
 {
-    [ProtoMember(2)] public OidbSvcTrpcTcp0x6D8_1List? List { get; set; }
+    [ProtoMember(2)] public OidbSvcTrpcTcp0x6D8List? List { get; set; }
+    
+    [ProtoMember(3)] public OidbSvcTrpcTcp0x6D8Count? Count { get; set; }
+    
+    [ProtoMember(4)] public OidbSvcTrpcTcp0x6D8Space? Space { get; set; }
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0x6D8_1List
+internal class OidbSvcTrpcTcp0x6D8List
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
     
@@ -33,4 +33,23 @@ internal class OidbSvcTrpcTcp0x6D8_1List
     [ProtoMember(17)] public uint Field17 { get; set; } // 2
     
     [ProtoMember(18)] public uint Field18 { get; set; } // 0
+}
+
+
+[ProtoContract]
+internal class OidbSvcTrpcTcp0x6D8Count
+{
+    [ProtoMember(1)] public uint GroupUin { get; set; }
+    
+    [ProtoMember(2)] public uint AppId { get; set; } // 7
+    
+    [ProtoMember(3)] public uint BusId { get; set; } // 6
+}
+
+[ProtoContract]
+internal class OidbSvcTrpcTcp0x6D8Space
+{
+    [ProtoMember(1)] public uint GroupUin { get; set; }
+    
+    [ProtoMember(2)] public uint AppId { get; set; } // 7
 }
