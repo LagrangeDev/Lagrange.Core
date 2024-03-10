@@ -28,6 +28,7 @@
         <None Include="./Native/libSilkCodec-Linux-musl-arm64.so" Pack="true" PackagePath="runtimes/linux-musl-arm64/native/libSilkCodec.so"/>
         <None Include="./Native/libSilkCodec-Linux-musl-arm.so" Pack="true" PackagePath="runtimes/linux-musl-arm/native/libSilkCodec.so"/>
         <None Include="./Native/libSilkCodec-Linux-amd64.so" Pack="true" PackagePath="runtimes/linux-x64/native/libSilkCodec.so"/>
+        <None Include="./Native/libSilkCodec-Linux-arm.so" Pack="true" PackagePath="runtimes/linux-arm/native/libSilkCodec.so"/>
         <None Include="./Native/libSilkCodec-Linux-arm64.so" Pack="true" PackagePath="runtimes/linux-arm64/native/libSilkCodec.so"/>
         <None Include="./Native/SilkCodec-Windows-x64.dll" Pack="true" PackagePath="runtimes/win-x64/native/SilkCodec.dll"/>
         <None Include="./Native/SilkCodec-Windows-x86.dll" Pack="true" PackagePath="runtimes/win-x86/native/SilkCodec.dll"/>
