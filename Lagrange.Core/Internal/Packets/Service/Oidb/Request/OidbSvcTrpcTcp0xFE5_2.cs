@@ -8,23 +8,23 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 
 [ProtoContract]
 [OidbSvcTrpcTcp(0xFE5, 2)]
-internal class OidbSvcTrpcTcp0FE5_2
+internal class OidbSvcTrpcTcp0xFE5_2
 {
-    [ProtoMember(1)] public OidbSvcTrpcTcp0FE5_2Config Config { get; set; }
+    [ProtoMember(1)] public OidbSvcTrpcTcp0xFE5_2Config Config { get; set; }
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0FE5_2Config
+internal class OidbSvcTrpcTcp0xFE5_2Config
 {
-    [ProtoMember(1)] public OidbSvcTrpcTcp0FE5_2Config1 Config1 { get; set; }
+    [ProtoMember(1)] public OidbSvcTrpcTcp0xFE5_2Config1 Config1 { get; set; }
     
-    [ProtoMember(2)] public OidbSvcTrpcTcp0FE5_2Config2 Config2 { get; set; }
+    [ProtoMember(2)] public OidbSvcTrpcTcp0xFE5_2Config2 Config2 { get; set; }
 
-    [ProtoMember(3)] public OidbSvcTrpcTcp0FE5_2Config3 Config3 { get; set; }
+    [ProtoMember(3)] public OidbSvcTrpcTcp0xFE5_2Config3 Config3 { get; set; }
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0FE5_2Config1
+internal class OidbSvcTrpcTcp0xFE5_2Config1
 {
     [ProtoMember(1)] public bool GroupOwner { get; set; } = true;
     
@@ -92,7 +92,7 @@ internal class OidbSvcTrpcTcp0FE5_2Config1
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0FE5_2Config2
+internal class OidbSvcTrpcTcp0xFE5_2Config2
 {
     [ProtoMember(1)] public bool Field1 { get; set; } = true;
     
@@ -112,7 +112,7 @@ internal class OidbSvcTrpcTcp0FE5_2Config2
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0FE5_2Config3
+internal class OidbSvcTrpcTcp0xFE5_2Config3
 {
     [ProtoMember(5)] public bool Field5 { get; set; } = true;
 

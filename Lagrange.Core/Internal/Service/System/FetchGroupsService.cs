@@ -18,13 +18,13 @@ internal class FetchGroupsService : BaseService<FetchGroupsEvent>
     protected override bool Build(FetchGroupsEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
-        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0FE5_2>(new OidbSvcTrpcTcp0FE5_2
+        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE5_2>(new OidbSvcTrpcTcp0xFE5_2
         {
-            Config = new OidbSvcTrpcTcp0FE5_2Config
+            Config = new OidbSvcTrpcTcp0xFE5_2Config
             {
-                Config1 = new OidbSvcTrpcTcp0FE5_2Config1(),
-                Config2 = new OidbSvcTrpcTcp0FE5_2Config2(),
-                Config3 = new OidbSvcTrpcTcp0FE5_2Config3()
+                Config1 = new OidbSvcTrpcTcp0xFE5_2Config1(),
+                Config2 = new OidbSvcTrpcTcp0xFE5_2Config2(),
+                Config3 = new OidbSvcTrpcTcp0xFE5_2Config3()
             }
         }, false, true);
 
