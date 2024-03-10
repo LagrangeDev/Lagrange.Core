@@ -21,7 +21,7 @@ internal class OnebotAndroidSigner : SignProvider
     private readonly string GetXwDebugIdUrl;
     private readonly string TestUrl;
 
-    private readonly HttpClient _client;
+    private readonly HttpClient _client = new();
     private readonly Timer _timer;
 
     public OnebotAndroidSigner(IConfiguration config)
@@ -52,8 +52,10 @@ internal class OnebotAndroidSigner : SignProvider
                 { "cmd", cmd },
                 { "seq", seq },
                 { "buffer", body.Hex() },
+                { "android_id", device.System.AndroidId },
+                { "guid", device.System.Guid.ToByteArray().Hex() }
             };
-            
+
             var message = _client.PostAsJsonAsync(SignUrl, payload).Result;
             string response = message.Content.ReadAsStringAsync().Result;
             var json = JsonSerializer.Deserialize<JsonObject>(response);

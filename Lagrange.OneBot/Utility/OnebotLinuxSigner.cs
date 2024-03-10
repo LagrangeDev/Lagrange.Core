@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -17,6 +18,7 @@ internal class OnebotLinuxSigner : SignProvider
     private readonly string SignUrl;
     private readonly string TestUrl;
 
+    private readonly HttpClient _client = new();
     private readonly Timer _timer;
 
     public OnebotLinuxSigner(IConfiguration config)
@@ -46,7 +48,9 @@ internal class OnebotLinuxSigner : SignProvider
                 { "seq", seq.ToString() },
                 { "src", body.Hex() },
             };
-            string response = Http.GetAsync(SignUrl, payload).GetAwaiter().GetResult();
+
+            var message = _client.PostAsJsonAsync(SignUrl, payload).Result;
+            string response = message.Content.ReadAsStringAsync().Result;
             var json = JsonSerializer.Deserialize<JsonObject>(response);
 
             var secSig = json?["value"]?["sign"]?.ToString().UnHex();
