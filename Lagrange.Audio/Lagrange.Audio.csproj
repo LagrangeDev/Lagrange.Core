@@ -4,7 +4,7 @@
         <LangVersion>preview</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>0.0.1-alpha</Version>
+        <Version>0.0.2-alpha</Version>
         <Title>Lagrange.Audio</Title>
         <RepositoryUrl>https://github.com/LagrangeDev/Lagrange.Core</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -26,7 +26,9 @@
         <None Include="./Native/libSilkCodec-Darwin-arm64.dylib" Pack="true" PackagePath="runtimes/osx-arm64/native/libSilkCodec.dylib"/>
         <None Include="./Native/libSilkCodec-Linux-musl-amd64.so" Pack="true" PackagePath="runtimes/linux-musl-x64/native/libSilkCodec.so"/>
         <None Include="./Native/libSilkCodec-Linux-musl-arm64.so" Pack="true" PackagePath="runtimes/linux-musl-arm64/native/libSilkCodec.so"/>
+        <None Include="./Native/libSilkCodec-Linux-musl-arm.so" Pack="true" PackagePath="runtimes/linux-musl-arm/native/libSilkCodec.so"/>
         <None Include="./Native/libSilkCodec-Linux-amd64.so" Pack="true" PackagePath="runtimes/linux-x64/native/libSilkCodec.so"/>
+        <None Include="./Native/libSilkCodec-Linux-arm.so" Pack="true" PackagePath="runtimes/linux-arm/native/libSilkCodec.so"/>
         <None Include="./Native/libSilkCodec-Linux-arm64.so" Pack="true" PackagePath="runtimes/linux-arm64/native/libSilkCodec.so"/>
         <None Include="./Native/SilkCodec-Windows-x64.dll" Pack="true" PackagePath="runtimes/win-x64/native/SilkCodec.dll"/>
         <None Include="./Native/SilkCodec-Windows-x86.dll" Pack="true" PackagePath="runtimes/win-x86/native/SilkCodec.dll"/>
