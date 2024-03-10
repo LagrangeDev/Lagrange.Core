@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Packets.System;
-using Lagrange.Core.Utility.Extension;o
+using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Generator;
 using ProtoBuf;
 
