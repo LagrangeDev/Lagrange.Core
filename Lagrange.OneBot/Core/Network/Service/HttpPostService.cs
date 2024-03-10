@@ -40,9 +40,9 @@ public partial class HttpPostService(IOptionsSnapshot<HttpPostServiceOptions> op
         {
             await _client.SendAsync(request, cancellationToken);
         }
-        catch (HttpRequestException)
+        catch (HttpRequestException ex)
         {
-            Log.LogPostFailed(_logger, Tag);
+            Log.LogPostFailed(_logger, ex, Tag);
         }
     }
 
@@ -94,7 +94,7 @@ public partial class HttpPostService(IOptionsSnapshot<HttpPostServiceOptions> op
         public static partial void LogSendingData(ILogger logger, string tag, string data);
 
         [LoggerMessage(EventId = 5, Level = LogLevel.Error, Message = "[{tag}] Post failed")]
-        public static partial void LogPostFailed(ILogger logger, string tag);
+        public static partial void LogPostFailed(ILogger logger, Exception ex, string tag);
 
         [LoggerMessage(EventId = 10, Level = LogLevel.Error, Message = "[{tag}] Invalid configuration was detected, url: {url}")]
         public static partial void LogInvalidUrl(ILogger logger, string tag, string url);
