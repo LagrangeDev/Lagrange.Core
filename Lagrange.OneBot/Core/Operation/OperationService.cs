@@ -26,8 +26,8 @@ public sealed class OperationService
         _operations = new Dictionary<string, Type>();
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
-            var attribute = type.GetCustomAttribute<OperationAttribute>();
-            if (attribute != null) _operations[attribute.Api] = type;
+            var attributes = type.GetCustomAttributes<OperationAttribute>();
+            foreach (var attribute in attributes) _operations[attribute.Api] = type;
         }
 
         var service = new ServiceCollection();
