@@ -26,7 +26,7 @@ internal class OidbSvcTrpcTcp0x6D8_1ResponseList
     
     [ProtoMember(4)] public bool IsEnd { get; set; }
     
-    [ProtoMember(5)] public List<OidbSvcTrpcTcp0x6D8_1ResponseItem> Items { get; set; }
+    [ProtoMember(5)] public List<OidbSvcTrpcTcp0x6D8_1ResponseItem>? Items { get; set; }
 }
 
 [ProtoContract]

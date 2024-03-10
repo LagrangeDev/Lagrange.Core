@@ -64,8 +64,8 @@ internal class GroupFSViewService : BaseService<GroupFSViewEvent>
 
         if (packet.Body.List != null)
         {
-            var list = packet.Body.List;
-            var fileEntries = list.Items.Select(x =>
+            var items = packet.Body.List.Items ?? new List<OidbSvcTrpcTcp0x6D8_1ResponseItem>();
+            var fileEntries = items.Select(x =>
             {
                 var f = x.FileInfo;
                 var s = x.FolderInfo;
