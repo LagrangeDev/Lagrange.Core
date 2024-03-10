@@ -6,6 +6,7 @@ using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Action.Response;
 using Lagrange.OneBot.Core.Entity.File;
+using Lagrange.OneBot.Core.Operation.Converters;
 using Lagrange.OneBot.Utility;
 
 namespace Lagrange.OneBot.Core.Operation.File;
@@ -15,7 +16,7 @@ public class GetGroupFileUrlOperation : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload.Deserialize<OneBotGetFileUrl>() is { } url)
+        if (payload.Deserialize<OneBotGetFileUrl>(SerializerOptions.DefaultOptions) is { } url)
         {
             string raw = await context.FetchGroupFSDownload(url.GroupId, url.FileId);
             return new OneBotResult(new JsonObject { { "url", raw } }, 0, "ok");
@@ -31,7 +32,7 @@ public class GetGroupRootFilesOperation : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload.Deserialize<OneBotGetFiles>() is { } file)
+        if (payload.Deserialize<OneBotGetFiles>(SerializerOptions.DefaultOptions) is { } file)
         {
             var entries = await context.FetchGroupFSList(file.GroupId, file.FolderId ?? "/");
             var files = new List<OneBotFile>();
