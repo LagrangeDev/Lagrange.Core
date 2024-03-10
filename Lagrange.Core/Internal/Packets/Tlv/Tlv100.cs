@@ -10,15 +10,15 @@ internal class Tlv100 : TlvBody
 {
     public Tlv100(BotAppInfo appInfo)
     {
-        AppId = (uint)appInfo.AppId;
-        SubAppId = (uint)appInfo.SubAppId;
+        AppId = appInfo.AppId;
+        SubAppId = appInfo.SubAppId;
         AppClientVersion = appInfo.AppClientVersion;
-        MainSigMap = appInfo.MainSigMap;
+        MainSigMap = appInfo.WtLoginSdk.MainSigBitmap;
     }
     
-    [BinaryProperty] public ushort DbBufVersion { get; set; } = 0; // originally 0x1
+    [BinaryProperty] public ushort DbBufVersion { get; set; } = 1;
     
-    [BinaryProperty] public uint SsoVersion { get; set; } = 0x00000005;
+    [BinaryProperty] public uint SsoVersion { get; set; } = 0x00000015;
     
     [BinaryProperty] public uint AppId { get; set; }
     

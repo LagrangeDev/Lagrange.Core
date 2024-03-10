@@ -301,4 +301,9 @@ internal partial class BinaryPacket : IDisposable
         _stream.Dispose();
         _reader.Dispose();
     }
+
+    internal object WriteBytes(object session, Prefix prefix)
+    {
+        throw new NotImplementedException();
+    }
 }

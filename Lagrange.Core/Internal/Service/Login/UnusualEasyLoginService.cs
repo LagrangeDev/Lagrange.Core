@@ -11,7 +11,7 @@ using ProtoBuf;
 namespace Lagrange.Core.Internal.Service.Login;
 
 [EventSubscribe(typeof(UnusualEasyLoginEvent))]
-[Service("trpc.login.ecdh.EcdhService.SsoNTLoginEasyLoginUnusualDevice")]
+[Service("trpc.login.ecdh.EcdhService.SsoNTLoginEasyLoginUnusualDevice", 12, 2)]
 internal class UnusualEasyLoginService : BaseService<UnusualEasyLoginEvent>
 {
     protected override bool Build(UnusualEasyLoginEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,

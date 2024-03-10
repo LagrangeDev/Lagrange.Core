@@ -10,7 +10,7 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Login;
 
-[Service("trpc.login.ecdh.EcdhService.SsoNTLoginPasswordLoginNewDevice")]
+[Service("trpc.login.ecdh.EcdhService.SsoNTLoginPasswordLoginNewDevice", 12, 2)]
 internal class NewDeviceLoginService : BaseService<NewDeviceLoginEvent>
 {
     protected override bool Build(NewDeviceLoginEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
@@ -23,11 +23,11 @@ internal class NewDeviceLoginService : BaseService<NewDeviceLoginEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out NewDeviceLoginEvent output, out List<ProtocolEvent>? extraEvents)
     {
         if (keystore.Session.ExchangeKey == null) throw new InvalidOperationException("ExchangeKey is null");
-        
+
         var encrypted = Serializer.Deserialize<SsoNTLoginEncryptedData>(input.AsSpan());
 
         if (encrypted.GcmCalc != null)
@@ -35,7 +35,7 @@ internal class NewDeviceLoginService : BaseService<NewDeviceLoginEvent>
             var decrypted = new AesGcmImpl().Decrypt(encrypted.GcmCalc, keystore.Session.ExchangeKey);
             var response = Serializer.Deserialize<SsoNTLoginBase<SsoNTLoginResponse>>(decrypted.AsSpan());
             var body = response.Body;
-            
+
             if (response.Header?.Error != null || body is not { Credentials: not null })
             {
                 output = NewDeviceLoginEvent.Result((int)(response.Header?.Error?.ErrorCode ?? 1));

@@ -51,5 +51,7 @@ public enum Protocols
 {
     Windows = 0,
     MacOs = 1,
-    Linux = 2
+    Linux = 2,
+    AndroidPhone = 3,
+    AndroidPad = 4
 }

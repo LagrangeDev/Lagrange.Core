@@ -10,26 +10,40 @@ public static class BotExt
     /// <returns>return url and qrcode image in PNG format</returns>
     public static Task<(string Url, byte[] QrCode)?> FetchQrCode(this BotContext bot)
         => bot.ContextCollection.Business.WtExchangeLogic.FetchQrCode();
-    
+
     /// <summary>
     /// Use this method to login by QrCode, you should call <see cref="FetchQrCode"/> first
     /// </summary>
     public static Task LoginByQrCode(this BotContext bot)
         => bot.ContextCollection.Business.WtExchangeLogic.LoginByQrCode();
-    
+
     /// <summary>
     /// Use this method to login by password, EasyLogin may be preformed if there is sig in <see cref="BotKeystore"/>
     /// </summary>
     public static Task<bool> LoginByPassword(this BotContext bot)
         => bot.ContextCollection.Business.WtExchangeLogic.LoginByPassword();
-    
+
     /// <summary>
     /// Submit the captcha of the url given by the <see cref="EventInvoker.OnBotCaptchaEvent"/>
     /// </summary>
     /// <returns>Whether the captcha is submitted successfully</returns>
-    public static bool SubmitCaptcha(this BotContext bot, string ticket, string randStr)
+    public static bool SubmitCaptcha(this BotContext bot, string ticket, string randStr = "")
         => bot.ContextCollection.Business.WtExchangeLogic.SubmitCaptcha(ticket, randStr);
     
+    /// <summary>
+    /// Send sms code to the phone number given by the <see cref="EventInvoker.OnBotNewDeviceVerify"/>
+    /// </summary>
+    /// <returns>Whether the sms is send successfully</returns>
+    public static Task<bool> SendSmsCode(this BotContext bot)
+        => bot.ContextCollection.Business.WtExchangeLogic.SendSmsCode();
+
+    /// <summary>
+    /// Submit the code of the sms sent by the <see cref="SendSmsCode"/> on the <see cref="EventInvoker.OnBotNewDeviceVerify"/>
+    /// </summary>
+    /// <returns>Whether the sms code is submitted successfully</returns>
+    public static bool SubmitSmsCode(this BotContext bot, string smsCode)
+        => bot.ContextCollection.Business.WtExchangeLogic.SubmitSmsCode(smsCode);
+
     /// <summary>
     /// Use this method to update keystore, so EasyLogin may be preformed next time by using this keystore
     /// </summary>

@@ -5,7 +5,7 @@ using Lagrange.Core.Utility.Binary.Tlv.Attributes;
 
 namespace Lagrange.Core.Internal.Packets.Tlv;
 
-[Tlv(0X305)]
+[Tlv(0x305)]
 internal class Tlv305 : TlvBody
 {
     [BinaryProperty(Prefix.None)] public byte[] D2Key { get; set; }

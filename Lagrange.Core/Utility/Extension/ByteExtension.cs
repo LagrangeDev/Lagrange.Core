@@ -56,4 +56,11 @@ internal static class ByteExtension
         var hash = await md5.ComputeHashAsync(stream);
         return hash.Hex(lower);
     }
+
+    public static string Sha256(this byte[] bytes, bool lower = false)
+    {
+        using var sha256 = SHA256.Create();
+        var hash = sha256.ComputeHash(bytes);
+        return hash.Hex(lower);
+    }
 }

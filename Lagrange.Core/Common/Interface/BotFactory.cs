@@ -21,5 +21,5 @@ public static class BotFactory
     /// <param name="device">Created device, should be serialized to files for next use</param>
     /// <returns>Created BotContext Instance</returns>
     public static BotContext Create(BotConfig config, uint uin, string password, out BotDeviceInfo device) => 
-        new(config, device = BotDeviceInfo.GenerateInfo(), new BotKeystore(uin, password));
+        new(config, device = BotDeviceInfo.GenerateInfo(config.Protocol), new BotKeystore(uin, password));
 }

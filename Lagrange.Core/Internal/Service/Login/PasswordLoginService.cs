@@ -6,15 +6,13 @@ using Lagrange.Core.Internal.Packets.Login.NTLogin.Plain;
 using Lagrange.Core.Internal.Packets.Login.NTLogin.Plain.Body;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Crypto;
-using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Generator;
 using ProtoBuf;
-using BitConverter = Lagrange.Core.Utility.Binary.BitConverter;
 
 namespace Lagrange.Core.Internal.Service.Login;
 
 [EventSubscribe(typeof(PasswordLoginEvent))]
-[Service("trpc.login.ecdh.EcdhService.SsoNTLoginPasswordLogin")]
+[Service("trpc.login.ecdh.EcdhService.SsoNTLoginPasswordLogin", 12, 2)]
 internal class PasswordLoginService : BaseService<PasswordLoginEvent>
 {
     protected override bool Build(PasswordLoginEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
@@ -23,17 +21,16 @@ internal class PasswordLoginService : BaseService<PasswordLoginEvent>
         var plainBody = new SsoNTLoginPasswordLogin
         {
             Random = (uint)Random.Shared.Next(),
-            AppId = (uint)appInfo.AppId,
+            AppId = appInfo.AppId,
             Uin = keystore.Uin,
             Timestamp = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-            PasswordMd5 = keystore.PasswordMd5.UnHex(),
+            PasswordMd5 = keystore.PasswordMd5,
             RandomBytes = ByteGen.GenRandomBytes(16),
-            Guid = device.Guid.ToByteArray(),
+            Guid = device.System.Guid.ToByteArray(),
             UinString = keystore.Uin.ToString()
         };
         var plainBytes = BinarySerializer.Serialize(plainBody);
-        var plainKey = keystore.PasswordMd5.UnHex().Concat(new byte[4]).Concat(BitConverter.GetBytes(keystore.Uin, false)).ToArray().Md5().UnHex();
-        var encryptedPlain = keystore.TeaImpl.Encrypt(plainBytes.ToArray(), plainKey); // TODO: Investigate key
+        var encryptedPlain = keystore.TeaImpl.Encrypt(plainBytes.ToArray(), keystore.PasswordWithSalt);
         
         output = SsoNTLoginCommon.BuildNTLoginPacket(keystore, appInfo, device, encryptedPlain);
         extraPackets = null;

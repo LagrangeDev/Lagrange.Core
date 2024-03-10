@@ -11,7 +11,7 @@ using ProtoBuf;
 namespace Lagrange.Core.Internal.Service.Login;
 
 [EventSubscribe(typeof(EasyLoginEvent))]
-[Service("trpc.login.ecdh.EcdhService.SsoNTLoginEasyLogin")]
+[Service("trpc.login.ecdh.EcdhService.SsoNTLoginEasyLogin", 12, 2)]
 internal class EasyLoginService : BaseService<EasyLoginEvent>
 {
     protected override bool Build(EasyLoginEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
@@ -24,7 +24,7 @@ internal class EasyLoginService : BaseService<EasyLoginEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out EasyLoginEvent output, out List<ProtocolEvent>? extraEvents)
     {
         if (keystore.Session.ExchangeKey == null) throw new InvalidOperationException("ExchangeKey is null");
@@ -35,11 +35,11 @@ internal class EasyLoginService : BaseService<EasyLoginEvent>
             var decrypted = new AesGcmImpl().Decrypt(encrypted.GcmCalc, keystore.Session.ExchangeKey);
             var response = Serializer.Deserialize<SsoNTLoginBase<SsoNTLoginResponse>>(decrypted.AsSpan());
             var body = response.Body;
-            
+
             if (response.Header?.Error != null || body?.Credentials == null)
             {
                 output = EasyLoginEvent.Result((int)(response.Header?.Error?.ErrorCode ?? 1));
-                
+
                 keystore.Session.UnusualSign = body?.Unusual?.Sig;
                 keystore.Session.UnusualCookies = response.Header?.Cookie?.Cookie;
             }

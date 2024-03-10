@@ -11,8 +11,6 @@ internal class TlvPacker
 {
     private static readonly Dictionary<ushort, Type> Tlvs = new();
     private static readonly Dictionary<ushort, Type> TlvResps = new();
-    private static readonly Dictionary<ushort, Type> TlvQrCodes = new();
-    private static readonly Dictionary<ushort, Type> TlvQrCodeResps = new();
 
     private static readonly Dictionary<Type, TlvEncryptAttribute> TlvEncrypt = new();
 
@@ -30,16 +28,6 @@ internal class TlvPacker
             
             var encrypt = tlvs[i].GetCustomAttribute<TlvEncryptAttribute>();
             if (encrypt != null) TlvEncrypt[tlvs[i]] = encrypt;
-        }
-
-        var tlvQrCodes = assembly.GetTypeByAttributes<TlvQrCodeAttribute>(out var tlvQrCodeAttributes);
-        for (int i = 0; i < tlvQrCodes.Count; i++)
-        {
-            var attribute = tlvQrCodeAttributes[i];
-            (attribute.IsResponse ? TlvQrCodeResps : TlvQrCodes)[attribute.TlvCommand] = tlvQrCodes[i];
-            
-            var encrypt = tlvQrCodes[i].GetCustomAttribute<TlvEncryptAttribute>();
-            if (encrypt != null) TlvEncrypt[tlvQrCodes[i]] = encrypt;
         }
     }
 
@@ -59,26 +47,11 @@ internal class TlvPacker
         return new TlvPacket(cmd, tlvBody, encrypt);
     }
 
-    public TlvPacket PackQrCode(ushort cmd)
-    {
-        var tlvBody = (TlvBody)_injector.Inject(TlvQrCodes[cmd]);
-        var encrypt = ResolveEncryption(TlvQrCodes[cmd]);
-        return new TlvPacket(cmd, tlvBody, encrypt);
-    }
-
     public BinaryPacket Pack(ushort[] cmd)
     {
         var packet = new BinaryPacket().WriteUshort((ushort)cmd.Length, false);
 
         foreach (var tlv in cmd) packet.WritePacket(Pack(tlv));
-        return packet;
-    }
-
-    public BinaryPacket PackQrCode(ushort[] cmd)
-    {
-        var packet = new BinaryPacket().WriteUshort((ushort)cmd.Length, false);
-
-        foreach (var tlv in cmd) packet.WritePacket(PackQrCode(tlv));
         return packet;
     }
     
@@ -104,23 +77,7 @@ internal class TlvPacker
         return (TlvBody)packet.Deserialize(type);
     }
 
-    public static TlvBody? ReadTlvBodyQrCode(ushort cmd, BinaryPacket packet)
-    {
-        if (!TlvQrCodeResps.TryGetValue(cmd, out var type))
-        {
-            if (!TlvQrCodes.TryGetValue(cmd, out type)) return null;
-        }
-        
-        if (type.GetCustomAttribute<ProtoContractAttribute>() != null)
-        {
-            using var stream = new MemoryStream(packet.ToArray());
-            return (TlvBody)Serializer.Deserialize(type, stream);
-        }
-
-        return (TlvBody)packet.Deserialize(type);
-    }
-
-    public static Dictionary<ushort, TlvBody> ReadTlvCollections(BinaryPacket payload, bool isQrCode = false)
+    public static Dictionary<ushort, TlvBody> ReadTlvCollections(BinaryPacket payload)
     {
         ushort tlvCount = payload.ReadUshort(false);
         var tlvs = new Dictionary<ushort, TlvBody>(tlvCount);
@@ -131,7 +88,7 @@ internal class TlvPacker
             ushort length = payload.ReadUshort(false);
 
             var packet = payload.ReadPacket(length);
-            var tlvBody = isQrCode ? ReadTlvBodyQrCode(cmd, packet) : ReadTlvBody(cmd, packet);
+            var tlvBody = ReadTlvBody(cmd, packet);
             if (tlvBody != null) tlvs[cmd] = tlvBody;
         }
 
@@ -146,7 +103,7 @@ internal class TlvPacker
         return encrypt.Type switch
         {
             TlvEncryptAttribute.KeyType.TgtgtKey => (keystore.TeaImpl, keystore.Stub.TgtgtKey),
-            TlvEncryptAttribute.KeyType.Password => (keystore.TeaImpl, keystore.Stub.TgtgtKey), // TODO: Implement password encryption
+            TlvEncryptAttribute.KeyType.PasswordWithSalt => (keystore.TeaImpl, keystore.PasswordWithSalt),
             _ => null
         };
     }

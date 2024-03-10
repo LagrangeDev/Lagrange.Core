@@ -10,14 +10,14 @@ internal class Tlv147 : TlvBody
 {
     public Tlv147(BotAppInfo appInfo)
     {
-        AppId = (uint)appInfo.AppId;
+        AppId = appInfo.AppId;
         PtVersion = appInfo.PtVersion;
-        PackageName = appInfo.PackageName;
+        ApkSignatureMd5 = appInfo.ApkSignatureMd5;
     }
     
     [BinaryProperty] public uint AppId { get; set; }
     
     [BinaryProperty(Prefix.Uint16 | Prefix.LengthOnly)] public string PtVersion { get; set; }
     
-    [BinaryProperty(Prefix.Uint16 | Prefix.LengthOnly)] public string PackageName { get; set; }
+    [BinaryProperty(Prefix.Uint16 | Prefix.LengthOnly)] public byte[] ApkSignatureMd5 { get; set; }
 }

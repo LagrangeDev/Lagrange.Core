@@ -10,7 +10,7 @@ namespace Lagrange.Core.Internal.Packets.Tlv;
 internal class Tlv16A : TlvBody
 {
     /// <summary>
-    /// Tlv0x16A <see cref="TlvQrCode19"/>
+    /// Tlv0x16A <see cref="Tlv019"/>
     /// </summary>
     public Tlv16A(BotKeystore keystore)
     {

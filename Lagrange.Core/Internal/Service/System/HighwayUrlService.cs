@@ -24,7 +24,7 @@ internal class HighwayUrlService : BaseService<HighwayUrlEvent>
                 Field2 = 0,
                 Field3 = 16,
                 Field4 = 1,
-                Tgt = keystore.Session.Tgt.Hex().ToLower(),
+                Tgt = keystore.Session.Tgt.Hex(true),
                 Field6 = 3,
                 ServiceTypes = new List<int> { 1, 5, 10, 21 },
                 Field9 = 2,
