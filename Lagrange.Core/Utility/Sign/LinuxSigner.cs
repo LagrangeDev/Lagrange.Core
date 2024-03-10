@@ -1,3 +1,5 @@
+using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Lagrange.Core.Utility.Extension;
@@ -8,6 +10,8 @@ namespace Lagrange.Core.Utility.Sign;
 internal class LinuxSigner : SignProvider
 {
     private const string Url = "";
+    private readonly HttpClient _client = new();
+
 
     private readonly Timer _timer;
 
@@ -25,19 +29,23 @@ internal class LinuxSigner : SignProvider
         ver = null;
         token = null;
         if (!WhiteListCommand.Contains(cmd)) return null;
-        if (!Available || string.IsNullOrEmpty(Url)) return new byte[20]; // Dummy signature
+        if (!Available || string.IsNullOrEmpty(Url)) return new byte[35]; // Dummy signature
+        
+        var payload = new JsonObject
+        {
+            { "cmd", cmd },
+            { "seq", seq },
+            { "src", body.Hex() },
+        };
 
         try
         {
-            var payload = new Dictionary<string, string>
-            {
-                { "cmd", cmd },
-                { "seq", seq.ToString() },
-                { "src", body.Hex() },
-            };
-            string response = Http.GetAsync(Url, payload).GetAwaiter().GetResult();
+            var message = _client.PostAsJsonAsync(Url, payload).Result;
+            string response = message.Content.ReadAsStringAsync().Result;
             var json = JsonSerializer.Deserialize<JsonObject>(response);
 
+            ver = json?["value"]?["extra"]?.ToString().UnHex() ?? Array.Empty<byte>();
+            token = Encoding.ASCII.GetString(json?["value"]?["token"]?.ToString().UnHex() ?? Array.Empty<byte>());
             return json?["value"]?["sign"]?.ToString().UnHex() ?? new byte[20];
         }
         catch (Exception)

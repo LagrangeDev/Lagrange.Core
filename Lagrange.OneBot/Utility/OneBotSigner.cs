@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -16,10 +17,13 @@ public class OneBotSigner : SignProvider
     private readonly ILogger _logger;
     private readonly Timer _timer;
 
+    private readonly HttpClient _client;
+
     public OneBotSigner(IConfiguration config, ILogger<OneBotSigner> logger)
     {
         _signServer = config["SignServerUrl"] ?? "";
         _logger = logger;
+        _client = new HttpClient();
         
         if (string.IsNullOrEmpty(_signServer))
         {
@@ -45,16 +49,17 @@ public class OneBotSigner : SignProvider
         if (!WhiteListCommand.Contains(cmd)) return null;
         if (!Available || string.IsNullOrEmpty(_signServer)) return new byte[35]; // Dummy signature
         
-        var payload = new Dictionary<string, string>
+        var payload = new JsonObject
         {
             { "cmd", cmd },
-            { "seq", seq.ToString() },
+            { "seq", seq },
             { "src", body.Hex() },
         };
 
         try
         {
-            string response = Http.GetAsync(_signServer, payload).GetAwaiter().GetResult();
+            var message = _client.PostAsJsonAsync(_signServer, payload).Result;
+            string response = message.Content.ReadAsStringAsync().Result;
             var json = JsonSerializer.Deserialize<JsonObject>(response);
 
             ver = json?["value"]?["extra"]?.ToString().UnHex() ?? Array.Empty<byte>();
