@@ -1,5 +1,25 @@
 <div align="center">
 
+# Lagrange.Core
+
+An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
+
+![Core](https://img.shields.io/badge/Lagrange-Core-blue)
+![OneBot](https://img.shields.io/badge/Lagrange-OneBot-blue)
+![C#](https://img.shields.io/badge/Core-%20.NET_6-blue)
+![C#](https://img.shields.io/badge/OneBot-%20.NET_7-blue)
+
+[![License](https://img.shields.io/static/v1?label=LICENSE&message=GPL-3.0&color=lightrey)](/LICENSE)
+[![Telegram](https://img.shields.io/endpoint?url=https%3A%2F%2Ftelegram-badge-4mbpu8e0fit4.runkit.sh%2F%3Furl%3Dhttps%3A%2F%2Ft.me%2F%2B6HNTeJO0JqtlNmRl)](https://t.me/+6HNTeJO0JqtlNmRl)
+
+[![Image](https://trendshift.io/api/badge/repositories/3486)](https://trendshift.io/repositories/3486)
+
+**&gt; English &lt;** | [简体中文](README_zh.md)
+
+</div>
+
+## Related Projects
+
 <table>
 <tr>
   <td><a href="https://github.com/LagrangeDev/Lagrange.Core">Lagrange.Core</a></td>
@@ -15,29 +35,12 @@
 </tr>
 </table>
 
-
-# Lagrange.Core
-
-[![Core](https://img.shields.io/badge/Lagrange-Core-blue)](#)
-[![OneBot](https://img.shields.io/badge/Lagrange-OneBot-blue)](#)
-[![C#](https://img.shields.io/badge/Core-%20.NET_6-blue)](#)
-[![C#](https://img.shields.io/badge/OneBot-%20.NET_7-blue)](#)
-
-[![License](https://img.shields.io/static/v1?label=LICENSE&message=GPL-3.0&color=lightrey)](#)
-[![Telegram](https://img.shields.io/endpoint?url=https%3A%2F%2Ftelegram-badge-4mbpu8e0fit4.runkit.sh%2F%3Furl%3Dhttps%3A%2F%2Ft.me%2F%2B6HNTeJO0JqtlNmRl)](https://t.me/+6HNTeJO0JqtlNmRl)
-
-<a href="https://trendshift.io/repositories/3486" target="_blank"><img src="https://trendshift.io/api/badge/repositories/3486" alt="Linwenxuan05%2FLagrange.Core | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
-
-An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
-
-</div>
-
 ## Document
+
 [Lagrange.Doc](https://lagrangedev.github.io/Lagrange.Doc/)
 
-[Docker guide](Docker.md) | [Docker 使用指南](Docker_zh.md)
+[Docker guide](Docker.md)
 
-[English Readme](README.md) | [中文 Readme](README_zh.md)
 ## Out of Active Feature Requesting
 
 Lagrange.Core has completed nearly all the function and task scheduled by Linwenxuan05, so mostly enhance to the library would be concentrated to the repo for next.
@@ -45,6 +48,8 @@ Lagrange.Core has completed nearly all the function and task scheduled by Linwen
 Feature request would be accepted but implemented with a long duration.
 
 The new function of NTQQ supported in following versions would be added as well.
+
+> Recommend [OpenShamrock](https://github.com/whitechi73/OpenShamrock) if applicable
 
 ## Disclaimer
 
@@ -60,11 +65,10 @@ By using or accessing Lagrange.Core, the user acknowledges and agrees to release
 
 Please use Lagrange.Core responsibly and in accordance with the law.
 
-### Recommend [OpenShamrock](https://github.com/whitechi73/OpenShamrock) if applicable
 ## Features List
 
 | Protocol | Support | Login                     | Support | Messages  | Support | Operations        | Support | Events              | Support |
-|----------|:-------:|---------------------------|:-------:|:----------|:-------:|:------------------|:-------:|:--------------------|:-------:|
+| -------- | :-----: | ------------------------- | :-----: | :-------- | :-----: | :---------------- | :-----: | :------------------ | :-----: |
 | Windows  |   🟢    | QrCode                    |   🟢    | Images    |   🟢    | ~~Poke~~          |   🔴    | Captcha             |   🟢    |
 | macOS    |   🟢    | Password                  |   🟢    | Text / At |   🟢    | Recall            |   🟢    | BotOnline           |   🟢    |
 | Linux    |   🟢    | EasyLogin                 |   🟢    | Records   |   🟢    | Leave Group       |   🟢    | BotOffline          |   🟢    |
@@ -82,13 +86,13 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 ## Lagrange.OneBot
 
-### Implementation - OneBot v11
-#### The Binary for development could be found in Actions Artifacts
+> The Binary for development could be found in Actions Artifacts
+
 <Details>
 <Summary>Message Segement</Summary>
 
 | Message Segement | Support |
-|------------------|:-------:|
+| ---------------- | :-----: |
 | [Text]           |   🟢    |
 | [Face]           |   🟢    |
 | [Image]          |   🟢    |
@@ -137,7 +141,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 <Summary>API</Summary>
 
 | API                            | Support |
-|--------------------------------|:-------:|
+| ------------------------------ | :-----: |
 | [/send_private_msg]            |   🟢    |
 | [/send_group_msg]              |   🟢    |
 | [/send_msg]                    |   🟢    |
@@ -178,7 +182,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [/clean_cache]                 |   🔴    |
 
 [/send_private_msg]: https://github.com/botuniverse/onebot-11/blob/master/api/public.md#send_private_msg-%E5%8F%91%E9%80%81%E7%A7%81%E8%81%8A%E6%B6%88%E6%81%AF
-[/send_group_msg]: https://github.com/botuniverse/onebot-11/blob/master/api/public.md#send_group_msg-%E5%8F%91%E9%80%81%E7%BE%A4%E6%B6%88%E6%81%AF 
+[/send_group_msg]: https://github.com/botuniverse/onebot-11/blob/master/api/public.md#send_group_msg-%E5%8F%91%E9%80%81%E7%BE%A4%E6%B6%88%E6%81%AF
 [/send_msg]: https://github.com/botuniverse/onebot-11/blob/master/api/public.md#send_msg-发送消息
 [/delete_msg]: https://github.com/botuniverse/onebot-11/blob/master/api/public.md#delete_msg-撤回消息
 [/get_msg]: https://github.com/botuniverse/onebot-11/blob/master/api/public.md#get_msg-获取消息
@@ -222,7 +226,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 <Summary>Event</Summary>
 
 | PostType | EventName                      | Support |
-|----------|--------------------------------|:-------:|
+| -------- | ------------------------------ | :-----: |
 | Message  | [Private Message]              |   🟢    |
 | Message  | [Group Message]                |   🟢    |
 | Notice   | [Group File Upload]            |   🟢    |
@@ -265,7 +269,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 <Summary>Communication</Summary>
 
 | CommunicationType  | Support |
-|--------------------|:-------:|
+| ------------------ | :-----: |
 | [Http]             |   🟢    |
 | [Http-Post]        |   🟢    |
 | [ForwardWebSocket] |   🟢    |
@@ -278,7 +282,9 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 </Details>
 
-#### appsettings.json Example
+### `appsettings.json` Example
+
+> As the Password is empty here, this indicates that QRCode login is used
 
 ```json
 {
@@ -339,13 +345,10 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 }
 ```
 
-- As the Password is empty here, this indicates that QRCode login is used
-- After the QRCode Login, write Uin back to perform EasyLogin
-
 ## NOTICE BEFORE LOGIN
-- It is recommended that use QRCode Login for the first time as NewDeviceLogin is not implemented.
-- Linux Protocol is recommended as only SignServer for such is provided
-- After QRCode Login, write password and uin back to appsettings.json
+
+- The NewDeviceLogin feature has not been implemented yet. It is recommended to use QRCode login for now.
+- Currently, only the signature server implementation for Linux protocol is available. It is recommended to use the Linux protocol.
 
 ## Known Problem
 
@@ -353,6 +356,6 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 ~~Thanks KonataDev/TheSnowfield for Provision of Signature API~~
 
-Signature API is now not provided, you may need to find it somewhere and inherit `SignProvider` class for `CustomSignProvider` in  `BotConfig`
+Signature API is now not provided, you may need to find it somewhere and inherit `SignProvider` class for `CustomSignProvider` in `BotConfig`
 
 - Signature of Windows and macOS is missing, you need to figure out by your self
