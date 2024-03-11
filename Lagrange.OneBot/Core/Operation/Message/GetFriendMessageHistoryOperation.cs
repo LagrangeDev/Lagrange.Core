@@ -21,7 +21,7 @@ public class GetFriendMessageHistoryOperation(LiteDatabase database, MessageServ
         {
             var collection = database.GetCollection<MessageRecord>();
             var record = history.MessageId == 0 
-                ? collection.Query().Where(x => x.FriendUin == history.UserId).OrderByDescending(x => x.Time).First() 
+                ? collection.Find(x => x.FriendUin == history.UserId).OrderByDescending(x => x.Time).First() 
                 : collection.FindOne(x => x.MessageHash == history.MessageId);
             var chain = (MessageChain)record;
 

@@ -44,8 +44,8 @@ public partial class ReplySegment : SegmentBase
         uint groupUin = chain.GroupUin ?? 0;
             
         var query = chain.IsGroup
-            ? collection.Query().Where(x => x.Sequence == forward.Sequence).Where(x => x.GroupUin == groupUin)
-            : collection.Query().Where(x => x.Sequence == forward.Sequence).Where(x => x.FriendUin == friendUin);
+            ? collection.Find(x => x.Sequence == forward.Sequence).Where(x => x.GroupUin == groupUin)
+            : collection.Find(x => x.Sequence == forward.Sequence).Where(x => x.FriendUin == friendUin);
         var target = query.FirstOrDefault();
 
         return target == null
