@@ -24,7 +24,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
         bot.Invoker.OnGroupMuteEvent += async (_, @event) =>
         {
             logger.LogInformation(@event.ToString());
-            await service.SendJsonAsync(new OneBotGroupMute(bot.BotUin, @event.IsMuted ? "ban" : "lift_ban", @event.GroupUin, @event.OperatorUin ?? 0, 0, -1));
+            await service.SendJsonAsync(new OneBotGroupMute(bot.BotUin, @event.IsMuted ? "ban" : "lift_ban", @event.GroupUin, @event.OperatorUin ?? 0, 0, @event.IsMuted ? -1 : 0));
         };
         
         bot.Invoker.OnFriendRequestEvent += async (_, @event) =>
