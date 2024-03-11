@@ -106,7 +106,8 @@ public class FileEntity : IMessageEntity
             {
                 FileSize = extra.FileSize,
                 FileMd5 = extra.FileMd5.UnHex(),
-                FileId = extra.FileId
+                FileId = extra.FileId,
+                FileName = extra.FileName
             };
         }
 
