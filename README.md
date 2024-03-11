@@ -49,8 +49,6 @@ Feature request would be accepted but implemented with a long duration.
 
 The new function of NTQQ supported in following versions would be added as well.
 
-> Recommend [OpenShamrock](https://github.com/whitechi73/OpenShamrock) if applicable
-
 ## Disclaimer
 
 The Lagrange.Core project, including its developers, contributors, and affiliated individuals or entities, hereby explicitly disclaim any association with, support for, or endorsement of any form of illegal behavior. This disclaimer extends to any use or application of the Lagrange.Core project that may be contrary to local, national, or international laws, regulations, or ethical guidelines.
