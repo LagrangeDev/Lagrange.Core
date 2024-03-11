@@ -13,7 +13,7 @@ internal static class QrCodeHelper
 
         var (bottomHalfBlock, topHalfBlock, emptyBlock, fullBlock) = compatibilityMode ? (".", "^", " ", "@") : ("▄", "▀", " ", "█");
 
-		for (var y = 0; y < qrCode.Size + 2; y += 2)
+        for (var y = 0; y < qrCode.Size + 2; y += 2)
         {
             for (var x = 0; x < qrCode.Size + 2; ++x)
             {
