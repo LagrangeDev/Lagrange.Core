@@ -81,19 +81,19 @@ public static class AudioHelper
         // |FF|FB|
         // +--+--+
         // 0     2
-        if (value >> 16 == 0xFFFB)
+        if (value >> 16 == 0xFFFB ||
         //  ÿ  ó
         // +--+--+
         // |FF|F3|
         // +--+--+
         // 0     2
-        else (value >> 16 == 0xFFF3)
+        value >> 16 == 0xFFF3 ||
         //  ÿ  ò
         // +--+--+
         // |FF|F2|
         // +--+--+
         // 0     2
-        else (value >> 16 == 0xFFF2)
+        value >> 16 == 0xFFF2)
         {
             type = AudioFormat.Mp3;
             return true;
