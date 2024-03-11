@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - "Lagrange.Core/**"
+      - "Lagrange.Core.sln"
       - "README.md"
   workflow_dispatch:
 
