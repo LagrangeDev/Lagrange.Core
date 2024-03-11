@@ -81,7 +81,7 @@ public class GetGroupRootFilesOperation : IOperation
                 }
             }
 
-            return new OneBotResult(new OneBotGetFilesResponse(files, folders), 200, "ok");
+            return new OneBotResult(new OneBotGetFilesResponse(files, folders), 0, "ok");
         }
 
         throw new Exception();
