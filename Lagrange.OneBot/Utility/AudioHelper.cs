@@ -63,13 +63,37 @@ public static class AudioHelper
             return true;
         }
 
-        // MP3
+        // MP3 ID3
         //  I  D  3
         // +--+--+--+
         // |49|44|33|
         // +--+--+--+
         // 0        3
         if (value >> 8 == 0x494433)
+        {
+            type = AudioFormat.Mp3;
+            return true;
+        }
+
+        // MP3 no ID3
+        //  ÿ  û
+        // +--+--+
+        // |FF|FB|
+        // +--+--+
+        // 0     2
+        if (value >> 16 == 0xFFFB ||
+        //  ÿ  ó
+        // +--+--+
+        // |FF|F3|
+        // +--+--+
+        // 0     2
+        value >> 16 == 0xFFF3 ||
+        //  ÿ  ò
+        // +--+--+
+        // |FF|F2|
+        // +--+--+
+        // 0     2
+        value >> 16 == 0xFFF2)
         {
             type = AudioFormat.Mp3;
             return true;
