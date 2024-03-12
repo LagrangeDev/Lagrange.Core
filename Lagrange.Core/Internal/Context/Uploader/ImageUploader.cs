@@ -21,24 +21,27 @@ internal class ImageUploader : IHighwayUploader
             var hwUrlEvent = HighwayUrlEvent.Create();
             var highwayUrlResult = await context.Business.SendEvent(hwUrlEvent);
             var ticketResult = (HighwayUrlEvent)highwayUrlResult[0];
-            
-            var index = metaResult.MsgInfo.MsgInfoBody[0].Index;
-            var extend = new NTV2RichMediaHighwayExt
+
+            if (metaResult.UKey != null)
             {
-                FileUuid = index.FileUuid,
-                UKey = metaResult.UKey,
-                Network = Common.Convert(metaResult.Network),
-                MsgInfoBody = metaResult.MsgInfo.MsgInfoBody,
-                BlockSize = 1024 * 1024,
-                Hash = new NTHighwayHash { FileSha1 = index.Info.FileSha1.UnHex() }
-            };
-            var extStream = extend.Serialize();
-            
-            bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1003, image.ImageStream, ticketResult.SigSession, index.Info.FileHash.UnHex(), extStream.ToArray());
-            if (!hwSuccess)
-            {
-                await image.ImageStream.DisposeAsync();
-                throw new Exception();
+                var index = metaResult.MsgInfo.MsgInfoBody[0].Index;
+                var extend = new NTV2RichMediaHighwayExt
+                {
+                    FileUuid = index.FileUuid,
+                    UKey = metaResult.UKey,
+                    Network = Common.Convert(metaResult.Network),
+                    MsgInfoBody = metaResult.MsgInfo.MsgInfoBody,
+                    BlockSize = 1024 * 1024,
+                    Hash = new NTHighwayHash { FileSha1 = index.Info.FileSha1.UnHex() }
+                };
+                var extStream = extend.Serialize();
+
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1003, image.ImageStream, ticketResult.SigSession, index.Info.FileHash.UnHex(), extStream.ToArray());
+                if (!hwSuccess)
+                {
+                    await image.ImageStream.DisposeAsync();
+                    throw new Exception();
+                }
             }
             
             image.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
@@ -58,24 +61,27 @@ internal class ImageUploader : IHighwayUploader
             var hwUrlEvent = HighwayUrlEvent.Create();
             var highwayUrlResult = await context.Business.SendEvent(hwUrlEvent);
             var ticketResult = (HighwayUrlEvent)highwayUrlResult[0];
-            
-            var index = metaResult.MsgInfo.MsgInfoBody[0].Index;
-            var extend = new NTV2RichMediaHighwayExt
+
+            if (metaResult.UKey != null)
             {
-                FileUuid = index.FileUuid,
-                UKey = metaResult.UKey,
-                Network = Common.Convert(metaResult.Network),
-                MsgInfoBody = metaResult.MsgInfo.MsgInfoBody,
-                BlockSize = 1024 * 1024,
-                Hash = new NTHighwayHash { FileSha1 = index.Info.FileSha1.UnHex() }
-            };
-            var extStream = extend.Serialize();
-            
-            bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1004, image.ImageStream, ticketResult.SigSession, index.Info.FileHash.UnHex(), extStream.ToArray());
-            if (!hwSuccess)
-            {
-                await image.ImageStream.DisposeAsync();
-                throw new Exception();
+                var index = metaResult.MsgInfo.MsgInfoBody[0].Index;
+                var extend = new NTV2RichMediaHighwayExt
+                {
+                    FileUuid = index.FileUuid,
+                    UKey = metaResult.UKey,
+                    Network = Common.Convert(metaResult.Network),
+                    MsgInfoBody = metaResult.MsgInfo.MsgInfoBody,
+                    BlockSize = 1024 * 1024,
+                    Hash = new NTHighwayHash { FileSha1 = index.Info.FileSha1.UnHex() }
+                };
+                var extStream = extend.Serialize();
+
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1004, image.ImageStream, ticketResult.SigSession, index.Info.FileHash.UnHex(), extStream.ToArray());
+                if (!hwSuccess)
+                {
+                    await image.ImageStream.DisposeAsync();
+                    throw new Exception();
+                }
             }
             
             image.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server

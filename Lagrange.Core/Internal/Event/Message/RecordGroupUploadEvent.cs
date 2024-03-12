@@ -12,7 +12,7 @@ internal class RecordGroupUploadEvent : ProtocolEvent
     
     public uint GroupUin { get; }
     
-    public string UKey { get; }
+    public string? UKey { get; }
     
     public MsgInfo MsgInfo { get; }
     
@@ -26,7 +26,7 @@ internal class RecordGroupUploadEvent : ProtocolEvent
         GroupUin = groupUin;
     }
 
-    private RecordGroupUploadEvent(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, RichText compat) : base(resultCode)
+    private RecordGroupUploadEvent(int resultCode, string? uKey, MsgInfo msgInfo, List<IPv4> network, RichText compat) : base(resultCode)
     {
         UKey = uKey;
         MsgInfo = msgInfo;
@@ -37,6 +37,6 @@ internal class RecordGroupUploadEvent : ProtocolEvent
     public static RecordGroupUploadEvent Create(RecordEntity entity, uint groupUin)
         => new(entity, groupUin);
 
-    public static RecordGroupUploadEvent Result(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, RichText compat)
+    public static RecordGroupUploadEvent Result(int resultCode, string? uKey, MsgInfo msgInfo, List<IPv4> network, RichText compat)
         => new(resultCode, uKey, msgInfo, network, compat);
 }
