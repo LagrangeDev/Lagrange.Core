@@ -12,7 +12,7 @@ internal class ImageGroupUploadEvent : ProtocolEvent
     
     public uint GroupUin { get; }
     
-    public string UKey { get; }
+    public string? UKey { get; }
     
     public MsgInfo MsgInfo { get; }
     
@@ -26,7 +26,7 @@ internal class ImageGroupUploadEvent : ProtocolEvent
         GroupUin = groupUin;
     }
 
-    private ImageGroupUploadEvent(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, CustomFace compat) : base(resultCode)
+    private ImageGroupUploadEvent(int resultCode, string? uKey, MsgInfo msgInfo, List<IPv4> network, CustomFace compat) : base(resultCode)
     {
         UKey = uKey;
         MsgInfo = msgInfo;
@@ -37,6 +37,6 @@ internal class ImageGroupUploadEvent : ProtocolEvent
     public static ImageGroupUploadEvent Create(ImageEntity entity, uint groupUin)
         => new(entity, groupUin);
 
-    public static ImageGroupUploadEvent Result(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, CustomFace compat)
+    public static ImageGroupUploadEvent Result(int resultCode, string? uKey, MsgInfo msgInfo, List<IPv4> network, CustomFace compat)
         => new(resultCode, uKey, msgInfo, network, compat);
 }

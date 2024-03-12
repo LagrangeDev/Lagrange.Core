@@ -164,6 +164,11 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         var pkgType = (Event0x210SubType)(msg.Message.ContentHead.SubType ?? 0);
         switch (pkgType)
         {
+            case Event0x210SubType.FriendDeleteNotice:
+            {
+                // 0A8D010A4008AFB39FF80A1218755F54305768425A6368695A684555496253786F6F63474128AFB39FF80A3218755F54305768425A6368695A684555496253786F6F634741122108900410271827209092D9C10228F2C00330809096AF06609092D9C182808080021A260A0012220A2008001005721A0A18755F597831586B5A4E4E656E4E3141356A53423361576667
+                break;
+            }
             case Event0x210SubType.FriendRequestNotice when msg.Message.Body?.MsgContent is { } content:
             {
                 if (Serializer.Deserialize<FriendRequest>(content.AsSpan()).Info is { } info)

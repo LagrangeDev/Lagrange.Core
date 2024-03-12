@@ -13,7 +13,7 @@ internal class ImageUploadEvent : ProtocolEvent
     
     public string TargetUid { get; set; }
     
-    public string UKey { get; }
+    public string? UKey { get; }
     
     public MsgInfo MsgInfo { get; }
     
@@ -27,7 +27,7 @@ internal class ImageUploadEvent : ProtocolEvent
         TargetUid = targetUid;
     }
 
-    private ImageUploadEvent(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, NotOnlineImage compat) : base(resultCode)
+    private ImageUploadEvent(int resultCode, string? uKey, MsgInfo msgInfo, List<IPv4> network, NotOnlineImage compat) : base(resultCode)
     {
         UKey = uKey;
         MsgInfo = msgInfo;
@@ -38,6 +38,6 @@ internal class ImageUploadEvent : ProtocolEvent
     public static ImageUploadEvent Create(ImageEntity entity, string targetUid)
         => new(entity, targetUid);
 
-    public static ImageUploadEvent Result(int resultCode, string uKey, MsgInfo msgInfo, List<IPv4> network, NotOnlineImage compat)
+    public static ImageUploadEvent Result(int resultCode, string? uKey, MsgInfo msgInfo, List<IPv4> network, NotOnlineImage compat)
         => new(resultCode, uKey, msgInfo, network, compat);
 }
