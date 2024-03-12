@@ -49,7 +49,7 @@ internal class GroupFSUploadService : BaseService<GroupFSUploadEvent>
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x6D6Response>>(input.AsSpan());
         var upload = payload.Body.Upload;
         
-        output = GroupFSUploadEvent.Result(upload.RetCode, upload.FileId, upload.FileKey, upload.CheckKey, upload.UploadIp, upload.UploadPort);
+        output = GroupFSUploadEvent.Result(upload.RetCode, upload.BoolFileExist, upload.FileId, upload.FileKey, upload.CheckKey, upload.UploadIp, upload.UploadPort);
         extraEvents = null;
         return true;
     }

@@ -23,62 +23,65 @@ internal static class FileUploader
         var hwUrlEvent = HighwayUrlEvent.Create();
         var highwayUrlResult = await context.Business.SendEvent(hwUrlEvent);
         var ticketResult = (HighwayUrlEvent)highwayUrlResult[0];
-        
-        var ext = new FileUploadExt
+
+        if (!uploadResp.IsExist)
         {
-            Unknown1 = 100,
-            Unknown2 = 1,
-            Entry = new FileUploadEntry
+            var ext = new FileUploadExt
             {
-                BusiBuff = new ExcitingBusiInfo
+                Unknown1 = 100,
+                Unknown2 = 1,
+                Entry = new FileUploadEntry
                 {
-                    SenderUin = context.Keystore.Uin,
-                },
-                FileEntry = new ExcitingFileEntry
-                {
-                    FileSize = file.FileStream.Length,
-                    Md5 = file.FileMd5,
-                    CheckKey = file.FileSha1,
-                    Md5S2 = file.FileMd5,
-                    FileId = uploadResp.FileId,
-                    UploadKey = uploadResp.UploadKey
-                },
-                ClientInfo = new ExcitingClientInfo
-                {
-                    ClientType = 3,
-                    AppId = "100",
-                    TerminalType = 3,
-                    ClientVer = "1.1.1",
-                    Unknown = 4
-                },
-                FileNameInfo = new ExcitingFileNameInfo
-                {
-                    FileName = file.FileName
-                },
-                Host = new ExcitingHostConfig
-                {
-                    Hosts = new List<ExcitingHostInfo>
+                    BusiBuff = new ExcitingBusiInfo
                     {
-                        new()
+                        SenderUin = context.Keystore.Uin,
+                    },
+                    FileEntry = new ExcitingFileEntry
+                    {
+                        FileSize = file.FileStream.Length,
+                        Md5 = file.FileMd5,
+                        CheckKey = file.FileSha1,
+                        Md5S2 = file.FileMd5,
+                        FileId = uploadResp.FileId,
+                        UploadKey = uploadResp.UploadKey
+                    },
+                    ClientInfo = new ExcitingClientInfo
+                    {
+                        ClientType = 3,
+                        AppId = "100",
+                        TerminalType = 3,
+                        ClientVer = "1.1.1",
+                        Unknown = 4
+                    },
+                    FileNameInfo = new ExcitingFileNameInfo
+                    {
+                        FileName = file.FileName
+                    },
+                    Host = new ExcitingHostConfig
+                    {
+                        Hosts = new List<ExcitingHostInfo>
                         {
-                            Url = new ExcitingUrlInfo
+                            new()
                             {
-                                Unknown = 1,
-                                Host = uploadResp.Ip
-                            },
-                            Port = uploadResp.Port
+                                Url = new ExcitingUrlInfo
+                                {
+                                    Unknown = 1,
+                                    Host = uploadResp.Ip
+                                },
+                                Port = uploadResp.Port
+                            }
                         }
                     }
-                }
-            },
-            Unknown200 = 1
-        };
+                },
+                Unknown200 = 1
+            };
 
-        file.FileHash = uploadResp.Addon;
-        file.FileUuid = uploadResp.FileId;
-        
-        bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(95, file.FileStream, ticketResult.SigSession, file.FileMd5, ext.Serialize().ToArray());
-        if (!hwSuccess) return false;
+            file.FileHash = uploadResp.Addon;
+            file.FileUuid = uploadResp.FileId;
+
+            bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(95, file.FileStream, ticketResult.SigSession, file.FileMd5, ext.Serialize().ToArray());
+            if (!hwSuccess) return false;
+        }
 
         await file.FileStream.DisposeAsync();
         var sendEvent = SendMessageEvent.Create(chain);
@@ -98,59 +101,62 @@ internal static class FileUploader
         var highwayUrlResult = await context.Business.SendEvent(hwUrlEvent);
         var ticketResult = (HighwayUrlEvent)highwayUrlResult[0];
 
-        var ext = new FileUploadExt
+        if (!uploadResp.IsExist)
         {
-            Unknown1 = 100,
-            Unknown2 = 1,
-            Entry = new FileUploadEntry
+            var ext = new FileUploadExt
             {
-                BusiBuff = new ExcitingBusiInfo
+                Unknown1 = 100,
+                Unknown2 = 1,
+                Entry = new FileUploadEntry
                 {
-                    SenderUin = context.Keystore.Uin,
-                    ReceiverUin = chain.GroupUin ?? 0,
-                    GroupCode = chain.GroupUin ?? 0
-                },
-                FileEntry = new ExcitingFileEntry
-                {
-                    FileSize = file.FileStream.Length,
-                    Md5 = file.FileMd5,
-                    CheckKey = uploadResp.CheckKey,
-                    Md5S2 = file.FileMd5,
-                    FileId = uploadResp.FileId,
-                    UploadKey = uploadResp.UploadKey
-                },
-                ClientInfo = new ExcitingClientInfo
-                {
-                    ClientType = 3,
-                    AppId = "100",
-                    TerminalType = 3,
-                    ClientVer = "1.1.1",
-                    Unknown = 4
-                },
-                FileNameInfo = new ExcitingFileNameInfo
-                {
-                    FileName = file.FileName
-                },
-                Host = new ExcitingHostConfig
-                {
-                    Hosts = new List<ExcitingHostInfo>
+                    BusiBuff = new ExcitingBusiInfo
                     {
-                        new()
+                        SenderUin = context.Keystore.Uin,
+                        ReceiverUin = chain.GroupUin ?? 0,
+                        GroupCode = chain.GroupUin ?? 0
+                    },
+                    FileEntry = new ExcitingFileEntry
+                    {
+                        FileSize = file.FileStream.Length,
+                        Md5 = file.FileMd5,
+                        CheckKey = uploadResp.CheckKey,
+                        Md5S2 = file.FileMd5,
+                        FileId = uploadResp.FileId,
+                        UploadKey = uploadResp.UploadKey
+                    },
+                    ClientInfo = new ExcitingClientInfo
+                    {
+                        ClientType = 3,
+                        AppId = "100",
+                        TerminalType = 3,
+                        ClientVer = "1.1.1",
+                        Unknown = 4
+                    },
+                    FileNameInfo = new ExcitingFileNameInfo
+                    {
+                        FileName = file.FileName
+                    },
+                    Host = new ExcitingHostConfig
+                    {
+                        Hosts = new List<ExcitingHostInfo>
                         {
-                            Url = new ExcitingUrlInfo
+                            new()
                             {
-                                Unknown = 1,
-                                Host = uploadResp.Ip
-                            },
-                            Port = uploadResp.Port
+                                Url = new ExcitingUrlInfo
+                                {
+                                    Unknown = 1,
+                                    Host = uploadResp.Ip
+                                },
+                                Port = uploadResp.Port
+                            }
                         }
                     }
                 }
-            }
-        };
-        
-        bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(71, file.FileStream, ticketResult.SigSession, file.FileMd5, ext.Serialize().ToArray());
-        if (!hwSuccess) return false;
+            };
+
+            bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(71, file.FileStream, ticketResult.SigSession, file.FileMd5, ext.Serialize().ToArray());
+            if (!hwSuccess) return false;
+        }
         
         await file.FileStream.DisposeAsync();
         var sendEvent = GroupSendFileEvent.Create(chain.GroupUin ?? 0, uploadResp.FileId);

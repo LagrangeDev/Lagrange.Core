@@ -62,8 +62,5 @@ public class NTLoginTest
         await bot.SendMessage(friendChain.Build());
 
         await Task.Delay(1000);
-
-        await bot.ContextCollection.Business.SendEvent(FetchAvatarEvent.Create("u_jwgijMpG1BnknQNubcy1bQ"));
-        await bot.FetchRequests();
     }
 }
