@@ -11,6 +11,8 @@ internal class GroupFSUploadEvent : ProtocolEvent
     public string TargetDirectory { get; }
     
     public FileEntity Entity { get; }
+
+    public bool IsExist { get; }
     
     public string FileId { get; }
     
@@ -29,8 +31,9 @@ internal class GroupFSUploadEvent : ProtocolEvent
         Entity = entity;
     }
 
-    private GroupFSUploadEvent(int resultCode, string fileId, byte[] uploadKey, byte[] checkKey, string ip, uint port) : base(resultCode)
+    private GroupFSUploadEvent(int resultCode, bool isExist, string fileId, byte[] uploadKey, byte[] checkKey, string ip, uint port) : base(resultCode)
     {
+        IsExist = isExist;
         FileId = fileId;
         UploadKey = uploadKey;
         CheckKey = checkKey;
@@ -41,6 +44,6 @@ internal class GroupFSUploadEvent : ProtocolEvent
     public static GroupFSUploadEvent Create(uint groupUin, string targetDirectory, FileEntity entity) 
         => new(groupUin, targetDirectory, entity);
 
-    public static GroupFSUploadEvent Result(int resultCode, string fileId, byte[] uploadKey, byte[] checkKey, string ip, uint port) 
-        => new(resultCode, fileId, uploadKey, checkKey, ip, port);
+    public static GroupFSUploadEvent Result(int resultCode, bool isExist, string fileId, byte[] uploadKey, byte[] checkKey, string ip, uint port) 
+        => new(resultCode, isExist, fileId, uploadKey, checkKey, ip, port);
 }

@@ -9,6 +9,8 @@ internal class FileUploadEvent : ProtocolEvent
     public string TargetUid { get; }
     
     public FileEntity Entity { get; }
+
+    public bool IsExist { get; }
     
     public string FileId { get; }
     
@@ -26,8 +28,9 @@ internal class FileUploadEvent : ProtocolEvent
         Entity = entity;
     }
 
-    private FileUploadEvent(int resultCode, string fileId, byte[] uploadKey, string ip, uint port, string addon) : base(resultCode)
+    private FileUploadEvent(int resultCode, bool isExist, string fileId, byte[] uploadKey, string ip, uint port, string addon) : base(resultCode)
     {
+        IsExist = isExist;
         FileId = fileId;
         UploadKey = uploadKey;
         Ip = ip;
@@ -37,6 +40,6 @@ internal class FileUploadEvent : ProtocolEvent
 
     public static FileUploadEvent Create(string targetUid, FileEntity entity) => new(targetUid, entity);
 
-    public static FileUploadEvent Result(int resultCode, string fileId, byte[] uploadKey, string ip, uint port, string addon) 
-        => new(resultCode, fileId, uploadKey, ip, port, addon);
+    public static FileUploadEvent Result(int resultCode, bool isExist, string fileId, byte[] uploadKey, string ip, uint port, string addon) 
+        => new(resultCode, isExist, fileId, uploadKey, ip, port, addon);
 }
