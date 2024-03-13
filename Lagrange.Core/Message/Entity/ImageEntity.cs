@@ -80,8 +80,22 @@ public class ImageEntity : IMessageEntity
     {
         if (elems.NotOnlineImage is { } image)
         {
-            if (image.OrigUrl.Contains("&rkey=")) return null; // NTQQ's shit
-            
+            if (image.OrigUrl.Contains("&rkey=")) // NTQQ's shit
+            {
+                if (image.PbRes is { } res && Serializer.Deserialize<CustomFaceExtra>(res.AsSpan()).Hash != null)
+                {
+                    return new ImageEntity // NTQQ Mobile
+                    {
+                        PictureSize = new Vector2(image.PicWidth, image.PicHeight),
+                        FilePath = image.FilePath,
+                        ImageSize = image.FileLen,
+                        ImageUrl = $"{BaseUrl}{image.OrigUrl}"
+                    };
+                }
+
+                return null;
+            }
+
             return new ImageEntity
             {
                 PictureSize = new Vector2(image.PicWidth, image.PicHeight),
