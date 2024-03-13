@@ -9,6 +9,8 @@ public class ForwardEntity : IMessageEntity
 {
     public DateTime Time { get; set; }
     
+    public ulong MessageId { get; set; }
+    
     public uint Sequence { get; set; }
     
     public string? Uid { get; set; }
@@ -33,13 +35,14 @@ public class ForwardEntity : IMessageEntity
         Uid = chain.Uid;
         Elements = chain.Elements;
         TargetUin = chain.FriendUin;
+        MessageId = chain.MessageId;
     }
     
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
         var reserve = new SrcMsg.Preserve
         {
-            MessageId = Random.Shared.NextInt64(0, int.MaxValue) | 0x1000000000000000L,
+            MessageId = MessageId,
             ReceiverUid = SelfUid,
             SenderUid = Uid,
             ClientSequence = 0
@@ -68,10 +71,12 @@ public class ForwardEntity : IMessageEntity
     {
         if (elems.SrcMsg is { } srcMsg)
         {
+            var reserve = Serializer.Deserialize<SrcMsg.Preserve>(srcMsg.PbReserve.AsSpan());
             return new ForwardEntity
             {
                 Sequence = srcMsg.OrigSeqs?[0] ?? 0,
                 TargetUin = (uint)srcMsg.SenderUin,
+                MessageId = reserve.MessageId
             };
         }
 
