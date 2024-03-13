@@ -19,7 +19,7 @@ public class GetMessageOperation(LiteDatabase database, MessageService service) 
     {
         if (payload.Deserialize<OneBotGetMessage>(SerializerOptions.DefaultOptions) is { } getMsg)
         {
-            var record = database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == getMsg.MessageId);
+            var record = database.GetCollection<MessageRecord>().FindById(getMsg.MessageId);
             var chain = (MessageChain)record;
             var sender = chain.GroupMemberInfo == null
                 ? new OneBotSender(chain.GroupMemberInfo?.Uin ?? 0, chain.GroupMemberInfo?.MemberName ?? string.Empty)

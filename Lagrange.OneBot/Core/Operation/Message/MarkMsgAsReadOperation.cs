@@ -17,7 +17,7 @@ internal class MarkMsgAsReadOperation(LiteDatabase database) : IOperation
     {
         if (payload.Deserialize<OneBotGetMessage>(SerializerOptions.DefaultOptions) is { } getMsg)
         {
-            var record = database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == getMsg.MessageId);
+            var record = database.GetCollection<MessageRecord>().FindById(getMsg.MessageId);
             var chain = (MessageChain)record;
             bool result = await context.MarkAsRead(chain);
             return new OneBotResult(null, result ? 0 : 1, result ? "ok" : "failed");

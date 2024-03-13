@@ -17,7 +17,7 @@ public class DeleteMessageOperation(LiteDatabase database) : IOperation
     {
         if (payload.Deserialize<OneBotGetMessage>(SerializerOptions.DefaultOptions) is { } getMsg)
         {
-            var record = database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == getMsg.MessageId);
+            var record = database.GetCollection<MessageRecord>().FindById(getMsg.MessageId);
             var chain = (MessageChain)record;
 
             if (chain.IsGroup && await context.RecallGroupMessage(chain)) return new OneBotResult(null, 0, "ok");

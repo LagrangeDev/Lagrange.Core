@@ -22,7 +22,7 @@ public class GetFriendMessageHistoryOperation(LiteDatabase database, MessageServ
             var collection = database.GetCollection<MessageRecord>();
             var record = history.MessageId == 0 
                 ? collection.Find(x => x.FriendUin == history.UserId).OrderByDescending(x => x.Time).First() 
-                : collection.FindOne(x => x.MessageHash == history.MessageId);
+                : collection.FindById(history.MessageId);
             var chain = (MessageChain)record;
 
             if (await context.GetRoamMessage(chain, 20) is { } results)

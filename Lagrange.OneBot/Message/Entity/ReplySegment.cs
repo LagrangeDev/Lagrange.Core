@@ -24,7 +24,7 @@ public partial class ReplySegment : SegmentBase
     {
         if (segment is ReplySegment reply && Database is not null)
         {
-            reply.TargetChain ??= (MessageChain)Database.GetCollection<MessageRecord>().FindOne(x => x.MessageHash == int.Parse(reply.MessageId));
+            reply.TargetChain ??= (MessageChain)Database.GetCollection<MessageRecord>().FindById(int.Parse(reply.MessageId));
 
             var build = MessagePacker.Build(reply.TargetChain, "");
             var virtualElem = build.Body?.RichText?.Elems;
@@ -39,17 +39,11 @@ public partial class ReplySegment : SegmentBase
         if (entity is not ForwardEntity forward || Database is null) throw new ArgumentException("The entity is not a forward entity.");
         
         var collection = Database.GetCollection<MessageRecord>();
-            
-        uint friendUin = chain.FriendUin;  // such action is to break the BsonExpression from MessageChain into uint
-        uint groupUin = chain.GroupUin ?? 0;
-            
-        var query = chain.IsGroup
-            ? collection.Find(x => x.Sequence == forward.Sequence).Where(x => x.GroupUin == groupUin)
-            : collection.Find(x => x.Sequence == forward.Sequence).Where(x => x.FriendUin == friendUin);
-        var target = query.FirstOrDefault();
-
-        return target == null
+        
+        int hash = MessageRecord.CalcMessageHash(forward.MessageId, forward.Sequence);
+        var query = collection.FindById(hash);
+        return query == null
             ? new ReplySegment { MessageId = 0.ToString() }
-            : new ReplySegment { MessageId = target.MessageHash.ToString() };
+            : new ReplySegment { MessageId = query.MessageHash.ToString() };
     }
 }
