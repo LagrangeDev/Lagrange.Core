@@ -9,6 +9,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 
 [EventSubscribe(typeof(GroupSysDecreaseEvent))]
 [EventSubscribe(typeof(GroupSysIncreaseEvent))]
+[EventSubscribe(typeof(GroupSysAdminEvent))]
 [BusinessLogic("CachingLogic", "Cache Uin to Uid")]
 internal class CachingLogic : LogicBase
 {
@@ -39,6 +40,8 @@ internal class CachingLogic : LogicBase
                 return CacheUid(groupSysDecreaseEvent.GroupUin, true);
             case GroupSysIncreaseEvent groupSysIncreaseEvent:
                 return CacheUid(groupSysIncreaseEvent.GroupUin, true);
+            case GroupSysAdminEvent groupSysAdminEvent:
+                return CacheUid(groupSysAdminEvent.GroupUin, true);
         }
 
         return Task.CompletedTask;
