@@ -174,7 +174,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [/get_image]                   |   🔴    |
 | [/can_send_image]              |   🟢    |
 | [/can_send_record]             |   🟢    |
-| [/get_status]                  |   🔴    |
+| [/get_status]                  |   🟢    |
 | [/get_version_info]            |   🟢    |
 | [/set_restart]                 |   🟢    |
 | [/clean_cache]                 |   🔴    |
