@@ -28,8 +28,7 @@ public class GetFriendMessageHistoryOperation(LiteDatabase database, MessageServ
             if (await context.GetRoamMessage(chain, 20) is { } results)
             {
                 var messages = results
-                    .Select(message.Convert)
-                    .Select(x => message.ConvertToPrivateMsg(context.BotUin, chain, record.MessageHash))
+                    .Select(x => message.ConvertToPrivateMsg(context.BotUin, x, record.MessageHash))
                     .ToList();
                 return new OneBotResult(new OneBotFriendMsgHistoryResponse(messages), 0, "ok");
             }
