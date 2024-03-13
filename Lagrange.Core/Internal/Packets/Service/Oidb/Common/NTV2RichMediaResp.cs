@@ -100,7 +100,7 @@ internal class IPv6
 [ProtoContract]
 internal class UploadResp
 {
-    [ProtoMember(1)] public string UKey { get; set; }
+    [ProtoMember(1)] public string? UKey { get; set; }
     
     [ProtoMember(2)] public uint UKeyTtlSecond { get; set; }
 

@@ -28,6 +28,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(GroupSysRequestInvitationEvent))]
 [EventSubscribe(typeof(FriendSysRecallEvent))]
 [EventSubscribe(typeof(FriendSysRequestEvent))]
+[EventSubscribe(typeof(LoginNotifyEvent))]
 [BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
 internal class MessagingLogic : LogicBase
 {
@@ -170,6 +171,12 @@ internal class MessagingLogic : LogicBase
                 uint fromUin = await Collection.Business.CachingLogic.ResolveUin(null, recall.FromUid) ?? 0;
                 var recallArgs = new FriendRecallEvent(fromUin, recall.Sequence, recall.Time, recall.Random);
                 Collection.Invoker.PostEvent(recallArgs);
+                break;
+            }
+            case LoginNotifyEvent login:
+            {
+                var deviceArgs = new DeviceLoginEvent(login.IsLogin, login.AppId, login.Tag, login.Message);
+                Collection.Invoker.PostEvent(deviceArgs);
                 break;
             }
         }
