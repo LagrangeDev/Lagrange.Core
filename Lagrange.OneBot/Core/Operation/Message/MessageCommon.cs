@@ -192,7 +192,7 @@ public partial class MessageCommon
                     if (pair.Length == 2) data[pair[0]] = UnescapeCQ(pair[1]);
                 }
 
-                if (JsonSerializer.SerializeToElement(data).Deserialize(instance.GetType()) is SegmentBase cast) instance.Build(builder, cast);
+                if (JsonSerializer.SerializeToElement(data).Deserialize(instance.GetType(), SerializerOptions.DefaultOptions) is SegmentBase cast) instance.Build(builder, cast);
                 else Log.LogCQFailed(_logger, type, string.Empty);
             }
         }
@@ -206,7 +206,7 @@ public partial class MessageCommon
         {
             if (_typeToSegment.TryGetValue(segment.Type, out var instance))
             {
-                if (((JsonElement)segment.Data).Deserialize(instance.GetType()) is SegmentBase cast) instance.Build(builder, cast);
+                if (((JsonElement)segment.Data).Deserialize(instance.GetType(), SerializerOptions.DefaultOptions) is SegmentBase cast) instance.Build(builder, cast);
                 else Log.LogCQFailed(_logger, segment.Type, string.Empty);
             }
         }
