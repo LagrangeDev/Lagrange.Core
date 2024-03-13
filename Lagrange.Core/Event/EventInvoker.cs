@@ -35,6 +35,7 @@ public partial class EventInvoker : IDisposable
         RegisterEvent((GroupRecallEvent e) => OnGroupRecallEvent?.Invoke(context, e));
         RegisterEvent((FriendRecallEvent e) => OnFriendRecallEvent?.Invoke(context, e));
         RegisterEvent((DeviceLoginEvent e) => OnDeviceLoginEvent?.Invoke(context, e));
+        RegisterEvent((FriendPokeEvent e) => OnFriendPokeEvent?.Invoke(context, e));
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

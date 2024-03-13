@@ -190,6 +190,12 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 // 0A710A4008AFB39FF80A1218755F54305768425A6368695A684555496253786F6F63474128AFB39FF80A3218755F54305768425A6368695A684555496253786F6F634741122108900410D40118D4012090845428A0850230ECB982AF06609084D48080808080021A0A0A00120608BDCCF4E802180122340A0E33302E3137312E3135392E32333510FE9D011A1E10900418A08502209084D480808080800230D401380140AFB39FF80A4801
                 break;
             }
+            case Event0x210SubType.FriendPokeNotice:
+            {
+                var poke = FriendSysPokeEvent.Result(msg.Message.ResponseHead.FromUin);
+                extraEvents.Add(poke);
+                break;
+            }
             default:
             {
                 Console.WriteLine($"Unknown Event0x210 message type: {pkgType}: {payload.Hex()}");

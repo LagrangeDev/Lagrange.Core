@@ -9,6 +9,7 @@ using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Service;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
+using FriendPokeEvent = Lagrange.Core.Event.EventArg.FriendPokeEvent;
 
 namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 
@@ -28,6 +29,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(GroupSysRequestInvitationEvent))]
 [EventSubscribe(typeof(FriendSysRecallEvent))]
 [EventSubscribe(typeof(FriendSysRequestEvent))]
+[EventSubscribe(typeof(FriendSysPokeEvent))]
 [EventSubscribe(typeof(LoginNotifyEvent))]
 [BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
 internal class MessagingLogic : LogicBase
@@ -171,6 +173,12 @@ internal class MessagingLogic : LogicBase
                 uint fromUin = await Collection.Business.CachingLogic.ResolveUin(null, recall.FromUid) ?? 0;
                 var recallArgs = new FriendRecallEvent(fromUin, recall.Sequence, recall.Time, recall.Random);
                 Collection.Invoker.PostEvent(recallArgs);
+                break;
+            }
+            case FriendSysPokeEvent poke:
+            {
+                var pokeArgs = new FriendPokeEvent(poke.FriendUin);
+                Collection.Invoker.PostEvent(pokeArgs);
                 break;
             }
             case LoginNotifyEvent login:

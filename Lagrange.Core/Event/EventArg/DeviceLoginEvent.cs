@@ -18,6 +18,6 @@ public class DeviceLoginEvent : EventBase
         Tag = tag;
         Message = message;
 
-        EventMessage = $"{Tag} | {Message}, AppID: {AppId}, IsLogin: {IsLogin}";
+        EventMessage = $"[{nameof(DeviceLoginEvent)}]: {Tag} | {Message}, AppID: {AppId}, IsLogin: {IsLogin}";
     }
 }
