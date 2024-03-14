@@ -72,6 +72,9 @@ public static class GroupExt
     public static Task<bool> RemoveEssenceMessage(this BotContext bot, MessageChain chain)
         => bot.ContextCollection.Business.OperationLogic.RemoveEssenceMessage(chain.GroupUin ?? 0, chain.Sequence, (uint)(chain.MessageId & 0xFFFFFFFF));
 
+    public static Task<bool> GroupSetSpecialTitle(this BotContext bot, uint groupUin, uint targetUin, string title)
+        => bot.ContextCollection.Business.OperationLogic.GroupSetSpecialTitle(groupUin, targetUin, title);
+
     #region Group File System
 
     public static Task<ulong> FetchGroupFSSpace(this BotContext bot, uint groupUin)

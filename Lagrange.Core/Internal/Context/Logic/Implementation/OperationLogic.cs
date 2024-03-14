@@ -387,4 +387,14 @@ internal class OperationLogic : LogicBase
         var results = await Collection.Business.SendEvent(removeEssenceMessageEvent);
         return results.Count != 0 && ((RemoveEssenceMessageEvent)results[0]).ResultCode == 0;
     }
+    
+    public async Task<bool> GroupSetSpecialTitle(uint groupUin, uint targetUin, string title)
+    {
+        string? uid = await Collection.Business.CachingLogic.ResolveUid(groupUin, targetUin);
+        if (uid == null) return false;
+
+        var groupSetSpecialTitleEvent = GroupSetSpecialTitleEvent.Create(groupUin, uid, title);
+        var events = await Collection.Business.SendEvent(groupSetSpecialTitleEvent);
+        return events.Count != 0 && ((GroupSetSpecialTitleEvent)events[0]).ResultCode == 0;
+    }
 }

@@ -9,18 +9,23 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 /// Rename Group Member
 /// </summary>
 [ProtoContract]
-[OidbSvcTrpcTcp(0x8FC, 3)]
-internal class OidbSvcTrpcTcp0x8FC_3
+internal class OidbSvcTrpcTcp0x8FC
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
     
-    [ProtoMember(3)] public OidbSvcTrpcTcp0x8FC_3Body Body { get; set; }
+    [ProtoMember(3)] public OidbSvcTrpcTcp0x8FCBody Body { get; set; }
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0x8FC_3Body
+internal class OidbSvcTrpcTcp0x8FCBody
 {
     [ProtoMember(1)] public string TargetUid { get; set; }
+    
+    [ProtoMember(5)] public string SpecialTitle { get; set; }
+    
+    [ProtoMember(6)] public int SpecialTitleExpireTime { get; set; }
+    
+    [ProtoMember(7)] public string UinName { get; set; }
     
     [ProtoMember(8)] public string TargetName { get; set; }
 }
