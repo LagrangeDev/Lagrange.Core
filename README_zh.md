@@ -141,7 +141,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 <Summary>API</Summary>
 
 | API                            | 支持情况 |
-| ------------------------------ | :------: |
+|--------------------------------| :------: |
 | [/send_private_msg]            |    🟢    |
 | [/send_group_msg]              |    🟢    |
 | [/send_msg]                    |    🟢    |
@@ -158,7 +158,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [/set_group_card]              |    🟢    |
 | [/set_group_name]              |    🟢    |
 | [/set_group_leave]             |    🟢    |
-| ~~[/set_group_special_title]~~ |    🔴    |
+| [/set_group_special_title]     |    🟢    |
 | [/set_friend_add_request]      |    🟢    |
 | [/set_group_add_request]       |    🟢    |
 | [/get_login_info]              |    🟢    |
