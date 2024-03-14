@@ -4,7 +4,7 @@
         <LangVersion>preview</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>0.0.4-alpha</Version>
+        <Version>0.0.5-alpha</Version>
         <Title>Lagrange.Audio</Title>
         <RepositoryUrl>https://github.com/LagrangeDev/Lagrange.Core</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -36,6 +36,7 @@
     
     <ItemGroup>
       <PackageReference Include="MP3Sharp" Version="1.0.5" />
+      <PackageReference Include="NAudio" Version="2.2.1" />
     </ItemGroup>
 
 </Project>

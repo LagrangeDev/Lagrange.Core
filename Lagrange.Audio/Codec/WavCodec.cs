@@ -1,5 +1,4 @@
-using System.Text;
-using Lagrange.Audio.Utility;
+using NAudio.Wave;
 
 namespace Lagrange.Audio.Codec;
 
@@ -8,79 +7,66 @@ namespace Lagrange.Audio.Codec;
 /// </summary>
 public static class WavCodec
 {
-    /// <summary>
-    /// Wav encoder
-    /// </summary>
-    public class Encoder : AudioStream
+    public class Decoder : AudioStream
     {
-        private AudioInfo _output;
-        private bool _firstRead;
-        private bool _firstWrite;
-
+        private readonly WaveStream _stream;
+        private readonly AudioInfo _output;
+        
         /// <summary>
-        /// Wav encoder
+        /// WavCodec decoder
         /// </summary>
-        public Encoder()
+        public Decoder(string file)
         {
-            _output = AudioInfo.Default();
-            _firstRead = true;
-            _firstWrite = true;
+            _stream = new WaveFileReader(file);
+            _output = new AudioInfo(AudioFormat.Signed16Bit, (AudioChannel)_stream.WaveFormat.Channels, _stream.WaveFormat.SampleRate);
         }
-
+        
         /// <summary>
-        /// Wav encoder
+        /// WavCodec decoder
         /// </summary>
-        public Encoder(AudioInfo input) : this()
+        public Decoder(Stream file)
         {
-            _output = input;
+            _stream = new WaveFileReader(file);
+            _output = new AudioInfo(AudioFormat.Signed16Bit, (AudioChannel)_stream.WaveFormat.Channels, _stream.WaveFormat.SampleRate);
         }
-
+        
         /// <summary>
-        /// Set adaptive output
+        /// Get adaptive output
         /// </summary>
-        internal override void SetAdaptiveInput(AudioInfo info) => _output = info;
+        internal override AudioInfo? GetAdaptiveOutput() => _output;
 
         /// <inheritdoc />
-        public override void Write(byte[] buffer, int offset, int count)
-        {
-            // Write wav header
-            if (_firstWrite)
-            {
-                _firstWrite = false;
-
-                using var writer = new BinaryWriter(this, Encoding.Default, true);
-                writer.Write(0x46464952U);
-                writer.Write(Length + 44 - 8);
-
-                writer.Write(1163280727U);
-                writer.Write(544501094U);
-
-                writer.Write(16);
-                writer.Write((ushort)0x01);
-                writer.Write((ushort)_output.Channels);
-
-                writer.Write(_output.SampleRate);
-                writer.Write((uint)((double)_output.SampleRate * Sample.GetSampleLen(_output.Format) * (int)_output.Channels / 8));
-
-                writer.Write((ushort)Sample.GetSampleLen(_output.Format));
-
-                writer.Write(0x61746164U);
-                writer.Write(Length);
-            }
-
-            base.Write(buffer, offset, count);
-        }
+        public override void Flush() => _stream.Flush();
 
         /// <inheritdoc />
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            if (_firstRead)
-            {
-                Position = 0;
-                _firstRead = false;
-            }
+        public override int Read(byte[] buffer, int offset, int count) => _stream.Read(buffer, offset, count);
 
-            return base.Read(buffer, offset, count);
+        /// <inheritdoc />
+        public override long Seek(long offset, SeekOrigin origin) => _stream.Seek(offset, origin);
+
+        /// <inheritdoc />
+        public override void SetLength(long value) => _stream.SetLength(value);
+
+        /// <inheritdoc />
+        public override void Write(byte[] buffer, int offset, int count) => _stream.Write(buffer, offset, count);
+
+        /// <inheritdoc />
+        public override bool CanRead => _stream.CanRead;
+
+        /// <inheritdoc />
+        public override bool CanSeek => _stream.CanSeek;
+
+        /// <inheritdoc />
+        public override bool CanWrite => _stream.CanWrite;
+
+        /// <inheritdoc />
+        public override long Length => _stream.Length;
+
+        /// <inheritdoc />
+        public override long Position
+        {
+            get => _stream.Position;
+            set => _stream.Position = value;
         }
     }
 }
