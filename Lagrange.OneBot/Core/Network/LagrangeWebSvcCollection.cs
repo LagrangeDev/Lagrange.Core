@@ -9,11 +9,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Lagrange.OneBot.Core.Network;
 
-public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, IConfiguration config, ILogger<LagrangeWebSvcCollection> logger) 
+public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, IConfiguration config, ILogger<LagrangeWebSvcCollection> logger)
     : IHostedService
 {
     private const string Tag = nameof(LagrangeWebSvcCollection);
-    
+
     private readonly List<(IServiceScope, ILagrangeWebService)> _webServices = [];
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -23,7 +23,7 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
         {
             Log.LogMultiConnection(logger, Tag);
         }
-        else 
+        else
         {
             implsSection = config.GetSection("Implementation");
             if (!implsSection.Exists())
@@ -31,7 +31,7 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
                 Log.LogNoConnection(logger, Tag);
                 return;
             }
-            
+
             Log.LogSingleConnection(logger, Tag);
         }
 
@@ -41,15 +41,24 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
             if (section["Enable"] == "false") continue;
             var scope = services.CreateScope();
             var serviceProvider = scope.ServiceProvider;
-            
+
             var factory = serviceProvider.GetRequiredService<ILagrangeWebServiceFactory>();
             factory.SetConfig(section);
 
             if (factory.Create() is not { } webService) continue;
             webService.OnMessageReceived += async (_, args) =>
             {
-                if (await operationSvc.HandleOperation(args) is { } result) 
-                    await webService.SendJsonAsync(result, args.Identifier, cancellationToken);
+                if (await operationSvc.HandleOperation(args) is { } result)
+                {
+                    try
+                    {
+                        await webService.SendJsonAsync(result, args.Identifier, cancellationToken);
+                    }
+                    catch (WebSocketException)
+                    {
+                        // ignore due to connection failed
+                    }
+                }
             };
 
             try
@@ -64,9 +73,9 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
             }
         }
     }
-    
+
     public async Task StopAsync(CancellationToken cancellationToken)
-    {       
+    {
         foreach (var (scope, service) in _webServices)
         {
             try
@@ -83,7 +92,7 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
             }
         }
     }
-    
+
     public async Task SendJsonAsync<T>(T json, string? identifier = null, CancellationToken cancellationToken = default)
     {
         foreach (var (_, service) in _webServices)
@@ -101,15 +110,15 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
             {
                 // ignore due to connection failed
             }
-		    catch (WebSocketException e) when (e.InnerException is SocketException)
-		    {
-			    // ignore due to connection closed
-		    }
-		    catch (Exception e)
-                {
-                    Log.LogWebServiceSendFailed(logger, e, Tag);
-                }
+            catch (WebSocketException e) when (e.InnerException is SocketException)
+            {
+                // ignore due to connection closed
             }
+            catch (Exception e)
+            {
+                Log.LogWebServiceSendFailed(logger, e, Tag);
+            }
+        }
     }
 
     private static partial class Log
