@@ -1,9 +1,6 @@
 <div align="center">
 
-# Lagrange.Core
-
-An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
-
+![Lagrange.Core](https://socialify.git.ci/KonataDev/Lagrange.Core/image?description=1&descriptionEditable=An%20Implementation%20of%20NTQQ%20Protocol%2C%20with%20Pure%20C%23%2CDerived%20from%20Konata.Core&font=Jost&forks=1&issues=1&logo=https%3A%2F%2Fstatic.live.moe%2Flagrange.jpg&name=1&pattern=Diagonal%20Stripes&pulls=1&stargazers=1&theme=Light)
 ![Core](https://img.shields.io/badge/Lagrange-Core-blue)
 ![OneBot](https://img.shields.io/badge/Lagrange-OneBot-blue)
 ![C#](https://img.shields.io/badge/Core-%20.NET_6-blue)
