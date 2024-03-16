@@ -90,7 +90,7 @@ public partial class RecordSegment : SegmentBase
                     audioPipeline.Add(type switch
                     {
                         AudioHelper.AudioFormat.Mp3 => new Mp3Codec.Decoder(inputStream),  // Decode Mp3 to pcm
-                        AudioHelper.AudioFormat.Wav => throw new NotImplementedException(), // Decode Wav to pcm
+                        AudioHelper.AudioFormat.Wav => new WavCodec.Decoder(inputStream), // Decode Wav to pcm
                         _ => throw new NotImplementedException()
                     }); // Resample audio to silkv3
                     audioPipeline.Add(new AudioResampler(AudioInfo.SilkV3())); // Encode pcm to silkv3
