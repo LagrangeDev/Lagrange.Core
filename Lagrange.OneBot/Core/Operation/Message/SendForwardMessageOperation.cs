@@ -23,7 +23,7 @@ public class SendForwardMessageOperation(MessageCommon common) : IOperation
             {
                 return new OneBotResult(res.ResId, 0, "ok");
             }
-            
+
             return new OneBotResult(null, 404, "failed");
         }
 
