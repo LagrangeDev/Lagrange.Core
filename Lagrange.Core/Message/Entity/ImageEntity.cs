@@ -79,7 +79,7 @@ public class ImageEntity : IMessageEntity
     {
         if (elems.NotOnlineImage is { } image)
         {
-            if (image.OrigUrl.Contains("&rkey=")) // NTQQ's shit
+            if (image.OrigUrl.Contains("&fileid=")) // NTQQ's shit
             {
                 return new ImageEntity // NTQQ Mobile
                 {
@@ -102,7 +102,7 @@ public class ImageEntity : IMessageEntity
 
         if (elems.CustomFace is { } face)
         {
-            if (face.OrigUrl.Contains("&rkey="))
+            if (face.OrigUrl.Contains("&fileid="))
             {
                 return new ImageEntity // NTQQ Mobile
                 {
