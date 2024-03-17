@@ -11,6 +11,12 @@ public class OneBotFakeNodeBase
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
 
     [JsonPropertyName("uin")] public string Uin { get; set; } = string.Empty;
+
+    // For onebot 11 compatibility
+    [JsonPropertyName("user_id")] public string UserId { set => Uin = value; }
+
+    // For onebot 11 compatibility
+    [JsonPropertyName("nickname")] public string Nickname { set => Name = value; }
 }
 
 [Serializable]
