@@ -15,31 +15,31 @@ namespace Lagrange.Core.Message.Entity;
 public class ImageEntity : IMessageEntity
 {
     private const string BaseUrl = "https://multimedia.nt.qq.com.cn";
-    
+
     private const string LegacyBaseUrl = "http://gchat.qpic.cn";
-    
+
     public Vector2 PictureSize { get; set; }
-    
+
     public string FilePath { get; set; } = string.Empty;
-    
+
     public uint ImageSize { get; set; }
-    
+
     public string ImageUrl { get; set; } = string.Empty;
-    
+
     internal Stream? ImageStream { get; set; }
 
     internal string? Path { get; set; }
-    
+
     internal uint FileId { get; set; }
-    
+
     internal MsgInfo? MsgInfo { get; set; }
-    
+
     internal NotOnlineImage? CompatImage { get; set; }
-    
+
     internal CustomFace? CompatFace { get; set; }
-    
+
     public ImageEntity() { }
-    
+
     public ImageEntity(string filePath)
     {
         FilePath = filePath;
@@ -51,11 +51,11 @@ public class ImageEntity : IMessageEntity
         FilePath = "";
         ImageStream = new MemoryStream(file);
     }
-    
+
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
         var common = MsgInfo.Serialize();
-        
+
         var elems = new Elem[]
         {
             new(),
@@ -72,10 +72,10 @@ public class ImageEntity : IMessageEntity
 
         if (CompatFace != null) elems[0].CustomFace = CompatFace;
         if (CompatImage != null) elems[0].NotOnlineImage = CompatImage;
-        
+
         return elems;
     }
-    
+
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
         if (elems.NotOnlineImage is { } image)
@@ -104,7 +104,7 @@ public class ImageEntity : IMessageEntity
                 ImageUrl = $"{LegacyBaseUrl}{image.OrigUrl}"
             };
         }
-        
+
         if (elems.CustomFace is { } face)
         {
             if (face.OrigUrl.Contains("&rkey="))
@@ -122,7 +122,7 @@ public class ImageEntity : IMessageEntity
 
                 return null;
             }
-            
+
             return new ImageEntity
             {
                 PictureSize = new Vector2(face.Width, face.Height),
@@ -140,10 +140,10 @@ public class ImageEntity : IMessageEntity
 
             var biz = extra.ExtBizInfo.Pic;
             var reserve = biz.FromScene == 2 ? biz.BytesPbReserveTroop /*2*/ : biz.BytesPbReserveC2c /*1*/;
-            var rkey = Serializer.Deserialize<ImageExtraKey>(reserve.AsSpan());
-            
-            string url = $"https://{meta.Picture.Domain}{meta.Picture.UrlPath}{rkey.RKey}";
-            
+            var extraUrl = Serializer.Deserialize<ImageExtraUrl>(reserve.AsSpan());
+
+            string url = $"https://{meta.Picture.Domain}{extraUrl.OrigUrl}";
+
             return new ImageEntity
             {
                 PictureSize = new Vector2(info.Width, info.Height),
@@ -153,7 +153,7 @@ public class ImageEntity : IMessageEntity
                 MsgInfo = extra
             };
         }
-        
+
         return null;
     }
 
