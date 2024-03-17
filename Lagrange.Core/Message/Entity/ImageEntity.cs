@@ -11,7 +11,6 @@ namespace Lagrange.Core.Message.Entity;
 
 [MessageElement(typeof(NotOnlineImage))]
 [MessageElement(typeof(CustomFace))]
-[MessageElement(typeof(CommonElem))]
 public class ImageEntity : IMessageEntity
 {
     private const string BaseUrl = "https://multimedia.nt.qq.com.cn";
@@ -82,18 +81,14 @@ public class ImageEntity : IMessageEntity
         {
             if (image.OrigUrl.Contains("&rkey=")) // NTQQ's shit
             {
-                if (image.PbRes is { } res && Serializer.Deserialize<CustomFaceExtra>(res.AsSpan()).Hash != null)
+                return new ImageEntity // NTQQ Mobile
                 {
-                    return new ImageEntity // NTQQ Mobile
-                    {
-                        PictureSize = new Vector2(image.PicWidth, image.PicHeight),
-                        FilePath = image.FilePath,
-                        ImageSize = image.FileLen,
-                        ImageUrl = $"{BaseUrl}{image.OrigUrl}"
-                    };
-                }
+                    PictureSize = new Vector2(image.PicWidth, image.PicHeight),
+                    FilePath = image.FilePath,
+                    ImageSize = image.FileLen,
+                    ImageUrl = $"{BaseUrl}{image.OrigUrl}"
+                };
 
-                return null;
             }
 
             return new ImageEntity
@@ -109,18 +104,14 @@ public class ImageEntity : IMessageEntity
         {
             if (face.OrigUrl.Contains("&rkey="))
             {
-                if (face.PbReserve is { } res && Serializer.Deserialize<CustomFaceExtra>(res.AsSpan()).Hash != null)
+                return new ImageEntity // NTQQ Mobile
                 {
-                    return new ImageEntity // NTQQ Mobile
-                    {
-                        PictureSize = new Vector2(face.Width, face.Height),
-                        FilePath = face.FilePath,
-                        ImageSize = face.Size,
-                        ImageUrl = $"{BaseUrl}{face.OrigUrl}"
-                    };
-                }
+                    PictureSize = new Vector2(face.Width, face.Height),
+                    FilePath = face.FilePath,
+                    ImageSize = face.Size,
+                    ImageUrl = $"{BaseUrl}{face.OrigUrl}"
+                };
 
-                return null;
             }
 
             return new ImageEntity
