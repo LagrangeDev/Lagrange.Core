@@ -132,28 +132,6 @@ public class ImageEntity : IMessageEntity
             };
         }
 
-        if (elems.CommonElem is { ServiceType: 48, BusinessType: 10 or 20 } common)  // 10 for private, 20 for group
-        {
-            var extra = Serializer.Deserialize<MsgInfo>(common.PbElem.AsSpan());
-            var meta = extra.MsgInfoBody[0];
-            var info = meta.Index.Info;
-
-            var biz = extra.ExtBizInfo.Pic;
-            var reserve = biz.FromScene == 2 ? biz.BytesPbReserveTroop /*2*/ : biz.BytesPbReserveC2c /*1*/;
-            var extraUrl = Serializer.Deserialize<ImageExtraUrl>(reserve.AsSpan());
-
-            string url = $"https://{meta.Picture.Domain}{extraUrl.OrigUrl}";
-
-            return new ImageEntity
-            {
-                PictureSize = new Vector2(info.Width, info.Height),
-                FilePath = info.FileName,
-                ImageSize = info.FileSize,
-                ImageUrl = url,
-                MsgInfo = extra
-            };
-        }
-
         return null;
     }
 
