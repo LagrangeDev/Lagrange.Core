@@ -18,13 +18,16 @@ public class GetForwardMsgOperation(MessageService service) : IOperation
         if (payload.Deserialize<OneBotGetForwardMsg>(SerializerOptions.DefaultOptions) is { } forwardMsg)
         {
             var nodes = new List<OneBotSegment>();
-            
+
             var @event = MultiMsgDownloadEvent.Create(context.ContextCollection.Keystore.Uid ?? "", forwardMsg.Id);
             var results = await context.ContextCollection.Business.SendEvent(@event);
             foreach (var chain in ((MultiMsgDownloadEvent)results[0]).Chains ?? throw new Exception())
             {
                 var parsed = service.Convert(chain);
-                var node = new OneBotNode(chain.FriendUin, "", parsed);
+                var nickname = string.IsNullOrEmpty(chain.FriendInfo?.Nickname)
+                    ? chain.GroupMemberInfo?.MemberName
+                    : chain.FriendInfo?.Nickname;
+                var node = new OneBotNode(chain.FriendUin, nickname ?? "", parsed);
                 nodes.Add(new OneBotSegment("node", node));
             }
 
