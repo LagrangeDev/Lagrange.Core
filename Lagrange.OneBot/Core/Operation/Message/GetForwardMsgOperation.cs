@@ -27,7 +27,7 @@ public class GetForwardMsgOperation(MessageService service) : IOperation
                 var nickname = string.IsNullOrEmpty(chain.FriendInfo?.Nickname)
                     ? chain.GroupMemberInfo?.MemberName
                     : chain.FriendInfo?.Nickname;
-                var node = new OneBotNode(chain.FriendUin, nickname ?? "", parsed);
+                var node = new OneBotNode(chain.FriendUin.ToString(), nickname ?? "", parsed);
                 nodes.Add(new OneBotSegment("node", node));
             }
 
