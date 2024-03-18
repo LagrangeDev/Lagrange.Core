@@ -21,6 +21,15 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             }
         };
 
+        bot.Invoker.OnFriendMessageReceived += async (_, @event) =>
+        {
+            if (@event.Chain.GetEntity<FileEntity>() is { FileUrl: { } url } file)
+            {
+                var fileInfo = new OneBotFileInfo(file.FileId ?? "", file.FileName, (ulong)file.FileSize, url);
+                await service.SendJsonAsync(new OneBotPrivateFile(bot.BotUin, @event.Chain.FriendUin, fileInfo));
+            }
+        };
+
         bot.Invoker.OnGroupMuteEvent += async (_, @event) =>
         {
             logger.LogInformation(@event.ToString());
