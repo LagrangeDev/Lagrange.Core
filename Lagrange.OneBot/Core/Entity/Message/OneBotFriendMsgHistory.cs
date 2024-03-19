@@ -9,5 +9,5 @@ public class OneBotFriendMsgHistory
     
     [JsonPropertyName("message_id")] public int MessageId { get; set; }
 
-    [JsonPropertyName("count")] public int Count { get; set; } = 20;
+    [JsonPropertyName("count")] public uint Count { get; set; } = 20;
 }

@@ -25,7 +25,7 @@ public class GetFriendMessageHistoryOperation(LiteDatabase database, MessageServ
                 : collection.FindById(history.MessageId);
             var chain = (MessageChain)record;
 
-            if (await context.GetRoamMessage(chain, 20) is { } results)
+            if (await context.GetRoamMessage(chain, history.Count) is { } results)
             {
                 var messages = results
                     .Select(x => message.ConvertToPrivateMsg(context.BotUin, x, record.MessageHash))
