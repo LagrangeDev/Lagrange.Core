@@ -28,6 +28,13 @@ public sealed class SendPrivateMessageOperation(LiteDatabase database, MessageCo
             Sequence = result.Sequence ?? 0,
             Time = DateTimeOffset.FromUnixTimeSeconds(result.Timestamp).DateTime,
             MessageId = chain.MessageId,
+            FriendInfo = new BotFriend(
+                context.BotUin,
+                string.Empty,
+                context.BotName ?? string.Empty,
+                string.Empty,
+                string.Empty
+            ),
             Entities = chain,
             MessageHash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence ?? 0)
         };
