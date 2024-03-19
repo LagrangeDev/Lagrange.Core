@@ -73,7 +73,7 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
                             Type = new FileType
                             {
                                 Type = 1,
-                                PicFormat = 1001,
+                                PicFormat = (uint)type,
                                 VideoFormat = 0,
                                 VoiceFormat = 0
                             },

@@ -64,13 +64,13 @@ internal static class ImageResolver
     }
 }
 
-internal enum ImageFormat
+internal enum ImageFormat : uint
 {
-    Unknown,
-    Png,
-    Jpeg,
-    Gif,
-    Webp,
-    Bmp,
+    Unknown,  // regard as jpg
+    Png = 1001,
+    Jpeg = 1000,
+    Gif = 2000,
+    Webp = 1002,
+    Bmp = 1005,
     Tiff
 }
