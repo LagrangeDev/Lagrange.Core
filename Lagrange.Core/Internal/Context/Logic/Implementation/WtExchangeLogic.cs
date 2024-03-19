@@ -101,6 +101,14 @@ internal class WtExchangeLogic : LogicBase
             Collection.Scheduler.Interval("Heartbeat.Alive", 10 * 1000, async () => await Collection.Business.PushEvent(AliveEvent.Create()));
         }
 
+        if (Collection.Keystore.Session.D2.Length > 0 && Collection.Keystore.Session.Tgt.Length > 0 && 
+            DateTime.Now - Collection.Keystore.Session.SessionDate < TimeSpan.FromDays(15))
+        {
+            Collection.Log.LogInfo(Tag, "Session has not expired, using session to login and register status");
+            await BotOnline();
+            return true;
+        }
+
         if (Collection.Keystore.Session.ExchangeKey == null)
         {
             if (!await KeyExchange())
@@ -337,14 +345,17 @@ internal class WtExchangeLogic : LogicBase
 
     private async Task BotOnline()
     {
-        var onlineEvent = new BotOnlineEvent();
-        Collection.Invoker.PostEvent(onlineEvent);
-        
         var registerEvent = StatusRegisterEvent.Create();
         var registerResponse = await Collection.Business.SendEvent(registerEvent);
         var heartbeatDelegate = new Action(async () => await Collection.Business.PushEvent(SsoAliveEvent.Create()));
-        Collection.Log.LogInfo(Tag, $"Register Status: {((StatusRegisterEvent)registerResponse[0]).Message}");
+        var resp = (StatusRegisterEvent)registerResponse[0];
+        if (resp.ResultCode == 0) Collection.Keystore.Session.SessionDate = DateTime.Now;
+        
+        Collection.Log.LogInfo(Tag, $"Register Status: {resp.Message}");
         Collection.Scheduler.Interval("SsoHeartBeat", (int)(4.5 * 60 * 1000), heartbeatDelegate);
+        
+        var onlineEvent = new BotOnlineEvent();
+        Collection.Invoker.PostEvent(onlineEvent);
 
         await Collection.Business.PushEvent(InfoSyncEvent.Create());
     }
