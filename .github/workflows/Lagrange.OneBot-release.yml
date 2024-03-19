@@ -34,7 +34,7 @@ jobs:
       - name: Build Lagrange.OneBot .NET 8.0
         shell: powershell
         run: |
-          dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --self-contained -p:PublishSingleFile=true -p:IncludeContentInSingleFile=true -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
+          dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
 
       - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 8.0
         uses: actions/upload-artifact@v3
@@ -43,8 +43,7 @@ jobs:
           path: Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
 
       - name: Compress files
-        run: |
-          Get-ChildItem -Path 'Lagrange.OneBot\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish' -Exclude '*.pdb' | Compress-Archive -DestinationPath 'Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip'
+        run: Compress-Archive -Path 'Lagrange.OneBot\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish' -DestinationPath 'Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip'
 
       - name: Prepare release files
         uses: actions/upload-artifact@v3
