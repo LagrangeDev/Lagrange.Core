@@ -339,7 +339,7 @@ internal class WtExchangeLogic : LogicBase
 
     }
 
-    private async Task<bool> BotOnline()
+    public  async Task<bool> BotOnline(BotOnlineEvent.OnlineReason reason = BotOnlineEvent.OnlineReason.Login)
     {
         var registerEvent = StatusRegisterEvent.Create();
         var registerResponse = await Collection.Business.SendEvent(registerEvent);
@@ -350,7 +350,7 @@ internal class WtExchangeLogic : LogicBase
         Collection.Log.LogInfo(Tag, $"Register Status: {resp.Message}");
         Collection.Scheduler.Interval("SsoHeartBeat", (int)(4.5 * 60 * 1000), heartbeatDelegate);
         
-        var onlineEvent = new BotOnlineEvent();
+        var onlineEvent = new BotOnlineEvent(reason);
         Collection.Invoker.PostEvent(onlineEvent);
 
         await Collection.Business.PushEvent(InfoSyncEvent.Create());

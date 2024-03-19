@@ -1,7 +1,7 @@
 using System.Buffers.Binary;
 using System.Net;
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Event.System;
+using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Internal.Network;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Network;
@@ -50,10 +50,8 @@ internal class SocketContext : ContextBase, IClientListener
             bool reconnect = await _tcpClient.Connect(ServerUri.Host, ServerUri.Port);
             if (reconnect)
             {
-                var registerEvent = StatusRegisterEvent.Create();
-                var registerResponse = await Collection.Business.SendEvent(registerEvent);
                 Collection.Log.LogInfo(Tag, $"Reconnect to {ServerUri}");
-                Collection.Log.LogInfo(Tag, $"Register Status: {((StatusRegisterEvent)registerResponse[0]).Message}");
+                await Collection.Business.WtExchangeLogic.BotOnline(BotOnlineEvent.OnlineReason.Reconnect);
             }
         }
 
