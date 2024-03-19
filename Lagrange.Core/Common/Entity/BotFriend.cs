@@ -12,26 +12,28 @@ public class BotFriend
         Nickname = string.Empty;
         Remarks = string.Empty;
         PersonalSign = string.Empty;
+        Avatar = $"https://q1.qlogo.cn/g?b=qq&nk={Uin}&s=640";
     }
-    
-    internal BotFriend(uint uin,string uid, string nickname, string remarks, string personalSign)
+
+    internal BotFriend(uint uin, string uid, string nickname, string remarks, string personalSign)
     {
         Uin = uin;
         Uid = uid;
         Nickname = nickname;
         Remarks = remarks;
         PersonalSign = personalSign;
+        Avatar = $"https://q1.qlogo.cn/g?b=qq&nk={Uin}&s=640";
     }
-    
-    public uint Uin { get; }
-    
-    internal string Uid { get; }
-    
-    public string Nickname { get; }
-    
-    public string Remarks { get; }
-    
-    public string PersonalSign { get; }
 
-    public string Avatar => $"https://q1.qlogo.cn/g?b=qq&nk={Uin}&s=640";
+    public uint Uin { get; set; }
+
+    internal string Uid { get; set; }
+
+    public string Nickname { get; set; }
+
+    public string Remarks { get; set; }
+
+    public string PersonalSign { get; set; }
+
+    public string Avatar { get; set; }
 }

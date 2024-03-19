@@ -21,9 +21,9 @@ public class GetMessageOperation(LiteDatabase database, MessageService service) 
         {
             var record = database.GetCollection<MessageRecord>().FindById(getMsg.MessageId);
             var chain = (MessageChain)record;
-            var sender = chain.GroupMemberInfo == null
+            var sender = chain.GroupMemberInfo != null
                 ? new OneBotSender(chain.GroupMemberInfo?.Uin ?? 0, chain.GroupMemberInfo?.MemberName ?? string.Empty)
-                : new OneBotSender(chain.FriendUin, chain.FriendInfo?.Nickname ?? string.Empty);
+                : new OneBotSender(chain.FriendInfo?.Uin ?? 0, chain.FriendInfo?.Nickname ?? string.Empty);
             var elements = service.Convert(chain);
             var response = new OneBotGetMessageResponse(chain.Time, chain.IsGroup ? "group" : "private", record.MessageHash, sender, elements);
             
