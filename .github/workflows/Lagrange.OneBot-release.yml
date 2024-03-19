@@ -44,7 +44,7 @@ jobs:
 
       - name: Compress files
         run: |
-          Get-ChildItem -Path Lagrange.OneBot\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish\Lagrange.OneBot -Exclude '*.pdb' | Compress-Archive -DestinationPath 'Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip'
+          Get-ChildItem -Path 'Lagrange.OneBot\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish' -Exclude '*.pdb' | Compress-Archive -DestinationPath 'Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip'
 
       - name: Prepare release files
         uses: actions/upload-artifact@v3
