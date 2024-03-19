@@ -42,14 +42,9 @@ jobs:
           name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0
           path: Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
 
-      - name: Compress files (Not Windows)
-        if: matrix.runtimeIdentifier != 'win-x64' && matrix.runtimeIdentifier != 'win-x86'
+      - name: Compress files
         run: |
-          Compress-Archive -Path 'Lagrange.OneBot\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish\Lagrange.OneBot' -DestinationPath  'Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip'
-      - name: Compress files (Windows)
-        if: matrix.runtimeIdentifier == 'win-x64' || matrix.runtimeIdentifier == 'win-x86'
-        run: |
-          Compress-Archive -Path 'Lagrange.OneBot\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish\Lagrange.OneBot.exe' -DestinationPath  'Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip'
+          Get-ChildItem -Path Lagrange.OneBot\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish\Lagrange.OneBot -Exclude '*.pdb' | Compress-Archive -DestinationPath 'Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip'
 
       - name: Prepare release files
         uses: actions/upload-artifact@v3
@@ -82,7 +77,7 @@ jobs:
           tag: nightly
           name: "Nightly Release"
           prerelease: true
-          body: "> ⚠️This is a nightly release."
+          body: "> ⚠️This is a nightly release.\n> ⚠️This is not the latest version."
           artifacts: |
             ./bin/*
           allowUpdates: true
