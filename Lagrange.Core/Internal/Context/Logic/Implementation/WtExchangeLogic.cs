@@ -105,8 +105,7 @@ internal class WtExchangeLogic : LogicBase
             DateTime.Now - Collection.Keystore.Session.SessionDate < TimeSpan.FromDays(15))
         {
             Collection.Log.LogInfo(Tag, "Session has not expired, using session to login and register status");
-            await BotOnline();
-            return true;
+            return await BotOnline();
         }
 
         if (Collection.Keystore.Session.ExchangeKey == null)
@@ -130,10 +129,8 @@ internal class WtExchangeLogic : LogicBase
                 {
                     case LoginCommon.Error.Success:
                     {
-                        Collection.Log.LogInfo(Tag, "Login Success");
-
-                        await BotOnline();
-                        return true;
+                        Collection.Log.LogInfo(Tag, "Login Success, try to register services");
+                        return await BotOnline();
                     }
                     case LoginCommon.Error.UnusualVerify:
                     {
@@ -156,8 +153,7 @@ internal class WtExchangeLogic : LogicBase
                             return false;
                         }));
                         bool result = await _transEmpTask.Task;
-                        if (result) await BotOnline();
-                        return result;
+                        return result && await BotOnline();
                     }
                     default:
                     {
@@ -269,9 +265,7 @@ internal class WtExchangeLogic : LogicBase
                 Collection.Log.LogInfo(Tag, "Login Success");
                 Collection.Keystore.Info = new BotKeystore.BotInfo(@event.Age, @event.Sex, @event.Name);
                 Collection.Log.LogInfo(Tag, Collection.Keystore.Info.ToString());
-                await BotOnline();
-
-                return true;
+                return await BotOnline();
             }
 
             Collection.Log.LogFatal(Tag, $"Login failed: {@event.ResultCode}");
@@ -343,7 +337,7 @@ internal class WtExchangeLogic : LogicBase
 
     }
 
-    private async Task BotOnline()
+    private async Task<bool> BotOnline()
     {
         var registerEvent = StatusRegisterEvent.Create();
         var registerResponse = await Collection.Business.SendEvent(registerEvent);
@@ -358,6 +352,8 @@ internal class WtExchangeLogic : LogicBase
         Collection.Invoker.PostEvent(onlineEvent);
 
         await Collection.Business.PushEvent(InfoSyncEvent.Create());
+
+        return resp.Message.Contains("register success");
     }
 
     private async Task<bool> FetchUnusual()
