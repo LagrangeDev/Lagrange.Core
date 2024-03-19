@@ -105,7 +105,9 @@ internal class WtExchangeLogic : LogicBase
             DateTime.Now - Collection.Keystore.Session.SessionDate < TimeSpan.FromDays(15))
         {
             Collection.Log.LogInfo(Tag, "Session has not expired, using session to login and register status");
-            return await BotOnline();
+            if (await BotOnline()) return true;
+            
+            Collection.Log.LogWarning(Tag, "Register by session failed, try to login by EasyLogin");
         }
 
         if (Collection.Keystore.Session.ExchangeKey == null)
@@ -190,7 +192,7 @@ internal class WtExchangeLogic : LogicBase
                     }
                     case LoginCommon.Error.CaptchaVerify:
                     {
-                        Collection.Log.LogInfo(Tag, "Login Success, but captcha is required, please follow the link from event");
+                        Collection.Log.LogInfo(Tag, "Login captcha is required, please follow the link from event");
                         
                         if (Collection.Keystore.Session.CaptchaUrl != null)
                         {
