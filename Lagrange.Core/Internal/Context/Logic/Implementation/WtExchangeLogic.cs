@@ -345,7 +345,6 @@ internal class WtExchangeLogic : LogicBase
         var registerResponse = await Collection.Business.SendEvent(registerEvent);
         var heartbeatDelegate = new Action(async () => await Collection.Business.PushEvent(SsoAliveEvent.Create()));
         var resp = (StatusRegisterEvent)registerResponse[0];
-        if (resp.ResultCode == 0) Collection.Keystore.Session.SessionDate = DateTime.Now;
         
         Collection.Log.LogInfo(Tag, $"Register Status: {resp.Message}");
         Collection.Scheduler.Interval("SsoHeartBeat", (int)(4.5 * 60 * 1000), heartbeatDelegate);

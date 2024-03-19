@@ -69,6 +69,7 @@ internal class PasswordLoginService : BaseService<PasswordLoginEvent>
                 keystore.Session.D2 = body.Credentials.D2;
                 keystore.Session.D2Key = body.Credentials.D2Key;
                 keystore.Session.TempPassword = body.Credentials.TempPassword;
+                keystore.Session.SessionDate = DateTime.Now;
 
                 output = PasswordLoginEvent.Result(0);
             }

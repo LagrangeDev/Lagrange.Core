@@ -47,6 +47,7 @@ internal class UnusualEasyLoginService : BaseService<UnusualEasyLoginEvent>
                 keystore.Session.D2 = body.Credentials.D2;
                 keystore.Session.D2Key = body.Credentials.D2Key;
                 keystore.Session.TempPassword = body.Credentials.TempPassword;
+                keystore.Session.SessionDate = DateTime.Now;
 
                 output = UnusualEasyLoginEvent.Result(0);
             }

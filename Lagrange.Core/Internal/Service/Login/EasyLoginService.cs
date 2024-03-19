@@ -49,6 +49,7 @@ internal class EasyLoginService : BaseService<EasyLoginEvent>
                 keystore.Session.D2 = body.Credentials.D2;
                 keystore.Session.D2Key = body.Credentials.D2Key;
                 keystore.Session.TempPassword = body.Credentials.TempPassword;
+                keystore.Session.SessionDate = DateTime.Now;
 
                 output = EasyLoginEvent.Result(0);
             }

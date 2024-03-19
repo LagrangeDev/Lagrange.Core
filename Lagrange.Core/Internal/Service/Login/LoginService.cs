@@ -31,6 +31,7 @@ internal class LoginService : BaseService<LoginEvent>
             keystore.Session.Tgt = tlv10A.Tgt;
             keystore.Session.D2 = tlv143.D2;
             keystore.Session.TempPassword = tlv106.Temp;
+            keystore.Session.SessionDate = DateTime.Now;
             
             output = LoginEvent.Result((int)state, tlv11A.Age, tlv11A.Gender, tlv11A.Nickname);
             extraEvents = null;
