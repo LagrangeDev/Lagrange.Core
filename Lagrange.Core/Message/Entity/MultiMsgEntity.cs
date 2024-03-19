@@ -1,8 +1,9 @@
-using System.Text;
-using System.Xml;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Xml.Serialization;
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
+using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Binary.Compression;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
@@ -35,49 +36,66 @@ public class MultiMsgEntity : IMessageEntity
     
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
-        var xmlEntity = new MultiMessage
+        int count = Math.Clamp(Chains.Count, 0, 3);
+        string fileId = Guid.NewGuid().ToString();
+        var extra = new MultiMsgLightAppExtra
         {
-            ServiceId = 35,
-            TemplateId = 1,
-            Total = Chains.Count,
-            Flag = 3,
-            ResId = ResId ?? ""
+            FileName = fileId,
+            Sum = count
         };
         
-        var item = xmlEntity.Item;
-        item.Layout = 1;
-        item.Title.Add(new MultiTitle("#000000", 34, "群聊的聊天记录"));
-        for (int i = 0; i < Math.Min(Chains.Count, 3); i++)
+        var json = new MultiMsgLightApp
         {
-            var chain = Chains[i];
-            string? name = chain.FriendInfo?.Nickname ?? chain.GroupMemberInfo?.MemberCard ?? chain.GroupMemberInfo?.MemberName;
-            item.Title.Add(new MultiTitle("#777777", 26, $"{name}: {chain.GetEntity<TextEntity>()?.Text}"));
+            App = "com.tencent.multimsg",
+            Config = new Config
+            {
+                Autosize = 1,
+                Forward = 1,
+                Round = 1,
+                Type = "normal",
+                Width = 300
+            },
+            Desc = "[聊天记录]",
+            Extra = JsonSerializer.Serialize(extra),
+            Meta = new Meta
+            {
+                Detail = new Detail
+                {
+                    News = new List<News>(),
+                    Resid = ResId ?? "",
+                    Source = "聊天记录",
+                    Summary = $"查看{count}条转发消息",
+                    UniSeq = fileId
+                }
+            },
+            Prompt = "[聊天记录]",
+            Ver = "0.0.0.5",
+            View = "contact"
+        };
+        
+        if (!Chains.Select(x => x.GetEntity<TextEntity>()).Any())
+        {
+            json.Meta.Detail.News.Add(new News { Text = "[This message is send from Lagrange.Core]" });
         }
-        item.Summary.Color = "#808080";
-        item.Summary.Text = $"查看{Chains.Count}条转发信息";
-        
-        xmlEntity.Source.Name = "群聊的聊天记录";
-        
-        var xml = new StringBuilder();
-        var writer = XmlWriter.Create(xml, new XmlWriterSettings
+        else
         {
-            Encoding = Encoding.UTF8,
-            DoNotEscapeUriAttributes = true
-        });
-        Serializer.Serialize(writer, xmlEntity);
-        writer.Dispose();
+            for (int i = 0; i < count; i++)
+            {
+                var chain = Chains[i];
+                var member = chain.GroupMemberInfo;
+                var friend = chain.FriendInfo;
+                string text = $"{member?.MemberCard ??member?.MemberName ?? friend?.Nickname}: {chain.GetEntity<TextEntity>()?.Text ?? string.Empty}";
+                json.Meta.Detail.News.Add(new News { Text = text });
+            }
+        }
+        
+        using var payload = new BinaryPacket()
+            .WriteByte(0x01)
+            .WriteBytes(ZCompression.ZCompress(JsonSerializer.SerializeToUtf8Bytes(json)));
         
         return new Elem[]
         {
-            new()
-            { 
-                RichMsg = new RichMsg
-                {
-                    ServiceId = 35,
-                    Template1 = ZCompression.ZCompress(xml.ToString(), new byte[] { 0x01 })
-                }
-            },
-            new() { GeneralFlags = new GeneralFlags { LongTextResId = ResId } }
+            new() { LightAppElem = new LightAppElem { Data = payload.ToArray() } },
         };
     }
 
@@ -97,6 +115,79 @@ public class MultiMsgEntity : IMessageEntity
             
 
     public string ToPreviewString() => $"[MultiMsgEntity] {Chains.Count} chains";
+
+    #region Json
+
+    [Serializable]
+    private class MultiMsgLightApp
+    {
+        [JsonPropertyName("app")] public string App { get; set; }
+
+        [JsonPropertyName("config")] public Config Config { get; set; }
+
+        [JsonPropertyName("desc")] public string Desc { get; set; }
+
+        [JsonPropertyName("extra")] public string Extra { get; set; }
+
+        [JsonPropertyName("meta")] public Meta Meta { get; set; }
+
+        [JsonPropertyName("prompt")] public string Prompt { get; set; }
+
+        [JsonPropertyName("ver")] public string Ver { get; set; }
+
+        [JsonPropertyName("view")] public string View { get; set; }
+    }
+
+    private class MultiMsgLightAppExtra
+    {
+        [JsonPropertyName("filename")] public string FileName { get; set; }
+        
+        [JsonPropertyName("tsum")] public int Sum { get; set; }
+    }
+
+    [Serializable]
+    private class Config
+    {
+        [JsonPropertyName("autosize")] public long Autosize { get; set; }
+        
+        [JsonPropertyName("forward")] public long Forward { get; set; }
+
+        [JsonPropertyName("round")] public long Round { get; set; }
+
+        [JsonPropertyName("type")] public string Type { get; set; }
+
+        [JsonPropertyName("width")] public long Width { get; set; }
+    }
+
+    [Serializable]
+    private class Meta
+    {
+        [JsonPropertyName("detail")] public Detail Detail { get; set; }
+    }
+
+    [Serializable]
+    private class Detail
+    {
+        [JsonPropertyName("news")] public List<News> News { get; set; }
+
+        [JsonPropertyName("resid")] public string Resid { get; set; }
+
+        [JsonPropertyName("source")] public string Source { get; set; }
+
+        [JsonPropertyName("summary")] public string Summary { get; set; }
+
+        [JsonPropertyName("uniseq")] public string UniSeq { get; set; }
+    }
+
+    [Serializable]
+    private class News
+    {
+        [JsonPropertyName("text")] public string Text { get; set; }
+    }
+
+    #endregion
+
+    #region Xml
 
     [Serializable]
     [XmlRoot("msg")]
@@ -165,4 +256,6 @@ public class MultiMsgEntity : IMessageEntity
     {
         [XmlAttribute("name")] public string Name { get; set; } = string.Empty;
     }
+
+    #endregion
 }
