@@ -1,4 +1,7 @@
+using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
+using System.Web;
 using Lagrange.Core.Common;
 using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Internal.Context.Attributes;
@@ -188,7 +191,7 @@ internal class WtExchangeLogic : LogicBase
                     case LoginCommon.Error.UnusualVerify:
                     {
                         Collection.Log.LogInfo(Tag, "Unusual Verify is not currently supported for PasswordLogin");
-                        return true;
+                        return false;
                     }
                     case LoginCommon.Error.CaptchaVerify:
                     {
@@ -212,13 +215,52 @@ internal class WtExchangeLogic : LogicBase
                     }
                     case LoginCommon.Error.NewDeviceVerify:
                     {
-                        Collection.Log.LogInfo(Tag, $"NewDeviceVerify Url: {Collection.Keystore.Session.NewDeviceVerifyUrl}");
+                        Collection.Log.LogInfo(Tag, $"NewDeviceVerify required, please notice the {nameof(BotNewDeviceVerifyEvent)} and encode into QRCode");
+                        string? parameters = Collection.Keystore.Session.NewDeviceVerifyUrl;
+                        if (parameters == null) return false;
+                        var parsed = HttpUtility.ParseQueryString(parameters);
                         
-                        var newDeviceEvent = new BotNewDeviceVerifyEvent("", Array.Empty<byte>());
+                        uint uin = Collection.Keystore.Uin;
+                        string url = $"https://oidb.tim.qq.com/v3/oidbinterface/oidb_0xc9e_8?uid={uin}&getqrcode=1&sdkappid=39998&actype=2";
+                        var request = new NTNewDeviceQrCodeRequest
+                        {
+                            StrDevAuthToken = parsed["sig"] ?? "",
+                            Uint32Flag = 1,
+                            Uint32UrlType = 0,
+                            StrUinToken = parsed["uin-token"] ?? "",
+                            StrDevType = Collection.AppInfo.Os,
+                            StrDevName = Collection.Device.DeviceName
+                        };
+
+                        var client = new HttpClient();
+                        var response = await client.PostAsJsonAsync(url, request);
+                        var json = await response.Content.ReadFromJsonAsync<NTNewDeviceQrCodeResponse>();
+                        var newDeviceEvent = new BotNewDeviceVerifyEvent(json?.StrUrl ?? string.Empty, Array.Empty<byte>());
                         Collection.Invoker.PostEvent(newDeviceEvent);
                         
+                        Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => 
+                        {
+                            var query = new NTNewDeviceQrCodeQuery
+                            {
+                                Uint32Flag = 0,
+                                Token = ""  // TODO: Fill in token
+                            };
+                            var resp = await client.PostAsJsonAsync(url, query);
+                            var responseJson = await resp.Content.ReadFromJsonAsync<NTNewDeviceQrCodeResponse>();
+                            if (!string.IsNullOrEmpty(responseJson?.StrNtSuccToken)) 
+                                Collection.Keystore.Session.TempPassword = Encoding.UTF8.GetBytes(responseJson.StrNtSuccToken);
+                            
+                            _transEmpTask.SetResult(true);
+                        });
+                        
                         bool result = await _transEmpTask.Task;
-                        if (result) await BotOnline();
+                        if (result)
+                        {
+                            Collection.Log.LogInfo(Tag, "Trying to Login by EasyLogin...");
+                            var newDeviceLogin = NewDeviceLoginEvent.Create();
+                            _ = await Collection.Business.SendEvent(newDeviceLogin);
+                            await BotOnline();
+                        }
                         return result;
                     }
                     default:
