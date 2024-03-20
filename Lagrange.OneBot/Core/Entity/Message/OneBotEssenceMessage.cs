@@ -18,4 +18,6 @@ public class OneBotEssenceMessage
     [JsonPropertyName("operator_time")] public uint OperatorTime { get; set; }
     
     [JsonPropertyName("message_id")] public int MessageId { get; set; }
+
+    [JsonPropertyName("content")] public List<OneBotSegment> Content { get; set; } = [];
 }

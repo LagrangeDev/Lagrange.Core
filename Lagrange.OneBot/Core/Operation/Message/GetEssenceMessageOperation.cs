@@ -6,6 +6,8 @@ using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Message;
 using Lagrange.OneBot.Core.Notify;
 using Lagrange.OneBot.Database;
+using Lagrange.OneBot.Message;
+using Lagrange.OneBot.Message.Entity;
 using Lagrange.OneBot.Utility;
 
 #pragma warning disable CS8618
@@ -21,7 +23,6 @@ public class GetEssenceMessageOperation(TicketService ticket) : IOperation
         {
             int bkn = await ticket.GetCsrfToken();
             int page = 0;
-            
             var essence = new List<OneBotEssenceMessage>();
 
             while (true)
@@ -41,7 +42,8 @@ public class GetEssenceMessageOperation(TicketService ticket) : IOperation
                         OperatorId = uint.Parse(msg.AddDigestUin),
                         OperatorNick = msg.AddDigestNick,
                         OperatorTime = msg.AddDigestTime,
-                        MessageId = MessageRecord.CalcMessageHash(msg.MsgRandom, msg.MsgSeq)
+                        MessageId = MessageRecord.CalcMessageHash(msg.MsgRandom, msg.MsgSeq),
+                        Content = ConvertToSegment(msg.MsgContent)
                     });
                 }
                 
@@ -54,6 +56,24 @@ public class GetEssenceMessageOperation(TicketService ticket) : IOperation
         }
 
         throw new Exception();
+    }
+
+    private static List<OneBotSegment> ConvertToSegment(IEnumerable<JsonObject> elements)
+    {
+        var segments = new List<OneBotSegment>();
+        foreach (var msg in elements)
+        {
+            uint type = msg["msg_type"]?.GetValue<uint>() ?? throw new InvalidDataException("Invalid type");
+            var segment = type switch
+            {
+                1 => new OneBotSegment("text", new TextSegment(msg["text"]?.GetValue<string>() ?? "")),
+                3 => new OneBotSegment("image", new ImageSegment(msg["text"]?.GetValue<string>() ?? "")),
+                _ => throw new InvalidDataException("Unknown type found in essence msg")
+            };
+            segments.Add(segment);
+        }
+
+        return segments;
     }
 }
 
@@ -100,7 +120,7 @@ file class MsgList
 
     [JsonPropertyName("add_digest_time")] public uint AddDigestTime { get; set; }
         
-    [JsonPropertyName("msg_content")] public JsonElement[] MsgContent { get; set; }
+    [JsonPropertyName("msg_content")] public JsonObject[] MsgContent { get; set; }
         
     [JsonPropertyName("can_be_removed")] public bool CanBeRemoved { get; set; }
 }
