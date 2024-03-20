@@ -22,7 +22,7 @@
 # 8081 端口用于正向 WebSocket 和 Http-post
 # /path-to-data 被用于存储程序运行时产生的文件
 # UID Env 和 GID Env 用于设置文件权限
-docker run -id -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -g) ghcr.io/lagrangedev/lagrange.onebot:edge
+docker run -td -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -g) ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
 
 > [!IMPORTANT]重要
@@ -32,7 +32,7 @@ docker run -id -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -
 >   - 1.  修改 `/path-to-data/appsettings.json`
 >     2.  使用 `docker restart` 重新启动容器
 >
->   - 1.  确保在执行 `docker run` 时使用了 `-i` 选项
+>   - 1.  确保在执行 `docker run` 时使用了 `-t` 选项
 >     2.  修改 `/path-to-data/appsettings.json`
 >     3.  使用 `docker attach` 进入容器
 >     4.  按任意键
