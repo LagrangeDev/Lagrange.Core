@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Lagrange.Core;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Message;
+using Lagrange.OneBot.Core.Notify;
 using Lagrange.OneBot.Database;
 using Lagrange.OneBot.Utility;
 
@@ -12,14 +13,13 @@ using Lagrange.OneBot.Utility;
 namespace Lagrange.OneBot.Core.Operation.Message;
 
 [Operation("get_essence_msg")]
-public class GetEssenceMessageOperation : IOperation
+public class GetEssenceMessageOperation(TicketService ticket) : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         if (payload?["group_id"]?.GetValue<uint>() is { } groupUin)
         {
-            string sKey = await TicketHelper.GetSKey(context) ?? "";
-            int bkn = TicketHelper.GetCSRFToken(sKey);
+            int bkn = await ticket.GetCsrfToken();
             int page = 0;
             
             var essence = new List<OneBotEssenceMessage>();
@@ -27,7 +27,7 @@ public class GetEssenceMessageOperation : IOperation
             while (true)
             {
                 string url = $"https://qun.qq.com/cgi-bin/group_digest/digest_list?random=7800&X-CROSS-ORIGIN=fetch&group_code={groupUin}&page_start={page}&page_limit=20&bkn={bkn}";
-                string response = await TicketHelper.GetAsync(context, url);
+                string response = await ticket.GetAsync(url);
                 var @object = JsonSerializer.Deserialize<RequestBody>(response);
                 if (@object == null) continue;
 
