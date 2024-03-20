@@ -107,7 +107,14 @@ public sealed class LagrangeAppBuilder
             return services.GetRequiredService<ILagrangeWebServiceFactory>().Create() ?? throw new Exception("Invalid conf detected");
         });
 
-        Services.AddSingleton<LiteDatabase>(x => new LiteDatabase(Configuration["ConfigPath:Database"] ?? $"lagrange-{Configuration["Account:Uin"]}.db"));
+        Services.AddSingleton<LiteDatabase>(x =>
+        {
+            string path = Configuration["ConfigPath:Database"] ?? $"lagrange-{Configuration["Account:Uin"]}.db";
+            
+            var db = new LiteDatabase(path);
+            db.CheckpointSize = 50;
+            return db;
+        });
         Services.AddSingleton<SignProvider, OneBotSigner>();
 
         Services.AddSingleton<NotifyService>();

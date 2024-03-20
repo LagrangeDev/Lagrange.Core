@@ -9,10 +9,12 @@ using Lagrange.OneBot.Core.Notify;
 using Lagrange.OneBot.Core.Operation;
 using Lagrange.OneBot.Message;
 using Lagrange.OneBot.Utility;
+using LiteDB;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 using LogLevel = Lagrange.Core.Event.EventArg.LogLevel;
 
 namespace Lagrange.OneBot;
@@ -115,7 +117,8 @@ public class LagrangeApp : IHost
         Logger.LogInformation("Lagrange.OneBot Implementation has stopped");
         
         Instance.Dispose();
-        
+
+        Services.GetRequiredService<LiteDatabase>().Dispose();
         await WebService.StopAsync(cancellationToken);
         await _hostApp.StopAsync(cancellationToken);
     }
