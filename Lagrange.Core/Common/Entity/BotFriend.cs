@@ -23,15 +23,15 @@ public class BotFriend
         PersonalSign = personalSign;
     }
     
-    public uint Uin { get; }
+    public uint Uin { get; set; }
     
-    internal string Uid { get; }
+    internal string Uid { get; set; }
     
-    public string Nickname { get; }
+    public string Nickname { get; set; }
     
-    public string Remarks { get; }
+    public string Remarks { get; set; }
     
-    public string PersonalSign { get; }
+    public string PersonalSign { get; set; }
 
     public string Avatar => $"https://q1.qlogo.cn/g?b=qq&nk={Uin}&s=640";
 }
