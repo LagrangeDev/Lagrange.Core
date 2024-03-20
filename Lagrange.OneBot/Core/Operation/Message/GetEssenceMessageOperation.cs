@@ -67,7 +67,7 @@ public class GetEssenceMessageOperation(TicketService ticket) : IOperation
             var segment = type switch
             {
                 1 => new OneBotSegment("text", new TextSegment(msg["text"]?.GetValue<string>() ?? "")),
-                3 => new OneBotSegment("image", new ImageSegment(msg["text"]?.GetValue<string>() ?? "")),
+                3 => new OneBotSegment("image", new ImageSegment(msg["image_url"]?.GetValue<string>() ?? "")),
                 _ => throw new InvalidDataException("Unknown type found in essence msg")
             };
             segments.Add(segment);
