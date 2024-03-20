@@ -21,7 +21,7 @@ public class TicketService
         {
             CookieContainer = _container
         };
-        _client = new HttpClient();
+        _client = new HttpClient(handler);
     }
 
     private async Task<string?> GetSKey()
