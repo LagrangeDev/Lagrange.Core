@@ -2,7 +2,6 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Lagrange.Core;
-using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core.Entity;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Notify;
@@ -56,7 +55,7 @@ public class GetGroupMemoOperation(TicketService ticket) : IOperation
 
     private async Task<IEnumerable<OneBotGroupNotice>?> GetGroupNotice(OneBotGetGroupMemo memo)
     {
-        var url = $"{_url}?bkn={ticket.GetCsrfToken()}&qid={memo.GroupId}&ft=23&ni=1&n=1&i=1&log_read=1&platform=1&s=-1&n=20";
+        var url = $"{_url}?bkn={await ticket.GetCsrfToken()}&qid={memo.GroupId}&ft=23&ni=1&n=1&i=1&log_read=1&platform=1&s=-1&n=20";
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Add("Cookie", await ticket.GetCookies("qun.qq.com"));
         try

@@ -15,7 +15,7 @@ public class DeleteGroupMemoOperation(TicketService ticket) : IOperation
 
     private async Task<bool> DeleteGroupNotice(OneBotDeleteGroupMemo memo)
     {
-        var url = $"{_url}?fid={memo.NoticeId}&qid={memo.GroupId}&bkn={ticket.GetCsrfToken()}&ft=23&op=1";
+        var url = $"{_url}?fid={memo.NoticeId}&qid={memo.GroupId}&bkn={await ticket.GetCsrfToken()}&ft=23&op=1";
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Add("Cookie", await ticket.GetCookies("qun.qq.com"));
         try
@@ -35,8 +35,8 @@ public class DeleteGroupMemoOperation(TicketService ticket) : IOperation
         if (payload.Deserialize<OneBotDeleteGroupMemo>(SerializerOptions.DefaultOptions) is { } memo)
         {
             return (await DeleteGroupNotice(memo))
-                ? new OneBotResult(null, -1, "failed")
-                : new OneBotResult(null, 0, "ok");
+                ? new OneBotResult(null, 0, "ok")
+                : new OneBotResult(null, -1, "failed");
         }
 
         throw new Exception();
