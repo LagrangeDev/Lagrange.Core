@@ -235,25 +235,31 @@ internal class WtExchangeLogic : LogicBase
                         var client = new HttpClient();
                         var response = await client.PostAsJsonAsync(url, request);
                         var json = await response.Content.ReadFromJsonAsync<NTNewDeviceQrCodeResponse>();
-                        var newDeviceEvent = new BotNewDeviceVerifyEvent(json?.StrUrl ?? string.Empty, Array.Empty<byte>());
+                        if (json == null) return false;
+                        
+                        var newDeviceEvent = new BotNewDeviceVerifyEvent(json.StrUrl, Array.Empty<byte>());
                         Collection.Invoker.PostEvent(newDeviceEvent);
-                        Collection.Log.LogInfo(Tag, $"NewDeviceLogin Url: {json?.StrUrl}");
+                        Collection.Log.LogInfo(Tag, $"NewDeviceLogin Url: {json.StrUrl}");
+
+                        string? original = HttpUtility.ParseQueryString(json.StrUrl.Split("?")[1])["str_url"];
+                        if (original == null) return false;
                         
                         Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => 
                         {
                             var query = new NTNewDeviceQrCodeQuery
                             {
                                 Uint32Flag = 0,
-                                Token = ""  // TODO: Fill in token
+                                Token = Convert.ToBase64String(Encoding.UTF8.GetBytes(original))
                             };
                             var resp = await client.PostAsJsonAsync(url, query);
                             var responseJson = await resp.Content.ReadFromJsonAsync<NTNewDeviceQrCodeResponse>();
                             if (!string.IsNullOrEmpty(responseJson?.StrNtSuccToken))
                             {
+                                Collection.Scheduler.Cancel(QueryEvent);  // cancel the event
+                                
                                 Collection.Keystore.Session.TempPassword = Encoding.UTF8.GetBytes(responseJson.StrNtSuccToken);
                                 _transEmpTask.SetResult(true);
                                 client.Dispose();
-                                Collection.Scheduler.Cancel(QueryEvent);
                             }
                             else
                             {
@@ -261,15 +267,15 @@ internal class WtExchangeLogic : LogicBase
                             }
                         });
                         
-                        bool result = await _transEmpTask.Task;
-                        if (result)
+                        if (await _transEmpTask.Task)
                         {
-                            Collection.Log.LogInfo(Tag, "Trying to Login by EasyLogin...");
+                            Collection.Log.LogInfo(Tag, "Trying to Login by NewDeviceLogin...");
                             var newDeviceLogin = NewDeviceLoginEvent.Create();
                             _ = await Collection.Business.SendEvent(newDeviceLogin);
-                            await BotOnline();
+                            return await BotOnline();
                         }
-                        return result;
+                        
+                        return false;
                     }
                     default:
                     {

@@ -10,6 +10,7 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Login;
 
+[EventSubscribe(typeof(NewDeviceLoginEvent))]
 [Service("trpc.login.ecdh.EcdhService.SsoNTLoginPasswordLoginNewDevice")]
 internal class NewDeviceLoginService : BaseService<NewDeviceLoginEvent>
 {
