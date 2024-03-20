@@ -237,6 +237,7 @@ internal class WtExchangeLogic : LogicBase
                         var json = await response.Content.ReadFromJsonAsync<NTNewDeviceQrCodeResponse>();
                         var newDeviceEvent = new BotNewDeviceVerifyEvent(json?.StrUrl ?? string.Empty, Array.Empty<byte>());
                         Collection.Invoker.PostEvent(newDeviceEvent);
+                        Collection.Log.LogInfo(Tag, $"NewDeviceLogin Url: {json?.StrUrl}");
                         
                         Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => 
                         {
@@ -247,10 +248,17 @@ internal class WtExchangeLogic : LogicBase
                             };
                             var resp = await client.PostAsJsonAsync(url, query);
                             var responseJson = await resp.Content.ReadFromJsonAsync<NTNewDeviceQrCodeResponse>();
-                            if (!string.IsNullOrEmpty(responseJson?.StrNtSuccToken)) 
+                            if (!string.IsNullOrEmpty(responseJson?.StrNtSuccToken))
+                            {
                                 Collection.Keystore.Session.TempPassword = Encoding.UTF8.GetBytes(responseJson.StrNtSuccToken);
-                            
-                            _transEmpTask.SetResult(true);
+                                _transEmpTask.SetResult(true);
+                                client.Dispose();
+                                Collection.Scheduler.Cancel(QueryEvent);
+                            }
+                            else
+                            {
+                                Collection.Log.LogInfo(Tag, "NewDeviceLogin is waiting for scanning");
+                            }
                         });
                         
                         bool result = await _transEmpTask.Task;
