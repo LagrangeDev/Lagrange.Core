@@ -1,0 +1,106 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using Lagrange.Core;
+using Lagrange.OneBot.Core.Entity.Action;
+using Lagrange.OneBot.Core.Entity.Message;
+using Lagrange.OneBot.Database;
+using Lagrange.OneBot.Utility;
+
+#pragma warning disable CS8618
+
+namespace Lagrange.OneBot.Core.Operation.Message;
+
+[Operation("get_essence_msg")]
+public class GetEssenceMessageOperation : IOperation
+{
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
+    {
+        if (payload?["group_id"]?.GetValue<uint>() is { } groupUin)
+        {
+            string sKey = await TicketHelper.GetSKey(context) ?? "";
+            int bkn = TicketHelper.GetCSRFToken(sKey);
+            int page = 0;
+            
+            var essence = new List<OneBotEssenceMessage>();
+
+            while (true)
+            {
+                string url = $"https://qun.qq.com/cgi-bin/group_digest/digest_list?random=7800&X-CROSS-ORIGIN=fetch&group_code={groupUin}&page_start={page}&page_limit=20&bkn={bkn}";
+                string response = await TicketHelper.GetAsync(context, url);
+                var @object = JsonSerializer.Deserialize<RequestBody>(response);
+                if (@object == null) continue;
+
+                foreach (var msg in @object.Data.MsgList)
+                {
+                    essence.Add(new OneBotEssenceMessage
+                    {
+                        SenderId = uint.Parse(msg.SenderUin),
+                        SenderNick = msg.SenderNick,
+                        SenderTime = msg.SenderTime,
+                        OperatorId = uint.Parse(msg.AddDigestUin),
+                        OperatorNick = msg.AddDigestNick,
+                        OperatorTime = msg.AddDigestTime,
+                        MessageId = MessageRecord.CalcMessageHash(msg.MsgRandom, msg.MsgSeq)
+                    });
+                }
+                
+                if (@object.Data.IsEnd) break;
+                
+                page++;
+            }
+
+            return new OneBotResult(essence, 0, "ok");
+        }
+
+        throw new Exception();
+    }
+}
+
+[Serializable]
+file class RequestBody
+{
+    [JsonPropertyName("retcode")] public long Retcode { get; set; }
+
+    [JsonPropertyName("retmsg")] public string Retmsg { get; set; }
+
+    [JsonPropertyName("data")] public Data Data { get; set; }
+}
+
+[Serializable]
+file class Data
+{
+    [JsonPropertyName("msg_list")] public MsgList[] MsgList { get; set; }
+
+    [JsonPropertyName("is_end")] public bool IsEnd { get; set; }
+
+    [JsonPropertyName("group_role")] public long GroupRole { get; set; }
+
+    [JsonPropertyName("config_page_url")] public Uri ConfigPageUrl { get; set; }
+}
+
+[Serializable]
+file class MsgList
+{
+    [JsonPropertyName("group_code")] public string GroupCode { get; set; }
+
+    [JsonPropertyName("msg_seq")] public uint MsgSeq { get; set; }
+        
+    [JsonPropertyName("msg_random")] public uint MsgRandom { get; set; }
+
+    [JsonPropertyName("sender_uin")] public string SenderUin { get; set; }
+        
+    [JsonPropertyName("sender_nick")] public string SenderNick { get; set; }
+
+    [JsonPropertyName("sender_time")] public uint SenderTime { get; set; }
+
+    [JsonPropertyName("add_digest_uin")] public string AddDigestUin { get; set; }
+
+    [JsonPropertyName("add_digest_nick")] public string AddDigestNick { get; set; }
+
+    [JsonPropertyName("add_digest_time")] public uint AddDigestTime { get; set; }
+        
+    [JsonPropertyName("msg_content")] public JsonElement[] MsgContent { get; set; }
+        
+    [JsonPropertyName("can_be_removed")] public bool CanBeRemoved { get; set; }
+}

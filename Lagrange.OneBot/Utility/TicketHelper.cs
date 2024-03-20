@@ -6,7 +6,7 @@ namespace Lagrange.OneBot.Utility;
 
 // Resharper disable InconsistentNaming
 
-public class TicketHelper
+public static class TicketHelper
 {
     private static readonly HttpClient _client;
 
@@ -41,10 +41,19 @@ public class TicketHelper
         return hash & 2147483647;
     }
 
-    public async Task<string> GetCookies(BotContext context, string domain)
+    public static async Task<string> GetCookies(BotContext context, string domain)
     {
         string? skey = await GetSKey(context);
         string token = (await context.FetchCookies([domain]))[0];
-        return $"p_uin=o{context.BotUin}; p_skey=o{token}; skey={skey}; uin=o{context.BotUin}";
+        return $"p_uin=o{context.BotUin}; p_skey={token}; skey={skey}; uin=o{context.BotUin}";
+    }
+
+    public static async Task<string> GetAsync(BotContext context, string url)
+    {
+        var message = new HttpRequestMessage(HttpMethod.Get, url);
+        message.Headers.Add("Cookie", await GetCookies(context, message.RequestUri?.Host ?? ""));
+
+        var response = await _client.SendAsync(message);
+        return await response.Content.ReadAsStringAsync();
     }
 }
