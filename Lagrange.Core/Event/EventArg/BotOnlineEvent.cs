@@ -2,7 +2,7 @@ namespace Lagrange.Core.Event.EventArg;
 
 public class BotOnlineEvent : EventBase
 {
-    public OnlineReason Reason;
+    public OnlineReason Reason { get; }
     
     public BotOnlineEvent(OnlineReason reason)
     {
