@@ -32,6 +32,7 @@ public sealed class OperationService
         }
 
         var service = new ServiceCollection();
+        service.AddSingleton(bot);
         service.AddSingleton(context);
         service.AddSingleton(logger);
         service.AddSingleton(message);
