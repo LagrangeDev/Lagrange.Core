@@ -66,7 +66,7 @@ public class TicketService
         return sKey;
     }
 
-    private async Task<string> GetCookies(string domain)
+    public async Task<string> GetCookies(string domain)
     {
         string? skey = await GetSKey();
         string token;
