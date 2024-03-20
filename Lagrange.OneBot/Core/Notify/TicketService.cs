@@ -12,6 +12,10 @@ public class TicketService
     
     private readonly CookieContainer _container;
 
+    private readonly Dictionary<string, (string PsSey, DateTime ExpireTime)> _psKeys;
+
+    private (string SKey, DateTime ExpireTime) _sKey;
+
     public TicketService(BotContext context)
     {
         _container = new CookieContainer();
@@ -22,16 +26,16 @@ public class TicketService
             CookieContainer = _container
         };
         _client = new HttpClient(handler);
+        _psKeys = new Dictionary<string, (string, DateTime)>();
     }
-
-    private async Task<string?> GetSKey()
+    
+    public async Task<string> GetAsync(string url)
     {
-        const string jump = "https%3A%2F%2Fh5.qzone.qq.com%2Fqqnt%2Fqzoneinpcqq%2Ffriend%3Frefresh%3D0%26clientuin%3D0%26darkMode%3D0&keyindex=19&random=2599";
-        string url = $"https://ssl.ptlogin2.qq.com/jump?ptlang=1033&clientuin={_context.BotUin}&clientkey={await _context.GetClientKey()}&u1={jump}";
-        await _client.GetAsync(url);
+        var message = new HttpRequestMessage(HttpMethod.Get, url);
+        message.Headers.Add("Cookie", await GetCookies(message.RequestUri?.Host ?? ""));
 
-        var cookies = _container.GetAllCookies();
-        return cookies["skey"]?.Value;
+        var response = await _client.SendAsync(message);
+        return await response.Content.ReadAsStringAsync();
     }
 
     public async Task<int> GetCsrfToken()
@@ -46,20 +50,44 @@ public class TicketService
         }
         return hash & 2147483647;
     }
+    
+    private async Task<string?> GetSKey()
+    {
+        if (DateTime.Now < _sKey.ExpireTime) return _sKey.SKey;
+        
+        const string jump = "https%3A%2F%2Fh5.qzone.qq.com%2Fqqnt%2Fqzoneinpcqq%2Ffriend%3Frefresh%3D0%26clientuin%3D0%26darkMode%3D0&keyindex=19&random=2599";
+        string url = $"https://ssl.ptlogin2.qq.com/jump?ptlang=1033&clientuin={_context.BotUin}&clientkey={await _context.GetClientKey()}&u1={jump}";
+        await _client.GetAsync(url);
+
+        var cookies = _container.GetAllCookies();
+        string sKey = cookies["skey"]?.Value ?? "";
+        _sKey = (sKey, DateTime.Now.AddDays(1));
+
+        return sKey;
+    }
 
     private async Task<string> GetCookies(string domain)
     {
         string? skey = await GetSKey();
-        string token = (await _context.FetchCookies([domain]))[0];
+        string token;
+        if (_psKeys.TryGetValue(domain, out var tokenTime))
+        {
+            if (DateTime.Now > tokenTime.ExpireTime)
+            {
+                token = (await _context.FetchCookies([domain]))[0];
+                _psKeys[domain] = (token, DateTime.Now.AddDays(1)); // update pskey
+            }
+            else
+            {
+                token = tokenTime.PsSey;
+            }
+        }
+        else
+        {
+            token = (await _context.FetchCookies([domain]))[0];
+            _psKeys[domain] = (token, DateTime.Now.AddDays(1)); // get pskey
+        }
+        
         return $"p_uin=o{_context.BotUin}; p_skey={token}; skey={skey}; uin=o{_context.BotUin}";
-    }
-
-    public async Task<string> GetAsync(string url)
-    {
-        var message = new HttpRequestMessage(HttpMethod.Get, url);
-        message.Headers.Add("Cookie", await GetCookies(message.RequestUri?.Host ?? ""));
-
-        var response = await _client.SendAsync(message);
-        return await response.Content.ReadAsStringAsync();
     }
 }
