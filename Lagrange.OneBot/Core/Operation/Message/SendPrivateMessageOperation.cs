@@ -12,9 +12,12 @@ using LiteDB;
 namespace Lagrange.OneBot.Core.Operation.Message;
 
 [Operation("send_private_msg")]
-public sealed class SendPrivateMessageOperation(LiteDatabase database, MessageCommon common) : IOperation {
-    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload) {
-        var chain = payload.Deserialize<OneBotPrivateMessageBase>(SerializerOptions.DefaultOptions) switch {
+public sealed class SendPrivateMessageOperation(LiteDatabase database, MessageCommon common) : IOperation
+{
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
+    {
+        var chain = payload.Deserialize<OneBotPrivateMessageBase>(SerializerOptions.DefaultOptions) switch
+        {
             OneBotPrivateMessage message => common.ParseChain(message).Build(),
             OneBotPrivateMessageSimple messageSimple => common.ParseChain(messageSimple).Build(),
             OneBotPrivateMessageText messageText => common.ParseChain(messageText).Build(),
@@ -23,14 +26,15 @@ public sealed class SendPrivateMessageOperation(LiteDatabase database, MessageCo
 
         var result = await context.SendMessage(chain);
 
-        MessageRecord record = new() {
+        MessageRecord record = new()
+        {
             FriendUin = context.BotUin,
             Sequence = result.Sequence ?? 0,
             Time = DateTimeOffset.FromUnixTimeSeconds(result.Timestamp).DateTime,
             MessageId = chain.MessageId,
             FriendInfo = new BotFriend(
                 context.BotUin,
-                string.Empty,
+                context.ContextCollection.Keystore.Uid ?? string.Empty,
                 context.BotName ?? string.Empty,
                 string.Empty,
                 string.Empty
