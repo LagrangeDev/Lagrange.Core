@@ -22,7 +22,7 @@ An Implementation of NTQQ Protocol, with Pure C#, Derived from Konata.Core
 # 8081 port for ForwardWebSocket and Http-Post
 # /path-to-data is used to store the files needed for the runtime
 # UID Env and GID Env are used to set file permissions
-docker run -id -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -g) ghcr.io/lagrangedev/lagrange.onebot:edge
+docker run -td -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -g) ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
 
 > [!IMPORTANT]
@@ -32,7 +32,7 @@ docker run -id -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -
 >    1. 1. Modify `/path-to-data/appsettings.json`
 >       2. Restart the container using `docker restart`
 >
->    2. 1. Ensure that the `-i` option is used when executing `docker run`
+>    2. 1. Ensure that the `-t` option is used when executing `docker run`
 >       2. Modify `/path-to-data/appsettings.json`
 >       3. Enter the container using `docker attach`
 >       4. Press any key
