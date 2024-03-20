@@ -6,16 +6,14 @@ using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Message;
 using Lagrange.OneBot.Core.Notify;
 using Lagrange.OneBot.Database;
-using Lagrange.OneBot.Message;
 using Lagrange.OneBot.Message.Entity;
-using Lagrange.OneBot.Utility;
 
 #pragma warning disable CS8618
 
 namespace Lagrange.OneBot.Core.Operation.Message;
 
-[Operation("get_essence_msg")]
-public class GetEssenceMessageOperation(TicketService ticket) : IOperation
+[Operation("get_essence_msg_list")]
+public class GetEssenceMessageListOperation(TicketService ticket) : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
