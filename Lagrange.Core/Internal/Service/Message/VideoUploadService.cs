@@ -1,42 +1,43 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
-using Lagrange.Core.Internal.Packets.Message.Component;
+using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 using FileInfo = Lagrange.Core.Internal.Packets.Service.Oidb.Common.FileInfo;
+using GroupInfo = Lagrange.Core.Internal.Packets.Service.Oidb.Common.GroupInfo;
 
 namespace Lagrange.Core.Internal.Service.Message;
 
-[EventSubscribe(typeof(RecordUploadEvent))]
-[Service("OidbSvcTrpcTcp.0x126d_100")]
-internal class RecordUploadService : BaseService<RecordUploadEvent>
+[EventSubscribe(typeof(VideoUploadEvent))]
+[Service("OidbSvcTrpcTcp.0x11e9_100")]
+internal class VideoUploadService : BaseService<VideoUploadEvent>
 {
-    protected override bool Build(RecordUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Build(VideoUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
-        if (input.Entity.AudioStream is null) throw new Exception();
+        if (input.Entity.VideoStream is null) throw new Exception();
         
-        string md5 = input.Entity.AudioStream.Md5(true);
-        string sha1 = input.Entity.AudioStream.Sha1(true);
-
+        string md5 = input.Entity.VideoStream.Md5(true);
+        string sha1 = input.Entity.VideoStream.Sha1(true);
+        
         var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq
         {
             ReqHead = new MultiMediaReqHead
             {
                 Common = new CommonHead
                 {
-                    RequestId = 4u,
+                    RequestId = 3,
                     Command = 100
                 },
                 Scene = new SceneInfo
                 {
                     RequestType = 2,
-                    BusinessType = 3,
-                    SceneType = 1u,
+                    BusinessType = 2,
+                    SceneType = 1,
                     C2C = new C2CUserInfo
                     {
                         AccountType = 2,
@@ -53,58 +54,80 @@ internal class RecordUploadService : BaseService<RecordUploadEvent>
                     {
                         FileInfo = new FileInfo
                         {
-                            FileSize = (uint)input.Entity.AudioStream.Length,
+                            FileSize = (uint)input.Entity.VideoStream.Length,
                             FileHash = md5,
                             FileSha1 = sha1,
-                            FileName = md5 + ".amr",
+                            FileName = "video.mp4",
                             Type = new FileType
                             {
-                                Type = 3,
+                                Type = 2,
                                 PicFormat = 0,
                                 VideoFormat = 0,
-                                VoiceFormat = 1
+                                VoiceFormat = 0
                             },
                             Width = 0,
                             Height = 0,
-                            Time = (uint)input.Entity.AudioLength,
+                            Time = (uint)input.Entity.VideoLength,
                             Original = 0
                         },
                         SubFileType = 0
-                    }
+                    },
+                    new()
+                    {
+                        FileInfo = new FileInfo  // dummy images
+                        {
+                            FileSize = (uint)input.Entity.VideoStream.Length - 1200,
+                            FileHash = md5,
+                            FileSha1 = sha1,
+                            FileName = "video.jpg",
+                            Type = new FileType
+                            {
+                                Type = 1,
+                                PicFormat = 0,
+                                VideoFormat = 0,
+                                VoiceFormat = 0
+                            },
+                            Width = 1920,
+                            Height = 1080,
+                            Time = 0,
+                            Original = 0
+                        },
+                        SubFileType = 100
+                    },
                 },
                 TryFastUploadCompleted = true,
                 SrvSendMsg = false,
                 ClientRandomId = (ulong)Random.Shared.Next(),
-                CompatQMsgSceneType = 1u,
+                CompatQMsgSceneType = 2,
                 ExtBizInfo = new ExtBizInfo
                 {
-                    Pic = new PicExtBizInfo { TextSummary = "" },
-                    Video = new VideoExtBizInfo { BytesPbReserve = Array.Empty<byte>() },
+                    Pic = new PicExtBizInfo { BizType = 0, TextSummary = "" },
+                    Video = new VideoExtBizInfo { BytesPbReserve = "800100".UnHex() },
                     Ptt = new PttExtBizInfo
                     {
-                        BytesReserve = new byte[] { 0x08, 0x00, 0x38, 0x00 },
+                        BytesReserve = Array.Empty<byte>(),
                         BytesPbReserve = Array.Empty<byte>(),
-                        BytesGeneralFlags = new byte[] { 0x9a, 0x01, 0x0b, 0xaa, 0x03, 0x08, 0x08, 0x04, 0x12, 0x04, 0x00, 0x00, 0x00, 0x00 }
+                        BytesGeneralFlags = Array.Empty<byte>()
                     }
                 },
                 ClientSeq = 0,
                 NoNeedCompatMsg = false
             }
-        }, 0x126d, 100, false, true);
-        
+        }, 0x11e9, 100, false, true);
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
     }
 
     protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out RecordUploadEvent output, out List<ProtocolEvent>? extraEvents)
+        out VideoUploadEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<NTV2RichMediaResp>>(input.AsSpan());
         var upload = packet.Body.Upload;
-        var compat = Serializer.Deserialize<RichText>(upload.CompatQMsg.AsSpan());
+        var compat = Serializer.Deserialize<VideoFile>(packet.Body.Upload.CompatQMsg.AsSpan());
         
-        output = RecordUploadEvent.Result((int)packet.ErrorCode, upload.UKey, upload.MsgInfo, upload.IPv4s, compat);
+        output = VideoUploadEvent.Result((int)packet.ErrorCode, upload.UKey, upload.MsgInfo, upload.IPv4s, compat);
         extraEvents = null;
         return true;
     }
