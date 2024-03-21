@@ -1,3 +1,4 @@
+using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Packets.Service.Highway;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 
@@ -5,6 +6,13 @@ namespace Lagrange.Core.Internal.Context.Uploader;
 
 internal static class Common
 {
+    public static async Task<byte[]> GetTicket(ContextCollection context)
+    {
+        var hwUrlEvent = HighwayUrlEvent.Create();
+        var highwayUrlResult = await context.Business.SendEvent(hwUrlEvent);
+        return ((HighwayUrlEvent)highwayUrlResult[0]).SigSession;
+    }
+    
     public static NTHighwayNetwork Convert(List<IPv4> ipv4s) => new()
     {
         IPv4s = ipv4s.Select(x => new NTHighwayIPv4

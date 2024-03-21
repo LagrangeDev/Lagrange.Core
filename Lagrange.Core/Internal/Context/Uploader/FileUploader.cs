@@ -20,10 +20,6 @@ internal static class FileUploader
         var result = await context.Business.SendEvent(uploadEvent);
         var uploadResp = (FileUploadEvent)result[0];
         
-        var hwUrlEvent = HighwayUrlEvent.Create();
-        var highwayUrlResult = await context.Business.SendEvent(hwUrlEvent);
-        var ticketResult = (HighwayUrlEvent)highwayUrlResult[0];
-
         if (!uploadResp.IsExist)
         {
             var ext = new FileUploadExt
@@ -79,7 +75,7 @@ internal static class FileUploader
             file.FileHash = uploadResp.Addon;
             file.FileUuid = uploadResp.FileId;
 
-            bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(95, file.FileStream, ticketResult.SigSession, file.FileMd5, ext.Serialize().ToArray());
+            bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(95, file.FileStream, await Common.GetTicket(context), file.FileMd5, ext.Serialize().ToArray());
             if (!hwSuccess) return false;
         }
 
@@ -97,9 +93,6 @@ internal static class FileUploader
         var result = await context.Business.SendEvent(uploadEvent);
         var uploadResp = (GroupFSUploadEvent)result[0];
         
-        var hwUrlEvent = HighwayUrlEvent.Create();
-        var highwayUrlResult = await context.Business.SendEvent(hwUrlEvent);
-        var ticketResult = (HighwayUrlEvent)highwayUrlResult[0];
 
         if (!uploadResp.IsExist)
         {
@@ -154,7 +147,7 @@ internal static class FileUploader
                 }
             };
 
-            bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(71, file.FileStream, ticketResult.SigSession, file.FileMd5, ext.Serialize().ToArray());
+            bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(71, file.FileStream, await Common.GetTicket(context), file.FileMd5, ext.Serialize().ToArray());
             if (!hwSuccess) return false;
         }
         

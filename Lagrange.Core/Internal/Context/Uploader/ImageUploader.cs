@@ -18,10 +18,6 @@ internal class ImageUploader : IHighwayUploader
             var uploadResult = await context.Business.SendEvent(uploadEvent);
             var metaResult = (ImageUploadEvent)uploadResult[0];
 
-            var hwUrlEvent = HighwayUrlEvent.Create();
-            var highwayUrlResult = await context.Business.SendEvent(hwUrlEvent);
-            var ticketResult = (HighwayUrlEvent)highwayUrlResult[0];
-
             if (metaResult.UKey != null)
             {
                 var index = metaResult.MsgInfo.MsgInfoBody[0].Index;
@@ -36,7 +32,7 @@ internal class ImageUploader : IHighwayUploader
                 };
                 var extStream = extend.Serialize();
 
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1003, image.ImageStream, ticketResult.SigSession, index.Info.FileHash.UnHex(), extStream.ToArray());
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1003, image.ImageStream, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
                 if (!hwSuccess)
                 {
                     await image.ImageStream.DisposeAsync();
@@ -58,10 +54,6 @@ internal class ImageUploader : IHighwayUploader
             var uploadResult = await context.Business.SendEvent(uploadEvent);
             var metaResult = (ImageGroupUploadEvent)uploadResult[0];
 
-            var hwUrlEvent = HighwayUrlEvent.Create();
-            var highwayUrlResult = await context.Business.SendEvent(hwUrlEvent);
-            var ticketResult = (HighwayUrlEvent)highwayUrlResult[0];
-
             if (metaResult.UKey != null)
             {
                 var index = metaResult.MsgInfo.MsgInfoBody[0].Index;
@@ -76,7 +68,7 @@ internal class ImageUploader : IHighwayUploader
                 };
                 var extStream = extend.Serialize();
 
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1004, image.ImageStream, ticketResult.SigSession, index.Info.FileHash.UnHex(), extStream.ToArray());
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1004, image.ImageStream, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
                 if (!hwSuccess)
                 {
                     await image.ImageStream.DisposeAsync();

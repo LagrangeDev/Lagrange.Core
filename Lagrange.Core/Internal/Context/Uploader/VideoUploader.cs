@@ -23,10 +23,6 @@ internal class VideoUploader : IHighwayUploader
             var uploadEvent = VideoGroupUploadEvent.Create(video, chain.GroupUin ?? 0);
             var uploadResult = await context.Business.SendEvent(uploadEvent);
             var metaResult = (VideoGroupUploadEvent)uploadResult[0];
-
-            var hwUrlEvent = HighwayUrlEvent.Create();
-            var highwayUrlResult = await context.Business.SendEvent(hwUrlEvent);
-            var ticketResult = (HighwayUrlEvent)highwayUrlResult[0];
             
             if (metaResult.UKey != null)
             {
@@ -42,7 +38,7 @@ internal class VideoUploader : IHighwayUploader
                 };
                 var extStream = extend.Serialize();
 
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1005, stream, ticketResult.SigSession, index.Info.FileHash.UnHex(), extStream.ToArray());
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1005, stream, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
                 if (!hwSuccess)
                 {
                     await stream.DisposeAsync();
