@@ -14,6 +14,7 @@ public class SetGroupMemoOperation(TicketService ticket) : IOperation
 {
     private const string Url = "https://web.qun.qq.com/cgi-bin/announce/add_qun_notice?bkn=";
     private const string UserAgent = "Dalvik/2.1.0 (Linux; U; Android 7.1.2; PCRT00 Build/N2G48H)";
+    private const string Domain = "qun.qq.com";
 
     private async Task<string?> SendGroupNoticeSimple(OneBotSetGroupMemo memo)
     {
@@ -25,7 +26,7 @@ public class SetGroupMemoOperation(TicketService ticket) : IOperation
             var request = new HttpRequestMessage(HttpMethod.Post, url);
             request.Headers.UserAgent.ParseAdd(UserAgent);
             request.Content = new StringContent(body, Encoding.UTF8, "application/json");
-            var response = await ticket.SendAsync(request);
+            var response = await ticket.SendAsync(request, Domain);
             response.EnsureSuccessStatusCode();
             string content = await response.Content.ReadAsStringAsync();
 
