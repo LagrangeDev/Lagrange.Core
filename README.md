@@ -92,7 +92,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | [Face]           |   🟢    |
 | [Image]          |   🟢    |
 | [Record]         |   🟢    |
-| [Video]          |   🟡    |
+| [Video]          |   🟢    |
 | [At]             |   🟢    |
 | [Rps]            |   🟢    |
 | [Dice]           |   🟢    |

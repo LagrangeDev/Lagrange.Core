@@ -21,7 +21,7 @@ public partial class VideoSegment : SegmentBase
     {
         if (segment is VideoSegment videoSegment and not { File: "" } && CommonResolver.Resolve(videoSegment.File) is { } image)
         {
-            // TODO: Add Video
+            builder.Video(image);
         }
     }
 
