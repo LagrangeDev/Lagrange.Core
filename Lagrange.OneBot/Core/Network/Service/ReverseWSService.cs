@@ -198,7 +198,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                 received += result.Count;
                 if (result.EndOfMessage) break;
 
-                if (received == buffer.Length) Array.Resize(ref buffer, received + (~received & 0xFFF) + 1);
+                if (received == buffer.Length) Array.Resize(ref buffer, received << 1);
             }
             string text = Encoding.UTF8.GetString(buffer, 0, received);
             Log.LogDataReceived(_logger, Tag, text);
