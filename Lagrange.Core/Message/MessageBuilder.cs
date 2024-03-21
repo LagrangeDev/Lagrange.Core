@@ -125,6 +125,22 @@ public sealed class MessageBuilder
         
         return this;
     }
+    
+    public MessageBuilder Video(byte[] file, int videoLength = 0)
+    {
+        var videoEntity = new VideoEntity(file, videoLength);
+        _chain.Add(videoEntity);
+
+        return this;
+    }
+
+    public MessageBuilder Video(string filePath, int videoLength = 0)
+    {
+        var videoEntity = new VideoEntity(filePath, videoLength);
+        _chain.Add(videoEntity);
+
+        return this;
+    }
 
     /// <summary>
     /// Add a audio entity to the message chain

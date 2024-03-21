@@ -1,7 +1,7 @@
 using System.Numerics;
-using System.Text;
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
+using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Message.Entity;
@@ -16,12 +16,23 @@ public class VideoEntity : IMessageEntity
     public Vector2 Size { get; }
     
     public int VideoSize { get; }
+    
+    public int VideoLength { get; set; }
 
     public string VideoUrl { get; set; } = string.Empty;
-    
+
+    #region Internal Properties
+
     internal Stream? VideoStream { get; set; }
     
     internal string? VideoUuid { get; }
+    
+    internal MsgInfo? MsgInfo { get; set; }
+
+    internal VideoFile? Compat { get; set; }
+    
+
+    #endregion
     
     internal VideoEntity() { }
     
@@ -34,15 +45,42 @@ public class VideoEntity : IMessageEntity
         VideoUuid = videoUuid;
     }
     
+    public VideoEntity(string filePath, int videoLength = 0)
+    {
+        FilePath = filePath;
+        VideoStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        VideoSize = (int)VideoStream.Length;
+        VideoLength = videoLength;
+    }
+
+    public VideoEntity(byte[] file, int videoLength = 0)
+    {
+        FilePath = string.Empty;
+        VideoStream = new MemoryStream(file);
+        VideoSize = (int)VideoStream.Length;
+        VideoLength = videoLength;
+    }
+    
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
-        return new Elem[]
+        var common = MsgInfo.Serialize();
+
+        var elems = new List<Elem>
         {
             new()
             {
-                
+                CommonElem = new CommonElem
+                {
+                    ServiceType = 48,
+                    PbElem = common.ToArray(),
+                    BusinessType = 21
+                }
             }
         };
+        
+        if (Compat != null) elems.Add(new Elem { VideoFile = Compat });
+
+        return elems;
     }
 
     IMessageEntity? IMessageEntity.UnpackElement(Elem elem)
