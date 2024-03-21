@@ -31,7 +31,7 @@ public partial class HttpPostService(IOptionsSnapshot<HttpPostServiceOptions> op
     private string ComputeSHA1(string data)
     {
         byte[] hash = _sha1!.ComputeHash(Encoding.UTF8.GetBytes(data));
-        return Convert.ToHexString(hash);
+        return Convert.ToHexString(hash).ToLower();
     }
 
     public async ValueTask SendJsonAsync<T>(T payload, string? identifier, CancellationToken cancellationToken = default)
