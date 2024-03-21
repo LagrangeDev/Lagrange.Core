@@ -28,14 +28,11 @@ public class TicketService
         _client = new HttpClient(handler);
         _psKeys = new Dictionary<string, (string, DateTime)>();
     }
-    
-    public async Task<string> GetAsync(string url)
-    {
-        var message = new HttpRequestMessage(HttpMethod.Get, url);
-        message.Headers.Add("Cookie", await GetCookies(message.RequestUri?.Host ?? ""));
 
-        var response = await _client.SendAsync(message);
-        return await response.Content.ReadAsStringAsync();
+    public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage message)
+    {
+        message.Headers.Add("Cookie", await GetCookies(message.RequestUri?.Host ?? ""));
+        return await _client.SendAsync(message);
     }
 
     public async Task<int> GetCsrfToken()
@@ -43,7 +40,7 @@ public class TicketService
         string? sKey = await GetSKey();
         if (sKey == null) throw new InvalidDataException();
         
-        var hash = 5381;
+        int hash = 5381;
         for (int i = 0, len = sKey.Length; i < len; ++i)
         {
             hash += (hash << 5) + sKey[i];

@@ -37,8 +37,9 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
             foreach (string honorRaw in honors)
             {
                 string url = $"https://qun.qq.com/interactive/honorlist?gc={honor.GroupId}&type={HonorToType[honorRaw]}";
-                string response = await ticket.GetAsync(url);
-                var match = HonorRegex().Match(response);
+                var response = await ticket.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
+                string raw = await response.Content.ReadAsStringAsync();
+                var match = HonorRegex().Match(raw);
 
                 if (JsonSerializer.Deserialize<JsonObject>(match.Groups[1].Value) is { } json)
                 {

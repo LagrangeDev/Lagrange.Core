@@ -26,8 +26,9 @@ public class GetEssenceMessageListOperation(TicketService ticket) : IOperation
             while (true)
             {
                 string url = $"https://qun.qq.com/cgi-bin/group_digest/digest_list?random=7800&X-CROSS-ORIGIN=fetch&group_code={groupUin}&page_start={page}&page_limit=20&bkn={bkn}";
-                string response = await ticket.GetAsync(url);
-                var @object = JsonSerializer.Deserialize<RequestBody>(response);
+                var response = await ticket.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
+                string raw = await response.Content.ReadAsStringAsync();
+                var @object = JsonSerializer.Deserialize<RequestBody>(raw);
                 if (@object == null) continue;
 
                 foreach (var msg in @object.Data.MsgList)

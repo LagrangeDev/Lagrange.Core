@@ -5,79 +5,32 @@ using Lagrange.Core;
 using Lagrange.OneBot.Core.Entity;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Notify;
-using Lagrange.OneBot.Core.Operation;
 using Lagrange.OneBot.Core.Operation.Converters;
+
+namespace Lagrange.OneBot.Core.Operation.Group;
 
 [Operation("_get_group_notice")]
 public class GetGroupMemoOperation(TicketService ticket) : IOperation
 {
-    [Serializable]
-    private class GroupNoticeImage
-    {
-        [JsonPropertyName("h")] public string Height { get; set; } = string.Empty;
-
-        [JsonPropertyName("w")] public string Width { get; set; } = string.Empty;
-
-        [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;
-    }
-
-    [Serializable]
-    private class GroupNoticeMessage
-    {
-        [JsonPropertyName("text")] public string Text { get; set; } = string.Empty;
-
-        [JsonPropertyName("pics")] public IEnumerable<GroupNoticeImage> Images { get; set; } = [];
-    }
-
-    [Serializable]
-    private class GroupNoticeFeed
-    {
-        [JsonPropertyName("fid")] public string NoticeId { get; set; } = string.Empty;
-
-        [JsonPropertyName("u")] public uint SenderId { get; set; }
-
-        [JsonPropertyName("pubt")] public long PublishTime { get; set; }
-
-        [JsonPropertyName("msg")] public GroupNoticeMessage Message { get; set; } = new();
-    }
-
-    [Serializable]
-    private class GroupNoticeResponse
-    {
-        [JsonPropertyName("feeds")] public IEnumerable<GroupNoticeFeed> Feeds { get; set; } = [];
-
-        [JsonPropertyName("inst")] public IEnumerable<GroupNoticeFeed> Inst { get; set; } = [];
-    }
 
     private readonly HttpClient _client = new(new HttpClientHandler { UseCookies = false });
 
-    private const string _url = "https://web.qun.qq.com/cgi-bin/announce/get_t_list";
+    private const string Url = "https://web.qun.qq.com/cgi-bin/announce/get_t_list";
 
     private async Task<IEnumerable<OneBotGroupNotice>?> GetGroupNotice(OneBotGetGroupMemo memo)
     {
-        var url = $"{_url}?bkn={await ticket.GetCsrfToken()}&qid={memo.GroupId}&ft=23&ni=1&n=1&i=1&log_read=1&platform=1&s=-1&n=20";
+        var url = $"{Url}?bkn={await ticket.GetCsrfToken()}&qid={memo.GroupId}&ft=23&ni=1&n=1&i=1&log_read=1&platform=1&s=-1&n=20";
         var request = new HttpRequestMessage(HttpMethod.Get, url);
-        request.Headers.Add("Cookie", await ticket.GetCookies("qun.qq.com"));
         try
         {
-            var response = await _client.SendAsync(request);
+            var response = await ticket.SendAsync(request);
             response.EnsureSuccessStatusCode();
 
-            var content = await response.Content.ReadAsStringAsync();
+            string content = await response.Content.ReadAsStringAsync();
             var notices = JsonSerializer.Deserialize<GroupNoticeResponse>(content)!;
-            return Enumerable.Concat(notices.Feeds ?? [], notices.Inst ?? [])
-                .Select(feed => new OneBotGroupNotice(
-                    feed.NoticeId,
-                    feed.SenderId,
-                    feed.PublishTime,
-                    new(
-                        feed.Message.Text,
-                        feed.Message.Images.Select(image => new OneBotGroupNoticeImage(
-                            image.Id,
-                            image.Height,
-                            image.Width
-                        ))
-                    )
+            return notices.Feeds.Concat(notices.Inst)
+                .Select(feed => new OneBotGroupNotice(feed.NoticeId, feed.SenderId, feed.PublishTime,
+                    new OneBotGroupNoticeMessage(feed.Message.Text, feed.Message.Images.Select(image => new OneBotGroupNoticeImage(image.Id, image.Height, image.Width)))
                 ));
         }
         catch
@@ -98,4 +51,42 @@ public class GetGroupMemoOperation(TicketService ticket) : IOperation
 
         throw new Exception();
     }
+}
+
+[Serializable]
+file class GroupNoticeImage
+{
+    [JsonPropertyName("h")] public string Height { get; set; } = string.Empty;
+
+    [JsonPropertyName("w")] public string Width { get; set; } = string.Empty;
+
+    [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;
+}
+
+[Serializable]
+file class GroupNoticeMessage
+{
+    [JsonPropertyName("text")] public string Text { get; set; } = string.Empty;
+
+    [JsonPropertyName("pics")] public IEnumerable<GroupNoticeImage> Images { get; set; } = [];
+}
+
+[Serializable]
+file class GroupNoticeFeed
+{
+    [JsonPropertyName("fid")] public string NoticeId { get; set; } = string.Empty;
+
+    [JsonPropertyName("u")] public uint SenderId { get; set; }
+
+    [JsonPropertyName("pubt")] public long PublishTime { get; set; }
+
+    [JsonPropertyName("msg")] public GroupNoticeMessage Message { get; set; } = new();
+}
+
+[Serializable]
+file class GroupNoticeResponse
+{
+    [JsonPropertyName("feeds")] public IEnumerable<GroupNoticeFeed> Feeds { get; set; } = [];
+
+    [JsonPropertyName("inst")] public IEnumerable<GroupNoticeFeed> Inst { get; set; } = [];
 }
