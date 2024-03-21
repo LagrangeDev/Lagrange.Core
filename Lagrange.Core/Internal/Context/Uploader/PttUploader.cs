@@ -29,7 +29,7 @@ internal class PttUploader : IHighwayUploader
                     Network = Common.Convert(metaResult.Network),
                     MsgInfoBody = metaResult.MsgInfo.MsgInfoBody,
                     BlockSize = 1024 * 1024,
-                    Hash = new NTHighwayHash { FileSha1 = index.Info.FileSha1.UnHex() }
+                    Hash = new NTHighwayHash { FileSha1 = new List<byte[]> { index.Info.FileSha1.UnHex() } }
                 };
                 var extStream = extend.Serialize();
 
@@ -65,7 +65,7 @@ internal class PttUploader : IHighwayUploader
                     Network = Common.Convert(metaResult.Network),
                     MsgInfoBody = metaResult.MsgInfo.MsgInfoBody,
                     BlockSize = 1024 * 1024,
-                    Hash = new NTHighwayHash { FileSha1 = index.Info.FileSha1.UnHex() }
+                    Hash = new NTHighwayHash { FileSha1 = new List<byte[]> { index.Info.FileSha1.UnHex() } }
                 };
                 var extStream = extend.Serialize();
 

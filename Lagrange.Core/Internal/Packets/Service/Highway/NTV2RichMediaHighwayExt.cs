@@ -25,7 +25,7 @@ internal class NTV2RichMediaHighwayExt
 [ProtoContract]
 internal class NTHighwayHash
 {
-    [ProtoMember(1)] public byte[] FileSha1 { get; set; }
+    [ProtoMember(1)] public List<byte[]> FileSha1 { get; set; }
 }
 
 [ProtoContract]
