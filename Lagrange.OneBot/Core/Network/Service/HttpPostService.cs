@@ -1,6 +1,8 @@
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Lagrange.Core;
+using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Meta;
 using Lagrange.OneBot.Core.Network.Options;
 using Microsoft.Extensions.Hosting;
@@ -24,9 +26,19 @@ public partial class HttpPostService(IOptionsSnapshot<HttpPostServiceOptions> op
 
     private static readonly HttpClient _client = new();
 
+    private HMACSHA1? _sha1;
+
+    private string ComputeSHA1(string data)
+    {
+        byte[] hash = _sha1!.ComputeHash(Encoding.UTF8.GetBytes(data));
+        return Convert.ToHexString(hash).ToLower();
+    }
+
     public async ValueTask SendJsonAsync<T>(T payload, string? identifier, CancellationToken cancellationToken = default)
     {
         if (_url is null) throw new InvalidOperationException("Reverse HTTP service was not running");
+
+        if (payload is OneBotResult) return; // ignore api result
 
         var json = JsonSerializer.Serialize(payload);
         Log.LogSendingData(_logger, Tag, json);
@@ -35,6 +47,11 @@ public partial class HttpPostService(IOptionsSnapshot<HttpPostServiceOptions> op
             Headers = { { "X-Self-ID", context.BotUin.ToString() } },
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
+
+        if (_sha1 is not null)
+        {
+            request.Headers.Add("X-Signature", $"sha1={ComputeSHA1(json)}");
+        }
 
         try
         {
@@ -48,6 +65,9 @@ public partial class HttpPostService(IOptionsSnapshot<HttpPostServiceOptions> op
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        if (!string.IsNullOrEmpty(_options.Secret))
+            _sha1 = new HMACSHA1(Encoding.UTF8.GetBytes(_options.Secret));
+
         string urlstr = $"{_options.Host}:{_options.Port}{_options.Suffix}";
         if (!_options.Host.StartsWith("http://") && !_options.Host.StartsWith("https://"))
         {
