@@ -198,7 +198,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                 received += result.Count;
                 if (result.EndOfMessage) break;
 
-                if (received == buffer.Length) Array.Resize(ref buffer, received + 1024);
+                if (received == buffer.Length) Array.Resize(ref buffer, received + (~received & 0xFFF) + 1);
             }
             string text = Encoding.UTF8.GetString(buffer, 0, received);
             Log.LogDataReceived(_logger, Tag, text);
@@ -223,8 +223,20 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         [LoggerMessage(EventId = 1, Level = LogLevel.Trace, Message = "[{tag}] Send: {data}")]
         public static partial void LogSendingData(ILogger logger, string tag, string data);
 
-        [LoggerMessage(EventId = 2, Level = LogLevel.Trace, Message = "[{tag}] Receive: {data}")]
-        public static partial void LogDataReceived(ILogger logger, string tag, string data);
+        public static void LogDataReceived(ILogger logger, string tag, string data)
+        {
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                if (data.Length > 1024)
+                {
+                    data = string.Concat(data.AsSpan(0, 1024), "...", (data.Length - 1024).ToString(), "bytes");
+                }
+                InternalLogDataReceived(logger, tag, data);
+            }
+        }
+
+        [LoggerMessage(EventId = 2, Level = LogLevel.Trace, Message = "[{tag}] Receive: {data}", SkipEnabledCheck = true)]
+        private static partial void InternalLogDataReceived(ILogger logger, string tag, string data);
 
         [LoggerMessage(EventId = 3, Level = LogLevel.Warning, Message = "[{tag}] Client disconnected")]
         public static partial void LogClientDisconnected(ILogger logger, Exception e, string tag);
