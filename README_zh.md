@@ -1,6 +1,6 @@
 <div align="center">
 
-![Lagrange.Core](https://socialify.git.ci/KonataDev/Lagrange.Core/image?description=1&descriptionEditable=%E4%B8%80%E4%B8%AA%E5%9F%BA%E4%BA%8E%E7%BA%AF%20C%23%20%E7%9A%84%20NTQQ%20%E5%8D%8F%E8%AE%AE%E5%AE%9E%E7%8E%B0%2C%20%E6%BA%90%E8%87%AA%20Konata.Core&font=Jost&forks=1&issues=1&logo=https%3A%2F%2Fstatic.live.moe%2Flagrange.jpg&name=1&pattern=Diagonal%20Stripes&pulls=1&stargazers=1&theme=Light)
+![Lagrange.Core](https://socialify.git.ci/KonataDev/Lagrange.Core/image?description=1&descriptionEditable=%E4%B8%80%E4%B8%AA%E5%9F%BA%E4%BA%8E%E7%BA%AF%20C%23%20%E7%9A%84%20NTQQ%20%E5%8D%8F%E8%AE%AE%E5%AE%9E%E7%8E%B0%2C%20%E6%BA%90%E8%87%AA%20Konata.Core&font=Jost&forks=1&issues=1&logo=https%3A%2F%2Fstatic.live.moe%2Flagrange.jpg&name=1&pattern=Diagonal%20Stripes&pulls=1&stargazers=1&theme=Auto)
 ![Core](https://img.shields.io/badge/Lagrange-Core-blue)
 ![OneBot](https://img.shields.io/badge/Lagrange-OneBot-blue)
 ![C#](https://img.shields.io/badge/Core-%20.NET_6-blue)
