@@ -11,7 +11,7 @@ internal class AliveService : BaseService<AliveEvent>
     protected override bool Build(AliveEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
-        output = new BinaryPacket().WriteUint(4, false);
+        output = new BinaryPacket().WriteUint(4);
         extraPackets = null;
         return true;
     }

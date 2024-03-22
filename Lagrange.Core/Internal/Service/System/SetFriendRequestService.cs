@@ -27,10 +27,10 @@ internal class SetFriendRequestService : BaseService<SetFriendRequestEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out SetFriendRequestEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<byte[]>>(input.AsSpan());
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<byte[]>>(input);
 
         output = SetFriendRequestEvent.Result((int)packet.ErrorCode);
         extraEvents = null;

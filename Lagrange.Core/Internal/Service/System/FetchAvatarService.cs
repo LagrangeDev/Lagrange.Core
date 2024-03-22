@@ -31,10 +31,10 @@ internal class FetchAvatarService : BaseService<FetchAvatarEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, out FetchAvatarEvent output,
-        out List<ProtocolEvent>? extraEvents)
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+        out FetchAvatarEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xFE1_2Response>>(input.AsSpan());
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xFE1_2Response>>(input);
 
         output = FetchAvatarEvent.Result(0, payload.Body.Body.Uin, "");
         extraEvents = null;

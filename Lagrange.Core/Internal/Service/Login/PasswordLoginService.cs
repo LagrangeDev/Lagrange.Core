@@ -40,11 +40,11 @@ internal class PasswordLoginService : BaseService<PasswordLoginEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out PasswordLoginEvent output, out List<ProtocolEvent>? extraEvents)
     {
         if (keystore.Session.ExchangeKey == null) throw new InvalidOperationException("ExchangeKey is null");
-        var encrypted = Serializer.Deserialize<SsoNTLoginEncryptedData>(input.AsSpan());
+        var encrypted = Serializer.Deserialize<SsoNTLoginEncryptedData>(input);
         
         if (encrypted.GcmCalc != null)
         {

@@ -46,7 +46,7 @@ internal class RequestFriendService : BaseService<RequestFriendEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out RequestFriendEvent output, out List<ProtocolEvent>? extraEvents)
     {
         output = RequestFriendEvent.Result(0);

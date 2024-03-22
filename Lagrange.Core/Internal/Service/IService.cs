@@ -6,7 +6,7 @@ namespace Lagrange.Core.Internal.Service;
 
 internal interface IService
 {
-    public bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    public bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out ProtocolEvent? output, out List<ProtocolEvent>? extraEvents);
     
     public bool Build(ProtocolEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,

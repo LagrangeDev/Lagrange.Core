@@ -63,6 +63,14 @@ internal class WtExchangeLogic : LogicBase
         if (!await Collection.Socket.Connect()) return null;
         Collection.Scheduler.Interval("Heartbeat.Alive", 10 * 1000, async () => await Collection.Business.PushEvent(AliveEvent.Create()));
         
+        if (Collection.Keystore.Session.D2.Length != 0)
+        {
+            Collection.Log.LogWarning(Tag, "Invalid Session found, try to clean D2Key, D2 and TGT Token");
+            Collection.Keystore.Session.D2 = Array.Empty<byte>();
+            Collection.Keystore.Session.Tgt = Array.Empty<byte>();
+            Collection.Keystore.Session.D2Key = new byte[16];
+        }
+        
         var transEmp = TransEmpEvent.Create(TransEmpEvent.State.FetchQrCode);
         var result = await Collection.Business.SendEvent(transEmp);
 

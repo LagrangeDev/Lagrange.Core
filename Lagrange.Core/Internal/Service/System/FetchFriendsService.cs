@@ -40,10 +40,10 @@ internal class FetchFriendsService : BaseService<FetchFriendsEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out FetchFriendsEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xFD4_1Response>>(input.AsSpan());
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xFD4_1Response>>(input);
 
         var friends = new List<BotFriend>();
         foreach (var raw in packet.Body.Friends)

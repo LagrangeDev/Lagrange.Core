@@ -11,10 +11,10 @@ namespace Lagrange.Core.Internal.Service.Login;
 [Service("wtlogin.login")]
 internal class LoginService : BaseService<LoginEvent>
 {
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out LoginEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = BitConverter.GetBytes(input.Length, false).Concat(input).ToArray();
+        var payload = BitConverter.GetBytes(input.Length, false).Concat(input.ToArray()).ToArray();  // TODO: 这啥玩意啊
         var tlvs = Packets.Login.WtLogin.Entity.Login.Deserialize(new BinaryPacket(payload), keystore, out var state);
 
         if (state == Packets.Login.WtLogin.Entity.Login.State.Success)

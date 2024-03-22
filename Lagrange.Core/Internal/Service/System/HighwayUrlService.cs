@@ -39,10 +39,10 @@ internal class HighwayUrlService : BaseService<HighwayUrlEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out HighwayUrlEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<HttpConn0x6ff_501Response>(input.AsSpan());
+        var packet = Serializer.Deserialize<HttpConn0x6ff_501Response>(input);
         
         var servers = new Dictionary<uint, List<Uri>>();
         foreach (var serverInfo in packet.HttpConn.ServerInfos)

@@ -37,19 +37,19 @@ internal class TlvPacket : BinaryPacket
         {
             packet = BinarySerializer.Serialize(tlvBody); // Write V(VALUE)
         }
-
-        Func<BinaryPacket> func;
-        if (encrypt != null)
+        
+        WriteUshort(TlvCommand); // Write T(TAG)
+        Barrier(w =>
         {
-            var (tea, key) = encrypt.Value;
-            func = () => new BinaryPacket(tea.Encrypt(packet.ToArray(), key));
-        }
-        else
-        {
-            func = () => packet;
-        }
-
-        WriteUshort(TlvCommand, false); // Write T(TAG)
-        Barrier(typeof(ushort), func, false);
+            if (encrypt != null)
+            {
+                var (tea, key) = encrypt.Value;
+                w.WriteBytes(tea.Encrypt(packet.ToArray(), key));
+            }
+            else
+            {
+                w.WritePacket(packet);
+            }
+        }, Prefix.Uint16 | Prefix.LengthOnly);
     }
 }

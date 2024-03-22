@@ -28,10 +28,10 @@ internal class FetchGroupRequestsService : BaseService<FetchGroupRequestsEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, out FetchGroupRequestsEvent output,
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, out FetchGroupRequestsEvent output,
         out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x10C0_1Response>>(input.AsSpan());
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x10C0_1Response>>(input);
         var events = payload.Body.Requests.Select(x => new FetchGroupRequestsEvent.RawEvent(
             x.Group.GroupUin,
             x.Invitor?.Uid,

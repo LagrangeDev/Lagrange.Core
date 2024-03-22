@@ -33,10 +33,10 @@ internal class FetchCustomFaceService : BaseService<FetchCustomFaceEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out FetchCustomFaceEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<FaceRoamResponse>(input.AsSpan());
+        var payload = Serializer.Deserialize<FaceRoamResponse>(input);
         var results = payload.UserInfo.FileName.Select(name => $"https://p.qpic.cn/{payload.UserInfo.Bid}/{keystore.Uin}/{name}/0").ToList();
 
         output = FetchCustomFaceEvent.Result((int)payload.RetCode, results);

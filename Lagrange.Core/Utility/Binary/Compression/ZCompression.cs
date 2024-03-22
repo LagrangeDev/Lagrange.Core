@@ -24,7 +24,7 @@ internal static class ZCompression
     
     public static byte[] ZCompress(string data, byte[]? header = null) => ZCompress(Encoding.UTF8.GetBytes(data), header);
 
-    public static byte[] ZDecompress(byte[] data, bool validate = true)
+    public static byte[] ZDecompress(Span<byte> data, bool validate = true)
     {
         var checksum = data[^4..];
         

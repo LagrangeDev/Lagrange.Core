@@ -23,10 +23,10 @@ internal class SendMessageService : BaseService<SendMessageEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out SendMessageEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var response = Serializer.Deserialize<SendMessageResponse>(input.AsSpan());
+        var response = Serializer.Deserialize<SendMessageResponse>(input);
         var result = new MessageResult
         {
             Result = (uint)response.Result,

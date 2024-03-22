@@ -43,10 +43,10 @@ internal class GroupFSUploadService : BaseService<GroupFSUploadEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out GroupFSUploadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x6D6Response>>(input.AsSpan());
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x6D6Response>>(input);
         var upload = payload.Body.Upload;
         
         output = GroupFSUploadEvent.Result(upload.RetCode, upload.BoolFileExist, upload.FileId, upload.FileKey, upload.CheckKey, upload.UploadIp, upload.UploadPort);

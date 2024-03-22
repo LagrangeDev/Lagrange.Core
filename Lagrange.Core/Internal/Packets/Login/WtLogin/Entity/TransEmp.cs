@@ -20,32 +20,29 @@ internal abstract class TransEmp : WtLoginBase
     {
         var packet = new BinaryPacket().WriteByte(0); // known const
         
-        packet.Barrier(typeof(ushort), () =>
+        packet.Barrier(w =>
         {
-            var writer = new BinaryPacket()
-                .WriteUint((uint)AppInfo.AppId, false)
-                .WriteUint(0x00000072, false) // const
-                .WriteUshort(0, false) // const 0
+            w.WriteUint((uint)AppInfo.AppId)
+                .WriteUint(0x00000072) // const
+                .WriteUshort(0) // const 0
                 .WriteByte(0) // const 0
-                .WriteUint((uint)DateTimeOffset.Now.ToUnixTimeSeconds(), false) // length actually starts here
-                .WriteByte(0x02); // header for packet, counted into length of next barrier manually
+                .WriteUint((uint)DateTimeOffset.Now.ToUnixTimeSeconds()) // length actually starts here
+                .WriteByte(0x02) // header for packet, counted into length of next barrier manually
+                .Barrier(w => w
+                    .WriteUshort(_qrCodeCommand)
+                    .WriteUlong(0) // const 0
+                    .WriteUint(0) // const 0
+                    .WriteUlong(0) // const 0 
+                    .WriteUshort(3) // const 3
+                    .WriteUshort(0) // const 0
+                    .WriteUshort(50) // unknown const
+                    .WriteUlong(0)
+                    .WriteUint(0)
+                    .WriteUshort(0)
+                    .WriteUint((uint)AppInfo.AppId)
+                    .WritePacket(ConstructTransEmp()), Prefix.Uint16 | Prefix.WithPrefix, 1); // addition is the packet start counted in
 
-            writer.Barrier(typeof(ushort), () => new BinaryPacket()
-                .WriteUshort(_qrCodeCommand, false)
-                .WriteUlong(0, false) // const 0
-                .WriteUint(0, false) // const 0
-                .WriteUlong(0, false) // const 0 
-                .WriteUshort(3, false) // const 3
-                .WriteUshort(0, false) // const 0
-                .WriteUshort(50, false) // unknown const
-                .WriteUlong(0, false)
-                .WriteUint(0, false)
-                .WriteUshort(0, false)
-                .WriteUint((uint)AppInfo.AppId, false)
-                .WritePacket(ConstructTransEmp()), false, true, 1); // addition is the packet start counted in
-
-            return writer;
-        }, false, true, -13); // -13 is the length of zeros, which could be found at TransEmp31 and TransEmp12.ConstructTransEmp()
+        }, Prefix.Uint16 | Prefix.WithPrefix, -13); // -13 is the length of zeros, which could be found at TransEmp31 and TransEmp12.ConstructTransEmp()
 
         return packet;
     }
@@ -54,11 +51,11 @@ internal abstract class TransEmp : WtLoginBase
     {
         packet = DeserializePacket(keystore, packet);
         
-        uint packetLength = packet.ReadUint(false);
+        uint packetLength = packet.ReadUint();
         packet.Skip(4); // misc unknown data
-        command = packet.ReadUshort(false);
+        command = packet.ReadUshort();
         packet.Skip(40);
-        uint appId = packet.ReadUint(false);
+        uint appId = packet.ReadUint();
 
         return packet;
     }

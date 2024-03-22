@@ -32,10 +32,10 @@ internal class GetGroupMessageService : BaseService<GetGroupMessageEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out GetGroupMessageEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<SsoGetGroupMsgResponse>(input.AsSpan());
+        var payload = Serializer.Deserialize<SsoGetGroupMsgResponse>(input);
         var chains = payload.Body.Messages.Select(x => MessagePacker.Parse(x)).ToList();
         
         output = GetGroupMessageEvent.Result(0, chains);

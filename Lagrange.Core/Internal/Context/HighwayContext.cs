@@ -185,8 +185,8 @@ internal class HighwayContext : ContextBase, IDisposable
         
         var writer = new BinaryPacket()
                 .WriteByte(0x28) // packet start
-                .WriteInt((int)stream.Length, false)
-                .WriteInt((int)buffer.Length, false)
+                .WriteInt((int)stream.Length)
+                .WriteInt((int)buffer.Length)
                 .WriteBytes(stream.ToArray())
                 .WritePacket(buffer)
                 .WriteByte(0x29); // packet end
@@ -198,9 +198,9 @@ internal class HighwayContext : ContextBase, IDisposable
     {
         if (packet.ReadByte() == 0x28)
         {
-            int headLength = packet.ReadInt(false);
-            int bodyLength = packet.ReadInt(false);
-            var head = Serializer.Deserialize<RespDataHighwayHead>(packet.ReadBytes(headLength).AsSpan());
+            int headLength = packet.ReadInt();
+            int bodyLength = packet.ReadInt();
+            var head = Serializer.Deserialize<RespDataHighwayHead>(packet.ReadBytes(headLength));
             var body = packet.ReadPacket(bodyLength);
             
             if (packet.ReadByte() == 0x29) return (head, body);

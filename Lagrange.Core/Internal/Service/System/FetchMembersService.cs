@@ -40,10 +40,10 @@ internal class FetchMembersService : BaseService<FetchMembersEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out FetchMembersEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var response = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xFE7_2Response>>(input.AsSpan());
+        var response = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xFE7_2Response>>(input);
 
         var members = response.Body.Members.Select(member => 
             new BotGroupMember(member.Uin.Uin,

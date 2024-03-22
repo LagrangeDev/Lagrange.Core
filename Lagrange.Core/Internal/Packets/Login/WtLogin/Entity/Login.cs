@@ -24,7 +24,7 @@ internal class Login : WtLoginBase
     protected override BinaryPacket ConstructBody()
     {
         var packet = new BinaryPacket()
-            .WriteUshort(InternalCommand, false)
+            .WriteUshort(InternalCommand)
             .WritePacket(TlvPacker.Pack(ConstructTlvs));
         
         return packet;
@@ -34,7 +34,7 @@ internal class Login : WtLoginBase
     {
         packet = DeserializePacket(keystore, packet);
         
-        ushort command = packet.ReadUshort(false);
+        ushort command = packet.ReadUshort();
         if (command != InternalCommand) throw new Exception("Invalid command");
         
         state = (State)packet.ReadByte();

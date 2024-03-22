@@ -2,7 +2,7 @@ using Lagrange.Core.Utility.Crypto.Provider.Ecdh;
 
 namespace Lagrange.Core.Utility.Crypto;
 
-internal partial class EcdhImpl : ICryptoImpl
+internal partial class EcdhImpl
 {
     private readonly EcdhProvider _ecdhProvider;
     
@@ -43,7 +43,7 @@ internal partial class EcdhImpl : ICryptoImpl
 
     public byte[] Encrypt(byte[] data) => _teaImpl.Encrypt(data, ShareKey);
 
-    public byte[] Decrypt(byte[] data) => _teaImpl.Decrypt(data, ShareKey);
+    public Span<byte> Decrypt(Span<byte> data) => _teaImpl.Decrypt(data, ShareKey);
 
-    public byte[] Decrypt(byte[] data, byte[] key) => Decrypt(data);
+    public Span<byte> Decrypt(byte[] data, byte[] key) => Decrypt(data);
 }

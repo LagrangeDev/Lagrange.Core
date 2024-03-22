@@ -91,7 +91,7 @@ internal partial class ServiceContext : ContextBase
     public List<ProtocolEvent> ResolveEventByPacket(SsoPacket packet)
     {
         var result = new List<ProtocolEvent>();
-        var payload = packet.Payload.ReadBytes(BinaryPacket.Prefix.Uint32 | BinaryPacket.Prefix.WithPrefix);
+        var payload = packet.Payload.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix);
         
         if (!_services.TryGetValue(packet.Command, out var service))
         {

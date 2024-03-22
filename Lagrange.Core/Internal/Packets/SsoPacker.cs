@@ -36,10 +36,10 @@ internal static class SsoPacker
         var stream = new MemoryStream();
         Serializer.Serialize(stream, signature);
         
-        writer.Barrier(typeof(uint), () => new BinaryPacket() // Barrier is used to calculate the length of the packet header only
-            .WriteUint(packet.Sequence, false) // sequence
-            .WriteUint((uint)appInfo.SubAppId, false) // appId
-            .WriteUint(2052, false) // LocaleId
+        writer.Barrier( w => w// Barrier is used to calculate the length of the packet header only
+            .WriteUint(packet.Sequence) // sequence
+            .WriteUint((uint)appInfo.SubAppId) // appId
+            .WriteUint(2052) // LocaleId
             .WriteBytes("020000000000000000000000".UnHex().AsSpan())
             .WriteBytes(keystore.Session.Tgt, Prefix.Uint32 | Prefix.WithPrefix)
             .WriteString(packet.Command, Prefix.Uint32 | Prefix.WithPrefix)
@@ -47,7 +47,7 @@ internal static class SsoPacker
             .WriteString(device.Guid.ToByteArray().Hex().ToLower(), Prefix.Uint32 | Prefix.WithPrefix)
             .WriteBytes(Array.Empty<byte>(), Prefix.Uint32 | Prefix.WithPrefix) // TODO: unknown
             .WriteString(appInfo.CurrentVersion, Prefix.Uint16 | Prefix.WithPrefix) // Actually at wtlogin.trans_emp, this string is empty and only prefix 00 02 is given, but we can just simply ignore that situation
-            .WriteBytes(stream.ToArray(), Prefix.Uint32 | Prefix.WithPrefix), false, true); // packet end
+            .WriteBytes(stream.ToArray(), Prefix.Uint32 | Prefix.WithPrefix), Prefix.Uint32 | Prefix.WithPrefix); // packet end
         
         return writer.WriteBytes(packet.Payload.ToArray(), Prefix.Uint32 | Prefix.WithPrefix);
     }
@@ -57,9 +57,9 @@ internal static class SsoPacker
     /// </summary>
     public static SsoPacket Parse(BinaryPacket packet)
     {
-        uint _ = packet.ReadUint(false); // header length
-        uint sequence = packet.ReadUint(false);
-        int retCode = packet.ReadInt(false);
+        uint _ = packet.ReadUint(); // header length
+        uint sequence = packet.ReadUint();
+        int retCode = packet.ReadInt();
         string extra = packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix);
         string command = packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix);
         packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix); // unknown

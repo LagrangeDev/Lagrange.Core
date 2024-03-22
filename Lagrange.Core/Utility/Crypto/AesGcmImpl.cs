@@ -3,7 +3,7 @@ using Lagrange.Core.Utility.Generator;
 
 namespace Lagrange.Core.Utility.Crypto;
  
-internal class AesGcmImpl : ICryptoImpl
+internal class AesGcmImpl
 {
     public byte[] Encrypt(byte[] data, byte[] key)
     {
@@ -20,9 +20,7 @@ internal class AesGcmImpl : ICryptoImpl
         
         return result.ToArray();
     }
-
-    public byte[] Encrypt(byte[] data) => throw new InvalidOperationException();
-
+    
     public byte[] Decrypt(byte[] data, byte[] key)
     {
         using var aes = new AesGcm(key);
@@ -34,6 +32,4 @@ internal class AesGcmImpl : ICryptoImpl
         
         return result;
     }
-
-    public byte[] Decrypt(byte[] data) => throw new InvalidOperationException();
 }

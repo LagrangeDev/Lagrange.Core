@@ -68,7 +68,7 @@ internal class TlvPacker
 
     public BinaryPacket Pack(ushort[] cmd)
     {
-        var packet = new BinaryPacket().WriteUshort((ushort)cmd.Length, false);
+        var packet = new BinaryPacket().WriteUshort((ushort)cmd.Length);
 
         foreach (var tlv in cmd) packet.WritePacket(Pack(tlv));
         return packet;
@@ -76,7 +76,7 @@ internal class TlvPacker
 
     public BinaryPacket PackQrCode(ushort[] cmd)
     {
-        var packet = new BinaryPacket().WriteUshort((ushort)cmd.Length, false);
+        var packet = new BinaryPacket().WriteUshort((ushort)cmd.Length);
 
         foreach (var tlv in cmd) packet.WritePacket(PackQrCode(tlv));
         return packet;
@@ -122,13 +122,13 @@ internal class TlvPacker
 
     public static Dictionary<ushort, TlvBody> ReadTlvCollections(BinaryPacket payload, bool isQrCode = false)
     {
-        ushort tlvCount = payload.ReadUshort(false);
+        ushort tlvCount = payload.ReadUshort();
         var tlvs = new Dictionary<ushort, TlvBody>(tlvCount);
 
         for (int i = 0; i < tlvCount; i++)
         {            
-            ushort cmd = payload.ReadUshort(false);
-            ushort length = payload.ReadUshort(false);
+            ushort cmd = payload.ReadUshort();
+            ushort length = payload.ReadUshort();
 
             var packet = payload.ReadPacket(length);
             var tlvBody = isQrCode ? ReadTlvBodyQrCode(cmd, packet) : ReadTlvBody(cmd, packet);

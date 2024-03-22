@@ -56,10 +56,10 @@ internal class MultiMsgUploadService : BaseService<MultiMsgUploadEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out MultiMsgUploadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<SendLongMsgResp>(input.AsSpan());
+        var packet = Serializer.Deserialize<SendLongMsgResp>(input);
         
         output = MultiMsgUploadEvent.Result(0, packet.Result.ResId);
         extraEvents = null;

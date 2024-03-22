@@ -40,10 +40,10 @@ internal class StatusRegisterService : BaseService<StatusRegisterEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out StatusRegisterEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var response = Serializer.Deserialize<ServiceRegisterResponse>(input.AsSpan());
+        var response = Serializer.Deserialize<ServiceRegisterResponse>(input);
 
         output = StatusRegisterEvent.Result(response.Message ?? "OK");
         extraEvents = null;

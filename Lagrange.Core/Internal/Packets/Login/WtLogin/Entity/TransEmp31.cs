@@ -22,8 +22,8 @@ internal class TransEmp31 : TransEmp
         : base(QrCodeCommand, keystore, appInfo, device) { }
 
     protected override BinaryPacket ConstructTransEmp() => new BinaryPacket()
-        .WriteUshort(0, false)
-        .WriteUlong(0, false)
+        .WriteUshort(0)
+        .WriteUlong(0)
         .WriteByte(0)
         .WritePacket(TlvPacker.PackQrCode(Keystore.Session.UnusualSign == null ? ConstructTlvs : ConstructTlvsPassword))
         .WriteByte(0x03);
@@ -31,7 +31,7 @@ internal class TransEmp31 : TransEmp
     public static Dictionary<ushort, TlvBody> Deserialize(BinaryPacket packet, BotKeystore keystore, out byte[] signature)
     {
         byte dummy = packet.ReadByte();
-        signature = packet.ReadBytes(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
+        signature = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly).ToArray();
         keystore.Session.QrSign = signature;
         
         return TlvPacker.ReadTlvCollections(packet, true);

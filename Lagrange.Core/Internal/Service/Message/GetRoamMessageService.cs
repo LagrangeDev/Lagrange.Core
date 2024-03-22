@@ -30,10 +30,10 @@ internal class GetRoamMessageService : BaseService<GetRoamMessageEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out GetRoamMessageEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<SsoGetRoamMsgResponse>(input.AsSpan());
+        var payload = Serializer.Deserialize<SsoGetRoamMsgResponse>(input);
         var chains = payload.Messages.Select(x => MessagePacker.Parse(x)).ToList();
         
         extraEvents = null;

@@ -16,9 +16,9 @@ internal class TransEmp12 : TransEmp
         if (Keystore.Session.QrSign != null)
         {
             return new BinaryPacket()
-                .WriteBytes(Keystore.Session.QrSign, BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly)
-                .WriteUlong(0, false) // const 0
-                .WriteUint(0, false) // const 0
+                .WriteBytes(Keystore.Session.QrSign, Prefix.Uint16 | Prefix.LengthOnly)
+                .WriteUlong(0) // const 0
+                .WriteUint(0) // const 0
                 .WriteByte(0) // const 0
                 .WriteByte(0x03);         // packet end
         }

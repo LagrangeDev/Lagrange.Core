@@ -99,8 +99,8 @@ public class FileEntity : IMessageEntity
         {
             var payload = new BinaryPacket(trans.ElemValue);
             payload.Skip(1);
-            var data = payload.ReadBytes(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
-            var extra = Serializer.Deserialize<GroupFileExtra>(data.AsSpan()).Inner.Info;
+            var data = payload.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
+            var extra = Serializer.Deserialize<GroupFileExtra>(data).Inner.Info;
 
             return new FileEntity
             {

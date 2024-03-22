@@ -25,10 +25,10 @@ internal class KeyExchangeService : BaseService<KeyExchangeEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out KeyExchangeEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var response = Serializer.Deserialize<SsoKeyExchangeResponse>(input.AsSpan());
+        var response = Serializer.Deserialize<SsoKeyExchangeResponse>(input);
 
         var shareKey = keystore.PrimeImpl.GenerateShared(response.PublicKey, false);
         var gcmDecrypted = new AesGcmImpl().Decrypt(response.GcmEncrypted, shareKey);

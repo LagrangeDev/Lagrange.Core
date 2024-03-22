@@ -9,11 +9,11 @@ namespace Lagrange.Core.Internal.Packets.Login.Ecdh.Plain;
 [Serializable]
 internal class SsoKeyExchangePlain2
 {
-    [BinaryProperty(BinaryPacket.Prefix.None)] public byte[] PublicKey { get; set; }
+    [BinaryProperty(Prefix.None)] public byte[] PublicKey { get; set; }
     
     [BinaryProperty] public uint Type { get; set; }
     
-    [BinaryProperty(BinaryPacket.Prefix.None)] public byte[] EncryptedGcm { get; set; }
+    [BinaryProperty(Prefix.None)] public byte[] EncryptedGcm { get; set; }
 
     [BinaryProperty] public uint Const { get; set; } = 0;
     

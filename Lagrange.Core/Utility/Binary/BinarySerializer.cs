@@ -8,17 +8,17 @@ internal static class BinarySerializer
     private static readonly Dictionary<Type, Action<BinaryPacket, object>> SerializeActions = new()
     {
         { typeof(byte), (body, value) => body.WriteByte((byte)value) },
-        { typeof(short), (body, value) => body.WriteShort((short)value, false) },
-        { typeof(ushort), (body, value) => body.WriteUshort((ushort)value, false) },
-        { typeof(int), (body, value) => body.WriteInt((int)value, false) },
-        { typeof(uint), (body, value) => body.WriteUint((uint)value, false) },
-        { typeof(long), (body, value) => body.WriteLong((long)value, false) },
-        { typeof(ulong), (body, value) => body.WriteUlong((ulong)value, false) },
+        { typeof(short), (body, value) => body.WriteShort((short)value) },
+        { typeof(ushort), (body, value) => body.WriteUshort((ushort)value) },
+        { typeof(int), (body, value) => body.WriteInt((int)value) },
+        { typeof(uint), (body, value) => body.WriteUint((uint)value) },
+        { typeof(long), (body, value) => body.WriteLong((long)value) },
+        { typeof(ulong), (body, value) => body.WriteUlong((ulong)value) },
         { typeof(bool), (body, value) => body.WriteBool((bool)value) },
         { typeof(BinaryPacket), (body, value) => body.WritePacket(Serialize((BinaryPacket)value)) }
     };
 
-    private static readonly Dictionary<Type, Action<BinaryPacket, object, BinaryPacket.Prefix>> EnumSerializeActions = new()
+    private static readonly Dictionary<Type, Action<BinaryPacket, object, Prefix>> EnumSerializeActions = new()
     {
         { typeof(string), (body, value, prefix) => body.WriteString((string)value, prefix) },
         { typeof(byte[]), (body, value, prefix) => body.WriteBytes((byte[])value, prefix) },
@@ -27,19 +27,19 @@ internal static class BinarySerializer
     private static readonly Dictionary<Type, Func<BinaryPacket, object>> DeserializeActions = new()
     {
         { typeof(byte), body => body.ReadByte() },
-        { typeof(short), body => body.ReadShort(false) },
-        { typeof(ushort), body => body.ReadUshort(false) },
-        { typeof(int), body => body.ReadInt(false) },
-        { typeof(uint), body => body.ReadUint(false) },
-        { typeof(long), body => body.ReadLong(false) },
-        { typeof(ulong), body => body.ReadUlong(false) },
+        { typeof(short), body => body.ReadShort() },
+        { typeof(ushort), body => body.ReadUshort() },
+        { typeof(int), body => body.ReadInt() },
+        { typeof(uint), body => body.ReadUint() },
+        { typeof(long), body => body.ReadLong() },
+        { typeof(ulong), body => body.ReadUlong() },
         { typeof(bool), body => body.ReadBool() },
     };
     
-    private static readonly Dictionary<Type, Func<BinaryPacket, BinaryPacket.Prefix, object>> EnumDeserializeActions = new()
+    private static readonly Dictionary<Type, Func<BinaryPacket, Prefix, object>> EnumDeserializeActions = new()
     {
         { typeof(string), (body, prefix) => body.ReadString(prefix) },
-        { typeof(byte[]), (body, prefix) => body.ReadBytes(prefix) },
+        { typeof(byte[]), (body, prefix) => body.ReadBytes(prefix).ToArray() },
     };
 
     public static BinaryPacket Serialize(object obj)
@@ -55,7 +55,7 @@ internal static class BinarySerializer
             if (property.PropertyType == typeof(byte[]) || property.PropertyType == typeof(string))
             {
                 var func = EnumSerializeActions[property.PropertyType];
-                var prefix = property.GetCustomAttribute<BinaryPropertyAttribute>()?.Prefix ?? BinaryPacket.Prefix.None;
+                var prefix = property.GetCustomAttribute<BinaryPropertyAttribute>()?.Prefix ?? Prefix.None;
                 func(body, value, prefix);
             }
             else
@@ -81,7 +81,7 @@ internal static class BinarySerializer
             if (property.PropertyType == typeof(byte[]) || property.PropertyType == typeof(string))
             {
                 var func = EnumDeserializeActions[property.PropertyType];
-                var prefix = property.GetCustomAttribute<BinaryPropertyAttribute>()?.Prefix ?? BinaryPacket.Prefix.None;
+                var prefix = property.GetCustomAttribute<BinaryPropertyAttribute>()?.Prefix ?? Prefix.None;
                 value = func(body, prefix);
             }
             else
@@ -107,7 +107,7 @@ internal static class BinarySerializer
             if (property.PropertyType == typeof(byte[]) || property.PropertyType == typeof(string))
             {
                 var func = EnumDeserializeActions[property.PropertyType];
-                var prefix = property.GetCustomAttribute<BinaryPropertyAttribute>()?.Prefix ?? BinaryPacket.Prefix.None;
+                var prefix = property.GetCustomAttribute<BinaryPropertyAttribute>()?.Prefix ?? Prefix.None;
                 value = func(body, prefix);
             }
             else

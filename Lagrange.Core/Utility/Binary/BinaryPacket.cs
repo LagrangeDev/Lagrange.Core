@@ -1,5 +1,6 @@
+using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using System.Text;
-using Lagrange.Core.Utility.Binary.Tlv;
 
 namespace Lagrange.Core.Utility.Binary;
 
@@ -7,88 +8,93 @@ namespace Lagrange.Core.Utility.Binary;
 /// Binary Writer, Inspired by <see cref="System.IO.BinaryWriter"/>
 /// <para>Provide only Sync Apis</para>
 /// </summary>
-internal partial class BinaryPacket : IDisposable
+internal unsafe partial class BinaryPacket : IDisposable  // TODO: Reimplement im raw byte[]
 {
     private readonly MemoryStream _stream;
-    
+
     private readonly BinaryReader _reader;
     
     public long Length => _stream.Length;
     
     public long Remaining => _stream.Length - _stream.Position;
     
+    /// <summary>
+    /// Create a Packet for write
+    /// </summary>
     public BinaryPacket()
     {
         _stream = new MemoryStream();
         _reader = new BinaryReader(_stream);
     }
     
+    /// <summary>
+    /// Create a Packet for read
+    /// </summary>
     public BinaryPacket(byte[] data)
     {
         _stream = new MemoryStream(data);
         _reader = new BinaryReader(_stream);
     }
     
+    /// <summary>
+    /// Create a Packet for read
+    /// </summary>
+    public BinaryPacket(Span<byte> data)
+    {
+        _stream = new MemoryStream(data.ToArray());
+        _reader = new BinaryReader(_stream);
+    }
+    
+    /// <summary>
+    /// Create a Packet Reader for read
+    /// </summary>
     public BinaryPacket(MemoryStream stream)
     {
         _stream = stream;
         _reader = new BinaryReader(_stream);
     }
-
-    public BinaryPacket WriteByte(byte value)
+    
+    public BinaryPacket WriteString(string value, Prefix flag, int addition = 0)
     {
-        _stream.WriteByte(value);
+        WriteLength(value.Length, flag, addition);
+        return WriteBytes(Encoding.UTF8.GetBytes(value));
+    }
+
+    public BinaryPacket WriteBytes(ReadOnlySpan<byte> value, Prefix flag, int addition = 0)
+    {
+        WriteLength(value.Length, flag, addition);
+        return WriteBytes(value);
+    }
+
+    private BinaryPacket WriteLength(int origin, Prefix flag, int addition)
+    {
+        int prefixLength = (byte)flag & 0b0111;
+        if (prefixLength == 0) return this;
+        
+        bool lengthCounted = (flag & Prefix.WithPrefix) > 0;
+        int length = (lengthCounted ? prefixLength + origin : origin) + addition;
+        _ = prefixLength switch
+        {
+            sizeof(byte) => WriteByte((byte)length),
+            sizeof(ushort) => WriteUshort((ushort)length),
+            sizeof(uint) => WriteUint((uint)length),
+            _ => throw new InvalidDataException("Invalid Prefix is given")
+        };
+
         return this;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public BinaryPacket WriteBytes(ReadOnlySpan<byte> value)
     {
         _stream.Write(value);
         return this;
     }
-    
-    public BinaryPacket WriteBytes(byte[] value, Prefix prefixFlag = Prefix.None, byte limitedLength = 0)
+
+    public BinaryPacket WritePacket(BinaryPacket value)
     {
-        int prefixLength = (int)prefixFlag & 0b0111;
-        byte[] array; // 处理后的数据
-        
-        if (limitedLength > 0) // 限制长度时，写入数据长度=前缀+限制
-        {
-            limitedLength = (byte)value.Length;
-            array = new byte[prefixLength + limitedLength];
-            int len = value.Length > limitedLength ? limitedLength : value.Length;
-            if (len > 0) Buffer.BlockCopy(value, 0, array, prefixLength, len);
-        }
-        else if (prefixLength > 0) // 不限制长度且有前缀时，写入数据长度 = 前缀 + value长度
-        {
-            array = new byte[prefixLength + value.Length];
-            if (value.Length > 0) Buffer.BlockCopy(value, 0, array, prefixLength, value.Length);
-        }
-        else // 不限制又没有前缀，写入的就是value本身，不用处理，直接写入
-        {
-            WriteBytes(value.AsSpan());
-            return this;
-        }
-        
-        if (prefixLength > 0) // 添加前缀，使用大端序
-        {
-            int len = value.Length;
-            if ((prefixFlag & Prefix.WithPrefix) > 0) len += prefixLength;
-            if (!InsertPrefix(array, 0, (uint)len, (Prefix)prefixLength, false))
-            {
-                throw new IOException("Given prefix length is too small for value bytes."); // 给定的prefix不够填充value.Length，终止写入
-            }
-        }
-        WriteBytes(array.AsSpan());
-        
-        return this;
-    }
-    
-    public BinaryPacket WriteString(string value, Prefix prefixFlag = Prefix.None, Encoding? encoding = null, byte limitedLength = 0)
-    {
-        encoding ??= Encoding.UTF8;
-        byte[] bytes = encoding.GetBytes(value);
-        WriteBytes(bytes, prefixFlag, limitedLength);
+        value._stream.Seek(0, SeekOrigin.Begin);
+        value._stream.CopyTo(_stream);
         return this;
     }
     
@@ -97,208 +103,184 @@ internal partial class BinaryPacket : IDisposable
         _stream.WriteByte(value ? (byte)1 : (byte)0);
         return this;
     }
-
-    public BinaryPacket WriteShort(short value, bool isLittleEndian = true)
+    
+    public BinaryPacket WriteByte(byte value)
     {
-        _stream.Write(BitConverter.GetBytes(value, isLittleEndian).AsSpan());
+        _stream.WriteByte(value);
         return this;
     }
     
-    public BinaryPacket WriteUshort(ushort value, bool isLittleEndian = true)
+    public BinaryPacket WriteUshort(ushort value)
     {
-        _stream.Write(BitConverter.GetBytes(value, isLittleEndian).AsSpan());
-        return this;
+        value = BinaryPrimitives.ReverseEndianness(value);
+        var buffer = new ReadOnlySpan<byte>((byte*)&value, sizeof(ushort));
+        return WriteBytes(buffer);
     }
 
-    public BinaryPacket WriteInt(int value, bool isLittleEndian = true)
+    public BinaryPacket WriteUint(uint value)
     {
-        _stream.Write(BitConverter.GetBytes(value, isLittleEndian).AsSpan());
-        return this;
+        value = BinaryPrimitives.ReverseEndianness(value);
+        var buffer = new ReadOnlySpan<byte>((byte*)&value, sizeof(uint));
+        return WriteBytes(buffer);
+    }
+
+    public BinaryPacket WriteUlong(ulong value)
+    {
+        value = BinaryPrimitives.ReverseEndianness(value);
+        var buffer = new ReadOnlySpan<byte>((byte*)&value, sizeof(ulong));
+        return WriteBytes(buffer);
+    }
+
+    public BinaryPacket WriteSbyte(sbyte value)
+    {
+        var buffer = new ReadOnlySpan<byte>((byte*)&value, sizeof(sbyte));
+        return WriteBytes(buffer);
+    }
+
+    public BinaryPacket WriteShort(short value)
+    {
+        value = BinaryPrimitives.ReverseEndianness(value);
+        var buffer = new ReadOnlySpan<byte>((byte*)&value, sizeof(short));
+        return WriteBytes(buffer);
+    }
+
+    public BinaryPacket WriteInt(int value)
+    {
+        value = BinaryPrimitives.ReverseEndianness(value);
+        var buffer = new ReadOnlySpan<byte>((byte*)&value, sizeof(int));
+        return WriteBytes(buffer);
+    }
+
+    public BinaryPacket WriteLong(long value)
+    {
+        value = BinaryPrimitives.ReverseEndianness(value);
+        var buffer = new ReadOnlySpan<byte>((byte*)&value, sizeof(long));
+        return WriteBytes(buffer);
+    }
+
+    public BinaryPacket Barrier(Action<BinaryPacket> writer, Prefix flag, int addition = 0)
+    {
+        var packet = new BinaryPacket();
+        writer(packet);
+        return WriteLength((int)packet.Length, flag, addition).WritePacket(packet);
     }
     
-    public BinaryPacket WriteUint(uint value, bool isLittleEndian = true)
+    private int ReadLength(Prefix flag)
     {
-        _stream.Write(BitConverter.GetBytes(value, isLittleEndian).AsSpan());
-        return this;
-    }
+        bool lengthCounted = (flag & Prefix.WithPrefix) > 0;
+        int prefixLength = (byte)flag & 0b0111;
 
-    public BinaryPacket WriteLong(long value, bool isLittleEndian = true)
-    {
-        _stream.Write(BitConverter.GetBytes(value, isLittleEndian).AsSpan());
-        return this;
-    }
-
-    public BinaryPacket WriteUlong(ulong value, bool isLittleEndian = true)
-    {
-        _stream.Write(BitConverter.GetBytes(value, isLittleEndian).AsSpan());
-        return this;
-    }
-    
-    public BinaryPacket WritePacket(BinaryPacket packet)
-    {
-        _stream.Write(packet.ToArray());
-        return this;
-    }
-
-    public byte ReadByte() => _reader.ReadByte();
-    
-    public byte[] ReadBytes(int length) => _reader.ReadBytes(length);
-
-    public byte[] ReadBytes(Prefix prefixFlag)
-    {
-        uint length;
-        bool reduce = (prefixFlag & Prefix.WithPrefix) > 0;
-        uint preLen = (uint)prefixFlag & 0b0111;
-        
-        switch (preLen)
+        int length = prefixLength switch
         {
-            case 0: // Read all remaining bytes
-                length = (uint)(_stream.Length - _stream.Position);
-                break;
-            case 1: case 2: case 4: // Read length from prefix
-                if (IsAvailable((int)preLen))
-                {
-                    length = preLen switch
-                    {
-                        1 => _reader.ReadByte(),
-                        2 => ReadUshort(false),
-                        4 => ReadUint(false),
-                        _ => throw new ArgumentOutOfRangeException($"Invalid prefix length.")
-                    };
+            0 => (int)Remaining,
+            1 => _stream.ReadByte(),
+            2 => ReadUshort(),
+            4 => (int)ReadUint(),
+            _ => throw new InvalidDataException("Invalid Prefix is given")
+        };
 
-                    if (reduce)
-                    {
-                        if (length < preLen) throw new IOException("Data length is less than prefix length.");
-                        length -= preLen;
-                    }
-                    break;
-                }
-                throw new IOException("Data length is less than prefix length.");
-            default:
-                throw new ArgumentOutOfRangeException($"Invalid prefix flag.");
-        }
-
-        if (IsAvailable((int)length)) return _reader.ReadBytes((int)length);
-        throw new IOException("Data length is less than prefix length.");
+        if (lengthCounted) length -= prefixLength;
+    
+        return length;
     }
     
-    public string ReadString(int length, Encoding? encoding = null)
+    public bool ReadBool() => Convert.ToBoolean(_stream.ReadByte());
+
+    public byte ReadByte() => (byte)_stream.ReadByte();
+    
+    public ushort ReadUshort()
     {
-        encoding ??= Encoding.UTF8;
-        return encoding.GetString(_reader.ReadBytes(length));
+        Span<byte> buffer = stackalloc byte[sizeof(ushort)];
+        _ = _stream.Read(buffer);
+        return BinaryPrimitives.ReadUInt16BigEndian(buffer);
+    }
+
+    public uint ReadUint()
+    {
+        Span<byte> buffer = stackalloc byte[sizeof(uint)];
+        _ = _stream.Read(buffer);
+        return BinaryPrimitives.ReadUInt32BigEndian(buffer);
+    }
+
+    public ulong ReadUlong()
+    {
+        Span<byte> buffer = stackalloc byte[sizeof(ulong)];
+        _ = _stream.Read(buffer);
+        return BinaryPrimitives.ReadUInt64BigEndian(buffer);
+    }
+
+    public sbyte ReadSbyte()
+    {
+        Span<byte> buffer = stackalloc byte[sizeof(sbyte)];
+        _ = _stream.Read(buffer);
+        return (sbyte)buffer[0];
+    }
+
+    public short ReadShort()
+    {
+        Span<byte> buffer = stackalloc byte[sizeof(short)];
+        _ = _stream.Read(buffer);
+        return BinaryPrimitives.ReadInt16BigEndian(buffer);
+    }
+
+    public int ReadInt()
+    {
+        Span<byte> buffer = stackalloc byte[sizeof(int)];
+        _ = _stream.Read(buffer);
+        return BinaryPrimitives.ReadInt32BigEndian(buffer);
+    }
+
+    public long ReadLong()
+    {
+        Span<byte> buffer = stackalloc byte[sizeof(long)];
+        _ = _stream.Read(buffer);
+        return BinaryPrimitives.ReadInt64BigEndian(buffer);
+    }
+
+    public Span<byte> ReadBytes(int count)
+    {
+        Span<byte> buffer =  new byte[count];
+        _ = _stream.Read(buffer);
+        return buffer;
+    }
+
+    public Span<byte> ReadBytes(Prefix flag)
+    {
+        int length = ReadLength(flag);
+        return ReadBytes(length);
+    }
+
+    public string ReadString(Prefix flag)
+    {
+        int length = ReadLength(flag);
+        return Encoding.UTF8.GetString(ReadBytes(length));
     }
     
-    public string ReadString(Prefix prefixFlag, Encoding? encoding = null)
-    {
-        encoding ??= Encoding.UTF8;
-        return encoding.GetString(ReadBytes(prefixFlag));
-    }
+    public string ReadString(int count) => Encoding.UTF8.GetString(ReadBytes(count));
 
-    public bool ReadBool() => _reader.ReadByte() == 1;
-
-    public bool ReadBool(int length, bool isLittleEndian = true)
-    {
-        var bytes = _reader.ReadBytes(length);
-        var offset = _reader.BaseStream.Position;
-        return bytes[isLittleEndian ? offset : offset + length - 1] > 0;
-    }
-
-    public short ReadShort(bool isLittleEndian = true)
-    {
-        var bytes = _reader.ReadBytes(2);
-        return BitConverter.ToInt16(bytes, isLittleEndian);
-    }
-    
-    public ushort ReadUshort(bool isLittleEndian = true)
-    {
-        var bytes = _reader.ReadBytes(2);
-        return BitConverter.ToUInt16(bytes, isLittleEndian);
-    }
-    
-    public int ReadInt(bool isLittleEndian = true)
-    {
-        var bytes = _reader.ReadBytes(4);
-        return BitConverter.ToInt32(bytes, isLittleEndian);
-    }
-    
-    public uint ReadUint(bool isLittleEndian = true)
-    {
-        var bytes = _reader.ReadBytes(4);
-        return BitConverter.ToUInt32(bytes, isLittleEndian);
-    }
-
-    public long ReadLong(bool isLittleEndian = true)
-    {
-        var bytes = _reader.ReadBytes(8);
-        return BitConverter.ToInt64(bytes, isLittleEndian);
-    }
-    
-    public ulong ReadUlong(bool isLittleEndian = true)
-    {
-        var bytes = _reader.ReadBytes(8);
-        return BitConverter.ToUInt64(bytes, isLittleEndian);
-    }
-    
-    public BinaryPacket ReadPacket(int length)
-    {
-        var bytes = _reader.ReadBytes(length);
-        return new BinaryPacket(bytes);
-    }
-
-    /// <summary>
-    /// After the barrier is entered, the Following data will be recorded for length calculation and the written to the packet
-    /// </summary>
-    public BinaryPacket Barrier(Type barrierType, Func<BinaryPacket> writer, bool isLittleEndian = true, bool withPrefix = false, int addition = 0)
-    {
-        var barrierWriter = writer();
-        var barrierBytes = barrierWriter.ToArray();
-        int length = barrierBytes.Length + addition;
-
-        if (barrierType == typeof(byte)) WriteByte((byte)(length + (withPrefix ? 1 : 0)));
-        else if (barrierType == typeof(ushort)) WriteShort((short)(length + (withPrefix ? 2 : 0)), isLittleEndian);
-        else if (barrierType == typeof(uint)) WriteUint((uint)(length + (withPrefix ? 4 : 0)), isLittleEndian);
-        else if (barrierType == typeof(ulong)) WriteUlong((ulong)(length + (withPrefix ? 8 : 0)), isLittleEndian);
-        else throw new ArgumentException("Barrier Type must be byte, ushort, uint or ulong");
-
-        WritePacket(barrierWriter);
-        
-        return this;
-    }
+    public BinaryPacket ReadPacket(int count) => new(ReadBytes(count).ToArray());
     
     public void Skip(int length) => _reader.BaseStream.Seek(length, SeekOrigin.Current);
-
-    public static bool InsertPrefix(byte[] buffer, uint offset, uint value, Prefix prefixFlag, bool isLittleEndian = true)
-    {
-        switch (prefixFlag)
-        {
-            case Prefix.Uint8:
-                if (value <= byte.MaxValue)
-                {
-                    Buffer.BlockCopy(BitConverter.GetBytes((byte)value), 0, buffer, (int)offset, 1);
-                    return true;
-                }
-                break;
-            case Prefix.Uint16:
-                if (value <= ushort.MaxValue)
-                {
-                    Buffer.BlockCopy(BitConverter.GetBytes((ushort)value, isLittleEndian), 0, buffer, (int)offset, 2);
-                    return true;
-                }
-                break;
-            case Prefix.Uint32:
-                Buffer.BlockCopy(BitConverter.GetBytes(value, isLittleEndian), 0, buffer, (int)offset, 4);
-                return true;
-        }
-        return false;
-    }
     
     public bool IsAvailable(int length) => _stream.Length - _stream.Position >= length;
 
     public byte[] ToArray() => _stream.ToArray();
+
 
     public void Dispose()
     {
         _stream.Dispose();
         _reader.Dispose();
     }
+}
+
+[Flags]
+public enum Prefix
+{
+    None = 0,
+    Uint8 = 0b0001,
+    Uint16 = 0b0010,
+    Uint32 = 0b0100,
+    LengthOnly = 0,
+    WithPrefix = 0b1000,
 }

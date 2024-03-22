@@ -38,10 +38,10 @@ internal class SetStatusService : BaseService<SetStatusEvent>
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out SetStatusEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<SetStatusResponse>(input.AsSpan());
+        var payload = Serializer.Deserialize<SetStatusResponse>(input);
         extraEvents = null;
         output = payload.Message == "set status success" ? SetStatusEvent.Result(0) : SetStatusEvent.Result(-1);
         return true;

@@ -17,10 +17,10 @@ namespace Lagrange.Core.Internal.Service.Message;
 [Service("trpc.msg.olpush.OlPushService.MsgPush")]
 internal class PushMessageService : BaseService<PushMessageEvent>
 {
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out PushMessageEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var message = Serializer.Deserialize<PushMsg>(input.AsSpan());
+        var message = Serializer.Deserialize<PushMsg>(input);
         var packetType = (PkgType)message.Message.ContentHead.Type;
         
         output = null!;
@@ -119,7 +119,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         return true;
     }
 
-    private static void ProcessEvent0x2DC(byte[] payload, PushMsg msg, List<ProtocolEvent> extraEvents)
+    private static void ProcessEvent0x2DC(Span<byte> payload, PushMsg msg, List<ProtocolEvent> extraEvents)
     {
         var pkgType = (Event0x2DCSubType)(msg.Message.ContentHead.SubType ?? 0);
         switch (pkgType)
@@ -127,10 +127,10 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             case Event0x2DCSubType.GroupRecallNotice when msg.Message.Body?.MsgContent is { } content:
             {
                 var packet = new BinaryPacket(content);
-                _ = packet.ReadUint(false);  // group uin
+                _ = packet.ReadUint();  // group uin
                 _ = packet.ReadByte();  // unknown byte
-                var proto = packet.ReadBytes(BinaryPacket.Prefix.Uint16 | BinaryPacket.Prefix.LengthOnly);
-                var recall = Serializer.Deserialize<NotifyMessageBody>(proto.AsSpan());
+                var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
+                var recall = Serializer.Deserialize<NotifyMessageBody>(proto);
                 var meta = recall.Recall.RecallMessages[0];
                 var groupRecallEvent = GroupSysRecallEvent.Result(recall.GroupUin, meta.AuthorUid, recall.Recall.OperatorUid, meta.Sequence, meta.Time, meta.Random);
                 extraEvents.Add(groupRecallEvent);
@@ -159,7 +159,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         }
     }
 
-    private static void ProcessEvent0x210(byte[] payload, PushMsg msg, List<ProtocolEvent> extraEvents)
+    private static void ProcessEvent0x210(Span<byte> payload, PushMsg msg, List<ProtocolEvent> extraEvents)
     {
         var pkgType = (Event0x210SubType)(msg.Message.ContentHead.SubType ?? 0);
         switch (pkgType)

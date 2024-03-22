@@ -15,13 +15,13 @@ internal static class Common
        return memoryStream.ToArray();
     }
     
-    public static byte[] Inflate(byte[] data)
+    public static byte[] Inflate(Span<byte> data)
     {
         using var ms = new MemoryStream();
         using var ds = new DeflateStream(ms, CompressionMode.Decompress, true);
         using var os = new MemoryStream();
 
-        ms.Write(data, 0, data.Length);
+        ms.Write(data.ToArray(), 0, data.Length);
         ms.Position = 0;
 
         ds.CopyTo(os);

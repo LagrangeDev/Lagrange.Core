@@ -16,7 +16,7 @@ internal static class ByteExtension
         return sb.ToString();
     }
     
-    public static string Hex(this ReadOnlySpan<byte> bytes, bool lower = false, bool space = false)
+    public static string Hex(this Span<byte> bytes, bool lower = false, bool space = false)
     {
         var sb = new StringBuilder();
         foreach (byte b in bytes)

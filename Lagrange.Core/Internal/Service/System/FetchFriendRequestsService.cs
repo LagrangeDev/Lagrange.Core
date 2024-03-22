@@ -33,7 +33,7 @@ internal class FetchFriendRequestsService : BaseService<FetchFriendRequestsEvent
         return true;
     }
 
-    protected override bool Parse(byte[] input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out FetchFriendRequestsEvent output, out List<ProtocolEvent>? extraEvents)
     {
         return base.Parse(input, keystore, appInfo, device, out output, out extraEvents);
