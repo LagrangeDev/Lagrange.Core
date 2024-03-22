@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Sign;
 using Lagrange.OneBot.Core.Network;
@@ -68,6 +69,8 @@ public class LagrangeApp : IHost
 
         Instance.Invoker.OnBotOnlineEvent += async (_, args) =>
         {
+            if (args.Reason == BotOnlineEvent.OnlineReason.Reconnect) return;
+            
             var keystore = Instance.UpdateKeystore();
             Logger.LogInformation($"Bot Online: {keystore.Uin}");
             string json = JsonSerializer.Serialize(keystore, new JsonSerializerOptions { WriteIndented = true });
