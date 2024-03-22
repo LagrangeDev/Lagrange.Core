@@ -13,9 +13,8 @@ namespace Lagrange.OneBot.Core.Operation.Group;
 public class GetGroupMemoOperation(TicketService ticket) : IOperation
 {
 
-    private readonly HttpClient _client = new(new HttpClientHandler { UseCookies = false });
-
     private const string Url = "https://web.qun.qq.com/cgi-bin/announce/get_t_list";
+    private const string Domain = "qun.qq.com";
 
     private async Task<IEnumerable<OneBotGroupNotice>?> GetGroupNotice(OneBotGetGroupMemo memo)
     {
@@ -23,7 +22,7 @@ public class GetGroupMemoOperation(TicketService ticket) : IOperation
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         try
         {
-            var response = await ticket.SendAsync(request);
+            var response = await ticket.SendAsync(request, Domain);
             response.EnsureSuccessStatusCode();
 
             string content = await response.Content.ReadAsStringAsync();

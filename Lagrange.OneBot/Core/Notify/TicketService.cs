@@ -9,7 +9,7 @@ public class TicketService
     private readonly BotContext _context;
 
     private readonly HttpClient _client;
-    
+
     private readonly CookieContainer _container;
 
     private readonly Dictionary<string, (string PsSey, DateTime ExpireTime)> _psKeys;
@@ -29,9 +29,9 @@ public class TicketService
         _psKeys = new Dictionary<string, (string, DateTime)>();
     }
 
-    public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage message)
+    public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage message, string? domain = null)
     {
-        message.Headers.Add("Cookie", await GetCookies(message.RequestUri?.Host ?? ""));
+        message.Headers.Add("Cookie", await GetCookies(domain ?? message.RequestUri?.Host ?? ""));
         return await _client.SendAsync(message);
     }
 
@@ -39,7 +39,7 @@ public class TicketService
     {
         string? sKey = await GetSKey();
         if (sKey == null) throw new InvalidDataException();
-        
+
         int hash = 5381;
         for (int i = 0, len = sKey.Length; i < len; ++i)
         {
@@ -47,11 +47,11 @@ public class TicketService
         }
         return hash & 2147483647;
     }
-    
+
     private async Task<string?> GetSKey()
     {
         if (DateTime.Now < _sKey.ExpireTime) return _sKey.SKey;
-        
+
         const string jump = "https%3A%2F%2Fh5.qzone.qq.com%2Fqqnt%2Fqzoneinpcqq%2Ffriend%3Frefresh%3D0%26clientuin%3D0%26darkMode%3D0&keyindex=19&random=2599";
         string url = $"https://ssl.ptlogin2.qq.com/jump?ptlang=1033&clientuin={_context.BotUin}&clientkey={await _context.GetClientKey()}&u1={jump}";
         await _client.GetAsync(url);
@@ -84,7 +84,7 @@ public class TicketService
             token = (await _context.FetchCookies([domain]))[0];
             _psKeys[domain] = (token, DateTime.Now.AddDays(1)); // get pskey
         }
-        
+
         return $"p_uin=o{_context.BotUin}; p_skey={token}; skey={skey}; uin=o{_context.BotUin}";
     }
 }

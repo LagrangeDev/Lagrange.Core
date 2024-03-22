@@ -15,8 +15,8 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
 
     private static readonly Dictionary<string, string> Keys = new()
     {
-        { "group_id", "group_id" }, { "current_talkative", "currentTalkative" }, { "talkative_list", "talkativeList" }, 
-        { "performer_list", "" }, { "legend_list", "legendList" }, { "strong_newbie_list", "strongnewbieList" }, 
+        { "group_id", "group_id" }, { "current_talkative", "currentTalkative" }, { "talkative_list", "talkativeList" },
+        { "performer_list", "" }, { "legend_list", "legendList" }, { "strong_newbie_list", "strongnewbieList" },
         { "emotion_list", "emotionList" }
     };
 
@@ -24,7 +24,7 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
     {
         { "talkative", 1 }, { "performer", 2 }, { "legend", 3 }, { "strong_newbie", 5 }, { "emotion", 6 },
     };
-    
+
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         if (payload.Deserialize<OneBotHonorInfo>() is { } honor)
@@ -49,7 +49,7 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
                     }
                 }
             }
-            
+
             return new OneBotResult(result, 200, "ok");
         }
 
