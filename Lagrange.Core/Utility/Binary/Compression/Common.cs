@@ -6,7 +6,7 @@ namespace Lagrange.Core.Utility.Binary.Compression;
 
 internal static class Common
 {
-    public static byte[] Deflate(byte[] data, CompressionLevel level = CompressionLevel.Fastest)
+    public static byte[] Deflate(byte[] data)
     {
        using var memoryStream = new MemoryStream();
        using var deflateStream = new DeflateStream(memoryStream, CompressionMode.Compress);
@@ -21,7 +21,7 @@ internal static class Common
         using var ds = new DeflateStream(ms, CompressionMode.Decompress, true);
         using var os = new MemoryStream();
 
-        ms.Write(data.ToArray(), 0, data.Length);
+        ms.Write(data);
         ms.Position = 0;
 
         ds.CopyTo(os);
