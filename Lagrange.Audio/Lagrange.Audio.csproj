@@ -36,7 +36,7 @@
     
     <ItemGroup>
       <PackageReference Include="MP3Sharp" Version="1.0.5" />
-      <PackageReference Include="NAudio" Version="2.2.1" />
+      <PackageReference Include="NVorbis" Version="0.10.5" />
     </ItemGroup>
 
 </Project>

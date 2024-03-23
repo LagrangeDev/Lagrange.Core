@@ -1,6 +1,7 @@
 using System.Text;
 using System.Runtime.InteropServices;
 using Lagrange.Audio.Exceptions;
+using Exception = System.Exception;
 
 namespace Lagrange.Audio.Codec;
 
@@ -65,7 +66,7 @@ public static partial class SilkV3Codec
                     
                     Position = 0;  // Move position
                 }
-                catch  // Catch native exceptions
+                catch (Exception e)  // Catch native exceptions
                 {
                     throw new EncodeException("Thrown an exception while encoding silk.");
                 }
