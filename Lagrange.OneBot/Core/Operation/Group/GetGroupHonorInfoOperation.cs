@@ -50,7 +50,7 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
                 }
             }
 
-            return new OneBotResult(result, 200, "ok");
+            return new OneBotResult(result, 0, "ok");
         }
 
         throw new Exception();
