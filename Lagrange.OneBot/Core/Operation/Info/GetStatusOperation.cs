@@ -13,6 +13,6 @@ public class GetStatusOperation : IOperation
         return Task.FromResult(new OneBotResult(new OneBotGetStatusResponse
         {
             Memory = GC.GetTotalMemory(false)
-        }, 200, "ok"));
+        }, 0, "ok"));
     }
 }
