@@ -38,25 +38,31 @@ public partial class MessageCommon
         }
     }
 
-    public MessageBuilder ParseFakeChain(OneBotFakeNode message)
+    public MessageBuilder ParseFakeChain(OneBotFakeNode message, uint? groupUin)
     {
-        var builder = MessageBuilder.Friend(uint.Parse(message.Uin));
+        var builder = groupUin != null 
+            ? MessageBuilder.FakeGroup((uint)groupUin, uint.Parse(message.Uin))
+            : MessageBuilder.Friend(uint.Parse(message.Uin));
         BuildMessages(builder, message.Content);
 
         return builder;
     }
 
-    public MessageBuilder ParseFakeChain(OneBotFakeNodeSimple message)
+    public MessageBuilder ParseFakeChain(OneBotFakeNodeSimple message, uint? groupUin)
     {
-        var builder = MessageBuilder.Friend(uint.Parse(message.Uin));
+        var builder = groupUin != null 
+            ? MessageBuilder.FakeGroup((uint)groupUin, uint.Parse(message.Uin))
+            : MessageBuilder.Friend(uint.Parse(message.Uin));
         BuildMessages(builder, message.Content);
-
+        
         return builder;
     }
 
-    public MessageBuilder ParseFakeChain(OneBotFakeNodeText message)
+    public MessageBuilder ParseFakeChain(OneBotFakeNodeText message, uint? groupUin)
     {
-        var builder = MessageBuilder.Friend(uint.Parse(message.Uin));
+        var builder = groupUin != null 
+            ? MessageBuilder.FakeGroup((uint)groupUin, uint.Parse(message.Uin))
+            : MessageBuilder.Friend(uint.Parse(message.Uin));
         BuildMessages(builder, message.Content);
 
         return builder;
@@ -227,7 +233,7 @@ public partial class MessageCommon
         }
     }
 
-    public List<MessageChain> BuildForwardChains(BotContext context, OneBotForward forward)
+    public List<MessageChain> BuildForwardChains(BotContext context, OneBotForward forward, uint? groupUin = null)
     {
         List<MessageChain> chains = [];
 
@@ -237,9 +243,9 @@ public partial class MessageCommon
             {
                 var chain = element switch
                 {
-                    OneBotFakeNode message => ParseFakeChain(message).Build(),
-                    OneBotFakeNodeSimple messageSimple => ParseFakeChain(messageSimple).Build(),
-                    OneBotFakeNodeText messageText => ParseFakeChain(messageText).Build(),
+                    OneBotFakeNode message => ParseFakeChain(message, groupUin).Build(),
+                    OneBotFakeNodeSimple messageSimple => ParseFakeChain(messageSimple, groupUin).Build(),
+                    OneBotFakeNodeText messageText => ParseFakeChain(messageText, groupUin).Build(),
                     _ => throw new Exception()
                 };
                 string uid = context.ContextCollection.Keystore.Uid ?? throw new InvalidOperationException();

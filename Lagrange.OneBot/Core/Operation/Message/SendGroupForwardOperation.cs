@@ -18,7 +18,7 @@ public class SendGroupForwardOperation(MessageCommon common) : IOperation
     {
         if (payload.Deserialize<OneBotGroupForward>(SerializerOptions.DefaultOptions) is { } forward)
         {
-            var chains = common.BuildForwardChains(context, forward);
+            var chains = common.BuildForwardChains(context, forward, forward.GroupId);
 
             var multi = new MultiMsgEntity(forward.GroupId, [.. chains]);
             var chain = MessageBuilder.Group(forward.GroupId).Add(multi).Build();
