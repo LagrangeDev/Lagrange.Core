@@ -13,6 +13,7 @@ public static class AudioHelper
         SilkV3,
         TenSilkV3,
         Amr,
+        Ogg,
     }
 
     /// <summary>
@@ -74,6 +75,20 @@ public static class AudioHelper
             type = AudioFormat.Mp3;
             return true;
         }
+        
+        
+        // Ogg
+        //  O  g  g  S
+        // +--+--+--+--+
+        // |4F|67|67|53
+        // +--+--+--+--+
+
+        if (value == 0x4F676753)
+        {
+            type = AudioFormat.Ogg;
+            return true;
+        }
+
 
         // MP3 no ID3
         //  ÿ  û
