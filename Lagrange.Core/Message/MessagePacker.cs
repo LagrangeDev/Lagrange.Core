@@ -81,7 +81,7 @@ internal static class MessagePacker
     
     public static PushMsgBody BuildFake(MessageChain chain, string selfUid)
     {
-        var message = BuildFakePacketBase(chain);
+        var message = BuildFakePacketBase(chain, selfUid);
 
         foreach (var entity in chain)
         {
@@ -98,7 +98,6 @@ internal static class MessagePacker
                 message.Body.MsgContent = stream.ToArray();
             }
         }
-
         return message;
     }
 
@@ -202,28 +201,28 @@ internal static class MessagePacker
         Ctrl = chain.IsGroup ? null : new MessageControl { MsgFlag = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() }
     };
 
-    private static PushMsgBody BuildFakePacketBase(MessageChain chain) => new()
+    private static PushMsgBody BuildFakePacketBase(MessageChain chain, string selfUid) => new()
     {
         ResponseHead = new ResponseHead
         {
-            FromUid = chain.SelfUid,
-            ToUid = chain.Uid,
+            FromUid = selfUid,
+            ToUid = chain.IsGroup ? null : chain.Uid,
             Grp = !chain.IsGroup ? null : new ResponseGrp // for consistency of code so inverted condition
             {
                 GroupUin = chain.GroupUin ?? 0,
                 MemberName = chain.GroupMemberInfo?.MemberCard ?? ""
             },
-            Forward = new ResponseForward
+            Forward = chain.IsGroup ? null : new ResponseForward
             {
                 FriendName = chain.FriendInfo?.Nickname
             }
         },
         ContentHead = new ContentHead
         {
-            Type = (uint)(chain.IsGroup ? 82 : 529),
+            Type = (uint)(chain.IsGroup ? 82 : 9),
             SubType = chain.IsGroup ? null : 4,
             DivSeq = chain.IsGroup ? null : 4,
-            MsgId = (uint)Random.Shared.Next(100000000, int.MaxValue),
+            MsgId = (uint)(chain.MessageId & 0xFFFFFFFF),
             Sequence = (uint?)Random.Shared.Next(1000000, 9999999),
             Timestamp = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             Field7 = 1,
@@ -231,9 +230,11 @@ internal static class MessagePacker
             Field9 = 0,
             Forward = new ForwardHead
             {
-                Field3 = chain.IsGroup ? null : 2,
-                UnknownBase64 = Convert.ToBase64String(ByteGen.GenRandomBytes(32)),
-                Avatar = $"https://q1.qlogo.cn/g?b=qq&nk={chain.GroupMemberInfo?.Uin ?? chain.FriendInfo?.Uin}&s=640"
+                Field1 = 0,
+                Field2 = 0,
+                Field3 = chain.IsGroup ? 0u : 2u,
+                UnknownBase64 = string.Empty,
+                Avatar = string.Empty
             }
         },
         Body = new MessageBody { RichText = new RichText { Elems = new List<Elem>() } }

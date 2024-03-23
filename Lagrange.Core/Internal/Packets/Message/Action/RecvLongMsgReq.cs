@@ -32,11 +32,11 @@ internal class LongMsgUid
 [ProtoContract]
 internal class LongMsgSettings
 {
-    [ProtoMember(1)] public uint Field1 { get; set; } // 2
+    [ProtoMember(1)] public uint Field1 { get; set; } // 4
     
-    [ProtoMember(2)] public uint Field2 { get; set; } // 0
+    [ProtoMember(2)] public uint Field2 { get; set; } // 1
     
-    [ProtoMember(3)] public uint Field3 { get; set; } // 0
+    [ProtoMember(3)] public uint Field3 { get; set; } // 7
     
-    [ProtoMember(4)] public uint Field4 { get; set; } // 0
+    [ProtoMember(4)] public uint? Field4 { get; set; } // 0
 }

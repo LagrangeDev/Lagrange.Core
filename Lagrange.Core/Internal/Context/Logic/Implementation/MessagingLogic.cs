@@ -198,7 +198,6 @@ internal class MessagingLogic : LogicBase
             {
                 foreach (var chain in chains)
                 {
-                    await ResolveChainMetadata(chain);
                     await ResolveOutgoingChain(chain);
                     await Collection.Highway.UploadResources(chain);
                 }
