@@ -94,10 +94,8 @@ public class ImageEntity : IMessageEntity
     */
     private static int GetImageTypeFromPbReserve(CustomFace face)
     {
-        // maybe NTQQ and legacy PCQQ emoticon
-        if (face.PbReserve is not null && face.PbReserve.Length >= 2) return face.PbReserve[1];
         // maybe other legacy PCQQ
-        else if (face.OldData is not null && face.OldData.Length >= 4)
+        if (face.OldData is not null && face.OldData.Length >= 4)
         {
             switch (face.OldData[4].ToString("X2"))
             {
@@ -110,6 +108,8 @@ public class ImageEntity : IMessageEntity
                     return 114514;
             }
         }
+        // maybe NTQQ and legacy PCQQ emoticon
+        else if (face.PbReserve is not null && face.PbReserve.Length >= 2) return face.PbReserve[1];
         // still don't know
         else return -1;
     }
