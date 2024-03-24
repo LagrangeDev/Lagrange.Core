@@ -19,7 +19,7 @@ internal class CustomFace
     
     [ProtoMember(5)] public byte[] Flag { get; set; }
     
-    [ProtoMember(6)] public byte[] OldData { get; set; }
+    [ProtoMember(6)] public byte[]? OldData { get; set; }  // can be empty in NTQQ
     
     [ProtoMember(7)] public uint FileId { get; set; }
     
