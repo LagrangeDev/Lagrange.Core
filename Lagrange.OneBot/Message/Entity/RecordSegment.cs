@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
-using Lagrange.Audio;
-using Lagrange.Audio.Codec;
+using Konata.Codec.Audio;
+using Konata.Codec.Audio.Codecs;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.OneBot.Utility;
@@ -104,7 +104,7 @@ public partial class RecordSegment : SegmentBase
                     {
                         AudioHelper.AudioFormat.Mp3 => new Mp3Codec.Decoder(audio),  // Decode Mp3 to pcm
                         AudioHelper.AudioFormat.Wav => new WavCodec.Decoder(audio), // Decode Wav to pcm
-                        AudioHelper.AudioFormat.Ogg => new OggCodec.Decoder(audio),
+                        AudioHelper.AudioFormat.Ogg => new VorbisCodec.Decoder(audio),
                         _ => throw new NotImplementedException()
                     }); // Resample audio to silkv3
                     audioPipeline.Add(new AudioResampler(AudioInfo.SilkV3())); // Encode pcm to silkv3
