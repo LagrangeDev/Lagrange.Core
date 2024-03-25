@@ -33,7 +33,7 @@ internal class NewDeviceLoginService : BaseService<NewDeviceLoginEvent>
 
         if (encrypted.GcmCalc != null)
         {
-            var decrypted = new AesGcmImpl().Decrypt(encrypted.GcmCalc, keystore.Session.ExchangeKey);
+            var decrypted = AesGcmImpl.Decrypt(encrypted.GcmCalc, keystore.Session.ExchangeKey);
             var response = Serializer.Deserialize<SsoNTLoginBase<SsoNTLoginResponse>>(decrypted.AsSpan());
             var body = response.Body;
             

@@ -51,7 +51,7 @@ internal static class SsoNTLoginCommon
         
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, packet);
-        var encrypted = new AesGcmImpl().Encrypt(stream.ToArray(), keystore.Session.ExchangeKey);
+        var encrypted = AesGcmImpl.Encrypt(stream.ToArray(), keystore.Session.ExchangeKey);
 
         var encryptPacket = new SsoNTLoginEncryptedData
         {
