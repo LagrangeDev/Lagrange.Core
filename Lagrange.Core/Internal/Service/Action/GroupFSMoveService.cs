@@ -37,7 +37,7 @@ internal class GroupFSMoveService : BaseService<GroupFSMoveEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out GroupFSMoveEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<byte[]>>(input);
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
         
         output = GroupFSMoveEvent.Result((int)packet.ErrorCode);
         extraEvents = null;

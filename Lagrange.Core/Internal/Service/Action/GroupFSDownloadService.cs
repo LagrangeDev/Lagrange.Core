@@ -36,7 +36,7 @@ internal class GroupFSDownloadService : BaseService<GroupFSDownloadEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out GroupFSDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x6D6Response>>(input);
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x6D6Response>>(input);
         var download = packet.Body.Download;
 
         string url = $"https://{download.DownloadIp}:443/ftn_handler/{download.DownloadUrl.Hex(true)}/?fname=";

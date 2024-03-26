@@ -43,7 +43,7 @@ internal class FetchMembersService : BaseService<FetchMembersEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out FetchMembersEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var response = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xFE7_2Response>>(input);
+        var response = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE7_2Response>>(input);
 
         var members = response.Body.Members.Select(member => 
             new BotGroupMember(member.Uin.Uin,

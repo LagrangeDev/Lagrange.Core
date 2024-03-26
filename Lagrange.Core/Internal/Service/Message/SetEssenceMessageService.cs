@@ -31,7 +31,7 @@ internal class SetEssenceMessageService : BaseService<SetEssenceMessageEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out SetEssenceMessageEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<byte[]>>(input);
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
 
         output = SetEssenceMessageEvent.Result((int)payload.ErrorCode);
         extraEvents = null;

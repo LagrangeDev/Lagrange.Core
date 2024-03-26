@@ -34,9 +34,15 @@ internal class OidbSvcTrpcTcpBase<T> where T : class
     
     [ProtoMember(2)] public uint SubCommand { get; set; }
     
+    [ProtoMember(3)] public uint ErrorCode { get; set; }
+    
     [ProtoMember(4)] public T Body { get; set; }
     
+    [ProtoMember(5)] public string ErrorMsg { get; set; }
+    
     [ProtoMember(7)] public OidbLafter? Lafter { get; set; } // if Lafter is null, it would not be serialized
+    
+    [ProtoMember(11)] public List<OidbProperty> Properties { get; set; }
     
     [ProtoMember(12)] public int Reserved { get; set; }
     

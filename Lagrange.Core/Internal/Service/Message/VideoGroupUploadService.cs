@@ -119,7 +119,7 @@ internal class VideoGroupUploadService : BaseService<VideoGroupUploadEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out VideoGroupUploadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<NTV2RichMediaResp>>(input);
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var upload = packet.Body.Upload;
         var compat = Serializer.Deserialize<VideoFile>(packet.Body.Upload.CompatQMsg.AsSpan());
         

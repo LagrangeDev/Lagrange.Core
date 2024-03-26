@@ -116,7 +116,7 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out ImageGroupUploadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<NTV2RichMediaResp>>(input);
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var upload = packet.Body.Upload;
         var compat = Serializer.Deserialize<CustomFace>(upload.CompatQMsg.AsSpan());
         

@@ -36,7 +36,7 @@ internal class SetGroupRequestService : BaseService<SetGroupRequestEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out SetGroupRequestEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<byte[]>>(input);
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
         
         output = SetGroupRequestEvent.Result((int)payload.ErrorCode);
         extraEvents = null;

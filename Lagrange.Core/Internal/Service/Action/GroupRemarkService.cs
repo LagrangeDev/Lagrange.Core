@@ -33,7 +33,7 @@ internal class GroupRemarkService : BaseService<GroupRemarkEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out GroupRemarkEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<byte[]>>(input);
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
         
         output = GroupRemarkEvent.Result((int)payload.ErrorCode);
         extraEvents = null;

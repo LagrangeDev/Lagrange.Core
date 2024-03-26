@@ -31,7 +31,7 @@ internal class GroupTransferService : BaseService<GroupTransferEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out GroupTransferEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<byte[]>>(input);
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
         
         output = GroupTransferEvent.Result((int)payload.ErrorCode);
         extraEvents = null;

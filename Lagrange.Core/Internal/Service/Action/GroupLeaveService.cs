@@ -29,7 +29,7 @@ internal class GroupLeaveService : BaseService<GroupLeaveEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out GroupLeaveEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<byte[]>>(input);
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
         
         output = GroupLeaveEvent.Result((int)payload.ErrorCode);
         extraEvents = null;

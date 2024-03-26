@@ -34,7 +34,7 @@ internal class FetchAvatarService : BaseService<FetchAvatarEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out FetchAvatarEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xFE1_2Response>>(input);
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE1_2Response>>(input);
 
         output = FetchAvatarEvent.Result(0, payload.Body.Body.Uin, "");
         extraEvents = null;

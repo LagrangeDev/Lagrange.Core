@@ -51,7 +51,7 @@ internal class PokeService : BaseService<FriendPokeEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out FriendPokeEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<byte[]>>(input);
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
         
         output = FriendPokeEvent.Result((int)payload.ErrorCode);
         extraEvents = null;

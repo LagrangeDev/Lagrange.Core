@@ -56,7 +56,7 @@ internal class RecordGroupDownloadService : BaseService<RecordGroupDownloadEvent
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out RecordGroupDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<NTV2RichMediaResp>>(input);
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var body = payload.Body.Download;
         string url = $"https://{body.Info.Domain}{body.Info.UrlPath}{body.RKeyParam}";
         
