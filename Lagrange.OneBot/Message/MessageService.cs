@@ -99,14 +99,15 @@ public sealed class MessageService
         
         if (_config.GetValue<bool>("Message:IgnoreSelf") && e.Chain.FriendUin == bot.BotUin) return; // ignore self message
 
-        var request = ConvertToGroupMsg(bot.BotUin, e.Chain, record.MessageHash);
+        var request = ConvertToGroupMsg(bot.BotUin, e.Chain);
 
         _ = _service.SendJsonAsync(request);
     }
 
-    public object ConvertToGroupMsg(uint uin, MessageChain chain, int hash)
+    public object ConvertToGroupMsg(uint uin, MessageChain chain)
     {
         var segments = Convert(chain);
+        int hash = MessageRecord.CalcMessageHash(chain.MessageId, chain.Sequence);
         object request = _stringPost 
             ? new OneBotGroupStringMsg(uin, chain.GroupUin ?? 0, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash)
             : new OneBotGroupMsg(uin, chain.GroupUin ?? 0, segments, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash);

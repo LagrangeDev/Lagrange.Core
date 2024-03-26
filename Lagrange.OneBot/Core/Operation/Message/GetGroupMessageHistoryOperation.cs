@@ -28,7 +28,7 @@ public class GetGroupMessageHistoryOperation(LiteDatabase database, MessageServi
             if (await context.GetGroupMessage(history.GroupId, (uint)(chain.Sequence - history.Count), chain.Sequence) is { } results)
             {
                 var messages = results
-                    .Select(x => message.ConvertToGroupMsg(context.BotUin, x, record.MessageHash))
+                    .Select(x => message.ConvertToGroupMsg(context.BotUin, x))
                     .ToList();
                 return new OneBotResult(new OneBotGroupMsgHistoryResponse(messages), 0, "ok");
             }
