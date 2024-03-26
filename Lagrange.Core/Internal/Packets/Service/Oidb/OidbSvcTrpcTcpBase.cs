@@ -4,6 +4,8 @@ using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
+#pragma warning disable CS8618
+
 namespace Lagrange.Core.Internal.Packets.Service.Oidb;
 
 /// <summary>
@@ -46,6 +48,8 @@ internal class OidbSvcTrpcTcpBase<T> where T : class
     
     [ProtoMember(12)] public int Reserved { get; set; }
     
+    public OidbSvcTrpcTcpBase() { }
+    
     public OidbSvcTrpcTcpBase(T body, bool isLafter = false, bool isUid = false)
     {
         var (command, subCommand) = OidbReference[typeof(T)];
@@ -53,8 +57,10 @@ internal class OidbSvcTrpcTcpBase<T> where T : class
         Command = command;
         SubCommand = subCommand;
         Body = body;
+        ErrorMsg = "";
         Reserved = Convert.ToInt32(isUid);
         Lafter = isLafter ? new OidbLafter() : null;
+        Properties = new List<OidbProperty>();
     }
     
     public OidbSvcTrpcTcpBase(T body, uint command,uint subCommand, bool isLafter = false, bool isUid = false)
@@ -62,7 +68,9 @@ internal class OidbSvcTrpcTcpBase<T> where T : class
         Command = command;
         SubCommand = subCommand;
         Body = body;
+        ErrorMsg = "";
         Reserved = Convert.ToInt32(isUid);
         Lafter = isLafter ? new OidbLafter() : null;
+        Properties = new List<OidbProperty>();
     }
 }
