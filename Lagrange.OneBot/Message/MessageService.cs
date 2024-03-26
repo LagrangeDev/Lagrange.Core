@@ -67,14 +67,15 @@ public sealed class MessageService
         var record = (MessageRecord)e.Chain;
         _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
 
-        var request = ConvertToPrivateMsg(bot.BotUin, e.Chain, record.MessageHash);
+        var request = ConvertToPrivateMsg(bot.BotUin, e.Chain);
 
         _ = _service.SendJsonAsync(request);
     }
 
-    public object ConvertToPrivateMsg(uint uin, MessageChain chain, int hash)
+    public object ConvertToPrivateMsg(uint uin, MessageChain chain)
     {
         var segments = Convert(chain);
+        int hash = MessageRecord.CalcMessageHash(chain.MessageId, chain.Sequence);
         string raw = ToRawMessage(segments);
         object request = _stringPost ? new OneBotPrivateStringMsg(uin, new OneBotSender(chain.FriendUin, chain.FriendInfo?.Nickname ?? string.Empty), "friend")
             {
