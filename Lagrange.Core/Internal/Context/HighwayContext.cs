@@ -1,6 +1,7 @@
 using System.Reflection;
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Context.Uploader;
+using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Packets.Service.Highway;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Binary;
@@ -15,12 +16,14 @@ namespace Lagrange.Core.Internal.Context;
 internal class HighwayContext : ContextBase, IDisposable
 {
     private const string Tag = nameof(HighwayContext);
-
-    private readonly Dictionary<Type, IHighwayUploader> _uploaders;
     
-    private readonly HttpClient _client;
-    private uint _sequence;
     private static readonly RuntimeTypeModel Serializer;
+
+    private uint _sequence;
+    private Uri? _uri;
+        
+    private readonly Dictionary<Type, IHighwayUploader> _uploaders;
+    private readonly HttpClient _client;
     private readonly int _chunkSize;
     private readonly uint _concurrent;
 
@@ -54,35 +57,6 @@ internal class HighwayContext : ContextBase, IDisposable
         _concurrent = config.HighwayConcurrent;
     }
 
-    public async Task<bool> EchoAsync(uint uin)
-    {
-        var uri = new Uri($"http://htdata3.qq.com:80/cgi-bin/httpconn?htcmd=0x6FF0087&uin={uin}");
-        
-        var head = new ReqDataHighwayHead
-        {
-            MsgBaseHead = new DataHighwayHead
-            {
-                Version = 1, // isOpenUpEnable 2 else 1
-                Uin = Keystore.Uin.ToString(),
-                Command = "PicUp.Echo",
-                Seq = Interlocked.Increment(ref _sequence),
-                AppId = (uint)AppInfo.SubAppId,
-                CommandId = 0
-            }
-        };
-
-        try
-        {
-            var payload = await SendPacketAsync(head, new BinaryPacket(),  uri);
-            var (parsedHead, _) = ParsePacket(payload);
-            return parsedHead.ErrorCode == 0;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-    }
-
     public async Task UploadResources(MessageChain chain)
     {
         foreach (var entity in chain)
@@ -104,9 +78,15 @@ internal class HighwayContext : ContextBase, IDisposable
 
     public async Task<bool> UploadSrcByStreamAsync(int commonId, Stream data, byte[] ticket, byte[] md5, byte[]? extendInfo = null)
     {
+        if (_uri == null)
+        {
+            var highwayUrlEvent = await Collection.Business.SendEvent(HighwayUrlEvent.Create());
+            var result = ((HighwayUrlEvent)highwayUrlEvent[0]);
+            _uri = result.HighwayUrls[1][0];
+        }
+        
         bool success = true;
         var upBlocks = new List<UpBlock>();
-        var uri = new Uri($"http://htdata3.qq.com:80/cgi-bin/httpconn?htcmd=0x6FF0087&uin={Collection.Keystore.Uin}");
 
         long fileSize = data.Length;
         int offset = 0;
@@ -122,7 +102,7 @@ internal class HighwayContext : ContextBase, IDisposable
 
             if (upBlocks.Count >= _concurrent || data.Position == data.Length)
             {
-                var tasks = upBlocks.Select(x => SendUpBlockAsync(x, uri)).ToArray();
+                var tasks = upBlocks.Select(x => SendUpBlockAsync(x, _uri)).ToArray();
                 var results = await Task.WhenAll(tasks);
                 success &= results.All(x => x);
                 
