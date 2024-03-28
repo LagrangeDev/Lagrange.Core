@@ -20,7 +20,7 @@ public partial class ForwardWSService
     private BotContext _context { get; }
 
     private HttpListener _listener { get; } = new();
-    private ConcurrentDictionary<string, ForwardWSServiceConnectionContext> _connections = [];
+    private ConcurrentDictionary<string, ForwardWSServiceWebSocketContext> _connections = [];
 
     public ForwardWSService(ILogger<ForwardWSService> logger, IOptionsSnapshot<ForwardWSServiceOptions> options, BotContext context)
     {
@@ -30,18 +30,21 @@ public partial class ForwardWSService
 
         _listener.Prefixes.Add($"http://{_options.Host}:{_options.Port}/");
     }
+}
 
-    private partial class ForwardWSServiceConnectionContext(WebSocket ws)
+public partial class ForwardWSService
+{
+    private partial class ForwardWSServiceWebSocketContext(WebSocketContext wsContext)
     {
-        public WebSocket Ws { get; } = ws;
+        public WebSocketContext WsContext { get; } = wsContext;
         public Task? ConnectionTask { get; set; }
     }
 
-    private partial class ForwardWSServiceConnectionContext : IDisposable
+    private partial class ForwardWSServiceWebSocketContext : IDisposable
     {
         public void Dispose()
         {
-            Ws.Dispose();
+            WsContext.WebSocket.Dispose();
             ConnectionTask?.Dispose();
 
             GC.SuppressFinalize(this);
@@ -52,6 +55,7 @@ public partial class ForwardWSService
 public partial class ForwardWSService : BackgroundService, ILagrangeWebService
 {
     public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
+
     public override Task StartAsync(CancellationToken token)
     {
         if (IsPortInUse(_options.Port))
@@ -105,9 +109,10 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
                 }
 
                 HttpListenerWebSocketContext wsContext = await httpContext.AcceptWebSocketAsync(null).WaitAsync(token);
-                ForwardWSServiceConnectionContext connectionContext = new(wsContext.WebSocket);
+
+                ForwardWSServiceWebSocketContext connectionContext = new(wsContext);
                 _connections[identifier] = connectionContext;
-                connectionContext.ConnectionTask = ConnectionLoop(identifier, token);
+                connectionContext.ConnectionTask = HandleWebSocket(identifier, token);
 
                 Log.LogConnected(_logger, identifier);
             }
@@ -133,50 +138,81 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
         return;
     }
 
-    public async Task ConnectionLoop(string identifier, CancellationToken token)
+    public async Task HandleWebSocket(string identifier, CancellationToken token)
     {
+        WebSocketContext wsContext = _connections[identifier].WsContext;
         try
         {
-            await Task.WhenAll(ReceiveLoop(identifier, token), HeartbeatLoop(identifier, token));
+            string uri = wsContext.RequestUri.LocalPath;
+            if (uri != "/api" && uri != "/api/")
+            {
+                await SendJsonAsync(new OneBotLifecycle(_context.BotUin, "connect"), identifier, token);
+            }
+
+            CancellationTokenSource stopCts = CancellationTokenSource.CreateLinkedTokenSource(token);
+            Task[] tasks = wsContext.RequestUri.LocalPath switch
+            {
+                "/api" or "/api/" => [ReceiveLoop(identifier, stopCts.Token)],
+                "/event" or "/event/" => [WaitClose(identifier, stopCts.Token), HeartbeatLoop(identifier, stopCts.Token)],
+                _ => [ReceiveLoop(identifier, stopCts.Token), HeartbeatLoop(identifier, stopCts.Token)],
+            };
+            ;
+
+            await Task.WhenAny(tasks);
+            stopCts.Cancel();
+            try { await Task.WhenAll(tasks); } catch (OperationCanceledException) { /* ignore */ }
+
+            await wsContext.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, token);
             Log.LogDisconnected(_logger, identifier);
         }
-        catch (Exception e) when (e is not OperationCanceledException)
+        catch (Exception e)
         {
             Log.LogErrorDisconnected(_logger, identifier, e);
         }
         finally
         {
-            if (_connections.TryRemove(identifier, out ForwardWSServiceConnectionContext? connectionContext))
+            if (_connections.TryRemove(identifier, out ForwardWSServiceWebSocketContext? connectionContext))
             {
                 connectionContext?.Dispose();
             }
         }
     }
 
+    private async Task WaitClose(string identifier, CancellationToken token)
+    {
+        WebSocket ws = _connections[identifier].WsContext.WebSocket;
+        byte[] buffer = [];
+        while (!token.IsCancellationRequested)
+        {
+            if ((await ws.ReceiveAsync(buffer, token)).CloseStatus != null) return;
+        }
+        token.ThrowIfCancellationRequested();
+    }
+
     private async Task ReceiveLoop(string identifier, CancellationToken token)
     {
-        WebSocket ws = _connections[identifier].Ws;
+        WebSocket ws = _connections[identifier].WsContext.WebSocket;
 
         while (!token.IsCancellationRequested)
         {
             var buffer = new byte[1024];
+            int received = 0;
             while (!token.IsCancellationRequested)
             {
-                int received = 0;
-                while (!token.IsCancellationRequested)
-                {
-                    var result = await ws.ReceiveAsync(buffer.AsMemory(received), token);
-                    received += result.Count;
-                    if (result.EndOfMessage) break;
+                var result = await ws.ReceiveAsync(buffer.AsMemory(received), token);
+                if (result.MessageType == WebSocketMessageType.Close) return;
 
-                    if (received == buffer.Length) Array.Resize(ref buffer, received << 1);
-                }
-                token.ThrowIfCancellationRequested();
-                string text = Encoding.UTF8.GetString(buffer, 0, received);
-                Log.LogReceived(_logger, identifier, text);
-                OnMessageReceived?.Invoke(this, new MsgRecvEventArgs(text, identifier)); // Handle user handlers error?
+                received += result.Count;
+                if (result.EndOfMessage) break;
+
+                if (received == buffer.Length) Array.Resize(ref buffer, received << 1);
             }
             token.ThrowIfCancellationRequested();
+
+            string text = Encoding.UTF8.GetString(buffer, 0, received);
+            Log.LogReceived(_logger, identifier, text);
+
+            OnMessageReceived?.Invoke(this, new MsgRecvEventArgs(text, identifier)); // Handle user handlers error?
         }
         token.ThrowIfCancellationRequested();
     }
@@ -197,20 +233,30 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
     {
         IEnumerable<WebSocket> wss;
 
-        if (identifier == null) wss = _connections.Select(c => c.Value.Ws);
-        else wss = [_connections[identifier].Ws];
+        if (identifier == null)
+        {
+            wss = _connections.Where(c =>
+            {
+                string localPath = c.Value.WsContext.RequestUri.LocalPath;
+                return localPath != "/api" && localPath != "/api/";
+            })
+            .Select(c => c.Value.WsContext.WebSocket);
+        }
+        else wss = [_connections[identifier].WsContext.WebSocket];
 
+        var jsonString = JsonSerializer.Serialize(json);
+        var jsonBytes = Encoding.UTF8.GetBytes(jsonString);
         foreach (WebSocket ws in wss)
         {
-            var jsonString = JsonSerializer.Serialize(json);
-            var jsonBytes = Encoding.UTF8.GetBytes(jsonString);
             Log.LogSend(_logger, identifier ?? string.Empty, jsonString);
             await ws.SendAsync(jsonBytes.AsMemory(), WebSocketMessageType.Text, true, token);
         }
     }
 
-    private static bool IsPortInUse(uint port) =>
-        IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(endpoint => endpoint.Port == port);
+    private static bool IsPortInUse(uint port)
+    {
+        return IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(endpoint => endpoint.Port == port);
+    }
 }
 
 public partial class ForwardWSService
