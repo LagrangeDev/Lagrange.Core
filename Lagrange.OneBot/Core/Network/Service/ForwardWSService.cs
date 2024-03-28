@@ -80,7 +80,7 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
 
     public override async Task StopAsync(CancellationToken token)
     {
-        await base.StartAsync(token);
+        await base.StopAsync(token);
         await Task.WhenAll(
             _connections
                 .Where(c => c.Value.ConnectionTask != null)
@@ -170,7 +170,6 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
                 "/event" or "/event/" => [WaitClose(identifier, stopCts.Token), HeartbeatLoop(identifier, stopCts.Token)],
                 _ => [ReceiveLoop(identifier, stopCts.Token), HeartbeatLoop(identifier, stopCts.Token)],
             };
-            ;
 
             await Task.WhenAny(tasks);
             stopCts.Cancel();
@@ -234,13 +233,14 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
     private async Task HeartbeatLoop(string identifier, CancellationToken token)
     {
         var interval = TimeSpan.FromMilliseconds(_options.HeartBeatInterval);
-        while (true)
+        while (!token.IsCancellationRequested)
         {
             var status = new OneBotStatus(true, true);
             var heartBeat = new OneBotHeartBeat(_context.BotUin, (int)_options.HeartBeatInterval, status);
             await SendJsonAsync(heartBeat, identifier, token);
             await Task.Delay(interval, token);
         }
+        token.ThrowIfCancellationRequested();
     }
 
     public async ValueTask SendJsonAsync<T>(T json, string? identifier = null, CancellationToken token = default)
