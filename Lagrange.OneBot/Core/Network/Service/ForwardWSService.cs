@@ -1,180 +1,249 @@
 using System.Collections.Concurrent;
+using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.WebSockets;
+using System.Text;
 using System.Text.Json;
-using Fleck;
 using Lagrange.Core;
 using Lagrange.OneBot.Core.Entity.Meta;
 using Lagrange.OneBot.Core.Network.Options;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Lagrange.OneBot.Core.Network.Service;
 
-public sealed partial class ForwardWSService : ILagrangeWebService
+public partial class ForwardWSService
 {
-    public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
+    private ILogger _logger { get; }
+    private ForwardWSServiceOptions _options { get; }
+    private BotContext _context { get; }
 
-    private readonly ForwardWSServiceOptions _options;
+    private HttpListener _listener { get; } = new();
+    private ConcurrentDictionary<string, ForwardWSServiceConnectionContext> _connections = [];
 
-    private readonly ILogger _logger;
-
-    private readonly BotContext _context;
-
-    private readonly WebSocketServer _server;
-
-    private readonly ConcurrentDictionary<string, IWebSocketConnection> _connections;
-
-    private readonly ConcurrentDictionary<string, Timer> _heartbeats;
-
-    private readonly string _accessToken;
-
-    public ForwardWSService(IOptionsSnapshot<ForwardWSServiceOptions> options, ILogger<ForwardWSService> logger, BotContext context)
+    public ForwardWSService(ILogger<ForwardWSService> logger, IOptionsSnapshot<ForwardWSServiceOptions> options, BotContext context)
     {
-        _options = options.Value;
         _logger = logger;
+        _options = options.Value;
         _context = context;
-        _server = new WebSocketServer($"ws://{_options.Host}:{_options.Port}")
-        {
-            RestartAfterListenError = true
-        };
-        _connections = new ConcurrentDictionary<string, IWebSocketConnection>();
 
-        _heartbeats = new ConcurrentDictionary<string, Timer>();
-        _accessToken = _options.AccessToken ?? "";
+        _listener.Prefixes.Add($"http://{_options.Host}:{_options.Port}/");
     }
 
-    public Task StartAsync(CancellationToken cancellationToken)
+    private partial class ForwardWSServiceConnectionContext(WebSocket ws)
     {
-        uint port = _options.Port;
-        if (IsPortInUse(port))
+        public WebSocket Ws { get; } = ws;
+        public Task? ConnectionTask { get; set; }
+    }
+
+    private partial class ForwardWSServiceConnectionContext : IDisposable
+    {
+        public void Dispose()
         {
-            Log.LogPortInUse(_logger, port);
+            Ws.Dispose();
+            ConnectionTask?.Dispose();
+
+            GC.SuppressFinalize(this);
+        }
+    }
+}
+
+public partial class ForwardWSService : BackgroundService, ILagrangeWebService
+{
+    public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
+    public override Task StartAsync(CancellationToken token)
+    {
+        if (IsPortInUse(_options.Port))
+        {
+            Log.LogPortInUse(_logger, _options.Port);
             return Task.CompletedTask;
         }
 
-        return Task.Run(() =>
+        _listener.Start();
+
+        return base.StartAsync(token);
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
         {
-            _server.Start(conn =>
+            HttpListenerContext httpContext = await _listener.GetContextAsync().WaitAsync(token);
+            string identifier = Guid.NewGuid().ToString();
+            if (httpContext.Request.IsWebSocketRequest)
             {
-                string identifier = conn.ConnectionInfo.Id.ToString();
-
-                conn.OnMessage = s =>
+                if (_options.AccessToken != "")
                 {
-                    Log.LogReceived(_logger, identifier, s);
-                    if (conn.ConnectionInfo.Path == "/event") return;
-                    OnMessageReceived?.Invoke(this, new MsgRecvEventArgs(s, identifier));
-                };
+                    string? accessToken = null;
 
-                conn.OnOpen = () =>
-                {
-                    if (!string.IsNullOrEmpty(_accessToken))
+                    string? authorization = httpContext.Request.Headers["Authorization"];
+                    if (authorization == null)
                     {
-                        if (!conn.ConnectionInfo.Headers.TryGetValue("Authorization", out string? value) || value != $"Bearer {_accessToken}")
-                        {
-                            Log.LogAuthFailed(_logger, identifier);
-                            conn.Close(1002);
-                            return;
-                        }
+                        accessToken = httpContext.Request.QueryString["access_token"];
+                    }
+                    else if (authorization.StartsWith("Bearer "))
+                    {
+                        accessToken = authorization[authorization.IndexOf("Bearer ")..];
                     }
 
-                    _connections.TryAdd(identifier, conn);
-                    Log.LogConnected(_logger, identifier);
+                    if (accessToken == null)
+                    {
+                        httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        httpContext.Response.AddHeader("WWW-Authenticate", "Bearer");
+                        httpContext.Response.Close();
+                        Log.LogAuthFailed(_logger, identifier);
+                        return;
+                    }
 
-                    if (conn.ConnectionInfo.Path == "/api") return;
+                    if (accessToken != _options.AccessToken)
+                    {
+                        httpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        httpContext.Response.Close();
+                        return;
+                    }
+                }
 
-                    var lifecycle = new OneBotLifecycle(_context.BotUin, "connect");
-                    SendJsonAsync(lifecycle, identifier, cancellationToken).GetAwaiter().GetResult();
+                HttpListenerWebSocketContext wsContext = await httpContext.AcceptWebSocketAsync(null).WaitAsync(token);
+                ForwardWSServiceConnectionContext connectionContext = new(wsContext.WebSocket);
+                _connections[identifier] = connectionContext;
+                connectionContext.ConnectionTask = ConnectionLoop(identifier, token);
 
-                    var timer = new Timer(x => OnHeartbeat(x, identifier), null, 1, _options.HeartBeatInterval);
-                    timer.Change(0, _options.HeartBeatInterval);
-                    _heartbeats.TryAdd(identifier, timer);
-                };
-
-                conn.OnClose = () =>
-                {
-                    Log.LogDisconnected(_logger, identifier);
-                    _connections.TryRemove(identifier, out _);
-                    if (_heartbeats.TryRemove(identifier, out var timer)) timer.Dispose();
-                };
-            });
-        }, cancellationToken);
-    }
-
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        _server.ListenerSocket.Close();
-        _server.Dispose();
-        foreach (var (_, value) in _heartbeats) value.Dispose();
-
-        return Task.CompletedTask;
-    }
-
-    public async ValueTask SendJsonAsync<T>(T json, string? identifier = null, CancellationToken cancellationToken = default)
-    {
-        string payload = JsonSerializer.Serialize(json);
-        Log.LogSend(_logger, identifier ?? string.Empty, payload);
-
-        if (identifier == null)
-        {
-            foreach (var (id, connection) in _connections.Where(conn => conn.Value.ConnectionInfo.Path != "/api"))
+                Log.LogConnected(_logger, identifier);
+            }
+            else
             {
-                try
-                {
-                    await connection.Send(payload);
-                }
-                catch (Fleck.ConnectionNotAvailableException)
-                {
-                    Log.LogDisconnected(_logger, id);
-                    _connections.TryRemove(id, out _);
-                    if (_heartbeats.TryRemove(id, out var timer)) timer.Dispose();
-                }
+                httpContext.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+                httpContext.Response.Close();
+                return;
             }
         }
-        else
-        {
-            await (_connections.TryGetValue(identifier, out var connection)
-                ? new ValueTask(connection.Send(payload))
-                : ValueTask.CompletedTask);
-        }
+        token.ThrowIfCancellationRequested();
     }
 
-    private void OnHeartbeat(object? _, string identifier)
+    public override async Task StopAsync(CancellationToken token)
+    {
+        await base.StartAsync(token);
+        _listener.Stop();
+        return;
+    }
+
+    public async Task ConnectionLoop(string identifier, CancellationToken token)
     {
         try
         {
+            await Task.WhenAll(ReceiveLoop(identifier, token), HeartbeatLoop(identifier, token));
+            Log.LogDisconnected(_logger, identifier);
+        }
+        catch (Exception e) when (e is not OperationCanceledException)
+        {
+            Log.LogErrorDisconnected(_logger, identifier, e);
+        }
+        finally
+        {
+            if (_connections.TryRemove(identifier, out ForwardWSServiceConnectionContext? connectionContext))
+            {
+                connectionContext?.Dispose();
+            }
+        }
+    }
+
+    private async Task ReceiveLoop(string identifier, CancellationToken token)
+    {
+        WebSocket ws = _connections[identifier].Ws;
+
+        while (!token.IsCancellationRequested)
+        {
+            var buffer = new byte[1024];
+            while (!token.IsCancellationRequested)
+            {
+                int received = 0;
+                while (!token.IsCancellationRequested)
+                {
+                    var result = await ws.ReceiveAsync(buffer.AsMemory(received), token);
+                    received += result.Count;
+                    if (result.EndOfMessage) break;
+
+                    if (received == buffer.Length) Array.Resize(ref buffer, received << 1);
+                }
+                token.ThrowIfCancellationRequested();
+                string text = Encoding.UTF8.GetString(buffer, 0, received);
+                Log.LogReceived(_logger, identifier, text);
+                OnMessageReceived?.Invoke(this, new MsgRecvEventArgs(text, identifier)); // Handle user handlers error?
+            }
+            token.ThrowIfCancellationRequested();
+        }
+        token.ThrowIfCancellationRequested();
+    }
+
+    private async Task HeartbeatLoop(string identifier, CancellationToken token)
+    {
+        var interval = TimeSpan.FromMilliseconds(_options.HeartBeatInterval);
+        while (true)
+        {
             var status = new OneBotStatus(true, true);
             var heartBeat = new OneBotHeartBeat(_context.BotUin, (int)_options.HeartBeatInterval, status);
-
-            SendJsonAsync(heartBeat, identifier).GetAwaiter().GetResult();
+            await SendJsonAsync(heartBeat, identifier, token);
+            await Task.Delay(interval, token);
         }
-        catch
+    }
+
+    public async ValueTask SendJsonAsync<T>(T json, string? identifier = null, CancellationToken token = default)
+    {
+        IEnumerable<WebSocket> wss;
+
+        if (identifier == null) wss = _connections.Select(c => c.Value.Ws);
+        else wss = [_connections[identifier].Ws];
+
+        foreach (WebSocket ws in wss)
         {
-            // ignored
+            var jsonString = JsonSerializer.Serialize(json);
+            var jsonBytes = Encoding.UTF8.GetBytes(jsonString);
+            Log.LogSend(_logger, identifier ?? string.Empty, jsonString);
+            await ws.SendAsync(jsonBytes.AsMemory(), WebSocketMessageType.Text, true, token);
         }
     }
 
     private static bool IsPortInUse(uint port) =>
         IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(endpoint => endpoint.Port == port);
+}
 
+public partial class ForwardWSService
+{
     private static partial class Log
     {
         [LoggerMessage(EventId = 0, Level = LogLevel.Information, Message = "Connected(Conn: {identifier})")]
         public static partial void LogConnected(ILogger logger, string identifier);
 
-        [LoggerMessage(EventId = 1, Level = LogLevel.Information, Message = "Disconnected(Conn: {identifier})")]
+        [LoggerMessage(EventId = 1, Level = LogLevel.Warning, Message = "Disconnected(Conn: {identifier})")]
+        public static partial void LogErrorDisconnected(ILogger logger, string identifier, Exception e);
+
+
+        [LoggerMessage(EventId = 2, Level = LogLevel.Information, Message = "Disconnected(Conn: {identifier})")]
         public static partial void LogDisconnected(ILogger logger, string identifier);
 
-        [LoggerMessage(EventId = 2, Level = LogLevel.Trace, Message = "Receive(Conn: {identifier}): {s}")]
-        public static partial void LogReceived(ILogger logger, string identifier, string s);
+        public static void LogReceived(ILogger logger, string identifier, string data)
+        {
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                if (data.Length > 1024)
+                {
+                    data = string.Concat(data.AsSpan(0, 1024), "...", (data.Length - 1024).ToString(), "bytes");
+                }
+                InternalLogReceived(logger, identifier, data);
+            }
+        }
 
-        [LoggerMessage(EventId = 3, Level = LogLevel.Trace, Message = "Send(Conn: {identifier}): {s}")]
+        [LoggerMessage(EventId = 3, Level = LogLevel.Trace, Message = "Receive(Conn: {identifier}): {s}")]
+        private static partial void InternalLogReceived(ILogger logger, string identifier, string s);
+
+        [LoggerMessage(EventId = 4, Level = LogLevel.Trace, Message = "Send(Conn: {identifier}): {s}")]
         public static partial void LogSend(ILogger logger, string identifier, string s);
 
-        [LoggerMessage(EventId = 4, Level = LogLevel.Critical, Message = "The port {port} is in use, service failed to start")]
+        [LoggerMessage(EventId = 5, Level = LogLevel.Critical, Message = "The port {port} is in use, service failed to start")]
         public static partial void LogPortInUse(ILogger logger, uint port);
 
-        [LoggerMessage(EventId = 5, Level = LogLevel.Critical, Message = "Conn: {identifier} auth failed")]
+        [LoggerMessage(EventId = 6, Level = LogLevel.Critical, Message = "Conn: {identifier} auth failed")]
         public static partial void LogAuthFailed(ILogger logger, string identifier);
     }
 }
