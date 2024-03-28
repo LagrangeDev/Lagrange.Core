@@ -124,6 +124,11 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
     public override async Task StopAsync(CancellationToken token)
     {
         await base.StartAsync(token);
+        await Task.WhenAll(
+            _connections
+                .Where(c => c.Value.ConnectionTask != null)
+                .Select(c => c.Value.ConnectionTask!)
+        );
         _listener.Stop();
         return;
     }
