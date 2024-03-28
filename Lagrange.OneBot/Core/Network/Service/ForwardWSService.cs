@@ -46,8 +46,6 @@ public partial class ForwardWSService
         {
             WsContext.WebSocket.Dispose();
             ConnectionTask?.Dispose();
-
-            GC.SuppressFinalize(this);
         }
     }
 }
@@ -71,11 +69,11 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
 
     protected override async Task ExecuteAsync(CancellationToken token)
     {
-        while (!token.IsCancellationRequested)
+        while (true)
         {
             _ = HandleHttp(await _listener.GetContextAsync().WaitAsync(token), token);
+            token.ThrowIfCancellationRequested();
         }
-        token.ThrowIfCancellationRequested();
     }
 
     public override async Task StopAsync(CancellationToken token)
@@ -84,7 +82,7 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
         await Task.WhenAll(
             _connections
                 .Where(c => c.Value.ConnectionTask != null)
-                .Select(c => c.Value.ConnectionTask!)
+                .Select(c => c.Value.ConnectionTask!.WaitAsync(token))
         );
         _listener.Stop();
         return;
@@ -97,7 +95,7 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
         {
             if (httpContext.Request.IsWebSocketRequest)
             {
-                if (_options.AccessToken != "")
+                if (!string.IsNullOrWhiteSpace(_options.AccessToken))
                 {
                     string? accessToken = null;
 
@@ -111,7 +109,7 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
                         accessToken = authorization[7..];
                     }
 
-                    if (accessToken == null)
+                    if (string.IsNullOrWhiteSpace(accessToken))
                     {
                         httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                         httpContext.Response.AddHeader("WWW-Authenticate", "Bearer");
@@ -195,52 +193,55 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
     {
         WebSocket ws = _connections[identifier].WsContext.WebSocket;
         byte[] buffer = [];
-        while (!token.IsCancellationRequested)
+        while (true)
         {
             if ((await ws.ReceiveAsync(buffer, token)).CloseStatus != null) return;
+            token.ThrowIfCancellationRequested();
         }
-        token.ThrowIfCancellationRequested();
     }
 
     private async Task ReceiveLoop(string identifier, CancellationToken token)
     {
         WebSocket ws = _connections[identifier].WsContext.WebSocket;
 
-        while (!token.IsCancellationRequested)
+        while (true)
         {
-            var buffer = new byte[1024];
+            byte[] buffer = new byte[1024];
             int received = 0;
-            while (!token.IsCancellationRequested)
+            while (true)
             {
-                var result = await ws.ReceiveAsync(buffer.AsMemory(received), token);
+                ValueWebSocketReceiveResult result = await ws.ReceiveAsync(buffer.AsMemory(received), token);
                 if (result.MessageType == WebSocketMessageType.Close) return;
 
                 received += result.Count;
                 if (result.EndOfMessage) break;
 
                 if (received == buffer.Length) Array.Resize(ref buffer, received << 1);
+
+                token.ThrowIfCancellationRequested();
             }
-            token.ThrowIfCancellationRequested();
 
             string text = Encoding.UTF8.GetString(buffer, 0, received);
             Log.LogReceived(_logger, identifier, text);
 
             OnMessageReceived?.Invoke(this, new MsgRecvEventArgs(text, identifier)); // Handle user handlers error?
+
+            token.ThrowIfCancellationRequested();
         }
-        token.ThrowIfCancellationRequested();
     }
 
     private async Task HeartbeatLoop(string identifier, CancellationToken token)
     {
-        var interval = TimeSpan.FromMilliseconds(_options.HeartBeatInterval);
-        while (!token.IsCancellationRequested)
+        TimeSpan interval = TimeSpan.FromMilliseconds(_options.HeartBeatInterval);
+        while (true)
         {
-            var status = new OneBotStatus(true, true);
-            var heartBeat = new OneBotHeartBeat(_context.BotUin, (int)_options.HeartBeatInterval, status);
+            OneBotStatus status = new(true, true);
+            OneBotHeartBeat heartBeat = new(_context.BotUin, (int)_options.HeartBeatInterval, status);
             await SendJsonAsync(heartBeat, identifier, token);
             await Task.Delay(interval, token);
+
+            token.ThrowIfCancellationRequested();
         }
-        token.ThrowIfCancellationRequested();
     }
 
     public async ValueTask SendJsonAsync<T>(T json, string? identifier = null, CancellationToken token = default)
@@ -258,8 +259,8 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
         }
         else wss = [_connections[identifier].WsContext.WebSocket];
 
-        var jsonString = JsonSerializer.Serialize(json);
-        var jsonBytes = Encoding.UTF8.GetBytes(jsonString);
+        byte[] jsonBytes = JsonSerializer.SerializeToUtf8Bytes(json);
+        string jsonString = _logger.IsEnabled(LogLevel.Trace) ? Encoding.UTF8.GetString(jsonBytes) : string.Empty;
         foreach (WebSocket ws in wss)
         {
             Log.LogSend(_logger, identifier ?? string.Empty, jsonString);
