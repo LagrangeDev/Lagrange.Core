@@ -317,7 +317,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
     },
     {
       "Type": "ForwardWebSocket",
-      "Host": "127.0.0.1",
+      "Host": "*",
       "Port": 8081,
       "HeartBeatInterval": 5000,
       "AccessToken": ""

@@ -25,7 +25,7 @@
 docker run -td -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -g) ghcr.io/konatadev/lagrange.onebot:edge
 ```
 
-> [!IMPORTANT]重要
+> [!IMPORTANT]
 >
 > - 首次运行时可能会提示 `Please Edit the appsettings.json to set configs and press any key to continue`，请选择以下一种方案执行：
 >
@@ -38,7 +38,7 @@ docker run -td -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -
 >     4.  按任意键
 >     5.  使用 `Ctrl + P` `Ctrl + Q` 退出容器
 >
-> - 如果需要宿主需要访问实现（例如：`Http`，`ForwardWebSocket`），请将实现的 `Host` 配置为 `0.0.0.0` 或 `*`
+> - 如果需要宿主需要访问实现（例如：`Http`，`ForwardWebSocket`），请将实现的 `Host` 配置为 `*`
 > - 如果实现需要访问宿主网络（例如：`HttpPost`，`ReverseWebSocket`），请将实现的 `Host` 配置为 `host.docker.internal`
 
 ## 从旧版本迁移
