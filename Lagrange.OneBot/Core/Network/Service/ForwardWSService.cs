@@ -73,8 +73,28 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
     {
         while (!token.IsCancellationRequested)
         {
-            HttpListenerContext httpContext = await _listener.GetContextAsync().WaitAsync(token);
-            string identifier = Guid.NewGuid().ToString();
+            _ = HandleHttp(await _listener.GetContextAsync().WaitAsync(token), token);
+        }
+        token.ThrowIfCancellationRequested();
+    }
+
+    public override async Task StopAsync(CancellationToken token)
+    {
+        await base.StartAsync(token);
+        await Task.WhenAll(
+            _connections
+                .Where(c => c.Value.ConnectionTask != null)
+                .Select(c => c.Value.ConnectionTask!)
+        );
+        _listener.Stop();
+        return;
+    }
+
+    public async Task HandleHttp(HttpListenerContext httpContext, CancellationToken token)
+    {
+        string identifier = Guid.NewGuid().ToString();
+        try
+        {
             if (httpContext.Request.IsWebSocketRequest)
             {
                 if (_options.AccessToken != "")
@@ -104,6 +124,7 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
                     {
                         httpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                         httpContext.Response.Close();
+                        Log.LogAuthFailed(_logger, identifier);
                         return;
                     }
                 }
@@ -123,19 +144,12 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
                 return;
             }
         }
-        token.ThrowIfCancellationRequested();
-    }
-
-    public override async Task StopAsync(CancellationToken token)
-    {
-        await base.StartAsync(token);
-        await Task.WhenAll(
-            _connections
-                .Where(c => c.Value.ConnectionTask != null)
-                .Select(c => c.Value.ConnectionTask!)
-        );
-        _listener.Stop();
-        return;
+        catch (Exception e)
+        {
+            httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            httpContext.Response.Close();
+            Log.LogErrorDisconnected(_logger, identifier, e);
+        }
     }
 
     public async Task HandleWebSocket(string identifier, CancellationToken token)
@@ -294,7 +308,7 @@ public partial class ForwardWSService
         [LoggerMessage(EventId = 5, Level = LogLevel.Critical, Message = "The port {port} is in use, service failed to start")]
         public static partial void LogPortInUse(ILogger logger, uint port);
 
-        [LoggerMessage(EventId = 6, Level = LogLevel.Critical, Message = "Conn: {identifier} auth failed")]
+        [LoggerMessage(EventId = 6, Level = LogLevel.Critical, Message = "AuthFailed(Conn: {identifier})")]
         public static partial void LogAuthFailed(ILogger logger, string identifier);
     }
 }
