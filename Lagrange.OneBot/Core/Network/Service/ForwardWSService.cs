@@ -82,8 +82,8 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
         await Task.WhenAll(
             _connections
                 .Where(c => c.Value.ConnectionTask != null)
-                .Select(c => c.Value.ConnectionTask!.WaitAsync(token))
-        );
+                .Select(c => c.Value.ConnectionTask!)
+        ).WaitAsync(token);
         _listener.Stop();
         return;
     }
@@ -95,7 +95,7 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
         {
             if (httpContext.Request.IsWebSocketRequest)
             {
-                if (!string.IsNullOrWhiteSpace(_options.AccessToken))
+                if (!string.IsNullOrEmpty(_options.AccessToken))
                 {
                     string? accessToken = null;
 
@@ -109,7 +109,7 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
                         accessToken = authorization[7..];
                     }
 
-                    if (string.IsNullOrWhiteSpace(accessToken))
+                    if (string.IsNullOrEmpty(accessToken))
                     {
                         httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                         httpContext.Response.AddHeader("WWW-Authenticate", "Bearer");
