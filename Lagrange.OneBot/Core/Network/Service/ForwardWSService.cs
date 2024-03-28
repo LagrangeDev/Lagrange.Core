@@ -88,7 +88,7 @@ public partial class ForwardWSService : BackgroundService, ILagrangeWebService
                     }
                     else if (authorization.StartsWith("Bearer "))
                     {
-                        accessToken = authorization[(authorization.IndexOf("Bearer ") + 7)..];
+                        accessToken = authorization[7..];
                     }
 
                     if (accessToken == null)
