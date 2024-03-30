@@ -63,6 +63,7 @@ public class BotGroupRequest
         GroupRequest = 1,
         SelfInvitation = 2,
         KickMember = 6,
+        KickSelf =7,
         ExitGroup = 13,
         GroupInvitation = 22,
     }

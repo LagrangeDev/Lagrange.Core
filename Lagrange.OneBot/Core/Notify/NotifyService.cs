@@ -100,7 +100,16 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
 
             BotGroupRequest? botGroupRequest = (await bot.ContextCollection.Business.OperationLogic.FetchGroupRequests())
                 ?.AsParallel()
-                .FirstOrDefault(r => r.EventType == BotGroupRequest.Type.KickMember && r.GroupUin == @event.GroupUin && r.TargetMemberUin == @event.MemberUin);
+                .FirstOrDefault(r =>
+                {
+                    return @event.Type switch
+                    {
+                        GroupMemberDecreaseEvent.EventType.Kick => r.EventType == BotGroupRequest.Type.KickMember
+                                                                && r.TargetMemberUin == @event.MemberUin,
+                        GroupMemberDecreaseEvent.EventType.KickMe => r.EventType == BotGroupRequest.Type.KickSelf,
+                        _ => false
+                    } && r.GroupUin == @event.GroupUin;
+                });
 
             string type = @event.Type switch
             {
