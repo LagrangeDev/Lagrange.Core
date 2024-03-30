@@ -93,14 +93,14 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             await service.SendJsonAsync(new OneBotMemberIncrease(bot.BotUin, type, @event.GroupUin, @event.InvitorUin ?? 0, @event.MemberUin));
         };
 
-        bot.Invoker.OnGroupMemberDecreaseEvent += async (context, @event) =>
+        bot.Invoker.OnGroupMemberDecreaseEvent += async (_, @event) =>
         {
-            BotGroupRequest? botGroupRequest = (await context.ContextCollection.Business.OperationLogic.FetchGroupRequests())
-                ?.AsParallel()
-                ?.Where(r => r.EventType == BotGroupRequest.Type.KickMember && r.GroupUin == @event.GroupUin && r.TargetMemberUin == @event.MemberUin)
-                .FirstOrDefault(null as BotGroupRequest);
-
             logger.LogInformation(@event.ToString());
+
+            BotGroupRequest? botGroupRequest = (await bot.ContextCollection.Business.OperationLogic.FetchGroupRequests())
+                ?.AsParallel()
+                .FirstOrDefault(r => r.EventType == BotGroupRequest.Type.KickMember && r.GroupUin == @event.GroupUin && r.TargetMemberUin == @event.MemberUin);
+
             string type = @event.Type.ToString().ToLower();
             await service.SendJsonAsync(new OneBotMemberDecrease(bot.BotUin, type, @event.GroupUin, botGroupRequest?.InvitorMemberUin ?? 0, @event.MemberUin));
         };

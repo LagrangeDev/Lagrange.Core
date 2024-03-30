@@ -14,53 +14,49 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 internal class CachingLogic : LogicBase
 {
     private const string Tag = nameof(CachingLogic);
-    
+
     private readonly Dictionary<uint, string> _uinToUid;
     private readonly List<uint> _cachedGroups;
     private readonly List<BotGroup> _cachedGroupEntities;
-    
+
     private readonly List<BotFriend> _cachedFriends;
     private readonly Dictionary<uint, List<BotGroupMember>> _cachedGroupMembers;
-    
+
     internal CachingLogic(ContextCollection collection) : base(collection)
     {
         _uinToUid = new Dictionary<uint, string>();
         _cachedGroups = new List<uint>();
         _cachedGroupEntities = new List<BotGroup>();
-       
+
         _cachedFriends = new List<BotFriend>();
         _cachedGroupMembers = new Dictionary<uint, List<BotGroupMember>>();
     }
 
     public override Task Incoming(ProtocolEvent e)
     {
-        switch (e)
+        return e switch
         {
-            case GroupSysDecreaseEvent groupSysDecreaseEvent:
-                return CacheUid(groupSysDecreaseEvent.GroupUin, true);
-            case GroupSysIncreaseEvent groupSysIncreaseEvent:
-                return CacheUid(groupSysIncreaseEvent.GroupUin, true);
-            case GroupSysAdminEvent groupSysAdminEvent:
-                return CacheUid(groupSysAdminEvent.GroupUin, true);
-        }
-
-        return Task.CompletedTask;
+            GroupSysDecreaseEvent groupSysDecreaseEvent when groupSysDecreaseEvent.MemberUid != Collection.Keystore.Uid => CacheUid(groupSysDecreaseEvent.GroupUin, true),
+            GroupSysIncreaseEvent groupSysIncreaseEvent => CacheUid(groupSysIncreaseEvent.GroupUin, true),
+            GroupSysAdminEvent groupSysAdminEvent => CacheUid(groupSysAdminEvent.GroupUin, true),
+            _ => Task.CompletedTask,
+        };
     }
-    
+
     public async Task<List<BotGroup>> GetCachedGroups(bool refreshCache)
     {
         if (_cachedGroupEntities.Count == 0 || refreshCache)
         {
             _cachedGroupEntities.Clear();
-            
+
             var fetchGroupsEvent = FetchGroupsEvent.Create();
             var events = await Collection.Business.SendEvent(fetchGroupsEvent);
             var groups = ((FetchGroupsEvent)events[0]).Groups;
-            
+
             _cachedGroupEntities.AddRange(groups);
             return groups;
         }
-        
+
         return _cachedGroupEntities;
     }
 
@@ -68,22 +64,22 @@ internal class CachingLogic : LogicBase
     {
         if (_uinToUid.Count == 0) await ResolveFriendsUid();
         if (groupUin == null) return _uinToUid.GetValueOrDefault(friendUin);
-        
+
         await CacheUid(groupUin.Value);
 
         return _uinToUid.GetValueOrDefault(friendUin);
     }
-    
+
     public async Task<uint?> ResolveUin(uint? groupUin, string friendUid, bool force = false)
     {
         if (_uinToUid.Count == 0) await ResolveFriendsUid();
         if (groupUin == null) return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
-        
+
         await CacheUid(groupUin.Value, force);
 
         return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
     }
-    
+
     public async Task<List<BotGroupMember>> GetCachedMembers(uint groupUin, bool refreshCache)
     {
         if (!_cachedGroupMembers.TryGetValue(groupUin, out var members) || refreshCache)
@@ -93,7 +89,7 @@ internal class CachingLogic : LogicBase
         }
         return members;
     }
-    
+
     public async Task<List<BotFriend>> GetCachedFriends(bool refreshCache)
     {
         if (_cachedFriends.Count == 0 || refreshCache) await ResolveFriendsUid();
@@ -109,13 +105,13 @@ internal class CachingLogic : LogicBase
             _cachedGroups.Add(groupUin);
         }
     }
-    
+
     private async Task ResolveFriendsUid()
     {
         var fetchFriendsEvent = FetchFriendsEvent.Create();
         var events = await Collection.Business.SendEvent(fetchFriendsEvent);
         var friends = events.Count != 0 ? ((FetchFriendsEvent)events[0]).Friends : new List<BotFriend>();
-        
+
         foreach (var friend in friends) _uinToUid.TryAdd(friend.Uin, friend.Uid);
         _cachedFriends.Clear();
         _cachedFriends.AddRange(friends);
@@ -125,7 +121,7 @@ internal class CachingLogic : LogicBase
     {
         var fetchFriendsEvent = FetchMembersEvent.Create(groupUin);
         var events = await Collection.Business.SendEvent(fetchFriendsEvent);
-        
+
         if (events.Count != 0)
         {
             var @event = (FetchMembersEvent)events[0];
