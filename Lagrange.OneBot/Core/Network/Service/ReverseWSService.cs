@@ -76,10 +76,10 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         return ws.SendAsync(buffer.AsMemory(), WebSocketMessageType.Text, true, token);
     }
 
-    protected ClientWebSocket CreateDefaultWebSocket()
+    protected ClientWebSocket CreateDefaultWebSocket(string role)
     {
         var ws = new ClientWebSocket();
-        ws.Options.SetRequestHeader("X-Client-Role", "Universal");
+        ws.Options.SetRequestHeader("X-Client-Role", role);
         ws.Options.SetRequestHeader("X-Self-ID", context.BotUin.ToString());
         ws.Options.SetRequestHeader("User-Agent", Constant.OneBotImpl);
         if (_options.AccessToken != null) ws.Options.SetRequestHeader("Authorization", $"Bearer {_options.AccessToken}");
@@ -119,7 +119,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
             {
                 if (_options.UseUniversalClient)
                 {
-                    using var ws = CreateDefaultWebSocket();
+                    using var ws = CreateDefaultWebSocket("Universal");
                     var connTask = ws.ConnectAsync(url, stoppingToken);
                     using var connCtx = new UniversalConnectionContext(ws, connTask);
                     ConnCtx = connCtx;
@@ -141,10 +141,10 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                 }
                 else
                 {
-                    using var wsApi = CreateDefaultWebSocket();
+                    using var wsApi = CreateDefaultWebSocket("Api");
                     var apiConnTask = wsApi.ConnectAsync(apiUrl, stoppingToken);
 
-                    using var wsEvent = CreateDefaultWebSocket();
+                    using var wsEvent = CreateDefaultWebSocket("Event");
                     var eventConnTask = wsEvent.ConnectAsync(eventUrl, stoppingToken);
 
                     var connTask = Task.WhenAll(apiConnTask, eventConnTask);
@@ -176,7 +176,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
             catch (WebSocketException e) when (e.InnerException is HttpRequestException)
             {
                 Log.LogClientReconnect(_logger, Tag, _options.ReconnectInterval);
-                var interval = TimeSpan.FromMilliseconds(_options.HeartBeatInterval);
+                var interval = TimeSpan.FromMilliseconds(_options.ReconnectInterval);
                 await Task.Delay(interval, stoppingToken);
             }
             catch (Exception e)
