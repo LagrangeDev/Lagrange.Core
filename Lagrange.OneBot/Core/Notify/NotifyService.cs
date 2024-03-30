@@ -1,6 +1,7 @@
 using Lagrange.Core;
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Message.Entity;
 using Lagrange.OneBot.Core.Entity.Notify;
 using Lagrange.OneBot.Core.Network;
@@ -101,7 +102,13 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 ?.AsParallel()
                 .FirstOrDefault(r => r.EventType == BotGroupRequest.Type.KickMember && r.GroupUin == @event.GroupUin && r.TargetMemberUin == @event.MemberUin);
 
-            string type = @event.Type.ToString().ToLower();
+            string type = @event.Type switch
+            {
+                GroupMemberDecreaseEvent.EventType.KickMe => "kick_me",
+                GroupMemberDecreaseEvent.EventType.Leave => "leave",
+                GroupMemberDecreaseEvent.EventType.Kick => "kick",
+                _ => @event.Type.ToString()
+            };
             await service.SendJsonAsync(new OneBotMemberDecrease(bot.BotUin, type, @event.GroupUin, botGroupRequest?.InvitorMemberUin ?? 0, @event.MemberUin));
         };
 
