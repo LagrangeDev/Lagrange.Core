@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Lagrange.OneBot.Core.Notify;
 
-public sealed partial class NotifyService(BotContext bot, ILogger<NotifyService> logger, LagrangeWebSvcCollection service)
+public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger, LagrangeWebSvcCollection service)
 {
     public void RegisterEvents()
     {
