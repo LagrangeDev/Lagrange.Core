@@ -33,20 +33,20 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
 
         bot.Invoker.OnGroupMuteEvent += async (_, @event) =>
         {
-            logger.LogInformation(@event.ToString());
+            logger.LogInformation("{}", @event);
             await service.SendJsonAsync(new OneBotGroupMute(bot.BotUin, @event.IsMuted ? "ban" : "lift_ban", @event.GroupUin, @event.OperatorUin ?? 0, 0, @event.IsMuted ? -1 : 0));
         };
 
         bot.Invoker.OnFriendRequestEvent += async (_, @event) =>
         {
-            logger.LogInformation(@event.ToString());
+            logger.LogInformation("{}", @event);
             await service.SendJsonAsync(new OneBotFriendRequestNotice(bot.BotUin, @event.SourceUin));
             await service.SendJsonAsync(new OneBotFriendRequest(bot.BotUin, @event.SourceUin, @event.Message, @event.SourceUid));
         };
 
         bot.Invoker.OnGroupInvitationReceived += async (_, @event) =>
         {
-            logger.LogInformation(@event.ToString());
+            logger.LogInformation("{}", @event);
 
             var requests = await bot.FetchGroupRequests();
             if (requests?.FirstOrDefault(x => @event.GroupUin == x.GroupUin && @event.InvitorUin == x.InvitorMemberUin) is { } request)
@@ -58,7 +58,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
 
         bot.Invoker.OnGroupJoinRequestEvent += async (_, @event) =>
         {
-            logger.LogInformation(@event.ToString());
+            logger.LogInformation("{}", @event);
 
             var requests = await bot.FetchGroupRequests();
             if (requests?.FirstOrDefault(x => @event.GroupUin == x.GroupUin && @event.TargetUin == x.TargetMemberUin) is { } request)
@@ -70,7 +70,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
 
         bot.Invoker.OnGroupInvitationRequestEvent += async (_, @event) =>
         {
-            logger.LogInformation(@event.ToString());
+            logger.LogInformation("{}", @event);
 
             var requests = await bot.FetchGroupRequests();
             if (requests?.FirstOrDefault(x => @event.GroupUin == x.GroupUin && @event.TargetUin == x.TargetMemberUin) is { } request)
@@ -82,39 +82,39 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
 
         bot.Invoker.OnGroupAdminChangedEvent += async (_, @event) =>
         {
-            logger.LogInformation(@event.ToString());
+            logger.LogInformation("{}", @event);
             await service.SendJsonAsync(new OneBotGroupAdmin(bot.BotUin, @event.IsPromote ? "set" : "unset", @event.GroupUin, @event.AdminUin));
         };
 
         bot.Invoker.OnGroupMemberIncreaseEvent += async (_, @event) =>
         {
-            logger.LogInformation(@event.ToString());
+            logger.LogInformation("{}", @event);
             string type = @event.Type.ToString().ToLower();
             await service.SendJsonAsync(new OneBotMemberIncrease(bot.BotUin, type, @event.GroupUin, @event.InvitorUin ?? 0, @event.MemberUin));
         };
 
-        bot.Invoker.OnGroupMemberDecreaseEvent += async (context, @event) =>
+        bot.Invoker.OnGroupMemberDecreaseEvent += async (_, @event) =>
         {
-            BotGroupRequest? botGroupRequest = (await context.ContextCollection.Business.OperationLogic.FetchGroupRequests())
-                ?.AsParallel()
-                ?.Where(r => r.EventType == BotGroupRequest.Type.KickMember && r.GroupUin == @event.GroupUin && r.TargetMemberUin == @event.MemberUin)
-                .FirstOrDefault(null as BotGroupRequest);
+            logger.LogInformation("{}", @event);
 
-            logger.LogInformation(@event.ToString());
+            BotGroupRequest? botGroupRequest = (await bot.ContextCollection.Business.OperationLogic.FetchGroupRequests())
+                ?.AsParallel()
+                .FirstOrDefault(r => r.EventType == BotGroupRequest.Type.KickMember && r.GroupUin == @event.GroupUin && r.TargetMemberUin == @event.MemberUin);
+
             string type = @event.Type.ToString().ToLower();
             await service.SendJsonAsync(new OneBotMemberDecrease(bot.BotUin, type, @event.GroupUin, botGroupRequest?.InvitorMemberUin ?? 0, @event.MemberUin));
         };
 
         bot.Invoker.OnGroupMemberMuteEvent += async (_, @event) =>
         {
-            logger.LogInformation(@event.ToString());
+            logger.LogInformation("{}", @event);
             string type = @event.Duration == 0 ? "lift_ban" : "ban";
             await service.SendJsonAsync(new OneBotGroupMute(bot.BotUin, type, @event.GroupUin, @event.OperatorUin ?? 0, @event.TargetUin, @event.Duration));
         };
 
         bot.Invoker.OnGroupRecallEvent += async (_, @event) =>
         {
-            logger.LogInformation(@event.ToString());
+            logger.LogInformation("{}", @event);
             await service.SendJsonAsync(new OneBotGroupRecall(bot.BotUin)
             {
                 GroupId = @event.GroupUin,
@@ -126,7 +126,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
 
         bot.Invoker.OnFriendRecallEvent += async (_, @event) =>
         {
-            logger.LogInformation(@event.ToString());
+            logger.LogInformation("{}", @event);
             await service.SendJsonAsync(new OneBotFriendRecall(bot.BotUin)
             {
                 UserId = @event.FriendUin,
@@ -136,7 +136,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
 
         bot.Invoker.OnFriendPokeEvent += async (_, @event) =>
         {
-            logger.LogInformation(@event.ToString());
+            logger.LogInformation("{}", @event);
             await service.SendJsonAsync(new OneBotFriendPoke(bot.BotUin)
             {
                 SenderId = @event.FriendUin,
