@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package kritor.customization;
+
+option csharp_namespace = "Kritor.Customization";
+option java_multiple_files = true;
+option java_package = "io.kritor.customization";
+option go_package = "grpc/kritor/customization";
+
+import "Protos/common/request.proto";
+
+/* 自定义功能接口 */
+
+service CustomizationService {
+  rpc CallFunction(kritor.common.Request) returns (kritor.common.Response);
+}

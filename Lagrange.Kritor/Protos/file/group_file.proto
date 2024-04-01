@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package kritor.file;
+
+option csharp_namespace = "Kritor.File";
+option java_multiple_files = true;
+option java_package = "io.kritor.file";
+option go_package = "grpc/kritor/file";
+
+import "Protos/file/file_data.proto";
+
+service GroupFileService {
+  rpc CreateFolder(CreateFolderRequest) returns (CreateFolderResponse); // 创建文件夹
+  rpc RenameFolder(RenameFolderRequest) returns (RenameFolderResponse); // 重命名文件夹
+  rpc DeleteFolder(DeleteFolderRequest) returns (DeleteFolderResponse); // 删除文件夹
+
+  rpc UploadFile(UploadFileRequest) returns (UploadFileResponse); // 删除文件
+  rpc DeleteFile(DeleteFileRequest) returns (DeleteFileResponse); // 删除文件
+
+  rpc GetFileSystemInfo(GetFileSystemInfoRequest) returns (GetFileSystemInfoResponse); // 获取文件系统信息
+  rpc GetFileList(GetFileListRequest) returns (GetFileListResponse); // 获取文件夹下文件
+}
+
+message CreateFolderRequest {
+  uint64 group_id = 1; // 群号
+  string name = 2; // 文件夹名
+}
+
+message CreateFolderResponse {
+  string id = 1; // 文件夹id
+  uint64 used_space = 2; // 已使用空间
+}
+
+message RenameFolderRequest {
+  uint64 group_id = 1; // 群号
+  string folder_id = 2; // 文件夹id
+  string name = 3; // 文件夹名
+}
+
+message RenameFolderResponse {
+}
+
+message DeleteFolderRequest {
+  uint64 group_id = 1; // 群号
+  string folder_id = 2; // 文件夹id
+}
+
+message DeleteFolderResponse {
+}
+
+message UploadFileRequest {
+  uint64 group_id = 1; // 群号
+  oneof data {
+    bytes file = 2;       // 文件内容
+    string file_name = 3; // 文件文件名
+    string file_path = 4; // 文件绝对路径
+    string file_url = 5;  // 文件下载地址
+  }
+}
+
+message UploadFileResponse {
+
+}
+
+message DeleteFileRequest {
+  uint64 group_id = 1; // 群号
+  string file_id = 2; // 文件id
+  int32 bus_id = 3; // 文件类型ID
+}
+
+message DeleteFileResponse {
+}
+
+message GetFileSystemInfoRequest {
+  uint64 group_id = 1; // 群号
+}
+
+message GetFileSystemInfoResponse {
+  uint32 file_count = 1; // 文件数量
+  uint32 total_count = 2; // 文件数量上限
+  uint32 used_space = 3; // 已使用空间
+  uint32 total_space = 4; // 空间上限
+}
+
+message GetFileListRequest {
+  uint64 group_id = 1; // 群号
+  optional string folder_id = 2; // 文件夹id 空则为根目录
+}
+
+message GetFileListResponse {
+  repeated File files = 1;
+  repeated Folder folders = 2;
+}

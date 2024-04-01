@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package kritor.reverse;
+
+option csharp_namespace = "Kritor.Reverse";
+option java_multiple_files = true;
+option java_package = "io.kritor.reverse";
+option go_package = "grpc/kritor/reverse";
+
+import "Protos/common/request.proto";
+
+service ReverseService {
+  rpc ReverseStream(stream kritor.common.Response) returns (stream kritor.common.Request);
+}

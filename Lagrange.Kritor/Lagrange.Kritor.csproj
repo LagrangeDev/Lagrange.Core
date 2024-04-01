@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Protobuf Include="Protos\auth\*" GrpcServices="Server"/>
+        <Protobuf Include="Protos\common\*" GrpcServices="Server"/>
+        <Protobuf Include="Protos\core\*" GrpcServices="Server"/>
+        <Protobuf Include="Protos\customization\*" GrpcServices="Server"/>
+        <Protobuf Include="Protos\developer\*" GrpcServices="Server"/>
+        <Protobuf Include="Protos\event\*" GrpcServices="Server"/>
+        <Protobuf Include="Protos\file\*" GrpcServices="Server"/>
+        <Protobuf Include="Protos\friend\*" GrpcServices="Server"/>
+        <Protobuf Include="Protos\group\*" GrpcServices="Server"/>
+        <Protobuf Include="Protos\guild\*" GrpcServices="Server"/>
+        <Protobuf Include="Protos\message\*" GrpcServices="Server"/>
+        <Protobuf Include="Protos\reverse\*" GrpcServices="Server"/>
+        <Protobuf Include="Protos\web\*" GrpcServices="Server"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Grpc.AspNetCore" Version="2.57.0"/>
+        <PackageReference Include="LiteDB" Version="5.0.17" />
+        <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="1.6.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Core\" />
+    </ItemGroup>
+
+</Project>
