@@ -164,7 +164,13 @@ public partial class ForwardWSService // Handler
             }
             heartbeatTask?.Dispose();
 
-            try { await context.WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, default); }
+            try
+            {
+                await context.WebSocket
+                    .CloseAsync(WebSocketCloseStatus.NormalClosure, null, default)
+                    .WaitAsync(TimeSpan.FromSeconds(5), default);
+            }
+            catch (TimeoutException) { }
             catch (Exception e) { Log.LogWebSocketError(_logger, identifier, e); }
 
             _connections.TryRemove(identifier, out _);
