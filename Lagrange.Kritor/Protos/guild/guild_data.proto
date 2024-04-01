@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package kritor.guild;
+
+option csharp_namespace = "Kritor.Guild";
+option java_multiple_files = true;
+option java_package = "io.kritor.guild";
+option go_package = "grpc/kritor/guild";
+
+// 频道信息
+message GuildInfo {
+  uint64 guild_id = 1; // 频道ID
+  string guild_name = 2; // 频道名称
+  string guild_display_id = 3; // 频道显示ID
+  string profile = 4; // 频道简介
+  bool is_enable = 5; // 是否启用
+  bool is_banned = 6; // 是否被封禁
+  bool is_frozen = 7; // 是否被冻结
+  uint64 owner_id = 8; // 频道拥有者ID
+  uint64 shutup_expire_time = 9; // 禁言过期时间
+  bool allow_search = 10; // 是否允许搜索
+}
+
+// 子频道信息
+message ChannelInfo {
+  uint64 channel_id = 1; // 子频道ID
+  uint64 guild_id = 2; // 频道ID
+  string channel_name = 3; // 子频道名称
+  uint64 create_time = 4; // 创建时间
+  uint64 max_member_count = 5; // 最大成员数
+  uint64 creator_tiny_id = 6; // 创建者tinyid
+  uint64 talk_permission = 7; // 发言权限
+  uint64 visible_type = 8; // 可见类型
+  uint64 current_slow_mode = 9; // 当前发言限制
+  repeated SlowModes slow_modes = 10; // 发言限制
+  string icon_url = 11; // 频道图标
+  uint64 jump_switch = 12; // 跳转开关
+  uint64 jump_type = 13; // 跳转类型
+  string jump_url = 14; // 跳转地址
+  uint64 category_id = 15; // 分类ID
+  uint64 my_talk_permission = 16; // 我的发言权限
+}
+
+// 发言限制
+message SlowModes {
+  uint64 slow_mode_key = 1; // 0:关闭 1:每分钟1条 2:每分钟2条 3:每分钟5条 4:每分钟10条 5:每5分钟1条 6:每10分钟1条 7:每15分钟1条 8:每30分钟1条 9:每1小时1条 10:每12小时1条 11:每24小时1条
+  string slow_mode_text = 2; // 发言限制描述
+  uint64 speak_frequency = 3; // 每分钟发言频率
+  uint64 slow_mode_circle = 4; // 发言限制周期
+}
+
+// 频道成员信息
+message MemberInfo {
+  uint64 tiny_id = 1; // 用户tinyid
+  string title = 2; // 用户头衔
+  string nickname = 3; // 用户昵称
+  uint64 role_id = 4; // 用户角色ID
+  string role_name = 5; // 用户角色名称
+  uint64 role_color = 6; // 用户角色颜色
+  uint64 join_time = 7; // 加入时间
+  uint64 robot_type = 8; // 机器人类型
+  uint64 type = 9; // 用户类型
+  bool in_black = 10; // 是否在黑名单
+  uint64 platform = 11; // 平台
+}
+
+// 频道成员资料
+message MemberProfile {
+  uint64 tiny_id = 1; // 用户tinyid
+  string nickname = 2; // 用户昵称
+  string avatar_url = 3; // 用户头像
+  uint64 join_time = 4; // 加入时间
+  repeated MemberRoleInfo roles_info = 5; // 用户角色
+}
+
+// 身份组权限信息
+message PermissionInfo {
+  uint64 root_id = 1; // 权限根ID
+  repeated uint64 child_ids = 2; // 权限子ID
+}
+
+// 用户身份组信息
+message MemberRoleInfo {
+  uint64 role_id = 1; // 身份组ID
+  string role_name = 2; // 身份组名称
+  uint64 color = 3; // 身份组颜色
+  repeated PermissionInfo permissions = 4; // 身份组权限
+  uint64 type = 5; // 用户角色类型
+  string display_name = 6; // 用户角色显示名称
+}
+
+// 频道身份组详细信息
+message RoleInfo  {
+  uint64 role_id = 1; // 身份组ID
+  string role_name = 2; // 身份组名称
+  uint64 color = 3; // 身份组颜色
+  repeated PermissionInfo permissions = 4; // 身份组权限
+  bool disabled = 5; // 是否禁用
+  bool independent = 6; // 是否独立
+  uint64 max_count = 7; // 最大成员数
+  uint64 member_count = 8; // 成员数
+  bool owned = 9; // 是否拥有
+}
