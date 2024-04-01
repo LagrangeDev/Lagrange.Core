@@ -168,7 +168,7 @@ public partial class ForwardWSService // Handler
             {
                 await context.WebSocket
                     .CloseAsync(WebSocketCloseStatus.NormalClosure, null, default)
-                    .WaitAsync(TimeSpan.FromSeconds(5), default);
+                    .WaitAsync(TimeSpan.FromSeconds(5), (CancellationToken)default);
             }
             catch (TimeoutException) { }
             catch (Exception e) { Log.LogWebSocketError(_logger, identifier, e); }
