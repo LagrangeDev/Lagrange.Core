@@ -20,7 +20,7 @@ public sealed class MessageChain : List<IMessageEntity>
     
     public BotGroupMember? GroupMemberInfo { get; internal set; }
     
-    public uint Sequence { get; }
+    public uint Sequence { get; internal set; }
     
     #region Internal Properties
     
