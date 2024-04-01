@@ -24,11 +24,12 @@
 
     <ItemGroup>
         <PackageReference Include="Grpc.AspNetCore" Version="2.57.0"/>
+        <PackageReference Include="LiteDB" Version="5.0.17" />
+        <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="1.6.1" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Core\" />
-      <Folder Include="Services\" />
     </ItemGroup>
 
 </Project>
