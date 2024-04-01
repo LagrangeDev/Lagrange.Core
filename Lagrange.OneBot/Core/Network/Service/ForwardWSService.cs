@@ -27,7 +27,10 @@ public partial class ForwardWSService
         _options = options.Value;
         _context = context;
 
-        _listener.Prefixes.Add($"http://{_options.Host}:{_options.Port}/");
+        string host = _options.Host;
+        if (host == "0.0.0.0") host = "*";
+
+        _listener.Prefixes.Add($"http://{host}:{_options.Port}/");
     }
 }
 
