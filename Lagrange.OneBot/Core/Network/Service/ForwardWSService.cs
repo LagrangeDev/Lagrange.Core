@@ -332,7 +332,7 @@ public partial class ForwardWSService // Log class
         [LoggerMessage(EventId = 3, Level = LogLevel.Trace, Message = "Receive(Conn: {identifier}): {s}", SkipEnabledCheck = true)]
         private static partial void InternalLogReceived(ILogger logger, string identifier, string s);
 
-        [LoggerMessage(EventId = 4, Level = LogLevel.Trace, Message = "Disconnected(Conn: {identifier})")]
+        [LoggerMessage(EventId = 4, Level = LogLevel.Information, Message = "Disconnected(Conn: {identifier})")]
         public static partial void LogDisconnected(ILogger logger, string identifier);
 
 
