@@ -172,6 +172,7 @@ public partial class ForwardWSService // Handler
             }
             catch (TimeoutException) { }
             catch (Exception e) { Log.LogWebSocketError(_logger, identifier, e); }
+            context.WebSocket.Dispose();
 
             _connections.TryRemove(identifier, out _);
 
