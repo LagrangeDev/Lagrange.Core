@@ -340,6 +340,10 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 }
 ```
 
+> [!WARNING]
+> 
+> On Linux, `Host` for `ForwardWebSocket` and `Http` must use the same value as `Host` in the request header, except for `*` and `+`! This is an upstream bug.
+
 ## NOTICE BEFORE LOGIN
 
 - The NewDeviceLogin feature has not been implemented yet. It is recommended to use QRCode login for now.
