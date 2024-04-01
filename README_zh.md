@@ -344,6 +344,10 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 }
 ```
 
+> [!WARNING]
+> 
+> 在 Linux 上，用于 `ForwardWebSocket` 和 `Http` 的 `Host` 必须使用与请求头中的 `Host` 相同的值，但 `*` 和 `+` 除外！这是一个上游错误。
+
 ## 登录前须知
 
 - 目前新设备登录尚未实现，建议使用二维码登录
