@@ -19,7 +19,7 @@ public partial class ForwardWSService
     private BotContext _context { get; }
 
     private HttpListener _listener { get; } = new();
-    private ConcurrentDictionary<string, WebSocketConnectionContext> _connections = [];
+    private ConcurrentDictionary<string, WebSocketConnectionContext> _connections { get; } = [];
 
     public ForwardWSService(ILogger<ForwardWSService> logger, IOptionsSnapshot<ForwardWSServiceOptions> options, BotContext context)
     {
@@ -124,14 +124,17 @@ public partial class ForwardWSService // Handler
 
     private async Task HandleWebSocket(string identifier, WebSocketContext context, CancellationToken token) // no await, need to catch
     {
-        TaskCompletionSource tcs = new();
-        _connections.TryAdd(identifier, new(context, tcs));
-
         Task? receiveTask = null;
         Task? heartbeatTask = null;
-        CancellationTokenSource cts = new();
+
+        TaskCompletionSource tcs = new();
+
         try
         {
+            _connections.TryAdd(identifier, new(context, tcs));
+
+            CancellationTokenSource cts = new();
+
             string path = context.RequestUri.LocalPath;
             bool isApi = path == "/api" || path == "/api/";
             bool isEvent = path == "/event" || path == "/event/";
@@ -142,10 +145,11 @@ public partial class ForwardWSService // Handler
                 heartbeatTask = HeartbeatLoop(identifier, cts.Token);
             }
 
+
             if (isEvent) receiveTask = WaitCloseLoop(identifier, token);
             else receiveTask = ReceiveLoop(identifier, token);
 
-            await receiveTask;
+            await receiveTask.ContinueWith(t => { cts.Cancel(); if (t.IsFaulted) throw t.Exception; }, (CancellationToken)default);
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {
@@ -155,7 +159,6 @@ public partial class ForwardWSService // Handler
         {
             receiveTask?.Dispose();
 
-            cts.Cancel();
             if (heartbeatTask != null)
             {
                 try { await heartbeatTask; }
@@ -170,7 +173,6 @@ public partial class ForwardWSService // Handler
                     .CloseAsync(WebSocketCloseStatus.NormalClosure, null, default)
                     .WaitAsync(TimeSpan.FromSeconds(5), (CancellationToken)default);
             }
-            catch (TimeoutException) { }
             catch (Exception e) { Log.LogWebSocketError(_logger, identifier, e); }
             context.WebSocket.Dispose();
 
