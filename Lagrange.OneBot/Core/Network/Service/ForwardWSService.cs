@@ -276,7 +276,11 @@ public partial class ForwardWSService : ILagrangeWebService
     public ValueTask SendBytesAsync(string identifier, byte[] bytes, CancellationToken token = default)
     {
         Log.LogSend(_logger, identifier, bytes);
-        return _connections[identifier].WsContext.WebSocket.SendAsync(bytes.AsMemory(), WebSocketMessageType.Text, true, token);
+        WebSocketConnectionContext connectionContext = _connections[identifier];
+        lock (connectionContext)
+        {
+            return connectionContext.WsContext.WebSocket.SendAsync(bytes.AsMemory(), WebSocketMessageType.Text, true, token);
+        }
     }
 }
 
