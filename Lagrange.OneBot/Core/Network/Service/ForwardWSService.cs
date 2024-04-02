@@ -300,32 +300,32 @@ public partial class ForwardWSService // Log class
         [LoggerMessage(EventId = 1, Level = LogLevel.Information, Message = "Connected(Conn: {identifier})")]
         public static partial void LogConnected(ILogger logger, string identifier);
 
-        public static void LogSend(ILogger logger, string identifier, byte[] data)
+        public static void LogSend(ILogger logger, string identifier, byte[] payload)
         {
             if (logger.IsEnabled(LogLevel.Trace))
             {
-                string dataString = Encoding.UTF8.GetString(data);
+                string text = Encoding.UTF8.GetString(payload);
 
-                if (dataString.Length > 1024)
+                if (text.Length > 1024)
                 {
-                    dataString = string.Concat(dataString.AsSpan(0, 1024), "...", (dataString.Length - 1024).ToString(), "bytes");
+                    text = string.Concat(text.AsSpan(0, 1024), "...", (text.Length - 1024).ToString(), "bytes");
                 }
-                InternalLogSend(logger, identifier, dataString);
+                InternalLogSend(logger, identifier, text);
             }
         }
 
         [LoggerMessage(EventId = 2, Level = LogLevel.Trace, Message = "Send(Conn: {identifier}): {s}", SkipEnabledCheck = true)]
         private static partial void InternalLogSend(ILogger logger, string identifier, string s);
 
-        public static void LogReceived(ILogger logger, string identifier, string data)
+        public static void LogReceived(ILogger logger, string identifier, string payload)
         {
             if (logger.IsEnabled(LogLevel.Trace))
             {
-                if (data.Length > 1024)
+                if (payload.Length > 1024)
                 {
-                    data = string.Concat(data.AsSpan(0, 1024), "...", (data.Length - 1024).ToString(), "bytes");
+                    payload = string.Concat(payload.AsSpan(0, 1024), "...", (payload.Length - 1024).ToString(), "bytes");
                 }
-                InternalLogReceived(logger, identifier, data);
+                InternalLogReceived(logger, identifier, payload);
             }
         }
 
