@@ -91,6 +91,7 @@ public partial class ForwardWSService // Handler
 
                 response.StatusCode = (int)HttpStatusCode.Forbidden;
                 response.Close();
+
                 return;
             }
 
@@ -114,11 +115,9 @@ public partial class ForwardWSService // Handler
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Close();
             }
-            catch { }
-            finally
-            {
-                Log.LogHttpError(_logger, identifier, e);
-            }
+            catch (Exception ex) { Log.LogHttpError(_logger, identifier, ex); }
+
+            Log.LogHttpError(_logger, identifier, e);
         }
     }
 
@@ -149,7 +148,8 @@ public partial class ForwardWSService // Handler
             if (isEvent) receiveTask = WaitCloseLoop(identifier, token);
             else receiveTask = ReceiveLoop(identifier, token);
 
-            await await receiveTask.ContinueWith(t => { cts.Cancel(); return t; }, (CancellationToken)default);
+            try { await receiveTask; }
+            finally { cts.Cancel(); }
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {
