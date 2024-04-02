@@ -149,7 +149,7 @@ public partial class ForwardWSService // Handler
             if (isEvent) receiveTask = WaitCloseLoop(identifier, token);
             else receiveTask = ReceiveLoop(identifier, token);
 
-            await receiveTask.ContinueWith(t => { cts.Cancel(); if (t.IsFaulted) throw t.Exception; }, (CancellationToken)default);
+            await await receiveTask.ContinueWith(t => { cts.Cancel(); return t; }, (CancellationToken)default);
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {
