@@ -182,6 +182,8 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
             catch (Exception e)
             {
                 Log.LogClientDisconnected(_logger, e, Tag);
+                var interval = TimeSpan.FromMilliseconds(_options.ReconnectInterval);
+                await Task.Delay(interval, stoppingToken);
             }
         }
     }
@@ -195,6 +197,12 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
             while (true)
             {
                 var result = await ws.ReceiveAsync(buffer.AsMemory(received), token);
+                if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Close", token);
+                    break;
+                }
+
                 received += result.Count;
                 if (result.EndOfMessage) break;
 
