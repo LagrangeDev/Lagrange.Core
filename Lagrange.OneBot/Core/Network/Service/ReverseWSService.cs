@@ -24,6 +24,8 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
 
     protected ConnectionContext? ConnCtx;
 
+    private readonly SemaphoreSlim semaphore = new(1, 1);
+
     protected abstract class ConnectionContext(Task connectTask) : IDisposable
     {
         public readonly Task ConnectTask = connectTask;
@@ -68,12 +70,24 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         await SendJsonAsync(ws, payload, token);
     }
 
-    protected ValueTask SendJsonAsync<T>(ClientWebSocket ws, T payload, CancellationToken token)
+    protected async ValueTask SendJsonAsync<T>(ClientWebSocket ws, T payload, CancellationToken token)
     {
         var json = JsonSerializer.Serialize(payload);
         var buffer = Encoding.UTF8.GetBytes(json);
         Log.LogSendingData(_logger, Tag, json);
-        return ws.SendAsync(buffer.AsMemory(), WebSocketMessageType.Text, true, token);
+        try
+        {
+            await semaphore.WaitAsync(token);
+            await ws.SendAsync(buffer.AsMemory(), WebSocketMessageType.Text, true, token);
+        }
+        catch (Exception e)
+        {
+            Log.LogSendJsonFailed(_logger, Tag, e);
+        }
+        finally
+        {
+            semaphore.Release();
+        }
     }
 
     protected ClientWebSocket CreateDefaultWebSocket(string role)
@@ -254,6 +268,9 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
 
         [LoggerMessage(EventId = 5, Level = LogLevel.Error, Message = "[{tag}] Client connect failed, reconnect after {interval} millisecond")]
         public static partial void LogConnectFailed(ILogger logger, string tag, uint interval);
+
+        [LoggerMessage(EventId = 6, Level = LogLevel.Error, Message = "[{tag}] Send json failed")]
+        public static partial void LogSendJsonFailed(ILogger logger, string tag, Exception e);
 
         [LoggerMessage(EventId = 10, Level = LogLevel.Error, Message = "[{tag}] Invalid configuration was detected, url: {url}")]
         public static partial void LogInvalidUrl(ILogger logger, string tag, string url);
