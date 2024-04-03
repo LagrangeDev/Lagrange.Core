@@ -11,7 +11,7 @@ using LiteDB;
 namespace Lagrange.OneBot.Core.Operation.Message;
 
 [Operation("send_group_msg")]
-public sealed class SendGroupMessageOperation(MessageCommon common, LiteDatabase database) : IOperation
+public sealed class SendGroupMessageOperation(MessageCommon common) : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
@@ -25,8 +25,6 @@ public sealed class SendGroupMessageOperation(MessageCommon common, LiteDatabase
         
         var result = await context.SendMessage(chain);
         int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence ?? 0);
-        chain.Sequence = result.Sequence ?? 0;
-        database.GetCollection<MessageRecord>().Insert(hash, (MessageRecord)chain);
         
         return new OneBotResult(new OneBotMessageResponse(hash), (int)result.Result, "ok");
     }
