@@ -50,6 +50,12 @@ public class ImageEntity : IMessageEntity
         FilePath = "";
         ImageStream = new MemoryStream(file);
     }
+    
+    public ImageEntity(Stream stream)
+    {
+        FilePath = "";
+        ImageStream = stream;
+    }
 
     IEnumerable<Elem> IMessageEntity.PackElement()
     {

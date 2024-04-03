@@ -40,6 +40,8 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
         };
         input.Entity.ImageStream.Position = 0;
 
+        string uid = (string.IsNullOrEmpty(input.TargetUid) ? keystore.Uid : input.TargetUid) ?? "";
+
         var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq
         {
             ReqHead = new MultiMediaReqHead
@@ -57,7 +59,7 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
                     C2C = new C2CUserInfo
                     {
                         AccountType = 2,
-                        TargetUid = input.TargetUid
+                        TargetUid = uid
                     }
                 },
                 Client = new ClientMeta { AgentType = 2 },
