@@ -25,8 +25,25 @@ public sealed class SendMessageOperation(MessageCommon common, LiteDatabase data
 
         var result = await context.SendMessage(chain);
         int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence ?? 0);
-        chain.Sequence = result.Sequence ?? 0;
-        database.GetCollection<MessageRecord>().Insert(hash, (MessageRecord)chain);
+
+        if (!chain.IsGroup) database.GetCollection<MessageRecord>().Insert(hash, new()
+        {
+            FriendUin = context.BotUin,
+            GroupUin = 0,
+            Sequence = result.Sequence ?? 0,
+            Time = chain.Time,
+            MessageId = chain.MessageId,
+            FriendInfo = new(
+                context.BotUin,
+                context.ContextCollection.Keystore.Uid ?? string.Empty,
+                context.BotName ?? string.Empty,
+                string.Empty,
+                string.Empty
+            ),
+            GroupMemberInfo = null,
+            Entities = chain,
+            MessageHash = hash
+        });
 
         return new OneBotResult(new OneBotMessageResponse(hash), (int)result.Result, "ok");
     }
