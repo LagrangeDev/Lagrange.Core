@@ -75,9 +75,9 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         var json = JsonSerializer.Serialize(payload);
         var buffer = Encoding.UTF8.GetBytes(json);
         Log.LogSendingData(_logger, Tag, json);
+        await semaphore.WaitAsync(token);
         try
         {
-            await semaphore.WaitAsync(token);
             await ws.SendAsync(buffer.AsMemory(), WebSocketMessageType.Text, true, token);
         }
         finally
