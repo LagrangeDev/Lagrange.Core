@@ -259,6 +259,8 @@ public partial class ForwardWSService : ILagrangeWebService
 {
     public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
 
+    private SemaphoreSlim SendSemaphoreSlim { get; } = new(0, 1);
+
     public ValueTask SendJsonAsync<T>(T json, string? identifier = null, CancellationToken token = default)
     {
         byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(json);
@@ -273,13 +275,19 @@ public partial class ForwardWSService : ILagrangeWebService
         }
     }
 
-    public ValueTask SendBytesAsync(string identifier, byte[] bytes, CancellationToken token = default)
+    public async ValueTask SendBytesAsync(string identifier, byte[] bytes, CancellationToken token = default)
     {
         Log.LogSend(_logger, identifier, bytes);
         WebSocketConnectionContext connectionContext = _connections[identifier];
-        lock (connectionContext)
+
+        await SendSemaphoreSlim.WaitAsync(token);
+        try
         {
-            return connectionContext.WsContext.WebSocket.SendAsync(bytes.AsMemory(), WebSocketMessageType.Text, true, token);
+            await connectionContext.WsContext.WebSocket.SendAsync(bytes.AsMemory(), WebSocketMessageType.Text, true, token);
+        }
+        finally
+        {
+            SendSemaphoreSlim.Release();
         }
     }
 }
