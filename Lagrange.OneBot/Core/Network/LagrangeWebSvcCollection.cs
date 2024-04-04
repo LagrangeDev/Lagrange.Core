@@ -54,9 +54,17 @@ public sealed partial class LagrangeWebSvcCollection(IServiceProvider services, 
                     {
                         await webService.SendJsonAsync(result, args.Identifier, cancellationToken);
                     }
-                    catch (WebSocketException)
+                    catch (WebSocketException e) when (e.InnerException is HttpRequestException)
                     {
                         // ignore due to connection failed
+                    }
+                    catch (WebSocketException e) when (e.InnerException is SocketException)
+                    {
+                        // ignore due to connection closed
+                    }
+                    catch (Exception e)
+                    {
+                        Log.LogWebServiceSendFailed(logger, e, Tag);
                     }
                 }
             };
