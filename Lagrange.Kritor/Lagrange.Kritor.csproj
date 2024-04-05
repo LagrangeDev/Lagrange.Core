@@ -23,6 +23,14 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Remove="Resources\appsettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\appsettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Grpc.AspNetCore" Version="2.57.0"/>
         <PackageReference Include="LiteDB" Version="5.0.17" />
         <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="1.6.1" />
@@ -30,6 +38,10 @@
 
     <ItemGroup>
       <Folder Include="Core\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Lagrange.OneBot\Lagrange.OneBot.csproj" />
     </ItemGroup>
 
 </Project>
