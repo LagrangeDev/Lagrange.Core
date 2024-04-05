@@ -16,7 +16,7 @@ public class GetGroupMemberListOperation : IOperation
         if (payload.Deserialize<OneBotGetGroupMemberInfo>(SerializerOptions.DefaultOptions) is { } message)
         {
             var result = await context.FetchMembers(message.GroupId, message.NoCache);
-            return new OneBotResult(result.Select(x => new OneBotGroupMember(message.GroupId, x.Uin, x.Permission.ToString().ToLower(), x.GroupLevel.ToString(), x.MemberCard, x.MemberName, (uint)new DateTimeOffset(x.JoinTime).ToUnixTimeSeconds(), (uint)new DateTimeOffset(x.LastMsgTime).ToUnixTimeSeconds())), 0, "ok");
+            return new OneBotResult(result.Select(x => new OneBotGroupMember(message.GroupId, x.Uin, x.Permission.ToString().ToLower(), x.GroupLevel.ToString(), x.MemberCard, x.MemberName, x.SpecialTitle, (uint)new DateTimeOffset(x.JoinTime).ToUnixTimeSeconds(), (uint)new DateTimeOffset(x.LastMsgTime).ToUnixTimeSeconds())), 0, "ok");
         }
 
         throw new Exception();
