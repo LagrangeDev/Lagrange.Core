@@ -6,11 +6,11 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Response;
 #pragma warning disable CS8618
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0xFE7_2Response
+internal class OidbSvcTrpcTcp0xFE7_3Response
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
     
-    [ProtoMember(2)] public List<OidbSvcTrpcTcp0xFE7_2Member> Members { get; set; }
+    [ProtoMember(2)] public List<OidbSvcTrpcTcp0xFE7_3Member> Members { get; set; }
     
     [ProtoMember(3)] public uint Field3 { get; set; }
     
@@ -22,15 +22,17 @@ internal class OidbSvcTrpcTcp0xFE7_2Response
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0xFE7_2Member
+internal class OidbSvcTrpcTcp0xFE7_3Member
 {
-    [ProtoMember(1)] public OidbSvcTrpcTcp0xFE7_2Uin Uin { get; set; }
+    [ProtoMember(1)] public OidbSvcTrpcTcp0xFE7_3Uin Uin { get; set; }
     
     [ProtoMember(10)] public string MemberName { get; set; }
     
-    [ProtoMember(11)] public OidbSvcTrpcTcp0xFE7_2Card MemberCard { get; set; }
+    [ProtoMember(17)] public string? SpecialTitle { get; set; }
     
-    [ProtoMember(12)] public OidbSvcTrpcTcp0xFE7_2Level? Level { get; set; }
+    [ProtoMember(11)] public OidbSvcTrpcTcp0xFE7_3Card MemberCard { get; set; }
+    
+    [ProtoMember(12)] public OidbSvcTrpcTcp0xFE7_3Level? Level { get; set; }
 
     [ProtoMember(100)] public uint JoinTimestamp { get; set; }
     
@@ -40,7 +42,7 @@ internal class OidbSvcTrpcTcp0xFE7_2Member
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0xFE7_2Uin
+internal class OidbSvcTrpcTcp0xFE7_3Uin
 {
     [ProtoMember(2)] public string Uid { get; set; }
     
@@ -48,13 +50,13 @@ internal class OidbSvcTrpcTcp0xFE7_2Uin
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0xFE7_2Card
+internal class OidbSvcTrpcTcp0xFE7_3Card
 {
     [ProtoMember(2)] public string? MemberCard { get; set; }
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0xFE7_2Level
+internal class OidbSvcTrpcTcp0xFE7_3Level
 {
     [ProtoMember(1)] public List<uint>? Infos { get; set; }
     
