@@ -259,7 +259,7 @@ public partial class ForwardWSService : ILagrangeWebService
 {
     public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
 
-    private SemaphoreSlim SendSemaphoreSlim { get; } = new(0, 1);
+    private SemaphoreSlim SendSemaphoreSlim { get; } = new(1);
 
     public ValueTask SendJsonAsync<T>(T json, string? identifier = null, CancellationToken token = default)
     {
