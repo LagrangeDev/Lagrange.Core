@@ -15,7 +15,7 @@ public class BotGroupMember
     }
     
     internal BotGroupMember(uint uin, string uid, GroupMemberPermission permission, uint groupLevel, string? memberCard, 
-        string? memberName, string? specialTitle, DateTime joinTime, DateTime lastMsgTime)
+        string memberName, string? specialTitle, DateTime joinTime, DateTime lastMsgTime)
     {
         Uin = uin;
         Uid = uid;
@@ -38,7 +38,7 @@ public class BotGroupMember
     
     public string? MemberCard { get; set; }
     
-    public string? MemberName { get; set; }
+    public string MemberName { get; set; }
     
     public string? SpecialTitle { get; set; }
 
