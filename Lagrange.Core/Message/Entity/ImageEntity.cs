@@ -133,4 +133,6 @@ public class ImageEntity : IMessageEntity
     }
 
     public string ToPreviewString() => $"[Image: {PictureSize.X}x{PictureSize.Y}] {FilePath} {ImageSize} {ImageUrl}";
+
+    public string ToPreviewText() => "[图片]";
 }

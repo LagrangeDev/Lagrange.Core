@@ -13,13 +13,13 @@ namespace Lagrange.Core.Message.Entity;
 public class MultiMsgEntity : IMessageEntity
 {
     private static readonly XmlSerializer Serializer = new(typeof(MultiMessage));
-    
+
     internal string? ResId { get; set; }
-    
+
     public uint? GroupUin { get; set; }
-    
+
     public List<MessageChain> Chains { get; }
-    
+
     internal MultiMsgEntity() => Chains = new List<MessageChain>();
 
     internal MultiMsgEntity(string resId)
@@ -27,23 +27,23 @@ public class MultiMsgEntity : IMessageEntity
         ResId = resId;
         Chains = new List<MessageChain>();
     }
-    
+
     internal MultiMsgEntity(uint? groupUin, List<MessageChain> chains)
     {
         GroupUin = groupUin;
         Chains = chains;
     }
-    
+
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
-        int count = Math.Clamp(Chains.Count, 0, 3);
+        int count = Math.Clamp(Chains.Count, 0, 4);
         string fileId = Guid.NewGuid().ToString();
         var extra = new MultiMsgLightAppExtra
         {
             FileName = fileId,
             Sum = count
         };
-        
+
         var json = new MultiMsgLightApp
         {
             App = "com.tencent.multimsg",
@@ -64,7 +64,7 @@ public class MultiMsgEntity : IMessageEntity
                     News = new List<News>(),
                     Resid = ResId ?? "",
                     Source = "聊天记录",
-                    Summary = $"查看{count}条转发消息",
+                    Summary = $"查看{Chains.Count}条转发消息",
                     UniSeq = fileId
                 }
             },
@@ -72,7 +72,7 @@ public class MultiMsgEntity : IMessageEntity
             Ver = "0.0.0.5",
             View = "contact"
         };
-        
+
         if (!Chains.Select(x => x.GetEntity<TextEntity>()).Any())
         {
             json.Meta.Detail.News.Add(new News { Text = "[This message is send from Lagrange.Core]" });
@@ -84,15 +84,15 @@ public class MultiMsgEntity : IMessageEntity
                 var chain = Chains[i];
                 var member = chain.GroupMemberInfo;
                 var friend = chain.FriendInfo;
-                string text = $"{member?.MemberCard ??member?.MemberName ?? friend?.Nickname}: {chain.GetEntity<TextEntity>()?.Text ?? string.Empty}";
+                string text = $"{member?.MemberCard ?? member?.MemberName ?? friend?.Nickname}: {chain.ToPreviewText()}";
                 json.Meta.Detail.News.Add(new News { Text = text });
             }
         }
-        
+
         using var payload = new BinaryPacket()
             .WriteByte(0x01)
             .WriteBytes(ZCompression.ZCompress(JsonSerializer.SerializeToUtf8Bytes(json)));
-        
+
         return new Elem[]
         {
             new() { LightAppElem = new LightAppElem { Data = payload.ToArray() } },
@@ -111,10 +111,12 @@ public class MultiMsgEntity : IMessageEntity
         }
 
         return null;
-    } 
-            
+    }
+
 
     public string ToPreviewString() => $"[MultiMsgEntity] {Chains.Count} chains";
+
+    public string ToPreviewText() => "[聊天记录]";
 
     #region Json
 
@@ -141,7 +143,7 @@ public class MultiMsgEntity : IMessageEntity
     private class MultiMsgLightAppExtra
     {
         [JsonPropertyName("filename")] public string FileName { get; set; }
-        
+
         [JsonPropertyName("tsum")] public int Sum { get; set; }
     }
 
@@ -149,7 +151,7 @@ public class MultiMsgEntity : IMessageEntity
     private class Config
     {
         [JsonPropertyName("autosize")] public long Autosize { get; set; }
-        
+
         [JsonPropertyName("forward")] public long Forward { get; set; }
 
         [JsonPropertyName("round")] public long Round { get; set; }
@@ -196,21 +198,21 @@ public class MultiMsgEntity : IMessageEntity
         [XmlAttribute("serviceID")] public uint ServiceId { get; set; } // 35
 
         [XmlAttribute("templateID")] public uint TemplateId { get; set; } // 1
-        
+
         [XmlAttribute("action")] public string Action { get; set; } = "viewMultiMsg";
-        
+
         [XmlAttribute("brief")] public string Brief { get; set; } = "[消息记录]";
-        
+
         [XmlAttribute("m_fileName")] public string FileName { get; set; } = Guid.NewGuid().ToString("N");
-        
+
         [XmlAttribute("m_resid")] public string ResId { get; set; } = Guid.NewGuid().ToString("N");
-        
+
         [XmlAttribute("tSum")] public int Total { get; set; } // 2
-        
+
         [XmlAttribute("flag")] public int Flag { get; set; } // 3
-        
+
         [XmlElement("item")] public MultiItem Item { get; set; } = new();
-        
+
         [XmlElement("source")] public MultiSource Source { get; set; } = new();
     }
 
@@ -218,39 +220,39 @@ public class MultiMsgEntity : IMessageEntity
     public class MultiItem
     {
         [XmlAttribute("layout")] public int Layout { get; set; } // 1
-        
+
         [XmlElement("title")] public List<MultiTitle> Title { get; set; } = new();
-        
+
         [XmlElement("summary")] public MultiSummary Summary { get; set; } = new();
     }
-    
+
     [Serializable]
     public class MultiTitle
     {
         [XmlAttribute("color")] public string Color { get; set; }
-        
+
         [XmlAttribute("size")] public int Size { get; set; }
-        
+
         [XmlText] public string Text { get; set; }
-        
+
         public MultiTitle(string color, int size, string text)
         {
             Color = color;
             Size = size;
             Text = text;
         }
-        
+
         public MultiTitle() { }
     }
-    
+
     [Serializable]
     public class MultiSummary
     {
         [XmlAttribute("color")] public string Color { get; set; } = "#000000";
-        
+
         [XmlText] public string Text { get; set; } = string.Empty;
     }
-    
+
     [Serializable]
     public class MultiSource
     {
