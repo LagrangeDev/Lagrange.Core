@@ -78,4 +78,6 @@ public class MentionEntity : IMessageEntity
     {
         return $"[Mention]: {Name}({Uin})";
     }
+
+    public string ToPreviewText() => $"{Name} ";
 }

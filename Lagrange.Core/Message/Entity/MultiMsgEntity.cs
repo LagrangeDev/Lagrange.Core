@@ -84,9 +84,7 @@ public class MultiMsgEntity : IMessageEntity
                 var chain = Chains[i];
                 var member = chain.GroupMemberInfo;
                 var friend = chain.FriendInfo;
-                string? desc = chain.GetEntity<TextEntity>()?.Text;
-                if (desc is null && chain.GetEntity<ImageEntity>() is not null) desc = "[图片]";
-                string text = $"{member?.MemberCard ?? member?.MemberName ?? friend?.Nickname}: {desc ?? string.Empty}";
+                string text = $"{member?.MemberCard ?? member?.MemberName ?? friend?.Nickname}: {chain.ToPreviewText()}";
                 json.Meta.Detail.News.Add(new News { Text = text });
             }
         }
@@ -117,6 +115,8 @@ public class MultiMsgEntity : IMessageEntity
 
 
     public string ToPreviewString() => $"[MultiMsgEntity] {Chains.Count} chains";
+
+    public string ToPreviewText() => "[聊天记录]";
 
     #region Json
 

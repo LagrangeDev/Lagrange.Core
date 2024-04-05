@@ -7,34 +7,34 @@ namespace Lagrange.Core.Message;
 public sealed class MessageChain : List<IMessageEntity>
 {
     public MessageType Type { get; set; }
-    
+
     public uint? GroupUin { get; }
-    
+
     public uint FriendUin { get; }
-    
+
     public ulong MessageId { get; }
-    
+
     public DateTime Time { get; internal set; }
-    
+
     public BotFriend? FriendInfo { get; internal set; }
-    
+
     public BotGroupMember? GroupMemberInfo { get; internal set; }
-    
+
     public uint Sequence { get; internal set; }
-    
+
     #region Internal Properties
-    
+
     internal string? SelfUid { get; }
-    
+
     internal string? Uid { get; }
 
     internal bool IsGroup { get; }
-    
+
     internal List<Elem> Elements { get; }
 
     #endregion
 
-    internal MessageChain(uint friendUin, string selfUid, string friendUid, uint sequence = 0, ulong? messageId = null, 
+    internal MessageChain(uint friendUin, string selfUid, string friendUid, uint sequence = 0, ulong? messageId = null,
         MessageType type = MessageType.Friend)
     {
         GroupUin = null;
@@ -57,7 +57,7 @@ public sealed class MessageChain : List<IMessageEntity>
         IsGroup = true;
         Elements = new List<Elem>();
     }
-    
+
     internal MessageChain(uint groupUin, uint friendUin, uint sequence, ulong messageId = 0)
     {
         GroupUin = groupUin;
@@ -68,9 +68,9 @@ public sealed class MessageChain : List<IMessageEntity>
         IsGroup = true;
         Elements = new List<Elem>();
     }
-    
+
     public bool HasTypeOf<T>() where T : IMessageEntity => this.Any(entity => entity is T);
-    
+
     public T? GetEntity<T>() where T : class, IMessageEntity => this.FirstOrDefault(entity => entity is T, null) as T;
 
     public string ToPreviewString()
@@ -86,7 +86,19 @@ public sealed class MessageChain : List<IMessageEntity>
             chainBuilder.Append(entity.ToPreviewString());
             if (this.Last() != entity) chainBuilder.Append(" | ");
         }
-        
+
+        return chainBuilder.ToString();
+    }
+
+    public string ToPreviewText()
+    {
+        var chainBuilder = new StringBuilder();
+
+        foreach (var entity in this)
+        {
+            chainBuilder.Append(entity.ToPreviewText());
+        }
+
         return chainBuilder.ToString();
     }
 

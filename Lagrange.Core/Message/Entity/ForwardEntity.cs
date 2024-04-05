@@ -86,4 +86,6 @@ public class ForwardEntity : IMessageEntity
     public void SetSelfUid(string selfUid) => SelfUid = selfUid;
 
     public string ToPreviewString() => $"[Forward]: Sequence: {Sequence}";
+
+    public string ToPreviewText() => string.Empty;
 }

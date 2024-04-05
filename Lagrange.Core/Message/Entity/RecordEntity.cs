@@ -96,4 +96,6 @@ public class RecordEntity : IMessageEntity
     }
 
     public string ToPreviewString() =>  $"[{nameof(RecordEntity)}: {AudioUrl}]";
+
+    public string ToPreviewText() => "[语音]";
 }

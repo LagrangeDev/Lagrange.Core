@@ -19,4 +19,6 @@ public interface IMessageEntity
     internal void SetSelfUid(string selfUid) { } // virtual method
 
     public string ToPreviewString(); // abstract method
+
+    public string ToPreviewText() => "[暂不支持该消息类型]"; // virtual method
 }
