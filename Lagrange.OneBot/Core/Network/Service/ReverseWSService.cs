@@ -24,6 +24,8 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
 
     protected ConnectionContext? ConnCtx;
 
+    private readonly SemaphoreSlim semaphore = new(1, 1);
+
     protected abstract class ConnectionContext(Task connectTask) : IDisposable
     {
         public readonly Task ConnectTask = connectTask;
@@ -68,12 +70,20 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         await SendJsonAsync(ws, payload, token);
     }
 
-    protected ValueTask SendJsonAsync<T>(ClientWebSocket ws, T payload, CancellationToken token)
+    protected async ValueTask SendJsonAsync<T>(ClientWebSocket ws, T payload, CancellationToken token)
     {
         var json = JsonSerializer.Serialize(payload);
         var buffer = Encoding.UTF8.GetBytes(json);
         Log.LogSendingData(_logger, Tag, json);
-        return ws.SendAsync(buffer.AsMemory(), WebSocketMessageType.Text, true, token);
+        await semaphore.WaitAsync(token);
+        try
+        {
+            await ws.SendAsync(buffer.AsMemory(), WebSocketMessageType.Text, true, token);
+        }
+        finally
+        {
+            semaphore.Release();
+        }
     }
 
     protected ClientWebSocket CreateDefaultWebSocket(string role)
