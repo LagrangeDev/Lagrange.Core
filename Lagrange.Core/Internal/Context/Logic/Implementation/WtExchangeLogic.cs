@@ -116,9 +116,17 @@ internal class WtExchangeLogic : LogicBase
             DateTime.Now - Collection.Keystore.Session.SessionDate < TimeSpan.FromDays(15))
         {
             Collection.Log.LogInfo(Tag, "Session has not expired, using session to login and register status");
-            if (await BotOnline()) return true;
-            
-            Collection.Log.LogWarning(Tag, "Register by session failed, try to login by EasyLogin");
+            try
+            {
+                if (await BotOnline()) return true;
+            }
+            catch
+            {
+                Collection.Log.LogWarning(Tag, "Register by session failed, try to login by EasyLogin");
+                Collection.Keystore.Session.D2 = Array.Empty<byte>();
+                Collection.Keystore.Session.Tgt = Array.Empty<byte>();
+                Collection.Keystore.Session.D2Key = new byte[16];
+            }
         }
 
         if (Collection.Keystore.Session.ExchangeKey == null)
