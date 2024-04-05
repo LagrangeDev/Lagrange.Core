@@ -64,7 +64,7 @@ public class MultiMsgEntity : IMessageEntity
                     News = new List<News>(),
                     Resid = ResId ?? "",
                     Source = "聊天记录",
-                    Summary = $"查看{count}条转发消息",
+                    Summary = $"查看{Chains.Count}条转发消息",
                     UniSeq = fileId
                 }
             },
