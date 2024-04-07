@@ -86,13 +86,14 @@ public sealed partial class HttpService(
     {
         var request = context.Request;
         var response = context.Response; // no using cause we might need to use it in SendJsonAsync
+        var query = request.QueryString; // avoid creating a new nvc every get
 
         try
         {
             string identifier = Guid.NewGuid().ToString();
             if (!string.IsNullOrEmpty(_options.AccessToken))
             {
-                var authorization = request.Headers.Get("Authorization");
+                var authorization = request.Headers.Get("Authorization") ?? query["access_token"];
                 if (authorization is null)
                 {
                     Log.LogAuthFailed(_logger, identifier);
@@ -118,9 +119,9 @@ public sealed partial class HttpService(
             {
                 case "GET":
                 {
-                    var @params = request.QueryString.AllKeys
-                        .Where(key => key is not null)
-                        .ToDictionary(key => key!, key => request.QueryString[key]);
+                    var @params = query.AllKeys
+                        .OfType<string>()
+                        .ToDictionary(key => key, key => query[key]);
                     Log.LogReceived(_logger, identifier, request.Url.Query);
                     payload = JsonSerializer.Serialize(new { action, @params });
                     break;
