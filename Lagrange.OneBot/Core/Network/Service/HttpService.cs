@@ -141,8 +141,8 @@ public sealed partial class HttpService(
                     var body = await reader.ReadToEndAsync(token);
                     Log.LogReceived(_logger, identifier, body);
                     var @params = body.Split('&')
-                        .Select(pair => pair.Split('='))
-                        .ToDictionary(pair => pair[0], pair => pair[1]);
+                        .Select(pair => pair.Split('=', 2))
+                        .ToDictionary(pair => pair[0], pair => Uri.UnescapeDataString(pair[1]));
                     payload = JsonSerializer.Serialize(new { action, @params });
                     break;
                 }
