@@ -34,15 +34,31 @@ public sealed partial class HttpService(
         }
 
         string prefix = $"http://{_options.Host}:{_options.Port}/";
-        _listener.Prefixes.Add(prefix);
-        _listener.Start();
-        Log.LogStarted(_logger, prefix);
+
+        try
+        {
+            _listener.Prefixes.Add(prefix);
+            _listener.Start();
+            Log.LogStarted(_logger, prefix);
+        }
+        catch (Exception e)
+        {
+            Log.LogStartFailed(_logger, e);
+            return;
+        }
+
         await ReceiveLoop(token);
 
         if (_listener.IsListening)
         {
-            _listener.Stop();
-            _listener.Close();
+            try
+            {
+                _listener.Close();
+            }
+            catch (Exception e)
+            {
+                Log.LogCloseFailed(_logger, e);
+            }
         }
     }
 
@@ -190,22 +206,29 @@ public sealed partial class HttpService(
         public static partial void LogSend(ILogger logger, string identifier, string s);
 
 
-        [LoggerMessage(EventId = 994, Level = LogLevel.Warning, Message = "Conn: {identifier} auth failed")]
+        [LoggerMessage(EventId = 992, Level = LogLevel.Warning, Message = "Conn: {identifier} auth failed")]
         public static partial void LogAuthFailed(ILogger logger, string identifier);
 
-        [LoggerMessage(EventId = 995, Level = LogLevel.Warning, Message = "Unsupported content type: {contentType}")]
+        [LoggerMessage(EventId = 993, Level = LogLevel.Warning, Message = "Unsupported content type: {contentType}")]
         public static partial void LogUnsupportedContentType(ILogger logger, string contentType);
 
-        [LoggerMessage(EventId = 996, Level = LogLevel.Warning, Message = "Unsupported method: {method}")]
+        [LoggerMessage(EventId = 994, Level = LogLevel.Warning, Message = "Unsupported method: {method}")]
         public static partial void LogUnsupportedMethod(ILogger logger, string method);
 
-        [LoggerMessage(EventId = 997, Level = LogLevel.Warning,
+        [LoggerMessage(EventId = 995, Level = LogLevel.Warning,
             Message = "An error occurred while handling the request")]
         public static partial void LogHandleError(ILogger logger, Exception e);
 
-        [LoggerMessage(EventId = 998, Level = LogLevel.Warning,
+        [LoggerMessage(EventId = 996, Level = LogLevel.Warning,
             Message = "An error occurred while getting the context")]
         public static partial void LogGetContextError(ILogger logger, Exception e);
+
+        [LoggerMessage(EventId = 997, Level = LogLevel.Warning, Message = "Failed to gracefully close the listener")]
+        public static partial void LogCloseFailed(ILogger logger, Exception e);
+
+        [LoggerMessage(EventId = 998, Level = LogLevel.Error,
+            Message = "An error occurred while starting the listener")]
+        public static partial void LogStartFailed(ILogger logger, Exception e);
 
         [LoggerMessage(EventId = 999, Level = LogLevel.Error,
             Message = "The port {port} is in use, service failed to start")]
