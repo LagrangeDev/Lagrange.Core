@@ -93,7 +93,8 @@ public sealed partial class HttpService(
             string identifier = Guid.NewGuid().ToString();
             if (!string.IsNullOrEmpty(_options.AccessToken))
             {
-                var authorization = request.Headers.Get("Authorization") ?? query["access_token"];
+                var authorization = request.Headers.Get("Authorization") ??
+                                    (query["access_token"] is { } accessToken ? $"Bearer {accessToken}" : null);
                 if (authorization is null)
                 {
                     Log.LogAuthFailed(_logger, identifier);
