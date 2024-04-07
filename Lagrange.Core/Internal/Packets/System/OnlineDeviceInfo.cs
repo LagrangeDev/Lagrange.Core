@@ -6,7 +6,7 @@ using ProtoBuf;
 namespace Lagrange.Core.Internal.Packets.System;
 
 [ProtoContract]
-internal class OnlineOsInfo
+internal class OnlineDeviceInfo
 {
 	[ProtoMember(1)] public string User { get; set; }
 	
