@@ -147,6 +147,10 @@ internal static class MessagePacker
             case { } groupPtt when chain.IsGroup && groupPtt.FileId == 0:  //  for legacy ptt
                 chain.Add(new RecordEntity(groupPtt.GroupFileKey, groupPtt.FileName));
                 break;
+            case { } privatePtt when !chain.IsGroup: 
+                if (chain.OfType<RecordEntity>().FirstOrDefault(x => x.AudioName == privatePtt.FileName) == null) 
+                    chain.Add(new RecordEntity(privatePtt.FileUuid, privatePtt.FileName));
+                break;
         }
 
         return chain;

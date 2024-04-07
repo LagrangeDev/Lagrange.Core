@@ -41,7 +41,10 @@ internal class RecordDownloadService : BaseService<RecordDownloadEvent>
             },
             Download = new DownloadReq
             {
-                Node = input.Node,
+                Node = input.Node ?? new IndexNode
+                {
+                    FileUuid = input.FileUuid
+                },
                 Download = new DownloadExt
                 {
                     Video = new VideoDownloadExt

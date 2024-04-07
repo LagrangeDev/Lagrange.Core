@@ -100,7 +100,7 @@ internal class HighwayContext : ContextBase, IDisposable
         if (_uri == null)
         {
             var highwayUrlEvent = await Collection.Business.SendEvent(HighwayUrlEvent.Create());
-            var result = ((HighwayUrlEvent)highwayUrlEvent[0]);
+            var result = (HighwayUrlEvent)highwayUrlEvent[0];
             _uri = result.HighwayUrls[1][0];
         }
         
@@ -115,7 +115,9 @@ internal class HighwayContext : ContextBase, IDisposable
         {
             var buffer = new byte[Math.Min(_chunkSize, fileSize - offset)];
             int payload = await data.ReadAsync(buffer.AsMemory());
-            var reqBody = new UpBlock(commonId, Collection.Keystore.Uin, Interlocked.Increment(ref _sequence), (ulong)fileSize, (ulong)offset, ticket, md5, buffer, extendInfo);
+            uint uin = Collection.Keystore.Uin;
+            uint sequence = Interlocked.Increment(ref _sequence);
+            var reqBody = new UpBlock(commonId, uin, sequence, (ulong)fileSize, (ulong)offset, ticket, md5, buffer, extendInfo);
             upBlocks.Add(reqBody);
             offset += payload;
 

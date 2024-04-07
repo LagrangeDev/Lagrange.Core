@@ -268,6 +268,21 @@ internal class MessagingLogic : LogicBase
                 
                 break;
             }
+            case RecordEntity { AudioUuid: not null } record:
+            {
+                var @event = chain.IsGroup 
+                    ? RecordGroupDownloadEvent.Create(chain.GroupUin ?? 0, record.AudioUuid) 
+                    : RecordDownloadEvent.Create(chain.Uid ?? string.Empty, record.AudioUuid);
+            
+                var results = await Collection.Business.SendEvent(@event);
+                if (results.Count != 0)
+                {
+                    var result = (RecordDownloadEvent)results[0];
+                    record.AudioUrl = result.AudioUrl;
+                }
+                
+                break;
+            }
             case VideoEntity { VideoUuid: not null } video:
             {
                 string uid = (chain.IsGroup

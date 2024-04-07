@@ -36,7 +36,10 @@ internal class RecordGroupDownloadService : BaseService<RecordGroupDownloadEvent
             },
             Download = new DownloadReq
             {
-                Node = input.Node,
+                Node = input.Node ?? new IndexNode
+                {
+                    FileUuid = input.FileUuid
+                },
                 Download = new DownloadExt
                 {
                     Video = new VideoDownloadExt
