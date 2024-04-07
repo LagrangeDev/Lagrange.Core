@@ -18,11 +18,11 @@ internal class StatusRegisterService : BaseService<StatusRegisterEvent>
         var packet = new ServiceRegister
         {
             Guid = device.Guid.ToByteArray().Hex(true),
-            Type = 0,
+            KickPC = 0,
             CurrentVersion = appInfo.CurrentVersion,
-            Field4 = 0,
+            IsFirstRegisterProxyOnline = 0,
             LocaleId = 2052,
-            Online = new OnlineOsInfo
+            Device = new OnlineDeviceInfo
             {
                 User = device.DeviceName,
                 Os = appInfo.Kernel,
