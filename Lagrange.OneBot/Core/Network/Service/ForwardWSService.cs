@@ -26,8 +26,10 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
 
     public override Task StartAsync(CancellationToken token)
     {
+        string host = _options.Host == "0.0.0.0" ? "*" : _options.Host;
+
         // First start the HttpListener
-        _listener.Prefixes.Add($"http://{_options.Host}:{_options.Port}/");
+        _listener.Prefixes.Add($"http://{host}:{_options.Port}/");
         _listener.Start();
 
         foreach (string prefix in _listener.Prefixes) Log.LogServerStarted(_logger, prefix);
