@@ -27,7 +27,7 @@ public static class CommonResolver
         return uri.Scheme switch
         {
             "http" or "https" => Client.GetAsync(uri).Result.Content.ReadAsStreamAsync().Result,
-            "file" => new FileStream(Path.GetFullPath(uri.LocalPath), FileMode.Open),
+            "file" => new FileStream(Path.GetFullPath(uri.LocalPath), FileMode.Open, FileAccess.Read, FileShare.Read),
             _ => null,
         };
     }
