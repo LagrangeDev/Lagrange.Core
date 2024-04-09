@@ -180,7 +180,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
 
                     if (result.MessageType == WebSocketMessageType.Close)
                     {
-                        await Disconnect(identifier, WebSocketCloseStatus.NormalClosure, token);
+                        await DisconnectAsync(identifier, WebSocketCloseStatus.NormalClosure, token);
                         return;
                     }
 
@@ -215,7 +215,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
                 t = token;
             }
 
-            await Disconnect(identifier, status, t);
+            await DisconnectAsync(identifier, status, t);
 
             if (token.IsCancellationRequested) throw;
         }
@@ -243,7 +243,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
 
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    await Disconnect(identifier, WebSocketCloseStatus.NormalClosure, token);
+                    await DisconnectAsync(identifier, WebSocketCloseStatus.NormalClosure, token);
                     return;
                 }
 
@@ -264,7 +264,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
                 t = token;
             }
 
-            await Disconnect(identifier, status, t);
+            await DisconnectAsync(identifier, status, t);
 
             if (token.IsCancellationRequested) throw;
         }
@@ -329,7 +329,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
                 t = token;
             }
 
-            await Disconnect(identifier, status, t);
+            await DisconnectAsync(identifier, status, t);
 
             if (token.IsCancellationRequested) throw;
         }
@@ -374,22 +374,21 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
     #endregion
 
     #region Disconnect
-    private async Task Disconnect(string identifier, WebSocketCloseStatus status, CancellationToken token)
+    private async Task DisconnectAsync(string identifier, WebSocketCloseStatus status, CancellationToken token)
     {
-        if (_connection.TryRemove(identifier, out ConnectionContext? connection))
+        if (!_connection.TryRemove(identifier, out ConnectionContext? connection)) return;
+
+        try
         {
-            try
-            {
-                await connection.WsContext.WebSocket.CloseAsync(status, null, token);
-            }
-            catch (Exception e) when (e is not OperationCanceledException)
-            {
-                Log.LogDisconnectException(_logger, identifier, e);
-            }
-            finally
-            {
-                Log.LogDisconnect(_logger, identifier);
-            }
+            await connection.WsContext.WebSocket.CloseAsync(status, null, token);
+        }
+        catch (Exception e) when (e is not OperationCanceledException)
+        {
+            Log.LogDisconnectException(_logger, identifier, e);
+        }
+        finally
+        {
+            Log.LogDisconnect(_logger, identifier);
         }
     }
     #endregion
