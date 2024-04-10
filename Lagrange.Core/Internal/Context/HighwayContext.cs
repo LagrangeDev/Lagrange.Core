@@ -68,9 +68,9 @@ internal class HighwayContext : ContextBase, IDisposable
                     if (chain.IsGroup) await uploader.UploadGroup(Collection, chain, entity);
                     else await uploader.UploadPrivate(Collection, chain, entity);
                 }
-                catch
-                {
-                    Collection.Log.LogFatal(Tag, $"Upload resources for {entity.GetType().Name} failed");
+                catch (Exception ex)
+				{
+                    Collection.Log.LogFatal(Tag, $"Upload resources for {entity.GetType().Name} failed:{ex.Message}");
                 }
             }
         }
@@ -88,9 +88,9 @@ internal class HighwayContext : ContextBase, IDisposable
                 
                 await uploader.UploadPrivate(Collection, chain, entity);
             }
-            catch
+            catch(Exception ex)
             {
-                Collection.Log.LogFatal(Tag, $"Upload resources for {entity.GetType().Name} failed");
+                Collection.Log.LogFatal(Tag, $"Upload resources for {entity.GetType().Name} failed:{ex.Message}");
             }
         }
     }
