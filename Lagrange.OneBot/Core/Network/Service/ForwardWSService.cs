@@ -57,8 +57,14 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
 
     public override async Task StopAsync(CancellationToken token)
     {
+        // Get the task of all currently connected tcs before stopping it
+        Task[] tasks = _connections.Values.Select(c => c.Tcs.Task).ToArray();
+
         // Stop obtaining the HttpListenerContext first
         await base.StopAsync(token);
+
+        // Wait for the connection task to stop
+        await Task.WhenAll(tasks).WaitAsync(token);
 
         // then stop the HttpListener
         _listener.Stop();
@@ -66,7 +72,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
     #endregion
 
     #region Connect
-    private readonly ConcurrentDictionary<string, ConnectionContext> _connection = [];
+    private readonly ConcurrentDictionary<string, ConnectionContext> _connections = [];
 
     private async Task HandleHttpListenerContext(HttpListenerContext context, CancellationToken token)
     {
@@ -106,7 +112,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
 
             // Building and store ConnectionContext
             CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(token);
-            _connection.TryAdd(identifier, new(wsContext, cts));
+            _connections.TryAdd(identifier, new(wsContext, cts, new()));
 
             string path = wsContext.RequestUri.LocalPath;
             bool isApi = path == "/api" || path == "/api/";
@@ -163,7 +169,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
 
     public async Task ReceiveAsyncLoop(string identifier, CancellationToken token)
     {
-        if (!_connection.TryGetValue(identifier, out ConnectionContext? connection)) return;
+        if (!_connections.TryGetValue(identifier, out ConnectionContext? connection)) return;
 
         try
         {
@@ -229,7 +235,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
 
     public async Task WaitCloseAsyncLoop(string identifier, CancellationToken token)
     {
-        if (!_connection.TryGetValue(identifier, out ConnectionContext? connection)) return;
+        if (!_connections.TryGetValue(identifier, out ConnectionContext? connection)) return;
 
         try
         {
@@ -280,7 +286,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
     #region Heartbeat
     public async Task HeartbeatAsyncLoop(string identifier, CancellationToken token)
     {
-        if (!_connection.TryGetValue(identifier, out ConnectionContext? connection)) return;
+        if (!_connections.TryGetValue(identifier, out ConnectionContext? connection)) return;
 
         Stopwatch sw = new();
         TimeSpan interval = TimeSpan.FromMilliseconds(_options.HeartBeatInterval);
@@ -348,7 +354,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
     {
         byte[] payload = JsonSerializer.SerializeToUtf8Bytes(json);
         if (identifier != null) await SendBytesAsync(payload, identifier, token);
-        else await Task.WhenAll(_connection
+        else await Task.WhenAll(_connections
             .Where(c =>
             {
                 string path = c.Value.WsContext.RequestUri.LocalPath;
@@ -363,7 +369,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
         await _sendSemaphoreSlim.WaitAsync(token);
         try
         {
-            if (!_connection.TryGetValue(identifier, out ConnectionContext? connection)) return;
+            if (!_connections.TryGetValue(identifier, out ConnectionContext? connection)) return;
 
             Log.LogSend(_logger, identifier, payload);
             await connection.WsContext.WebSocket.SendAsync(payload.AsMemory(), WebSocketMessageType.Text, true, token);
@@ -378,7 +384,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
     #region Disconnect
     private async Task DisconnectAsync(string identifier, WebSocketCloseStatus status, CancellationToken token)
     {
-        if (!_connection.TryRemove(identifier, out ConnectionContext? connection)) return;
+        if (!_connections.TryRemove(identifier, out ConnectionContext? connection)) return;
 
         try
         {
@@ -391,15 +397,18 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
         finally
         {
             Log.LogDisconnect(_logger, identifier);
+
+            connection.Tcs.SetResult();
         }
     }
     #endregion
 
     #region ConnectionContext
-    public class ConnectionContext(WebSocketContext context, CancellationTokenSource cts)
+    public class ConnectionContext(WebSocketContext context, CancellationTokenSource cts, TaskCompletionSource tcs)
     {
         public WebSocketContext WsContext { get; } = context;
         public CancellationTokenSource Cts { get; } = cts;
+        public TaskCompletionSource Tcs { get; } = tcs;
     }
     #endregion
 
