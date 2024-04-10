@@ -396,9 +396,9 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
         }
         finally
         {
-            connection.Tcs.SetResult();
-
             Log.LogDisconnect(_logger, identifier);
+
+            connection.Tcs.SetResult();
         }
     }
     #endregion
