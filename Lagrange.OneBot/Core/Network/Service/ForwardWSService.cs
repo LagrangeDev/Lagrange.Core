@@ -112,7 +112,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
 
             // Building and store ConnectionContext
             CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(token);
-            _connections.TryAdd(identifier, new(wsContext, cts, new()));
+            _connections.TryAdd(identifier, new(wsContext, cts));
 
             string path = wsContext.RequestUri.LocalPath;
             bool isApi = path == "/api" || path == "/api/";
@@ -349,7 +349,6 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
     #endregion
 
     #region Send
-    private readonly SemaphoreSlim _sendSemaphoreSlim = new(1);
     public async ValueTask SendJsonAsync<T>(T json, string? identifier = null, CancellationToken token = default)
     {
         byte[] payload = JsonSerializer.SerializeToUtf8Bytes(json);
@@ -366,17 +365,18 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
 
     public async Task SendBytesAsync(byte[] payload, string identifier, CancellationToken token)
     {
-        await _sendSemaphoreSlim.WaitAsync(token);
+        if (!_connections.TryGetValue(identifier, out ConnectionContext? connection)) return;
+
+        await connection.SendSemaphoreSlim.WaitAsync(token);
+
         try
         {
-            if (!_connections.TryGetValue(identifier, out ConnectionContext? connection)) return;
-
             Log.LogSend(_logger, identifier, payload);
             await connection.WsContext.WebSocket.SendAsync(payload.AsMemory(), WebSocketMessageType.Text, true, token);
         }
         finally
         {
-            _sendSemaphoreSlim.Release();
+            connection.SendSemaphoreSlim.Release();
         }
     }
     #endregion
@@ -404,11 +404,12 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
     #endregion
 
     #region ConnectionContext
-    public class ConnectionContext(WebSocketContext context, CancellationTokenSource cts, TaskCompletionSource tcs)
+    public class ConnectionContext(WebSocketContext context, CancellationTokenSource cts)
     {
         public WebSocketContext WsContext { get; } = context;
+        public SemaphoreSlim SendSemaphoreSlim { get; } = new(1);
         public CancellationTokenSource Cts { get; } = cts;
-        public TaskCompletionSource Tcs { get; } = tcs;
+        public TaskCompletionSource Tcs { get; } = new();
     }
     #endregion
 
