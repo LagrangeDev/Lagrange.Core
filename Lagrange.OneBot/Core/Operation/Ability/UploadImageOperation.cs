@@ -19,7 +19,7 @@ public class UploadImageOperation : IOperation
 						var entity = new ImageEntity(stream);
 						var success = await context.ContextCollection.Highway.ManualUploadEntity(entity);
 						if (!success)
-								return new OneBotResult(ImageUploadFailUrl, 0, "ok");
+								return new OneBotResult(ImageUploadFailUrl, 0, "image upload fail");
 						var msgInfo = entity.MsgInfo;
 						if (msgInfo is null) throw new Exception("image-msg is empty");
 
