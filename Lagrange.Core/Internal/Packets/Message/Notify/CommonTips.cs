@@ -5,7 +5,7 @@ namespace Lagrange.Core.Internal.Packets.Message.Notify;
 #pragma warning disable CS8618
 
 [ProtoContract]
-internal class GroupCommonTips
+internal class CommonTips
 {
     // [ProtoMember(1)] public uint Field1 { get; set; }
 

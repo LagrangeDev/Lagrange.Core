@@ -20,7 +20,7 @@ internal class NotifyMessageBody
 
     // [ProtoMember(13)] public uint Field13 { get; set; }
 
-    [ProtoMember(26)] public List<GroupCommonTips> CommonTips { get; set; }
+    [ProtoMember(26)] public List<CommonTips> CommonTips { get; set; }
 
     [ProtoMember(33)] public List<GroupEssenceMessage> EssenceMessage { get; set; }
 

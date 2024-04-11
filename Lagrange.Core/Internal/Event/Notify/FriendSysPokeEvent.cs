@@ -24,6 +24,9 @@ internal class FriendSysPokeEvent : ProtocolEvent
     public FriendSysPokeEvent(uint friendUin) : base(0)
     {
         FriendUin = friendUin;
+        Action = "";
+        Suffix = "";
+        ActionImage = "";
         Full = false;
     }
 

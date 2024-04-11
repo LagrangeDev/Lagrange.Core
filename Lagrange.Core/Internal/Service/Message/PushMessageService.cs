@@ -286,8 +286,17 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             }
             case Event0x210SubType.FriendPokeNotice:
             {
-                var poke = FriendSysPokeEvent.Result(msg.Message.ResponseHead.FromUin);
-                extraEvents.Add(poke);
+                if (msg.Message.Body?.MsgContent is { } content)
+                {
+                    var poke = Serializer.Deserialize<CommonTips>(content.AsSpan());
+                    var pokeEvent = FriendSysPokeEvent.Result(msg.Message.ResponseHead.FromUin, poke.Params["action_str"], poke.Params["suffix_str"], poke.Params["action_img_url"]);
+                    extraEvents.Add(pokeEvent);
+                }
+                else
+                {
+                    var pokeEvent = FriendSysPokeEvent.Result(msg.Message.ResponseHead.FromUin);
+                    extraEvents.Add(pokeEvent);
+                }
                 break;
             }
             default:
