@@ -397,4 +397,14 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(groupSetSpecialTitleEvent);
         return events.Count != 0 && ((GroupSetSpecialTitleEvent)events[0]).ResultCode == 0;
     }
+
+    public async Task<BotUserInfo?> FetchUserInfo(uint uin)
+    {
+        string? uid = await Collection.Business.CachingLogic.ResolveUid(null, uin);
+        if (uid == null) return null;
+        
+        var fetchUserInfoEvent = FetchUserInfoEvent.Create(uid);
+        var events = await Collection.Business.SendEvent(fetchUserInfoEvent);
+        return events.Count != 0 ? ((FetchUserInfoEvent)events[0]).UserInfo : null;
+    }
 }
