@@ -67,7 +67,7 @@ public class GetEssenceMessageListOperation(TicketService ticket) : IOperation
             {
                 1 => new OneBotSegment("text", new TextSegment(msg["text"]?.GetValue<string>() ?? "")),
                 2 => new OneBotSegment("face", new FaceSegment(msg["face_index"]?.GetValue<int?>() ?? 0)),
-                3 => new OneBotSegment("image", new ImageSegment(msg["image_url"]?.GetValue<string>() ?? "")),
+                3 => new OneBotSegment("image", new ImageSegment(msg["image_url"]?.GetValue<string>() ?? "", "[图片]")),
                 4 => new OneBotSegment("video", new VideoSegment(msg["file_thumbnail_url"]?.GetValue<string>() ?? "")),
                 _ => throw new InvalidDataException("Unknown type found in essence msg")
             };

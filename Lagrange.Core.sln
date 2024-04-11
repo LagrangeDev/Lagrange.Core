@@ -9,13 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lagrange.Core.Test", "Lagra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lagrange.OneBot", "Lagrange.OneBot\Lagrange.OneBot.csproj", "{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "SolutionItem", "{ACE96E15-65D1-471B-913A-A1014F0D003E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ACE96E15-65D1-471B-913A-A1014F0D003E}"
 	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
-		README_zh.md = README_zh.md
 		Docker.md = Docker.md
 		Docker_zh.md = Docker_zh.md
 		LICENSE = LICENSE
+		README.md = README.md
+		README_zh.md = README_zh.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lagrange.Audio", "Lagrange.Audio\Lagrange.Audio.csproj", "{2D462D26-0FD5-40A9-A0C8-F7449117EE0E}"
@@ -51,5 +51,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9E8EA8EE-0A8E-479D-96F4-737A205C1176}
 	EndGlobalSection
 EndGlobal
