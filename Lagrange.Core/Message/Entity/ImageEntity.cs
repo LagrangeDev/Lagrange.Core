@@ -119,7 +119,8 @@ public class ImageEntity : IMessageEntity
                     PictureSize = new Vector2(face.Width, face.Height),
                     FilePath = face.FilePath,
                     ImageSize = face.Size,
-                    ImageUrl = $"{BaseUrl}{face.OrigUrl}"
+                    ImageUrl = $"{BaseUrl}{face.OrigUrl}",
+                    Summary = "[动画表情]"
                 };
 
             }
@@ -129,7 +130,8 @@ public class ImageEntity : IMessageEntity
                 PictureSize = new Vector2(face.Width, face.Height),
                 FilePath = face.FilePath,
                 ImageSize = face.Size,
-                ImageUrl = $"{LegacyBaseUrl}{face.OrigUrl}"
+                ImageUrl = $"{LegacyBaseUrl}{face.OrigUrl}",
+                Summary = "[动画表情]"
             };
         }
 

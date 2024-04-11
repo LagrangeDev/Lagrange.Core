@@ -13,7 +13,7 @@ public partial class ImageSegment(string url, string summary)
     
     [JsonPropertyName("url")] public string Url { get; set; }  = url;
 
-    [JsonPropertyName("summary")] [CQProperty] public string Summary { get; set; } = summary;
+    [JsonPropertyName("summary")] [CQProperty] public string Summary { get; set; } = summary == "" ? "[图片]" : summary;
 }
 
 [SegmentSubscriber(typeof(ImageEntity), "image")]
