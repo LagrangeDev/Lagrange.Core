@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -84,10 +85,9 @@ public partial class HttpPostService(IOptionsSnapshot<HttpPostServiceOptions> op
         {
             var lifecycle = new OneBotLifecycle(context.BotUin, "connect");
             await SendJsonAsync(lifecycle, null, stoppingToken);
-
-            if (_options.HeartBeatInterval > 0)
+            if (_options.HeartBeatEnable && _options.HeartBeatInterval > 0)
             {
-                _ = HeartbeatLoop(stoppingToken);
+                await HeartbeatLoop(stoppingToken);
             }
         }
         catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
@@ -99,12 +99,24 @@ public partial class HttpPostService(IOptionsSnapshot<HttpPostServiceOptions> op
     private async Task HeartbeatLoop(CancellationToken token)
     {
         var interval = TimeSpan.FromMilliseconds(_options.HeartBeatInterval);
+        Stopwatch sw = new();
+
         while (true)
         {
             var status = new OneBotStatus(true, true);
             var heartBeat = new OneBotHeartBeat(context.BotUin, (int)_options.HeartBeatInterval, status);
+
+            sw.Start();
             await SendJsonAsync(heartBeat, null, token);
-            await Task.Delay(interval, token);
+            sw.Stop();
+
+            // Implementing precise intervals by subtracting Stopwatch's timing from configured intervals
+            var waitingTime = interval - sw.Elapsed;
+            if (waitingTime >= TimeSpan.Zero)
+            {
+                await Task.Delay(waitingTime, token);
+            }
+            sw.Reset();
         }
     }
 

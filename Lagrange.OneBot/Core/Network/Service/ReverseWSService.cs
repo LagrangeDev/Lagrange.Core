@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -139,7 +140,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                     await SendJsonAsync(ws, lifecycle, stoppingToken);
 
                     var recvTask = ReceiveLoop(ws, stoppingToken);
-                    if (_options.HeartBeatInterval > 0)
+                    if (_options.HeartBeatEnable && _options.HeartBeatInterval > 0)
                     {
                         var heartbeatTask = HeartbeatLoop(ws, stoppingToken);
                         await Task.WhenAll(recvTask, heartbeatTask);
@@ -166,7 +167,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                     await SendJsonAsync(wsEvent, lifecycle, stoppingToken);
 
                     var recvTask = ReceiveLoop(wsApi, stoppingToken);
-                    if (_options.HeartBeatInterval > 0)
+                    if (_options.HeartBeatEnable && _options.HeartBeatInterval > 0)
                     {
                         var heartbeatTask = HeartbeatLoop(wsEvent, stoppingToken);
                         await Task.WhenAll(recvTask, heartbeatTask);
@@ -176,7 +177,6 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                         await recvTask;
                     }
                 }
-
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
@@ -227,12 +227,24 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
     private async Task HeartbeatLoop(ClientWebSocket ws, CancellationToken token)
     {
         var interval = TimeSpan.FromMilliseconds(_options.HeartBeatInterval);
+        Stopwatch sw = new();
+
         while (true)
         {
             var status = new OneBotStatus(true, true);
             var heartBeat = new OneBotHeartBeat(context.BotUin, (int)_options.HeartBeatInterval, status);
+
+            sw.Start();
             await SendJsonAsync(ws, heartBeat, token);
-            await Task.Delay(interval, token);
+            sw.Stop();
+
+            // Implementing precise intervals by subtracting Stopwatch's timing from configured intervals
+            var waitingTime = interval - sw.Elapsed;
+            if (waitingTime >= TimeSpan.Zero)
+            {
+                await Task.Delay(waitingTime, token);
+            }
+            sw.Reset();
         }
     }
 
