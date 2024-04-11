@@ -86,6 +86,8 @@ internal class CustomFace
 
         [ProtoMember(4)] public int Field4 { get; set; }
 
+        [ProtoMember(9)] public string Summary { get; set; }
+
         [ProtoMember(10)] public int Field10 { get; set; }
 
         [ProtoMember(21)] public PbReserve2 Field21 { get; set; }

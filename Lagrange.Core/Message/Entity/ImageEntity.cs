@@ -95,7 +95,7 @@ public class ImageEntity : IMessageEntity
                     FilePath = image.FilePath,
                     ImageSize = image.FileLen,
                     ImageUrl = $"{BaseUrl}{image.OrigUrl}",
-                    Summary = image.PbRes.Field8
+                    Summary = image.PbRes.Summary
                 };
 
             }
@@ -106,7 +106,7 @@ public class ImageEntity : IMessageEntity
                 FilePath = image.FilePath,
                 ImageSize = image.FileLen,
                 ImageUrl = $"{LegacyBaseUrl}{image.OrigUrl}",
-                Summary = image.PbRes.Field8
+                Summary = image.PbRes.Summary
             };
         }
 
@@ -120,7 +120,7 @@ public class ImageEntity : IMessageEntity
                     FilePath = face.FilePath,
                     ImageSize = face.Size,
                     ImageUrl = $"{BaseUrl}{face.OrigUrl}",
-                    Summary = "[动画表情]"
+                    Summary = face.PbReserve?.Summary
                 };
 
             }
@@ -131,7 +131,7 @@ public class ImageEntity : IMessageEntity
                 FilePath = face.FilePath,
                 ImageSize = face.Size,
                 ImageUrl = $"{LegacyBaseUrl}{face.OrigUrl}",
-                Summary = "[动画表情]"
+                Summary = face.PbReserve?.Summary
             };
         }
 
@@ -140,5 +140,5 @@ public class ImageEntity : IMessageEntity
 
     public string ToPreviewString() => $"[Image: {PictureSize.X}x{PictureSize.Y}] {FilePath} {ImageSize} {ImageUrl}";
 
-    public string ToPreviewText() => Summary == null ? "[图片]" : Summary;
+    public string ToPreviewText() => Summary == null || Summary == "" ? "[图片]" : Summary;
 }
