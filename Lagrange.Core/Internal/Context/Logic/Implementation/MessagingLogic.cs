@@ -9,7 +9,6 @@ using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Service;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
-using FriendPokeEvent = Lagrange.Core.Event.EventArg.FriendPokeEvent;
 
 namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 
@@ -27,6 +26,11 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(GroupSysRecallEvent))]
 [EventSubscribe(typeof(GroupSysRequestJoinEvent))]
 [EventSubscribe(typeof(GroupSysRequestInvitationEvent))]
+[EventSubscribe(typeof(GroupSysPokeEvent))]
+[EventSubscribe(typeof(GroupSysSignInEvent))]
+[EventSubscribe(typeof(GroupSysEssenceEvent))]
+[EventSubscribe(typeof(GroupSysReactMessageWithEmojiEvent))]
+[EventSubscribe(typeof(GroupSysUniqueTitleChangeEvent))]
 [EventSubscribe(typeof(FriendSysRecallEvent))]
 [EventSubscribe(typeof(FriendSysRequestEvent))]
 [EventSubscribe(typeof(FriendSysPokeEvent))]
@@ -177,8 +181,38 @@ internal class MessagingLogic : LogicBase
             }
             case FriendSysPokeEvent poke:
             {
-                var pokeArgs = new FriendPokeEvent(poke.FriendUin);
+                var pokeArgs = poke.Full ? new FriendPokeEvent(poke.FriendUin, poke.Action, poke.Suffix, poke.ActionImage) : new FriendPokeEvent(poke.FriendUin);
                 Collection.Invoker.PostEvent(pokeArgs);
+                break;
+            }
+            case GroupSysPokeEvent poke:
+            {
+                var pokeArgs = new GroupPokeEvent(poke.GroupUin, poke.OperatorUin, poke.TargetUin, poke.Action, poke.Suffix, poke.ActionImage);
+                Collection.Invoker.PostEvent(pokeArgs);
+                break;
+            }
+            case GroupSysSignInEvent sign:
+            {
+                var signArgs = new GroupSignInEvent(sign.GroupUin, sign.OperatorUin, sign.Action, sign.RankImage);
+                Collection.Invoker.PostEvent(signArgs);
+                break;
+            }
+            case GroupSysEssenceEvent essence:
+            {
+                var essenceArgs = new GroupEssenceEvent(essence.GroupUin, essence.OperatorUin, essence.AuthorUin, essence.Sequence, essence.SubType);
+                Collection.Invoker.PostEvent(essenceArgs);
+                break;
+            }
+            case GroupSysReactMessageWithEmojiEvent react:
+            {
+                var essenceArgs = new GroupReactMessageWithEmojiEvent(react.GroupUin, react.Sequence, react.FaceId, react.IsSet);
+                Collection.Invoker.PostEvent(essenceArgs);
+                break;
+            }
+            case GroupSysUniqueTitleChangeEvent title:
+            {
+                var titleChangeArgs = new GroupUniqueTitleChangeEvent(title.GroupUin, title.TargetUin, title.Title);
+                Collection.Invoker.PostEvent(titleChangeArgs);
                 break;
             }
             case LoginNotifyEvent login:

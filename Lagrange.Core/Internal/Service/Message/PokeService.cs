@@ -9,17 +9,17 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Message;
 
-[EventSubscribe(typeof(FriendPokeEvent))]
-[EventSubscribe(typeof(GroupPokeEvent))]
+[EventSubscribe(typeof(PokeFriendEvent))]
+[EventSubscribe(typeof(PokeGroupMemberEvent))]
 [Service("OidbSvcTrpcTcp.0xed3_1")]
-internal class PokeService : BaseService<FriendPokeEvent>
+internal class PokeService : BaseService<PokeFriendEvent>
 {
-    protected override bool Build(FriendPokeEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Build(PokeFriendEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
         switch (input)
         {
-            case GroupPokeEvent group:
+            case PokeGroupMemberEvent group:
             {
                 var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xED3_1>(new OidbSvcTrpcTcp0xED3_1
                 {
@@ -49,11 +49,11 @@ internal class PokeService : BaseService<FriendPokeEvent>
     }
 
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
-        out FriendPokeEvent output, out List<ProtocolEvent>? extraEvents)
+        out PokeFriendEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
         
-        output = FriendPokeEvent.Result((int)payload.ErrorCode);
+        output = PokeFriendEvent.Result((int)payload.ErrorCode);
         extraEvents = null;
         return true;
     }

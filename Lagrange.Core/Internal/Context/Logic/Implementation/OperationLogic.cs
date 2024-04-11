@@ -362,16 +362,16 @@ internal class OperationLogic : LogicBase
 
     public async Task<bool> FriendPoke(uint friendUin)
     {
-        var friendPokeEvent = FriendPokeEvent.Create(friendUin);
+        var friendPokeEvent = PokeFriendEvent.Create(friendUin);
         var results = await Collection.Business.SendEvent(friendPokeEvent);
-        return results.Count != 0 && ((FriendPokeEvent)results[0]).ResultCode == 0;
+        return results.Count != 0 && ((PokeFriendEvent)results[0]).ResultCode == 0;
     }
     
     public async Task<bool> GroupPoke(uint groupUin, uint friendUin)
     {
-        var groupPokeEvent = GroupPokeEvent.Create(friendUin, groupUin);
+        var groupPokeEvent = PokeGroupMemberEvent.Create(friendUin, groupUin);
         var results = await Collection.Business.SendEvent(groupPokeEvent);
-        return results.Count != 0 && ((FriendPokeEvent)results[0]).ResultCode == 0;
+        return results.Count != 0 && ((PokeFriendEvent)results[0]).ResultCode == 0;
     }
 
     public async Task<bool> SetEssenceMessage(uint groupUin, uint sequence, uint random)

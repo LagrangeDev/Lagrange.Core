@@ -4,16 +4,16 @@ internal class GroupSysUniqueTitleChangeEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
 
-    public uint FriendUin { get; }
+    public uint TargetUin { get; }
 
     public string Title { get; }
 
-    private GroupSysUniqueTitleChangeEvent(uint groupUin, uint friendUin, string title) : base(0)
+    private GroupSysUniqueTitleChangeEvent(uint groupUin, uint targetUin, string title) : base(0)
     {
         GroupUin = groupUin;
-        FriendUin = friendUin;
+        TargetUin = targetUin;
         Title = title;
     }
 
-    public static GroupSysUniqueTitleChangeEvent Result(uint groupUin, uint friendUin, string title) => new(groupUin, friendUin, title);
+    public static GroupSysUniqueTitleChangeEvent Result(uint groupUin, uint targetUin, string title) => new(groupUin, targetUin, title);
 }

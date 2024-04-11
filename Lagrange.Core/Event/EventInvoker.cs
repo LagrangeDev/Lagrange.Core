@@ -36,6 +36,11 @@ public partial class EventInvoker : IDisposable
         RegisterEvent((FriendRecallEvent e) => OnFriendRecallEvent?.Invoke(context, e));
         RegisterEvent((DeviceLoginEvent e) => OnDeviceLoginEvent?.Invoke(context, e));
         RegisterEvent((FriendPokeEvent e) => OnFriendPokeEvent?.Invoke(context, e));
+        RegisterEvent((GroupPokeEvent e) => OnGroupPokeEvent?.Invoke(context, e));
+        RegisterEvent((GroupSignInEvent e) => OnGroupSignInEvent?.Invoke(context, e));
+        RegisterEvent((GroupEssenceEvent e) => OnGroupEssenceEvent?.Invoke(context, e));
+        RegisterEvent((GroupReactMessageWithEmojiEvent e) => OnGroupReactMessageWithEmojiEvent?.Invoke(context, e));
+        RegisterEvent((GroupUniqueTitleChangeEvent e) => OnGroupUniqueTitleChangeEvent?.Invoke(context, e));
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

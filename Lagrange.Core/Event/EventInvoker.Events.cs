@@ -45,4 +45,14 @@ public partial class EventInvoker
     public event LagrangeEvent<DeviceLoginEvent>? OnDeviceLoginEvent;
 
     public event LagrangeEvent<FriendPokeEvent>? OnFriendPokeEvent;
+
+    public event LagrangeEvent<GroupPokeEvent>? OnGroupPokeEvent;
+
+    public event LagrangeEvent<GroupSignInEvent>? OnGroupSignInEvent;
+
+    public event LagrangeEvent<GroupEssenceEvent>? OnGroupEssenceEvent;
+
+    public event LagrangeEvent<GroupReactMessageWithEmojiEvent>? OnGroupReactMessageWithEmojiEvent;
+
+    public event LagrangeEvent<GroupUniqueTitleChangeEvent>? OnGroupUniqueTitleChangeEvent;
 }

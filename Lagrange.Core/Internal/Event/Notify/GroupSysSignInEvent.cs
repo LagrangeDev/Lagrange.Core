@@ -1,5 +1,3 @@
-using System.Net.NetworkInformation;
-
 namespace Lagrange.Core.Internal.Event.Notify;
 
 internal class GroupSysSignInEvent : ProtocolEvent
