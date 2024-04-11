@@ -119,7 +119,20 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
             bool isEvent = path == "/event" || path == "/event/";
 
             // Only API interfaces do not require sending heartbeats
-            if (!isApi) _ = HeartbeatAsyncLoop(identifier, cts.Token);
+            if (!isApi)
+            {
+                // Send ConnectLifecycleMetaEvent
+                await SendJsonAsync(
+                    new OneBotLifecycle(_context.BotUin, "connect"),
+                    identifier,
+                    token
+                );
+
+                if (_options.HeartBeatEnable && _options.HeartBeatInterval > 0)
+                {
+                    _ = HeartbeatAsyncLoop(identifier, cts.Token);
+                }
+            }
 
             // The Event interface does not need to receive messages
             // but still needs to receive Close messages to close the connection
@@ -293,13 +306,6 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
 
         try
         {
-            // Send ConnectLifecycleMetaEvent
-            await SendJsonAsync(
-                new OneBotLifecycle(_context.BotUin, "connect"),
-                identifier,
-                token
-            );
-
             while (true)
             {
                 sw.Start();
@@ -316,7 +322,11 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
                 sw.Stop();
 
                 // Implementing precise intervals by subtracting Stopwatch's timing from configured intervals
-                await Task.Delay(interval - sw.Elapsed, token);
+                var waitingTime = interval - sw.Elapsed;
+                if (waitingTime >= TimeSpan.Zero)
+                {
+                    await Task.Delay(waitingTime, token);
+                }
 
                 sw.Reset();
 

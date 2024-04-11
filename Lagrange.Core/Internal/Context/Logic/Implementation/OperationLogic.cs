@@ -223,9 +223,9 @@ internal class OperationLogic : LogicBase
         {
             if (uid == null) return 0;
             
-            var fetchUidEvent = FetchAvatarEvent.Create(uid);
+            var fetchUidEvent = FetchUserInfoEvent.Create(uid);
             var e = await Collection.Business.SendEvent(fetchUidEvent);
-            return e.Count == 0 ? 0 : ((FetchAvatarEvent)e[0]).Uin;
+            return e.Count == 0 ? 0 : ((FetchUserInfoEvent)e[0]).UserInfo.Uin;
         }
     }
 
@@ -396,5 +396,15 @@ internal class OperationLogic : LogicBase
         var groupSetSpecialTitleEvent = GroupSetSpecialTitleEvent.Create(groupUin, uid, title);
         var events = await Collection.Business.SendEvent(groupSetSpecialTitleEvent);
         return events.Count != 0 && ((GroupSetSpecialTitleEvent)events[0]).ResultCode == 0;
+    }
+
+    public async Task<BotUserInfo?> FetchUserInfo(uint uin)
+    {
+        string? uid = await Collection.Business.CachingLogic.ResolveUid(null, uin);
+        if (uid == null) return null;
+        
+        var fetchUserInfoEvent = FetchUserInfoEvent.Create(uid);
+        var events = await Collection.Business.SendEvent(fetchUserInfoEvent);
+        return events.Count != 0 ? ((FetchUserInfoEvent)events[0]).UserInfo : null;
     }
 }

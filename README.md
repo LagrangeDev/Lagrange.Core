@@ -313,6 +313,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
       "Suffix": "/onebot/v11/ws",
       "ReconnectInterval": 5000,
       "HeartBeatInterval": 5000,
+      "HeartBeatEnable": true,
       "AccessToken": ""
     },
     {
@@ -320,6 +321,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
       "Host": "*",
       "Port": 8081,
       "HeartBeatInterval": 5000,
+      "HeartBeatEnable": true,
       "AccessToken": ""
     },
     {
@@ -328,6 +330,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
       "Port": 8082,
       "Suffix": "/",
       "HeartBeatInterval": 5000,
+      "HeartBeatEnable": true,
       "AccessToken": ""
     },
     {
