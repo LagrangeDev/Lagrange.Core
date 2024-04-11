@@ -57,6 +57,12 @@ internal partial class NotOnlineImage
     [ProtoMember(24)] public uint ShowLen { get; set; }
     
     [ProtoMember(25)] public uint DownloadLen { get; set; }
+
+    [ProtoMember(26)] public string? X400Url { get; set; }
+
+    [ProtoMember(27)] public uint X400Width { get; set; }
+
+    [ProtoMember(28)] public uint X400Height { get; set; }
     
     [ProtoMember(29)] public PbReserve PbRes { get; set; }
 
