@@ -37,6 +37,8 @@ public class ImageEntity : IMessageEntity
 
     internal CustomFace? CompatFace { get; set; }
 
+    internal string? Summary { get; set; }
+
     public ImageEntity() { }
 
     public ImageEntity(string filePath)
@@ -92,7 +94,8 @@ public class ImageEntity : IMessageEntity
                     PictureSize = new Vector2(image.PicWidth, image.PicHeight),
                     FilePath = image.FilePath,
                     ImageSize = image.FileLen,
-                    ImageUrl = $"{BaseUrl}{image.OrigUrl}"
+                    ImageUrl = $"{BaseUrl}{image.OrigUrl}",
+                    Summary = image.PbRes.Field8
                 };
 
             }
@@ -102,7 +105,8 @@ public class ImageEntity : IMessageEntity
                 PictureSize = new Vector2(image.PicWidth, image.PicHeight),
                 FilePath = image.FilePath,
                 ImageSize = image.FileLen,
-                ImageUrl = $"{LegacyBaseUrl}{image.OrigUrl}"
+                ImageUrl = $"{LegacyBaseUrl}{image.OrigUrl}",
+                Summary = image.PbRes.Field8
             };
         }
 
@@ -134,5 +138,5 @@ public class ImageEntity : IMessageEntity
 
     public string ToPreviewString() => $"[Image: {PictureSize.X}x{PictureSize.Y}] {FilePath} {ImageSize} {ImageUrl}";
 
-    public string ToPreviewText() => "[图片]";
+    public string ToPreviewText() => Summary == null ? "[图片]" : Summary;
 }
