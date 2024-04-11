@@ -223,9 +223,9 @@ internal class OperationLogic : LogicBase
         {
             if (uid == null) return 0;
             
-            var fetchUidEvent = FetchAvatarEvent.Create(uid);
+            var fetchUidEvent = FetchUserInfoEvent.Create(uid);
             var e = await Collection.Business.SendEvent(fetchUidEvent);
-            return e.Count == 0 ? 0 : ((FetchAvatarEvent)e[0]).Uin;
+            return e.Count == 0 ? 0 : ((FetchUserInfoEvent)e[0]).UserInfo.Uin;
         }
     }
 
