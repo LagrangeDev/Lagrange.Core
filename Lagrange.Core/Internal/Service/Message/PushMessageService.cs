@@ -7,7 +7,9 @@ using Lagrange.Core.Internal.Packets.Message.Notify;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
+using System.Text.RegularExpressions;
 using ProtoBuf;
+using System.Text.Json;
 
 // ReSharper disable InconsistentNaming
 
@@ -124,6 +126,93 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         var pkgType = (Event0x2DCSubType)(msg.Message.ContentHead.SubType ?? 0);
         switch (pkgType)
         {
+            case Event0x2DCSubType.GroupUniqueTitleChangedOrReactMessageWithEmojiNotice when msg.Message.Body?.MsgContent is { } content:
+            {
+                var packet = new BinaryPacket(content);
+                _ = packet.ReadUint();  // group uin
+                _ = packet.ReadByte();  // unknown byte
+                var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
+                var detail = Serializer.Deserialize<NotifyMessageBody>(proto);
+                if (detail.Type == 1)
+                {
+                    if (detail.UniqueTitleChange.Count == 0)
+                    {
+                        Console.WriteLine($"UniqueTitleChange is null: {payload.Hex()}");
+                        break;
+                    }
+                    var meta = detail.UniqueTitleChange.First();
+                    try
+                    {
+                        // fk ten
+                        MatchCollection mc = Regex.Matches(meta.Wording, "恭喜<(.*?)>获得群主授予的<(.*?)>头衔");
+                        var document = JsonDocument.Parse(mc[0].Groups[2].ToString());
+                        JsonElement root = document.RootElement;
+                        string title = root.GetProperty("text").GetString()!;
+                        var groupUniqueTitleChangeEvent = GroupSysUniqueTitleChangeEvent.Result(detail.GroupUin, meta.TargetUin, title);
+                        extraEvents.Add(groupUniqueTitleChangeEvent);
+
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine($"UniqueTitleChange Wording Decade error: {meta.Wording}");
+                    }
+                }
+                else if (detail.Type == 36)
+                {
+                    if (detail.ReactEmoji.Count == 0)
+                    {
+                        Console.WriteLine($"ReactEmoji is null: {payload.Hex()}");
+                        break;
+                    }
+                    var meta = detail.ReactEmoji.First();
+                    var groupSysReactMessageWithEmojiEvent = GroupSysReactMessageWithEmojiEvent.Result(detail.GroupUin, meta.Field1.Field1.Field2.Sequence, uint.Parse(meta.Field1.Field1.Field3.FaceId), meta.Field1.Field1.Field3.IsSet);
+                    extraEvents.Add(groupSysReactMessageWithEmojiEvent);
+                }
+                
+                break;
+            }
+            case Event0x2DCSubType.GroupEssenceMessageNotice when msg.Message.Body?.MsgContent is { } content:
+            {
+                var packet = new BinaryPacket(content);
+                _ = packet.ReadUint();  // group uin
+                _ = packet.ReadByte();  // unknown byte
+                var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
+                var essence = Serializer.Deserialize<NotifyMessageBody>(proto);
+                if (essence.EssenceMessage.Count == 0)
+                {
+                    Console.WriteLine($"EssenceMessage is null: {payload.Hex()}");
+                    break;
+                }
+                var meta = essence.EssenceMessage.First();
+                var groupRecallEvent = GroupSysEssenceEvent.Result(essence.GroupUin, meta.OperatorUin, meta.SenderUin, meta.Sequence, meta.Type);
+                extraEvents.Add(groupRecallEvent);
+                break;
+            }
+            case Event0x2DCSubType.GroupCommonTipsNotice when msg.Message.Body?.MsgContent is { } content:
+            {
+                var packet = new BinaryPacket(content);
+                _ = packet.ReadUint();  // group uin
+                _ = packet.ReadByte();  // unknown byte
+                var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
+                var common = Serializer.Deserialize<NotifyMessageBody>(proto);
+                if (common.CommonTips.Count == 0)
+                {
+                    Console.WriteLine($"CommonTips is null: {payload.Hex()}");
+                    break;
+                }
+                var meta = common.CommonTips.First();
+                if (meta.Type == 1061)
+                {
+                    var groupPokeEvent = GroupSysPokeEvent.Result(common.GroupUin, uint.Parse(meta.Params["uin_str1"]), uint.Parse(meta.Params["uin_str2"]), meta.Params["action_str"], meta.Params["suffix_str"], meta.Params["action_img_url"]);
+                    extraEvents.Add(groupPokeEvent);
+                }
+                else if(meta.Type == 1068)
+                {
+                    var groupPokeEvent = GroupSysSignInEvent.Result(common.GroupUin, uint.Parse(meta.Params["mqq_uin"]), meta.Params["user_sign"], meta.Params["rank_img"]);
+                    extraEvents.Add(groupPokeEvent);
+                }
+                break;
+            }
             case Event0x2DCSubType.GroupRecallNotice when msg.Message.Body?.MsgContent is { } content:
             {
                 var packet = new BinaryPacket(content);
@@ -131,7 +220,12 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 _ = packet.ReadByte();  // unknown byte
                 var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
                 var recall = Serializer.Deserialize<NotifyMessageBody>(proto);
-                var meta = recall.Recall.RecallMessages[0];
+                if (recall.Recall == null)
+                {
+                    Console.WriteLine($"Recall is null: {payload.Hex()}");
+                    break;
+                }
+                var meta = recall.Recall.RecallMessages.First();
                 var groupRecallEvent = GroupSysRecallEvent.Result(recall.GroupUin, meta.AuthorUid, recall.Recall.OperatorUid, meta.Sequence, meta.Time, meta.Random);
                 extraEvents.Add(groupRecallEvent);
                 break;
@@ -226,8 +320,12 @@ internal class PushMessageService : BaseService<PushMessageEvent>
 
     private enum Event0x2DCSubType
     {
+        GroupSetMessageRead = 1,
+        GroupMuteNotice = 12,
+        GroupUniqueTitleChangedOrReactMessageWithEmojiNotice = 16,
         GroupRecallNotice = 17,
-        GroupMuteNotice = 12
+        GroupCommonTipsNotice = 20,
+        GroupEssenceMessageNotice = 21
     }
     
     private enum Event0x210SubType

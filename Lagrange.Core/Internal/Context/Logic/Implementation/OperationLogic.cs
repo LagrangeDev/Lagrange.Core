@@ -369,8 +369,8 @@ internal class OperationLogic : LogicBase
     
     public async Task<bool> GroupPoke(uint groupUin, uint friendUin)
     {
-        var friendPokeEvent = GroupPokeEvent.Create(friendUin, groupUin);
-        var results = await Collection.Business.SendEvent(friendPokeEvent);
+        var groupPokeEvent = GroupPokeEvent.Create(friendUin, groupUin);
+        var results = await Collection.Business.SendEvent(groupPokeEvent);
         return results.Count != 0 && ((FriendPokeEvent)results[0]).ResultCode == 0;
     }
 

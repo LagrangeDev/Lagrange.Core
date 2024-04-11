@@ -41,7 +41,9 @@ internal class OidbSvcTrpcTcpBase<T> where T : class
     [ProtoMember(4)] public T Body { get; set; }
     
     [ProtoMember(5)] public string ErrorMsg { get; set; }
-    
+
+    // [ProtoMember(6)] public string Version { get; set; }
+
     [ProtoMember(7)] public OidbLafter? Lafter { get; set; } // if Lafter is null, it would not be serialized
     
     [ProtoMember(11)] public List<OidbProperty> Properties { get; set; }
@@ -63,7 +65,7 @@ internal class OidbSvcTrpcTcpBase<T> where T : class
         Properties = new List<OidbProperty>();
     }
     
-    public OidbSvcTrpcTcpBase(T body, uint command,uint subCommand, bool isLafter = false, bool isUid = false)
+    public OidbSvcTrpcTcpBase(T body, uint command, uint subCommand, bool isLafter = false, bool isUid = false)
     {
         Command = command;
         SubCommand = subCommand;

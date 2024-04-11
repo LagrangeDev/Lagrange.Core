@@ -4,7 +4,6 @@ using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Packets.Message;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
-using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Message;
 
