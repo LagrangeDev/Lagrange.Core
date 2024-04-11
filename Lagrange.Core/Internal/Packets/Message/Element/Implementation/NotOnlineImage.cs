@@ -75,7 +75,7 @@ internal partial class NotOnlineImage
 
         [ProtoMember(4)] public int Field4 { get; set; }
 
-        [ProtoMember(8)] public string Field8 { get; set; }
+        [ProtoMember(8)] public string Summary { get; set; }
 
         [ProtoMember(10)] public int Field10 { get; set; }
 
