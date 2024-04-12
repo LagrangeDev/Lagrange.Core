@@ -5,13 +5,15 @@ using Lagrange.Core.Message.Entity;
 namespace Lagrange.OneBot.Message.Entity;
 
 [Serializable]
-public partial class ImageSegment(string url)
+public partial class ImageSegment(string url, string summary = "图片")
 {
-    public ImageSegment() : this("") { }
+    public ImageSegment() : this("", "") { }
 
     [JsonPropertyName("file")] [CQProperty] public string File { get; set; } = url;
     
     [JsonPropertyName("url")] public string Url { get; set; }  = url;
+
+    [JsonPropertyName("summary")] public string Summary { get; set; } = summary;
 }
 
 [SegmentSubscriber(typeof(ImageEntity), "image")]
@@ -33,6 +35,6 @@ public partial class ImageSegment : SegmentBase
     {
         if (entity is not ImageEntity imageEntity) throw new ArgumentException("Invalid entity type.");
 
-        return new ImageSegment(imageEntity.ImageUrl);
+        return new ImageSegment(imageEntity.ImageUrl, imageEntity.ToPreviewText());
     }
 }

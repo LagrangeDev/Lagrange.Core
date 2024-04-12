@@ -37,6 +37,8 @@ public class ImageEntity : IMessageEntity
 
     internal CustomFace? CompatFace { get; set; }
 
+    internal string? Summary { get; set; }
+
     public ImageEntity() { }
 
     public ImageEntity(string filePath)
@@ -92,7 +94,8 @@ public class ImageEntity : IMessageEntity
                     PictureSize = new Vector2(image.PicWidth, image.PicHeight),
                     FilePath = image.FilePath,
                     ImageSize = image.FileLen,
-                    ImageUrl = $"{BaseUrl}{image.OrigUrl}"
+                    ImageUrl = $"{BaseUrl}{image.OrigUrl}",
+                    Summary = image.PbRes.Summary
                 };
 
             }
@@ -102,7 +105,8 @@ public class ImageEntity : IMessageEntity
                 PictureSize = new Vector2(image.PicWidth, image.PicHeight),
                 FilePath = image.FilePath,
                 ImageSize = image.FileLen,
-                ImageUrl = $"{LegacyBaseUrl}{image.OrigUrl}"
+                ImageUrl = $"{LegacyBaseUrl}{image.OrigUrl}",
+                Summary = image.PbRes.Summary
             };
         }
 
@@ -115,7 +119,8 @@ public class ImageEntity : IMessageEntity
                     PictureSize = new Vector2(face.Width, face.Height),
                     FilePath = face.FilePath,
                     ImageSize = face.Size,
-                    ImageUrl = $"{BaseUrl}{face.OrigUrl}"
+                    ImageUrl = $"{BaseUrl}{face.OrigUrl}",
+                    Summary = face.PbReserve?.Summary
                 };
 
             }
@@ -125,14 +130,15 @@ public class ImageEntity : IMessageEntity
                 PictureSize = new Vector2(face.Width, face.Height),
                 FilePath = face.FilePath,
                 ImageSize = face.Size,
-                ImageUrl = $"{LegacyBaseUrl}{face.OrigUrl}"
+                ImageUrl = $"{LegacyBaseUrl}{face.OrigUrl}",
+                Summary = face.PbReserve?.Summary
             };
         }
 
         return null;
     }
 
-    public string ToPreviewString() => $"[Image: {PictureSize.X}x{PictureSize.Y}] {FilePath} {ImageSize} {ImageUrl}";
+    public string ToPreviewString() => $"[Image: {PictureSize.X}x{PictureSize.Y}] {ToPreviewText()} {FilePath} {ImageSize} {ImageUrl}";
 
-    public string ToPreviewText() => "[图片]";
+    public string ToPreviewText() => string.IsNullOrEmpty(Summary) ? "[图片]" : Summary;
 }

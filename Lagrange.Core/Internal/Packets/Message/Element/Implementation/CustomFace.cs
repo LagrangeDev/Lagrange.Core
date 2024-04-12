@@ -75,5 +75,39 @@ internal class CustomFace
     
     [ProtoMember(33)] public int X400Height { get; set; }
     
-    [ProtoMember(34)] public byte[]? PbReserve { get; set; }
+    [ProtoMember(34)] public PbReserve1? PbReserve { get; set; }
+
+    [ProtoContract]
+    public class PbReserve1
+    {
+        [ProtoMember(1)] public int Field1 { get; set; }
+
+        [ProtoMember(3)] public int Field3 { get; set; }
+
+        [ProtoMember(4)] public int Field4 { get; set; }
+
+        [ProtoMember(9)] public string Summary { get; set; }
+
+        [ProtoMember(10)] public int Field10 { get; set; }
+
+        [ProtoMember(21)] public PbReserve2 Field21 { get; set; }
+
+        [ProtoMember(31)] public string Field31 { get; set; }
+    }
+
+    [ProtoContract]
+    public class PbReserve2
+    {
+        [ProtoMember(1)] public int Field1 { get; set; }
+
+        [ProtoMember(2)] public string Field2 { get; set; }
+
+        [ProtoMember(3)] public int Field3 { get; set; }
+
+        [ProtoMember(4)] public int Field4 { get; set; }
+
+        [ProtoMember(5)] public int Field5 { get; set; }
+
+        [ProtoMember(7)] public string Md5Str { get; set; }
+    }
 }

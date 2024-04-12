@@ -57,6 +57,48 @@ internal partial class NotOnlineImage
     [ProtoMember(24)] public uint ShowLen { get; set; }
     
     [ProtoMember(25)] public uint DownloadLen { get; set; }
+
+    [ProtoMember(26)] public string? X400Url { get; set; }
+
+    [ProtoMember(27)] public uint X400Width { get; set; }
+
+    [ProtoMember(28)] public uint X400Height { get; set; }
     
-    [ProtoMember(29)] public byte[] PbRes { get; set; }
+    [ProtoMember(29)] public PbReserve PbRes { get; set; }
+
+    [ProtoContract]
+    public class PbReserve
+    {
+        [ProtoMember(1)] public int Field1 { get; set; }
+
+        [ProtoMember(3)] public int Field3 { get; set; }
+
+        [ProtoMember(4)] public int Field4 { get; set; }
+
+        [ProtoMember(8)] public string Summary { get; set; }
+
+        [ProtoMember(10)] public int Field10 { get; set; }
+
+        [ProtoMember(20)] public PbReserve2 Field20 { get; set; }
+
+        [ProtoMember(30)] public string Url { get; set; }
+
+        [ProtoMember(31)] public string Md5Str { get; set; }
+    }
+
+    [ProtoContract]
+    public class PbReserve2
+    {
+        [ProtoMember(1)] public int Field1 { get; set; }
+
+        [ProtoMember(2)] public string Field2 { get; set; }
+
+        [ProtoMember(3)] public int Field3 { get; set; }
+
+        [ProtoMember(4)] public int Field4 { get; set; }
+
+        [ProtoMember(5)] public int Field5 { get; set; }
+
+        [ProtoMember(7)] public string Field7 { get; set; }
+    }
 }
