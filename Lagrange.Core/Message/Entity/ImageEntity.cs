@@ -140,5 +140,5 @@ public class ImageEntity : IMessageEntity
 
     public string ToPreviewString() => $"[Image: {PictureSize.X}x{PictureSize.Y}] {FilePath} {ImageSize} {ImageUrl}";
 
-    public string ToPreviewText() => Summary == null || Summary == "" ? "[图片]" : Summary;
+    public string ToPreviewText() => string.IsNullOrEmpty(Summary) ? "[图片]" : Summary;
 }
