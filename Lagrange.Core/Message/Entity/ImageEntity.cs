@@ -138,7 +138,7 @@ public class ImageEntity : IMessageEntity
         return null;
     }
 
-    public string ToPreviewString() => $"[Image: {PictureSize.X}x{PictureSize.Y}] {FilePath} {ImageSize} {ImageUrl}";
+    public string ToPreviewString() => $"[Image: {PictureSize.X}x{PictureSize.Y}] {ToPreviewText()} {FilePath} {ImageSize} {ImageUrl}";
 
     public string ToPreviewText() => string.IsNullOrEmpty(Summary) ? "[图片]" : Summary;
 }
