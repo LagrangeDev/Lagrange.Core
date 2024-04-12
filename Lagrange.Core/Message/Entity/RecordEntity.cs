@@ -17,13 +17,13 @@ public class RecordEntity : IMessageEntity
 
     public string AudioName { get; set; } = string.Empty;
     
-    public int AudioSize { get; set; }
+    public int AudioSize => (int)AudioStream!.Value.Length;
     
     public string AudioUrl { get; set; } = string.Empty;
 
     #region Internal Properties
 
-    internal Stream? AudioStream { get; set; }
+    internal Lazy<Stream>? AudioStream { get; set; }
     
     internal string? AudioUuid { get; set; }
     
@@ -40,16 +40,14 @@ public class RecordEntity : IMessageEntity
     public RecordEntity(string filePath, int audioLength = 0)
     {
         FilePath = filePath;
-        AudioStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-        AudioSize = (int)AudioStream.Length;
+        AudioStream = new Lazy<Stream>(() => new FileStream(filePath, FileMode.Open, FileAccess.Read));
         AudioLength = audioLength;
     }
 
     public RecordEntity(byte[] file, int audioLength = 0)
     {
         FilePath = string.Empty;
-        AudioStream = new MemoryStream(file);
-        AudioSize = (int)AudioStream.Length;
+        AudioStream = new Lazy<Stream>(() => new MemoryStream(file));
         AudioLength = audioLength;
     }
 

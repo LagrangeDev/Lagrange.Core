@@ -33,17 +33,17 @@ internal class PttUploader : IHighwayUploader
                 };
                 var extStream = extend.Serialize();
 
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1007, record.AudioStream, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1007, record.AudioStream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
                 if (!hwSuccess)
                 {
-                    await record.AudioStream.DisposeAsync();
+                    await record.AudioStream.Value.DisposeAsync();
                     throw new Exception();
                 }
             }
 
             record.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             record.Compat = metaResult.Compat;  // for legacy QQ
-            await record.AudioStream.DisposeAsync();
+            await record.AudioStream.Value.DisposeAsync();
         }
     }
 
@@ -69,17 +69,17 @@ internal class PttUploader : IHighwayUploader
                 };
                 var extStream = extend.Serialize();
 
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1008, record.AudioStream, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1008, record.AudioStream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
                 if (!hwSuccess)
                 {
-                    await record.AudioStream.DisposeAsync();
+                    await record.AudioStream.Value.DisposeAsync();
                     throw new Exception();
                 }
             }
             
             record.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             record.Compat = metaResult.Compat;  // for legacy QQ
-            await record.AudioStream.DisposeAsync();
+            await record.AudioStream.Value.DisposeAsync();
         }
     }
 }

@@ -25,7 +25,7 @@ public class ImageEntity : IMessageEntity
 
     public string ImageUrl { get; set; } = string.Empty;
 
-    internal Stream? ImageStream { get; set; }
+    internal Lazy<Stream>? ImageStream { get; set; }
 
     internal string? Path { get; set; }
 
@@ -42,19 +42,19 @@ public class ImageEntity : IMessageEntity
     public ImageEntity(string filePath)
     {
         FilePath = filePath;
-        ImageStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        ImageStream = new Lazy<Stream>(() => new FileStream(filePath, FileMode.Open, FileAccess.Read));
     }
 
     public ImageEntity(byte[] file)
     {
         FilePath = "";
-        ImageStream = new MemoryStream(file);
+        ImageStream = new Lazy<Stream>(() => new MemoryStream(file));
     }
     
     public ImageEntity(Stream stream)
     {
         FilePath = "";
-        ImageStream = stream;
+        ImageStream = new Lazy<Stream>(stream);
     }
 
     IEnumerable<Elem> IMessageEntity.PackElement()
