@@ -22,11 +22,11 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
     {
         if (input.Entity.ImageStream is null) throw new Exception();
         
-        string md5 = input.Entity.ImageStream.Md5(true);
-        string sha1 = input.Entity.ImageStream.Sha1(true);
+        string md5 = input.Entity.ImageStream.Value.Md5(true);
+        string sha1 = input.Entity.ImageStream.Value.Sha1(true);
         
         var buffer = new byte[1024]; // parse image header
-        int _ = input.Entity.ImageStream.Read(buffer.AsSpan());
+        int _ = input.Entity.ImageStream.Value.Read(buffer.AsSpan());
         var type = ImageResolver.Resolve(buffer, out var size);
         string imageExt = type switch
         {
@@ -38,7 +38,7 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
             ImageFormat.Tiff => ".tiff",
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
-        input.Entity.ImageStream.Position = 0;
+        input.Entity.ImageStream.Value.Position = 0;
 
         string uid = (string.IsNullOrEmpty(input.TargetUid) ? keystore.Uid : input.TargetUid) ?? "";
 
@@ -72,7 +72,7 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
                     {
                         FileInfo = new FileInfo
                         {
-                            FileSize = (uint)input.Entity.ImageStream.Length,
+                            FileSize = (uint)input.Entity.ImageStream.Value.Length,
                             FileHash = md5,
                             FileSha1 = sha1,
                             FileName = md5 + imageExt,

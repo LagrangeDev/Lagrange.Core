@@ -21,8 +21,8 @@ internal class VideoGroupUploadService : BaseService<VideoGroupUploadEvent>
     {
         if (input.Entity.VideoStream is null) throw new Exception();
         
-        string md5 = input.Entity.VideoStream.Md5(true);
-        string sha1 = input.Entity.VideoStream.Sha1(true);
+        string md5 = input.Entity.VideoStream.Value.Md5(true);
+        string sha1 = input.Entity.VideoStream.Value.Sha1(true);
         
         var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq
         {
@@ -50,7 +50,7 @@ internal class VideoGroupUploadService : BaseService<VideoGroupUploadEvent>
                     {
                         FileInfo = new FileInfo
                         {
-                            FileSize = (uint)input.Entity.VideoStream.Length,
+                            FileSize = (uint)input.Entity.VideoStream.Value.Length,
                             FileHash = md5,
                             FileSha1 = sha1,
                             FileName = "video.mp4",
@@ -72,7 +72,7 @@ internal class VideoGroupUploadService : BaseService<VideoGroupUploadEvent>
                     {
                         FileInfo = new FileInfo  // dummy images
                         {
-                            FileSize = (uint)input.Entity.VideoStream.Length - 1200,
+                            FileSize = (uint)input.Entity.VideoStream.Value.Length - 1200,
                             FileHash = md5,
                             FileSha1 = sha1,
                             FileName = "video.jpg",

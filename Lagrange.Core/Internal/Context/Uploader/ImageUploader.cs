@@ -32,17 +32,17 @@ internal class ImageUploader : IHighwayUploader
                 };
                 var extStream = extend.Serialize();
 
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1003, image.ImageStream, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1003, image.ImageStream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
                 if (!hwSuccess)
                 {
-                    await image.ImageStream.DisposeAsync();
+                    await image.ImageStream.Value.DisposeAsync();
                     throw new Exception();
                 }
             }
             
             image.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             image.CompatImage = metaResult.Compat;  // for legacy QQ
-            await image.ImageStream.DisposeAsync();
+            await image.ImageStream.Value.DisposeAsync();
         }
     }
 
@@ -68,17 +68,17 @@ internal class ImageUploader : IHighwayUploader
                 };
                 var extStream = extend.Serialize();
 
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1004, image.ImageStream, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1004, image.ImageStream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
                 if (!hwSuccess)
                 {
-                    await image.ImageStream.DisposeAsync();
+                    await image.ImageStream.Value.DisposeAsync();
                     throw new Exception();
                 }
             }
             
             image.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             image.CompatFace = metaResult.Compat;  // for legacy QQ
-            await image.ImageStream.DisposeAsync();
+            await image.ImageStream.Value.DisposeAsync();
         }
     }
 }

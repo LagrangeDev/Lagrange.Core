@@ -15,7 +15,7 @@ public class VideoEntity : IMessageEntity
 
     public Vector2 Size { get; }
 
-    public int VideoSize { get; }
+    public int VideoSize => (int)VideoStream!.Value.Length;
 
     public int VideoLength { get; set; }
 
@@ -23,7 +23,7 @@ public class VideoEntity : IMessageEntity
 
     #region Internal Properties
 
-    internal Stream? VideoStream { get; set; }
+    internal Lazy<Stream>? VideoStream { get; set; }
 
     internal string? VideoUuid { get; }
 
@@ -39,7 +39,6 @@ public class VideoEntity : IMessageEntity
     internal VideoEntity(Vector2 size, int videoSize, string filePath, string fileMd5, string videoUuid)
     {
         Size = size;
-        VideoSize = videoSize;
         FilePath = filePath;
         VideoHash = fileMd5;
         VideoUuid = videoUuid;
@@ -48,16 +47,14 @@ public class VideoEntity : IMessageEntity
     public VideoEntity(string filePath, int videoLength = 0)
     {
         FilePath = filePath;
-        VideoStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-        VideoSize = (int)VideoStream.Length;
+        VideoStream = new Lazy<Stream>(() => new FileStream(filePath, FileMode.Open, FileAccess.Read));
         VideoLength = videoLength;
     }
 
     public VideoEntity(byte[] file, int videoLength = 0)
     {
         FilePath = string.Empty;
-        VideoStream = new MemoryStream(file);
-        VideoSize = (int)VideoStream.Length;
+        VideoStream = new Lazy<Stream>(() => new MemoryStream(file));
         VideoLength = videoLength;
     }
 
