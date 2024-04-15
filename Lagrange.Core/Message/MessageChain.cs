@@ -12,6 +12,8 @@ public sealed class MessageChain : List<IMessageEntity>
 
     public uint FriendUin { get; }
 
+    public uint TargetUin { get; }
+
     public ulong MessageId { get; }
 
     public DateTime Time { get; internal set; }
@@ -34,11 +36,12 @@ public sealed class MessageChain : List<IMessageEntity>
 
     #endregion
 
-    internal MessageChain(uint friendUin, string selfUid, string friendUid, uint sequence = 0, ulong? messageId = null,
+    internal MessageChain(uint friendUin, string selfUid, string friendUid, uint targetUin = 0, uint sequence = 0, ulong? messageId = null,
         MessageType type = MessageType.Friend)
     {
         GroupUin = null;
         FriendUin = friendUin;
+        TargetUin = targetUin;
         Sequence = sequence; // unuseful at there
         SelfUid = selfUid;
         Uid = friendUid;

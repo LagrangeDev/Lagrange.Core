@@ -20,6 +20,8 @@ public class OneBotPrivateMsg(uint selfId, OneBotSender groupSender, string subT
     [JsonPropertyName("font")] public int Font { get; set; } = 0;
 
     [JsonPropertyName("sender")] public OneBotSender GroupSender { get; set; } = groupSender;
+
+    [JsonPropertyName("target_id")] public uint TargetId { get; set; }
 }
 
 [Serializable]
@@ -40,4 +42,6 @@ public class OneBotPrivateStringMsg(uint selfId, OneBotSender groupSender, strin
     [JsonPropertyName("font")] public int Font { get; set; } = 0;
 
     [JsonPropertyName("sender")] public OneBotSender GroupSender { get; set; } = groupSender;
+
+    [JsonPropertyName("target_id")] public uint TargetId { get; set; }
 }
