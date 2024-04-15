@@ -407,4 +407,11 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(fetchUserInfoEvent);
         return events.Count != 0 ? ((FetchUserInfoEvent)events[0]).UserInfo : null;
     }
+    
+    public async Task<bool> SetMessageReaction(uint groupUin, uint sequence, string code)
+    {
+        var setReactionEvent = GroupSetReactionEvent.Create(groupUin, sequence, code);
+        var results = await Collection.Business.SendEvent(setReactionEvent);
+        return results.Count != 0 && results[0].ResultCode == 0;
+    }
 }
