@@ -82,13 +82,15 @@ public sealed class MessageService
             MessageId = hash,
             UserId = chain.FriendUin,
             Message = raw,
-            RawMessage = raw
+            RawMessage = raw,
+            TargetId = chain.TargetUin,
         } : new OneBotPrivateMsg(uin, new OneBotSender(chain.FriendUin, chain.FriendInfo?.Nickname ?? string.Empty), "friend")
         {
             MessageId = hash,
             UserId = chain.FriendUin,
             Message = segments,
-            RawMessage = raw
+            RawMessage = raw,
+            TargetId = chain.TargetUin
         };
         return request;
     }

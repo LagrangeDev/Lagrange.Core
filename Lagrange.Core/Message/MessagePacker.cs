@@ -251,6 +251,7 @@ internal static class MessagePacker
                 message.ResponseHead.FromUin,
                 message.ResponseHead.ToUid ?? string.Empty , 
                 message.ResponseHead.FromUid ?? string.Empty, 
+                message.ResponseHead.ToUin,
                 message.ContentHead.Sequence ?? 0,
                 message.ContentHead.NewId ?? 0,
                 message.ContentHead.Type == 141 ? MessageChain.MessageType.Temp : MessageChain.MessageType.Friend)
