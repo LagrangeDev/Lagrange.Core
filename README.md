@@ -60,6 +60,12 @@ By using or accessing Lagrange.Core, the user acknowledges and agrees to release
 
 Please use Lagrange.Core responsibly and in accordance with the law.
 
+## SignServer
+
+http://sign.lagrangecore.org:8080/api/sign
+
+Thanks for XZhouQD for Provision of Azure Servlet
+
 ## Features List
 
 | Protocol | Support | Login                     | Support | Messages  | Support | Operations        | Support | Events              | Support |
@@ -358,6 +364,6 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 ~~Thanks KonataDev/TheSnowfield for Provision of Signature API~~
 
-Signature API is now not provided, you may need to find it somewhere and inherit `SignProvider` class for `CustomSignProvider` in `BotConfig`
+~~Signature API is now not provided, you may need to find it somewhere and inherit `SignProvider` class for `CustomSignProvider` in `BotConfig`~~
 
-- Signature of Windows and macOS is missing, you need to figure out by your self
+- Signature of Windows and macOS is missing, you need to figure out by your self~~
