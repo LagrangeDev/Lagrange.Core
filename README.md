@@ -62,9 +62,9 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 ## SignServer
 
-http://sign.lagrangecore.org:8080/api/sign
+https://sign.lagrangecore.org/api/sign
 
-Thanks for XZhouQD for Provision of Azure Servlet
+Thanks for 外国热心网友 for Provision of Azure Servlet
 
 ## Features List
 
