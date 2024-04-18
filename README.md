@@ -296,7 +296,7 @@ Thanks for 外国热心网友 for Provision of Azure Servlet
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
-  "SignServerUrl": "",
+  "SignServerUrl": "https://sign.lagrangecore.org/api/sign",
   "Account": {
     "Uin": 0,
     "Password": "",
@@ -365,5 +365,7 @@ Thanks for 外国热心网友 for Provision of Azure Servlet
 ~~Thanks KonataDev/TheSnowfield for Provision of Signature API~~
 
 ~~Signature API is now not provided, you may need to find it somewhere and inherit `SignProvider` class for `CustomSignProvider` in `BotConfig`~~
+
+- Built-in SignServer is now provided, Enjoy!
 
 - Signature of Windows and macOS is missing, you need to figure out by your self~~

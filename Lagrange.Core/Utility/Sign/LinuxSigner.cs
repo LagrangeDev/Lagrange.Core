@@ -9,9 +9,9 @@ namespace Lagrange.Core.Utility.Sign;
 
 internal class LinuxSigner : SignProvider
 {
-    private const string Url = "";
     private readonly HttpClient _client = new();
 
+    private const string Url = "https://sign.lagrangecore.org/api/sign";
 
     private readonly Timer _timer;
 
