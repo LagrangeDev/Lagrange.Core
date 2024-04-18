@@ -294,7 +294,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
-  "SignServerUrl": "",
+  "SignServerUrl": "https://sign.lagrangecore.org/api/sign",
   "Account": {
     "Uin": 0,
     "Password": "",
