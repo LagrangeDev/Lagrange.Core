@@ -5,7 +5,7 @@ ARG TARGETARCH
 
 COPY . /root/build
 
-RUN dotnet publish -p:DebugType="none" -a $TARGETARCH -f "8.0" -o "/root/out" "Lagrange.OneBot"
+RUN dotnet publish -p:DebugType="none" -a $TARGETARCH -f "net8.0" -o "/root/out" "Lagrange.OneBot"
 
 # ===
 
