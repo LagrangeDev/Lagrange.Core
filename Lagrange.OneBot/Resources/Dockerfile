@@ -20,7 +20,6 @@ ENV UID=100
 ENV GID=100
 
 RUN apk --no-cache add shadow su-exec \
- && mkdir /app/data \
  && adduser -D user \
  && chmod +x /app/bin/docker-entrypoint.sh
 
