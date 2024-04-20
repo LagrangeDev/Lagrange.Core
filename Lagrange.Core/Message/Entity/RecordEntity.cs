@@ -17,7 +17,7 @@ public class RecordEntity : IMessageEntity
 
     public string AudioName { get; set; } = string.Empty;
     
-    public int AudioSize => (int)AudioStream!.Value.Length;
+    public int AudioSize => (int?)AudioStream?.Value.Length ?? default;
     
     public string AudioUrl { get; set; } = string.Empty;
 
