@@ -66,9 +66,7 @@ internal class WtExchangeLogic : LogicBase
         if (Collection.Keystore.Session.D2.Length != 0)
         {
             Collection.Log.LogWarning(Tag, "Invalid Session found, try to clean D2Key, D2 and TGT Token");
-            Collection.Keystore.Session.D2 = Array.Empty<byte>();
-            Collection.Keystore.Session.Tgt = Array.Empty<byte>();
-            Collection.Keystore.Session.D2Key = new byte[16];
+            Collection.Keystore.ClearSession();
         }
         
         var transEmp = TransEmpEvent.Create(TransEmpEvent.State.FetchQrCode);
@@ -123,9 +121,7 @@ internal class WtExchangeLogic : LogicBase
             catch
             {
                 Collection.Log.LogWarning(Tag, "Register by session failed, try to login by EasyLogin");
-                Collection.Keystore.Session.D2 = Array.Empty<byte>();
-                Collection.Keystore.Session.Tgt = Array.Empty<byte>();
-                Collection.Keystore.Session.D2Key = new byte[16];
+                Collection.Keystore.ClearSession();
             }
         }
 
@@ -416,17 +412,22 @@ internal class WtExchangeLogic : LogicBase
         var registerEvent = StatusRegisterEvent.Create();
         var registerResponse = await Collection.Business.SendEvent(registerEvent);
         var heartbeatDelegate = new Action(async () => await Collection.Business.PushEvent(SsoAliveEvent.Create()));
-        var resp = (StatusRegisterEvent)registerResponse[0];
-        
-        Collection.Log.LogInfo(Tag, $"Register Status: {resp.Message}");
-        Collection.Scheduler.Interval("SsoHeartBeat", (int)(4.5 * 60 * 1000), heartbeatDelegate);
-        
-        var onlineEvent = new BotOnlineEvent(reason);
-        Collection.Invoker.PostEvent(onlineEvent);
 
-        await Collection.Business.PushEvent(InfoSyncEvent.Create());
+        if (registerResponse.Count != 0)
+        {
+            var resp = (StatusRegisterEvent)registerResponse[0];
+            Collection.Log.LogInfo(Tag, $"Register Status: {resp.Message}");
+            Collection.Scheduler.Interval("SsoHeartBeat", (int)(4.5 * 60 * 1000), heartbeatDelegate);
 
-        return resp.Message.Contains("register success");
+            var onlineEvent = new BotOnlineEvent(reason);
+            Collection.Invoker.PostEvent(onlineEvent);
+
+            await Collection.Business.PushEvent(InfoSyncEvent.Create());
+
+            return resp.Message.Contains("register success");
+        }
+        
+        return false;
     }
 
     private async Task<bool> FetchUnusual()
