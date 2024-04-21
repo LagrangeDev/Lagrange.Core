@@ -452,13 +452,5 @@ internal class WtExchangeLogic : LogicBase
         return result.Count != 0 && ((UnusualEasyLoginEvent)result[0]).Success;
     }
     
-    private async Task<bool> DoNewDeviceLogin()
-    {
-        Collection.Log.LogInfo(Tag, "Trying to Login by EasyLogin...");
-        var unusualEvent = NewDeviceLoginEvent.Create();
-        var result = await Collection.Business.SendEvent(unusualEvent);
-        return result.Count != 0 && ((NewDeviceLoginEvent)result[0]).Success;
-    }
-    
     public bool SubmitCaptcha(string ticket, string randStr) => _captchaTask?.TrySetResult((ticket, randStr)) ?? false;
 }
