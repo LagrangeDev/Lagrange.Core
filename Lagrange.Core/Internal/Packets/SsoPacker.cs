@@ -66,8 +66,9 @@ internal static class SsoPacker
         int isCompressed = packet.ReadInt(); 
         packet.ReadBytes(Prefix.Uint32 | Prefix.LengthOnly); // Dummy Sso header
 
-        if (retCode == 0) return new SsoPacket(12, command, sequence, isCompressed == 0 ? packet : InflatePacket(packet));
-        throw new Exception($"Packet '{command}' returns {retCode} with seq: {sequence}, extra: {extra}");
+        return retCode == 0 
+            ? new SsoPacket(12, command, sequence, isCompressed == 0 ? packet : InflatePacket(packet)) 
+            : new SsoPacket(12, command, sequence, retCode, extra);
     }
 
     private static BinaryPacket InflatePacket(BinaryPacket original)

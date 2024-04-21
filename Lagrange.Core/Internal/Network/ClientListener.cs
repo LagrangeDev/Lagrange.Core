@@ -70,7 +70,7 @@ internal abstract partial class ClientListener : IClientListener
     /// <param name="buffer"></param>
     /// <param name="timeout"></param>
     /// <returns></returns>
-    public async Task<bool> Send(byte[] buffer, int timeout = -1)
+    public async Task<bool> Send(ReadOnlyMemory<byte> buffer, int timeout = -1)
     {
         try
         {
