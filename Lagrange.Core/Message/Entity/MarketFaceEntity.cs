@@ -8,13 +8,13 @@ using Lagrange.Core.Utility.Extension;
 [MessageElement(typeof(MarketFace))]
 public class MarketFaceEntity : IMessageEntity
 {
-    public string FaceId { get; } = string.Empty;
+    public string FaceId { get; }
 
     public int TabId { get; }
 
-    public string Key { get; } = string.Empty;
+    public string Key { get; }
 
-    public MarketFaceEntity() { }
+    public MarketFaceEntity() : this(string.Empty, default, string.Empty) { }
 
     public MarketFaceEntity(string faceId, int tabId, string key)
     {
