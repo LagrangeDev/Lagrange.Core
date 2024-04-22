@@ -7,16 +7,19 @@ namespace Lagrange.OneBot.Message.Entity;
 [Serializable]
 public partial class MarketFaceSegment
 {
-    [JsonPropertyName("face_id")] public string FaceId { get; set; } = string.Empty;
+    [JsonPropertyName("face_id")] public string FaceId { get; set; }
 
     [JsonPropertyName("tab_id")] public int TabId { get; set; }
 
-    public MarketFaceSegment() { }
+    [JsonPropertyName("key")] public string Key { get; set; }
 
-    public MarketFaceSegment(string faceId, int tabId)
+    public MarketFaceSegment() : this(string.Empty, default, string.Empty) { }
+
+    public MarketFaceSegment(string faceId, int tabId, string key)
     {
         FaceId = faceId;
         TabId = tabId;
+        Key = key;
     }
 }
 
@@ -27,13 +30,13 @@ public partial class MarketFaceSegment : SegmentBase
     {
         if (segment is not MarketFaceSegment marketFaceSegment) return;
 
-        builder.Add(new MarketFaceEntity(marketFaceSegment.FaceId, marketFaceSegment.TabId));
+        builder.Add(new MarketFaceEntity(marketFaceSegment.FaceId, marketFaceSegment.TabId, marketFaceSegment.Key));
     }
 
     public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
     {
         if (entity is not MarketFaceEntity marketFaceEntity) throw new ArgumentException("Invalid entity type.");
 
-        return new MarketFaceSegment(marketFaceEntity.FaceId, marketFaceEntity.TabId);
+        return new MarketFaceSegment(marketFaceEntity.FaceId, marketFaceEntity.TabId, marketFaceEntity.Key);
     }
 }
