@@ -1,9 +1,6 @@
 namespace Lagrange.Core.Message.Entity;
 
 using System.Collections.Generic;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Utility.Extension;
@@ -15,12 +12,15 @@ public class MarketFaceEntity : IMessageEntity
 
     public int TabId { get; }
 
+    public string Key { get; } = string.Empty;
+
     public MarketFaceEntity() { }
 
-    public MarketFaceEntity(string faceId, int tabId)
+    public MarketFaceEntity(string faceId, int tabId, string key)
     {
         FaceId = faceId;
         TabId = tabId;
+        Key = key;
     }
 
     IEnumerable<Elem> IMessageEntity.PackElement()
@@ -37,7 +37,7 @@ public class MarketFaceEntity : IMessageEntity
                     FaceId = FaceId.UnHex(),
                     TabId = TabId,
                     SubType = 3,
-                    Key = "0000000000000000",
+                    Key = Key,
                     // Param = 
                     // MediaType
                     Width = 300,
@@ -56,8 +56,8 @@ public class MarketFaceEntity : IMessageEntity
     {
         if (elem.MarketFace == null) return null;
 
-        return new MarketFaceEntity(elem.MarketFace.FaceId.Hex(), elem.MarketFace.TabId);
+        return new MarketFaceEntity(elem.MarketFace.FaceId.Hex(), elem.MarketFace.TabId, elem.MarketFace.Key);
     }
 
-    public string ToPreviewString() => $"[{nameof(MarketFaceEntity)}: {TabId} - {FaceId}]";
+    public string ToPreviewString() => $"[{nameof(MarketFaceEntity)}: {TabId} - {FaceId} - {Key}]";
 }

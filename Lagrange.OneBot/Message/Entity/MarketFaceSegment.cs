@@ -11,12 +11,15 @@ public partial class MarketFaceSegment
 
     [JsonPropertyName("tab_id")] public int TabId { get; set; }
 
+    [JsonPropertyName("key")] public string Key { get; set; } = string.Empty;
+
     public MarketFaceSegment() { }
 
-    public MarketFaceSegment(string faceId, int tabId)
+    public MarketFaceSegment(string faceId, int tabId, string key)
     {
         FaceId = faceId;
         TabId = tabId;
+        Key = key;
     }
 }
 
@@ -27,13 +30,13 @@ public partial class MarketFaceSegment : SegmentBase
     {
         if (segment is not MarketFaceSegment marketFaceSegment) return;
 
-        builder.Add(new MarketFaceEntity(marketFaceSegment.FaceId, marketFaceSegment.TabId));
+        builder.Add(new MarketFaceEntity(marketFaceSegment.FaceId, marketFaceSegment.TabId, marketFaceSegment.Key));
     }
 
     public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
     {
         if (entity is not MarketFaceEntity marketFaceEntity) throw new ArgumentException("Invalid entity type.");
 
-        return new MarketFaceSegment(marketFaceEntity.FaceId, marketFaceEntity.TabId);
+        return new MarketFaceSegment(marketFaceEntity.FaceId, marketFaceEntity.TabId, marketFaceEntity.Key);
     }
 }
