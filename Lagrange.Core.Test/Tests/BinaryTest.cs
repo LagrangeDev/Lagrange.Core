@@ -20,8 +20,8 @@ public class BinaryTest
         Console.WriteLine(bytes.Length);
 
         var binary2 = new BinaryPacket();
-        binary2.WriteUint(114514, false);
-        binary2.WriteUlong(1919810, false);
+        binary2.WriteUint(114514);
+        binary2.WriteUlong(1919810);
         Console.WriteLine(binary2.ToArray().Hex());
         
         var newPacket = new BinaryPacket(bytes.ToArray());
