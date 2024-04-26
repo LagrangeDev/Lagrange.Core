@@ -1,6 +1,7 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
+using Lagrange.Core.Internal.Packets.Message.Component;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
@@ -20,10 +21,10 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
         if (input.Entity.ImageStream is null) throw new Exception();
-
+        
         string md5 = input.Entity.ImageStream.Value.Md5(true);
         string sha1 = input.Entity.ImageStream.Value.Sha1(true);
-
+        
         var buffer = new byte[1024]; // parse image header
         int _ = input.Entity.ImageStream.Value.Read(buffer.AsSpan());
         var type = ImageResolver.Resolve(buffer, out var size);
@@ -98,7 +99,7 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
                 {
                     Pic = new PicExtBizInfo
                     {
-                        TextSummary = string.IsNullOrEmpty(input.Entity.Summary) ? "[图片]" : input.Entity.Summary,
+                        TextSummary = input.Entity.Summary!,
                         BytesPbReserveC2c = "0800180020004200500062009201009a0100a2010c080012001800200028003a00".UnHex()
                     },
                     Video = new VideoExtBizInfo { BytesPbReserve = Array.Empty<byte>() },
@@ -113,7 +114,7 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
                 NoNeedCompatMsg = false
             }
         }, 0x11c5, 100, false, true);
-
+        
         output = packet.Serialize();
         extraPackets = null;
         return true;
@@ -125,7 +126,7 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var upload = packet.Body.Upload;
         var compat = Serializer.Deserialize<NotOnlineImage>(upload.CompatQMsg.AsSpan());
-
+        
         output = ImageUploadEvent.Result((int)packet.ErrorCode, upload.UKey, upload.MsgInfo, upload.IPv4s, compat);
         extraEvents = null;
         return true;
