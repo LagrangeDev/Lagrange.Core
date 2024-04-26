@@ -99,6 +99,7 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
                 {
                     Pic = new PicExtBizInfo
                     {
+                        TextSummary = input.Entity.Summary!,
                         BytesPbReserveC2c = "0800180020004200500062009201009a0100a2010c080012001800200028003a00".UnHex()
                     },
                     Video = new VideoExtBizInfo { BytesPbReserve = Array.Empty<byte>() },

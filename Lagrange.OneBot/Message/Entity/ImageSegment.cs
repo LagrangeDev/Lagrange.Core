@@ -5,7 +5,7 @@ using Lagrange.Core.Message.Entity;
 namespace Lagrange.OneBot.Message.Entity;
 
 [Serializable]
-public partial class ImageSegment(string url, string summary = "图片")
+public partial class ImageSegment(string url, string summary = "[图片]")
 {
     public ImageSegment() : this("", "") { }
 
@@ -26,7 +26,8 @@ public partial class ImageSegment : SegmentBase
             builder.Add(new ImageEntity
             {
                 FilePath = "",
-                ImageStream = new Lazy<Stream>(stream)
+                ImageStream = new Lazy<Stream>(stream),
+                Summary = imageSegment.Summary
             });
         }
     }
