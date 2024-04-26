@@ -26,7 +26,8 @@ public partial class ImageSegment : SegmentBase
             builder.Add(new ImageEntity
             {
                 FilePath = "",
-                ImageStream = new Lazy<Stream>(stream)
+                ImageStream = new Lazy<Stream>(stream),
+                Summary = imageSegment.Summary
             });
         }
     }
