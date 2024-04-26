@@ -5,7 +5,7 @@ using Lagrange.Core.Message.Entity;
 namespace Lagrange.OneBot.Message.Entity;
 
 [Serializable]
-public partial class ImageSegment(string url, string summary = "图片")
+public partial class ImageSegment(string url, string summary = "[图片]")
 {
     public ImageSegment() : this("", "") { }
 
