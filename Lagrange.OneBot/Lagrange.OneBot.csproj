@@ -21,7 +21,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Lagrange.Audio" Version="0.0.6-alpha" />
+        <PackageReference Include="Fleck" Version="1.2.0" />
+        <PackageReference Include="Konata.Codec" Version="1.4.0" />
         <PackageReference Include="LiteDB" Version="5.0.17" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
         <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="1.6.1" />
