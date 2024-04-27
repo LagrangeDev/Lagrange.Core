@@ -3,6 +3,7 @@ using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation.Extra;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
+using BitConverter = Lagrange.Core.Utility.Binary.BitConverter;
 
 namespace Lagrange.Core.Message.Entity;
 
@@ -64,7 +65,7 @@ public class MentionEntity : IMessageEntity
             return new MentionEntity
             {
                 Name = elems.Text.Str,
-                Uin = BitConverter.ToUInt32(attr.AsSpan()[7..11]),
+                Uin = BitConverter.ToUInt32(attr.AsSpan()[7..11], false),
                 Uid = ""
             };
         }
