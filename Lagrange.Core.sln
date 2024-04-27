@@ -18,8 +18,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "SolutionI
 		LICENSE = LICENSE
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lagrange.Audio", "Lagrange.Audio\Lagrange.Audio.csproj", "{2D462D26-0FD5-40A9-A0C8-F7449117EE0E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lagrange.Kritor", "Lagrange.Kritor\Lagrange.Kritor.csproj", "{FD0A15C0-600E-44A9-BAA8-6FAE0A1CA7EE}"
 EndProject
 Global
@@ -40,10 +38,6 @@ Global
 		{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D462D26-0FD5-40A9-A0C8-F7449117EE0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D462D26-0FD5-40A9-A0C8-F7449117EE0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D462D26-0FD5-40A9-A0C8-F7449117EE0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D462D26-0FD5-40A9-A0C8-F7449117EE0E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FD0A15C0-600E-44A9-BAA8-6FAE0A1CA7EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FD0A15C0-600E-44A9-BAA8-6FAE0A1CA7EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD0A15C0-600E-44A9-BAA8-6FAE0A1CA7EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
