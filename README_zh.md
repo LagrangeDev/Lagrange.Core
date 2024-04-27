@@ -364,6 +364,6 @@ Please use Lagrange.Core responsibly and in accordance with the law.
   >
   > ~~暂不提供签名 API，您可能需要在某个地方找到它并在 `BotConfig` 继承 `SignProvider` 类的 `CustomSignProviderBotConfig`~~
   > 
-- 内置签名服务器已经上线
+- ~~内置签名服务器已经上线~~
 
 - 如需使用 Windows 和 macOS 协议，你需要自行解决签名

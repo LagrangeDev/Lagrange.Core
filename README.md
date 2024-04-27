@@ -66,6 +66,8 @@ https://sign.lagrangecore.org/api/sign
 
 Thanks for 外国热心网友 for Provision of Azure Servlet
 
+** Built-in SignServer is now provided, Enjoy! **
+
 ## Features List
 
 | Protocol | Support | Login                     | Support | Messages  | Support | Operations        | Support | Events              | Support |
@@ -366,6 +368,6 @@ Thanks for 外国热心网友 for Provision of Azure Servlet
 
 ~~Signature API is now not provided, you may need to find it somewhere and inherit `SignProvider` class for `CustomSignProvider` in `BotConfig`~~
 
-- Built-in SignServer is now provided, Enjoy!
+- ~~Built-in SignServer is now provided, Enjoy!~~
 
-- Signature of Windows and macOS is missing, you need to figure out by your self~~
+- Signature of Windows and macOS is missing, you need to figure out by your self
