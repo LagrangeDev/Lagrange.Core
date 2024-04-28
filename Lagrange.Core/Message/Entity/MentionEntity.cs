@@ -60,14 +60,13 @@ public class MentionEntity : IMessageEntity
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
-        if (elems.Text is { Str: not null, PbReserve: { } reserve } && 
-            Serializer.Deserialize<MentionExtra>(reserve.AsSpan()) is { } extra and ({ Type: 2, Uin: not 0 } or { Type: 1 }))
+        if (elems.Text is { Str: not null, Attr6Buf: { } attr, PbReserve: not null })
         {
             return new MentionEntity
             {
-                Uin = extra.Uin ?? 0,
-                Uid = extra.Uid ?? "",
-                Name = elems.Text.Str
+                Name = elems.Text.Str,
+                Uin = BitConverter.ToUInt32(attr.AsSpan()[7..11], false),
+                Uid = ""
             };
         }
         
