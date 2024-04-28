@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Security.Cryptography;
 
 namespace Lagrange.Core.Utility.Extension;
@@ -13,38 +14,37 @@ internal static class ByteExtension
     public static string Hex(this Span<byte> bytes, bool lower = false, bool space = false)
         => Hex((ReadOnlySpan<byte>)bytes, lower, space);
 
-    public static string Hex(this ReadOnlySpan<byte> bytes, bool lower = false, bool space = false)
-        => space ? HexWithSpace(bytes, lower) : HexNoSpace(bytes, lower);
-
-    public static string HexNoSpace(this ReadOnlySpan<byte> bytes, bool lower = false)
+    public static string Hex(this ReadOnlySpan<byte> bytes, bool lower = true, bool space = false)
     {
-        Span<char> result = bytes.Length <= 1024 ? stackalloc char[bytes.Length * 2] : new char[bytes.Length * 2];
-        var map = lower ? lowerHexMap : upperHexMap;
-        byte mask = 0x0F;
-
-        for (var i = 0; i < bytes.Length; i++)
-        {
-            result[i * 2] = map[(bytes[i] >> 4) & mask];
-            result[i * 2 + 1] = map[bytes[i] & mask];
-        }
-
-        return new string(result);
-    }
-
-    public static string HexWithSpace(this ReadOnlySpan<byte> bytes, bool lower = false)
-    {
-        Span<char> result = bytes.Length <= 512 ? stackalloc char[bytes.Length * 3] : new char[bytes.Length * 3];
+        var capacity = (space ? bytes.Length * 3 - 1 : bytes.Length * 2);
+        char[]? rentArray = null;
+        Span<char> buffer = capacity <= 4096 ? stackalloc char[capacity] : (rentArray = ArrayPool<char>.Shared.Rent(capacity)).AsSpan();
         byte mask = 0x0F;
         var map = lower ? lowerHexMap : upperHexMap;
 
-        for (var i = 0; i < bytes.Length; i++)
+        if (!space)
         {
-            result[i * 2] = map[(bytes[i] >> 4) & mask];
-            result[i * 2 + 1] = map[bytes[i] & mask];
-            result[i * 2 + 2] = ' ';
+            for (var i = 0; i < bytes.Length; i++)
+            {
+                buffer[i * 2] = map[(bytes[i] >> 4) & mask];
+                buffer[i * 2 + 1] = map[bytes[i] & mask];
+            }
+        }
+        else
+        {
+            for (var i = 0; i < bytes.Length; i++)
+            {
+                buffer[i * 3] = map[(bytes[i] >> 4) & mask];
+                buffer[i * 3 + 1] = map[bytes[i] & mask];
+            }
+            for (var i = 2; i < buffer.Length; i += 3)
+                buffer[i] = ' ';
         }
 
-        return new string(result.Slice(0, Math.Max(0, result.Length - 1)));
+        var str = new string(buffer);
+        if (rentArray != null)
+            ArrayPool<char>.Shared.Return(rentArray);
+        return str;
     }
 
     public static string Md5(this byte[] bytes, bool lower = false)
