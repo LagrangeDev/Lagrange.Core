@@ -6,6 +6,7 @@ namespace Lagrange.Core.Utility.Extension;
 
 internal static class ByteExtension
 {
+
     private interface IHexByteStruct
     {
         void Write(uint twoChar);
@@ -30,9 +31,7 @@ internal static class ByteExtension
         [FieldOffset(0)] public uint twoChar;
 
         public void Write(uint twoChar)
-        {
-            this.twoChar = twoChar;
-        }
+            => this.twoChar = twoChar;
     }
 
     public static string Hex(this byte[] bytes, bool lower = false, bool space = false)
@@ -42,9 +41,9 @@ internal static class ByteExtension
         => Hex((ReadOnlySpan<byte>)bytes, lower, space);
 
     public static string Hex(this ReadOnlySpan<byte> bytes, bool lower = true, bool space = false)
-        => space ? HexInternal(bytes, lower, new WithSpaceHexByteStruct()) : HexInternal(bytes, lower, new NoSpaceHexByteStruct());
+        => space ? HexInternal<WithSpaceHexByteStruct>(bytes, lower) : HexInternal<NoSpaceHexByteStruct>(bytes, lower);
 
-    private unsafe static string HexInternal<TStruct>(ReadOnlySpan<byte> bytes, bool lower, TStruct writer) where TStruct : struct, IHexByteStruct
+    private unsafe static string HexInternal<TStruct>(ReadOnlySpan<byte> bytes, bool lower) where TStruct : struct, IHexByteStruct
     {
         if (bytes.Length == 0) return string.Empty;
 
@@ -53,7 +52,7 @@ internal static class ByteExtension
         if (structSize % 2 == 1)
             throw new ArgumentException($"{nameof(TStruct)}'s size of must be a multiple of 2, currently {structSize}");
 
-        var charCountPerByte = Marshal.SizeOf<TStruct>() / 2;  // 2 is the size of char
+        var charCountPerByte = structSize / 2;  // 2 is the size of char
         var result = new string('\0', bytes.Length * charCountPerByte);
         var resultSpan = new Span<TStruct>(Unsafe.AsPointer(ref Unsafe.AsRef(in result.GetPinnableReference())), bytes.Length);
 
