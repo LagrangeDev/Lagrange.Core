@@ -39,7 +39,7 @@ public partial class MarketFaceSegment : SegmentBase
             {
                 if (imgJson.GetProperty("id").GetString() == mfs.FaceId)
                 {
-                    mfs.Summary = imgJson.GetProperty("name").GetString() ?? "[\u5546\u57ce\u8868\u60c5]";
+                    mfs.Summary = $"[{imgJson.GetProperty("name").GetString()}]" ?? "[\u5546\u57ce\u8868\u60c5]";
                     break;
                 }
             }
