@@ -1,5 +1,4 @@
 ﻿using Lagrange.Core.Test.Tests;
-using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Test;
 
