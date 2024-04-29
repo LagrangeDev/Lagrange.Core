@@ -14,13 +14,16 @@ public class MarketFaceEntity : IMessageEntity
 
     public string Key { get; }
 
-    public MarketFaceEntity() : this(string.Empty, default, string.Empty) { }
+    public string Summary { get; }
 
-    public MarketFaceEntity(string faceId, int tabId, string key)
+    public MarketFaceEntity() : this(string.Empty, default, string.Empty, string.Empty) { }
+
+    public MarketFaceEntity(string faceId, int tabId, string key, string summary)
     {
         FaceId = faceId;
         TabId = tabId;
         Key = key;
+        Summary = summary;
     }
 
     IEnumerable<Elem> IMessageEntity.PackElement()
@@ -31,7 +34,7 @@ public class MarketFaceEntity : IMessageEntity
             {
                 MarketFace = new()
                 {
-                    Name = "[\u5546\u57ce\u8868\u60c5]",
+                    Summary = Summary,
                     ItemType = 6,
                     Info = 1,
                     FaceId = FaceId.UnHex(),
@@ -56,8 +59,16 @@ public class MarketFaceEntity : IMessageEntity
     {
         if (elem.MarketFace == null) return null;
 
-        return new MarketFaceEntity(elem.MarketFace.FaceId.Hex(), elem.MarketFace.TabId, elem.MarketFace.Key);
+        return new MarketFaceEntity(
+            elem.MarketFace.FaceId.Hex(true),
+            elem.MarketFace.TabId,
+            elem.MarketFace.Key,
+            elem.MarketFace.Summary
+        );
     }
 
-    public string ToPreviewString() => $"[{nameof(MarketFaceEntity)}: {TabId} - {FaceId} - {Key}]";
+    public string ToPreviewString()
+    {
+        return $"[{nameof(MarketFaceEntity)}: TabId: {TabId}; FaceId: {FaceId}; Key: {Key}; Summary: {Summary}]";
+    }
 }
