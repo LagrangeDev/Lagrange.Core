@@ -67,6 +67,8 @@ public sealed class MessageService
         var record = (MessageRecord)e.Chain;
         _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
 
+        if (_config.GetValue<bool>("Message:IgnoreSelf") && e.Chain.FriendUin == bot.BotUin) return; // ignore self message
+
         var request = ConvertToPrivateMsg(bot.BotUin, e.Chain);
 
         _ = _service.SendJsonAsync(request);
