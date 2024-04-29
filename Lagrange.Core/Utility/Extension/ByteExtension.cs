@@ -54,7 +54,7 @@ internal static class ByteExtension
 
         var charCountPerByte = structSize / 2;  // 2 is the size of char
         var result = new string('\0', bytes.Length * charCountPerByte);
-        var resultSpan = MemoryMarshal.CreateSpan(ref Unsafe.AsRef<TStruct>(Unsafe.AsPointer(ref Unsafe.AsRef(in result.GetPinnableReference()))), bytes.Length);
+        var resultSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<char, TStruct>(ref Unsafe.AsRef(in result.GetPinnableReference())), bytes.Length);
 
         for (int i = 0; i < bytes.Length; i++)
             resultSpan[i].Write(ToCharsBuffer(bytes[i], casing));
