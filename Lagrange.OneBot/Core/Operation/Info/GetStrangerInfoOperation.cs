@@ -4,6 +4,7 @@ using Lagrange.Core;
 using Lagrange.Core.Common.Entity;
 using Lagrange.OneBot.Core.Entity;
 using Lagrange.OneBot.Core.Entity.Action;
+using Lagrange.OneBot.Core.Operation.Converters;
 
 namespace Lagrange.OneBot.Core.Operation.Info;
 
@@ -12,7 +13,7 @@ public class GetStrangerInfoOperation : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload.Deserialize<OneBotGetStrangerInfo>() is { } stranger)
+        if (payload.Deserialize<OneBotGetStrangerInfo>(SerializerOptions.DefaultOptions) is { } stranger)
         {
             BotGroupMember? target = null;
 
