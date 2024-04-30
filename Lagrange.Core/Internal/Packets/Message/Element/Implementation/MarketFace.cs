@@ -8,7 +8,7 @@ namespace Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 [ProtoContract]
 internal class MarketFace
 {
-    [ProtoMember(1)] public string Name { get; set; }
+    [ProtoMember(1)] public string Summary { get; set; }
 
     [ProtoMember(2)] public int ItemType { get; set; }
 

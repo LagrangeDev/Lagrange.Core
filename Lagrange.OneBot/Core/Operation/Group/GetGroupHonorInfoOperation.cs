@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using Lagrange.Core;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Notify;
+using Lagrange.OneBot.Core.Operation.Converters;
 
 namespace Lagrange.OneBot.Core.Operation.Group;
 
@@ -27,7 +28,7 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
 
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload.Deserialize<OneBotHonorInfo>() is { } honor)
+        if (payload.Deserialize<OneBotHonorInfo>(SerializerOptions.DefaultOptions) is { } honor)
         {
             var result = new JsonObject();
             var honors = honor.Type == "all"

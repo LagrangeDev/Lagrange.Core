@@ -240,9 +240,9 @@ public sealed class MessageBuilder
         return this;
     }
     
-    public MessageBuilder MarketFace(string faceId, int tabId, string key)
+    public MessageBuilder MarketFace(string faceId, int tabId, string key, string summary)
     {
-        var marketFaceEntity = new MarketFaceEntity(faceId, tabId, key);
+        var marketFaceEntity = new MarketFaceEntity(faceId, tabId, key, summary);
         _chain.Add(marketFaceEntity);
         
         return this;
