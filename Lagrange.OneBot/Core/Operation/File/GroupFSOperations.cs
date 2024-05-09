@@ -87,3 +87,18 @@ public class GetGroupRootFilesOperation : IOperation
         throw new Exception();
     }
 }
+
+[Operation("delete_group_file")]
+public class DeleteGroupFileOperation : IOperation
+{
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
+    {
+        if (payload.Deserialize<OneBotDeleteFile>(SerializerOptions.DefaultOptions) is { } file)
+        {
+            await context.GroupFSDelete(file.GroupId, file.FileId);
+            return new OneBotResult(null, 0, "ok");
+        }
+
+        throw new Exception();
+    }
+}
