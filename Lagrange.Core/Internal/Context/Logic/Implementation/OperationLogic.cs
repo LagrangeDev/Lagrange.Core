@@ -142,6 +142,13 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupFSMoveEvent)events[0]).ResultCode == 0;
     }
     
+    public async Task<bool> GroupFSDelete(uint groupUin, string fileId)
+    {
+        var groupFSDeleteEvent = GroupFSDeleteEvent.Create(groupUin, fileId);
+        var events = await Collection.Business.SendEvent(groupFSDeleteEvent); 
+        return events.Count != 0 && ((GroupFSDeleteEvent)events[0]).ResultCode == 0;
+    }
+    
     public Task<bool> GroupFSUpload(uint groupUin, FileEntity fileEntity, string targetDirectory)
     {
         try

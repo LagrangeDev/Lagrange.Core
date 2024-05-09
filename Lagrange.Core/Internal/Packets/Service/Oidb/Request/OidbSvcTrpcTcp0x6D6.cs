@@ -15,6 +15,8 @@ internal class OidbSvcTrpcTcp0x6D6
     
     [ProtoMember(3)] public OidbSvcTrpcTcp0x6D6Download? Download { get; set; }
     
+    [ProtoMember(4)] public OidbSvcTrpcTcp0x6D6Delete? Delete { get; set; }
+    
     [ProtoMember(6)] public OidbSvcTrpcTcp0x6D6Move? Move { get; set; }
 }
 
@@ -57,6 +59,17 @@ internal class OidbSvcTrpcTcp0x6D6Download
     
     [ProtoMember(4)] public string FileId { get; set; }
 }
+
+[ProtoContract]
+internal class OidbSvcTrpcTcp0x6D6Delete
+{
+    [ProtoMember(1)] public uint GroupUin { get; set; }
+    
+    [ProtoMember(3)] public uint BusId { get; set; } // 102
+    
+    [ProtoMember(5)] public string FileId { get; set; }
+}
+
 
 [ProtoContract]
 internal class OidbSvcTrpcTcp0x6D6Move
