@@ -14,5 +14,5 @@ internal sealed class CallbackClientListener : ClientListener
 
     public override void OnRecvPacket(ReadOnlySpan<byte> packet) => _listener.OnRecvPacket(packet);
 
-    public override void OnSocketError(Exception e) => _listener.OnSocketError(e);
+    public override void OnSocketError(Exception e, ReadOnlyMemory<byte> data = default) => _listener.OnSocketError(e, data);
 }

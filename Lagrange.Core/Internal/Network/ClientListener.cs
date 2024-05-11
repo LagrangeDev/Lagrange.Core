@@ -171,5 +171,5 @@ internal abstract partial class ClientListener : IClientListener
 
     public abstract void OnDisconnect();
 
-    public abstract void OnSocketError(Exception e);
+    public abstract void OnSocketError(Exception e, ReadOnlyMemory<byte> data = default);
 }
