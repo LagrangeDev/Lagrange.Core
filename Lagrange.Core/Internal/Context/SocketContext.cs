@@ -86,7 +86,7 @@ internal class SocketContext : ContextBase, IClientListener
     {
         Collection.Log.LogFatal(Tag, $"Socket Error: {e.Message}");
         if (e.StackTrace != null) Collection.Log.LogFatal(Tag, e.StackTrace);
-        Collection.Log.LogDebug(Tag, data.Length > 0 ? $"Data: {data.Span.Hex()}" : "Empty Packet From Server");
+        if (data.Length > 0) Collection.Log.LogDebug(Tag, $"Data: {data.Span.Hex()}");
 
         _tcpClient.Disconnect();
         if (!_tcpClient.Connected) OnDisconnect();

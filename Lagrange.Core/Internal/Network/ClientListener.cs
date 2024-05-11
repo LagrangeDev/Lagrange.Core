@@ -105,7 +105,7 @@ internal abstract partial class ClientListener : IClientListener
         }
         catch (Exception e)
         {
-            OnSocketError(e);
+            OnSocketError(e, buffer);
             return false;
         }
     }
@@ -136,7 +136,15 @@ internal abstract partial class ClientListener : IClientListener
                     buffer = newBuffer;
                 }
                 await socket.ReceiveFullyAsync(buffer.AsMemory(headerSize, packetLength - headerSize), token);
-                OnRecvPacket(buffer.AsSpan(0, packetLength));
+                
+                try
+                {
+                    OnRecvPacket(buffer.AsSpan(0, packetLength));
+                }
+                catch (Exception e)
+                {
+                    OnSocketError(e, buffer.AsMemory(0, packetLength));
+                }
             }
         }
         catch (OperationCanceledException) when (token.IsCancellationRequested)
