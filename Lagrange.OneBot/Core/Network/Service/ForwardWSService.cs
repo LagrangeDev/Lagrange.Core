@@ -392,15 +392,15 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
     #endregion
 
     #region Disconnect
-    private readonly TimeSpan _closeTimeout = TimeSpan.FromSeconds(5);
-
     private async Task DisconnectAsync(string identifier, WebSocketCloseStatus status, CancellationToken token)
     {
         if (!_connections.TryRemove(identifier, out ConnectionContext? connection)) return;
 
         try
         {
-            await connection.WsContext.WebSocket.CloseAsync(status, null, token).WaitAsync(_closeTimeout, token);
+            await connection.WsContext.WebSocket
+                .CloseAsync(status, null, token)
+                .WaitAsync(TimeSpan.FromSeconds(5), token);
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {
