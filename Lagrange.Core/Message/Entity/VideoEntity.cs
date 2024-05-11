@@ -15,7 +15,7 @@ public class VideoEntity : IMessageEntity
 
     public Vector2 Size { get; }
 
-    public int VideoSize => (int)VideoStream!.Value.Length;
+    public int VideoSize { get; set; }
 
     public int VideoLength { get; set; }
 
@@ -39,6 +39,7 @@ public class VideoEntity : IMessageEntity
     internal VideoEntity(Vector2 size, int videoSize, string filePath, string fileMd5, string videoUuid)
     {
         Size = size;
+        VideoSize = videoSize;
         FilePath = filePath;
         VideoHash = fileMd5;
         VideoUuid = videoUuid;
@@ -88,10 +89,7 @@ public class VideoEntity : IMessageEntity
         return new VideoEntity(size, videoFile.FileSize, videoFile.FileName, videoFile.FileMd5.Hex(), videoFile.FileUuid);
     }
 
-    public string ToPreviewString()
-    {
-        return $"[Video {Size.X}x{Size.Y}]: {VideoSize} {VideoUrl}";
-    }
+    public string ToPreviewString() => $"[Video {Size.X}x{Size.Y}]: {VideoSize} {VideoUrl}";
 
     public string ToPreviewText() => "[视频]";
 }

@@ -367,7 +367,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
             .Where(c =>
             {
                 string path = c.Value.WsContext.RequestUri.LocalPath;
-                return path != "/api" || path != "/api/";
+                return path != "/api" && path != "/api/";
             })
             .Select(c => SendBytesAsync(payload, c.Key, token))
         );
@@ -398,7 +398,9 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
 
         try
         {
-            await connection.WsContext.WebSocket.CloseAsync(status, null, token);
+            await connection.WsContext.WebSocket
+                .CloseAsync(status, null, token)
+                .WaitAsync(TimeSpan.FromSeconds(5), token);
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {
