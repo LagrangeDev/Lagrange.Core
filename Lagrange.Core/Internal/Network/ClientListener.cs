@@ -144,6 +144,7 @@ internal abstract partial class ClientListener : IClientListener
                 catch (Exception e)
                 {
                     OnSocketError(e, buffer.AsMemory(0, packetLength));
+                    throw;
                 }
             }
         }
