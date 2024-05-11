@@ -239,6 +239,8 @@ internal unsafe partial class BinaryPacket : IDisposable  // TODO: Reimplement i
 
     public Span<byte> ReadBytes(int count)
     {
+        if (_stream.Length - _stream.Position < count) throw new InvalidDataException("Not enough data to read, remaining: " + (_stream.Length - _stream.Position) + " required: " + count);
+        
         Span<byte> buffer =  new byte[count];
         _ = _stream.Read(buffer);
         return buffer;
@@ -247,6 +249,8 @@ internal unsafe partial class BinaryPacket : IDisposable  // TODO: Reimplement i
     public Span<byte> ReadBytes(Prefix flag)
     {
         int length = ReadLength(flag);
+        if (_stream.Length - _stream.Position < length) throw new InvalidDataException("Not enough data to read, remaining: " + (_stream.Length - _stream.Position) + " required: " + length);
+
         return ReadBytes(length);
     }
 
