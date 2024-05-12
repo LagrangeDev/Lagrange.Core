@@ -41,14 +41,26 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         var str = GetStringProperties(payload.Body.Body.Properties);
         var num = GetNumberProperties(payload.Body.Body.Properties);
 
-        var bin = new BinaryPacket(Encoding.ASCII.GetBytes(str[20031]));
-        var birthday = new DateTime(bin.ReadUshort(), bin.ReadByte(), bin.ReadByte());
+        var birthday = GetBirthday(str[20031]);
         var reg = DateTime.UnixEpoch.AddSeconds(num[20026]);
         var info = new BotUserInfo(payload.Body.Body.Uin, payload.Body.Body.Uid, str[20002], birthday, str[20020], str[20003], str[20021], num[20037], reg, num[20009]);
 
         output = FetchUserInfoEvent.Result(0, info);
         extraEvents = null;
         return true;
+    }
+
+    private static DateTime GetBirthday(String birthday)
+    {
+        var bin = new BinaryPacket(Encoding.ASCII.GetBytes(birthday));
+        var year = bin.ReadUshort();
+        var month = bin.ReadByte();
+        var day = bin.ReadByte();
+        if (year != 0 && month >= 1 && month <= 12 && day >= 1 && day <= DateTime.DaysInMonth(year, month))
+        {
+            return new DateTime(year, month, day);
+        }
+        return new DateTime(1970, 1, 1);
     }
     
     private static Dictionary<uint, string> GetStringProperties(OidbSvcTrpcTcp0xFE1_2ResponseProperty properties)
