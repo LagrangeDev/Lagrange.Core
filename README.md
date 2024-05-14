@@ -354,7 +354,7 @@ Thanks for 外国热心网友 for Provision of Azure Servlet
 > [!WARNING]
 > Currently, `ForwardWebSocket` and `Http` are implemented based on `HttpListener`, which has the following problems:
 > 
-> 1. On Linux, the `Host` header of an Http request must match the value of `Prefixe` unless it is `+` or `*`, so configure the `Host` of `ForwardWebSocket` and `Http` to be the domain name or IP you are using to access it.
+> 1. On Linux, the `Host` header of an Http request must match the value of `Prefix` unless it is `+` or `*`, so configure the `Host` of `ForwardWebSocket` and `Http` to be the domain name or IP you are using to access it.
 > 
 > 2. On Windows, the `HttpListener` is based on the `http.sys` implementation, so you need to register `urlacl` before using it. see [netsh](https://learn.microsoft.com/en-us/windows-server/networking/technologies/netsh/netsh-http). You can also start `Lagrange.OneBot` using the administrator, at which point `HttpListener` will automatically register the required `urlacl`.
 
