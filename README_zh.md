@@ -349,7 +349,11 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 > [!WARNING]
 > 
-> 在 Linux 上，用于 `ForwardWebSocket` 和 `Http` 的 `Host` 必须使用与请求头中的 `Host` 相同的值，但 `*` 和 `+` 除外！这是一个上游错误。
+> 目前，`ForwardWebSocket` 和 `Http` 是基于 `HttpListener` 实现的，它存在以下问题:
+> 
+> 1. 在 Linux 中，Http 请求的 `Host` 头必须与 `Prefix` 的值相匹配，除非它是 `+` 或 `*`，因此请将 `ForwardWebSocket` 和 `Http` 的 `Host` 配置为您用来访问它的域名或 IP。
+> 
+> 2. 在 Windows 中，`HttpListener` 基于 `http.sys` 实现，因此使用前需要注册 `urlacl`，请参阅 [netsh](https://learn.microsoft.com/zh-cn/windows-server/networking/technologies/netsh/netsh-http)。您也可以使用管理员启动 `Lagrange.OneBot`，此时 `HttpListener` 会自动注册所需的 `urlacl`。
 
 ## 登录前须知
 
