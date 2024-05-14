@@ -65,9 +65,13 @@ internal static class ServicePacker
         if (uin != keystore.Uin.ToString() && protocol == 12) throw new Exception($"Uin mismatch: {uin} != {keystore.Uin}");
         
         var encrypted = packet.ReadBytes((int)packet.Remaining);
-        var decrypted = authFlag == 0 
-            ? encrypted
-            : keystore.TeaImpl.Decrypt(encrypted, keystore.Session.D2Key);
+        var decrypted = authFlag switch
+        {
+            0 => encrypted,
+            1 => keystore.TeaImpl.Decrypt(encrypted, keystore.Session.D2Key),
+            2 => keystore.TeaImpl.Decrypt(encrypted, new byte[16]),
+            _ => throw new Exception($"Unrecognized auth flag: {authFlag}")
+        };
         
         return new BinaryPacket(decrypted);
     }

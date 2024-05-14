@@ -121,4 +121,11 @@ public class BotKeystore
 
         public override string ToString() => $"Bot name: {Name} | Gender: {Gender} | Age: {Age}";
     }
+
+    internal void ClearSession()
+    {
+        Session.D2 = Array.Empty<byte>();
+        Session.Tgt = Array.Empty<byte>(); 
+        Session.D2Key = new byte[16];
+    }
 }

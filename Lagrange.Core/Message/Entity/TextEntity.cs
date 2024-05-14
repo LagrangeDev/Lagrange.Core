@@ -31,4 +31,6 @@ public class TextEntity : IMessageEntity
     {
         return $"[Text]: {Text}";
     }
+
+    public string ToPreviewText() => Text;
 }

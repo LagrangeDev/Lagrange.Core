@@ -4,6 +4,8 @@ using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
+#pragma warning disable CS8618
+
 namespace Lagrange.Core.Internal.Packets.Service.Oidb;
 
 /// <summary>
@@ -34,11 +36,19 @@ internal class OidbSvcTrpcTcpBase<T> where T : class
     
     [ProtoMember(2)] public uint SubCommand { get; set; }
     
+    [ProtoMember(3)] public uint ErrorCode { get; set; }
+    
     [ProtoMember(4)] public T Body { get; set; }
+    
+    [ProtoMember(5)] public string ErrorMsg { get; set; }
     
     [ProtoMember(7)] public OidbLafter? Lafter { get; set; } // if Lafter is null, it would not be serialized
     
+    [ProtoMember(11)] public List<OidbProperty> Properties { get; set; }
+    
     [ProtoMember(12)] public int Reserved { get; set; }
+    
+    public OidbSvcTrpcTcpBase() { }
     
     public OidbSvcTrpcTcpBase(T body, bool isLafter = false, bool isUid = false)
     {
@@ -47,8 +57,10 @@ internal class OidbSvcTrpcTcpBase<T> where T : class
         Command = command;
         SubCommand = subCommand;
         Body = body;
+        ErrorMsg = "";
         Reserved = Convert.ToInt32(isUid);
         Lafter = isLafter ? new OidbLafter() : null;
+        Properties = new List<OidbProperty>();
     }
     
     public OidbSvcTrpcTcpBase(T body, uint command,uint subCommand, bool isLafter = false, bool isUid = false)
@@ -56,7 +68,9 @@ internal class OidbSvcTrpcTcpBase<T> where T : class
         Command = command;
         SubCommand = subCommand;
         Body = body;
+        ErrorMsg = "";
         Reserved = Convert.ToInt32(isUid);
         Lafter = isLafter ? new OidbLafter() : null;
+        Properties = new List<OidbProperty>();
     }
 }

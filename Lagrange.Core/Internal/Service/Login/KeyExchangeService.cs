@@ -31,7 +31,7 @@ internal class KeyExchangeService : BaseService<KeyExchangeEvent>
         var response = Serializer.Deserialize<SsoKeyExchangeResponse>(input);
 
         var shareKey = keystore.PrimeImpl.GenerateShared(response.PublicKey, false);
-        var gcmDecrypted = new AesGcmImpl().Decrypt(response.GcmEncrypted, shareKey);
+        var gcmDecrypted = AesGcmImpl.Decrypt(response.GcmEncrypted, shareKey);
         var decrypted = Serializer.Deserialize<SsoKeyExchangeDecrypted>(gcmDecrypted.AsSpan());
 
         keystore.Session.ExchangeKey = decrypted.GcmKey;
@@ -51,7 +51,7 @@ internal class KeyExchangeService : BaseService<KeyExchangeEvent>
             Guid = deviceInfo.Guid.ToByteArray()
         };
         Serializer.Serialize(stream, plain1);
-        var gcmCalc1 = new AesGcmImpl().Encrypt(stream.ToArray(), keystore.PrimeImpl.ShareKey);
+        var gcmCalc1 = AesGcmImpl.Encrypt(stream.ToArray(), keystore.PrimeImpl.ShareKey);
 
         var timestamp = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         var plain2 = new SsoKeyExchangePlain2
@@ -65,7 +65,7 @@ internal class KeyExchangeService : BaseService<KeyExchangeEvent>
         var stream2 = BinarySerializer.Serialize(plain2);
         using var sha256 = SHA256.Create();
         var hash = sha256.ComputeHash(stream2.ToArray());
-        var gcmCalc2 = new AesGcmImpl().Encrypt(hash, GcmCalc2Key.UnHex());
+        var gcmCalc2 = AesGcmImpl.Encrypt(hash, GcmCalc2Key.UnHex());
 
         return new SsoKeyExchange
         {

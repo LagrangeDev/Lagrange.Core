@@ -27,7 +27,7 @@ internal class FetchClientKeyService : BaseService<FetchClientKeyEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out FetchClientKeyEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x102A_1Response>>(input);
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x102A_1Response>>(input);
 
         output = FetchClientKeyEvent.Result(0, packet.Body.ClientKey);
         extraEvents = null;

@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package kritor.common;
+
+option csharp_namespace = "Kritor.Common";
+option java_multiple_files = true;
+option java_package = "io.kritor.common";
+option go_package = "grpc/kritor/common";
+
+enum Scene {
+  GROUP = 0; // 群聊
+  FRIEND = 1; // 私聊
+  GUILD = 2; // 频道
+  STRANGER_FROM_GROUP = 10; // 群临时会话
+
+  // 以下类型为可选实现
+  NEARBY = 5; // 附近的人
+  STRANGER = 9; // 陌生人
+}
+
+message Contact {
+  Scene scene = 1;
+  string peer = 2; // 群聊则为群号 私聊则为uid 频道消息则为频道号
+  optional string sub_peer = 3; // 群临时聊天则为群号 频道消息则为子频道号 其它情况可不提供
+}
+
+message Sender {
+  string uid = 1;
+  optional uint64 uin = 2;
+  optional string nick = 3;
+}

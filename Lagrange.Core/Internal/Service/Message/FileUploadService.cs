@@ -48,7 +48,7 @@ internal class FileUploadService : BaseService<FileUploadEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out FileUploadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xE37Response>>(input);
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xE37Response>>(input);
         var upload = payload.Body.Upload;
 
         output = FileUploadEvent.Result((int)payload.ErrorCode, upload.BoolFileExist, upload.Uuid, upload.MediaPlatformUploadKey, upload.UploadIp, upload.UploadPort, upload.FileAddon);

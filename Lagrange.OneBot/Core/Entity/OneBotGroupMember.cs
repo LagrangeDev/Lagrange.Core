@@ -4,7 +4,7 @@ namespace Lagrange.OneBot.Core.Entity;
 
 [Serializable]
 public class OneBotGroupMember(uint groupId, uint uin, string permission, string groupLevel, string? memberCard,
-    string memberName, uint joinTime, uint lastMsgTime)
+    string memberName, string? title, uint joinTime, uint lastMsgTime)
 {
     [JsonPropertyName("group_id")] public uint GroupId { get; set; } = groupId;
 
@@ -30,7 +30,7 @@ public class OneBotGroupMember(uint groupId, uint uin, string permission, string
 
     [JsonPropertyName("unfriendly")] public bool Unfriendly { get; set; }
 
-    [JsonPropertyName("title")] public string Title { get; set; } = "";
+    [JsonPropertyName("title")] public string? Title { get; set; } = title;
 
     [JsonPropertyName("title_expire_time")] public uint TitleExpireTime { get; set; } = 0;
 

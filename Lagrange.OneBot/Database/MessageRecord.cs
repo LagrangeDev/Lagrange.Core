@@ -34,7 +34,7 @@ public class MessageRecord
     {
         var chain = record.GroupUin != 0 
             ? new MessageChain(record.GroupUin, record.FriendUin, record.Sequence, record.MessageId) 
-            : new MessageChain(record.FriendUin, string.Empty, string.Empty, record.Sequence, record.MessageId);
+            : new MessageChain(record.FriendUin, string.Empty, string.Empty, 0, record.Sequence, record.MessageId);
 
         chain.Time = record.Time;
         chain.FriendInfo = record.FriendInfo;

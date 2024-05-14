@@ -148,9 +148,9 @@ internal class MessagingLogic : LogicBase
             }
             case GroupSysRequestJoinEvent join:
             {
-                var fetchUidEvent = FetchAvatarEvent.Create(join.TargetUid);
+                var fetchUidEvent = FetchUserInfoEvent.Create(join.TargetUid);
                 var results = await Collection.Business.SendEvent(fetchUidEvent);
-                uint targetUin = results.Count == 0 ? 0 : ((FetchAvatarEvent)results[0]).Uin;
+                uint targetUin = results.Count == 0 ? 0 : ((FetchUserInfoEvent)results[0]).UserInfo.Uin;
                 
                 var joinArgs = new GroupJoinRequestEvent(join.GroupUin, targetUin);
                 Collection.Invoker.PostEvent(joinArgs);
@@ -160,9 +160,9 @@ internal class MessagingLogic : LogicBase
             {
                 uint invitorUin = await Collection.Business.CachingLogic.ResolveUin(invitation.GroupUin, invitation.InvitorUid) ?? 0;
                 
-                var fetchUidEvent = FetchAvatarEvent.Create(invitation.TargetUid);
+                var fetchUidEvent = FetchUserInfoEvent.Create(invitation.TargetUid);
                 var results = await Collection.Business.SendEvent(fetchUidEvent);
-                uint targetUin = results.Count == 0 ? 0 : ((FetchAvatarEvent)results[0]).Uin;
+                uint targetUin = results.Count == 0 ? 0 : ((FetchUserInfoEvent)results[0]).UserInfo.Uin;
                 
                 var invitationArgs = new GroupInvitationRequestEvent(invitation.GroupUin, targetUin, invitorUin);
                 Collection.Invoker.PostEvent(invitationArgs);
@@ -258,6 +258,21 @@ internal class MessagingLogic : LogicBase
                 var @event = chain.IsGroup 
                     ? RecordGroupDownloadEvent.Create(chain.GroupUin ?? 0, record.MsgInfo) 
                     : RecordDownloadEvent.Create(chain.Uid ?? string.Empty, record.MsgInfo);
+            
+                var results = await Collection.Business.SendEvent(@event);
+                if (results.Count != 0)
+                {
+                    var result = (RecordDownloadEvent)results[0];
+                    record.AudioUrl = result.AudioUrl;
+                }
+                
+                break;
+            }
+            case RecordEntity { AudioUuid: not null } record:
+            {
+                var @event = chain.IsGroup 
+                    ? RecordGroupDownloadEvent.Create(chain.GroupUin ?? 0, record.AudioUuid) 
+                    : RecordDownloadEvent.Create(chain.Uid ?? string.Empty, record.AudioUuid);
             
                 var results = await Collection.Business.SendEvent(@event);
                 if (results.Count != 0)

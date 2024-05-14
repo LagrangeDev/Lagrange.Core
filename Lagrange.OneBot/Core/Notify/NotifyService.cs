@@ -1,5 +1,7 @@
 using Lagrange.Core;
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Message.Entity;
 using Lagrange.OneBot.Core.Entity.Notify;
 using Lagrange.OneBot.Core.Network;
@@ -35,7 +37,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             logger.LogInformation(@event.ToString());
             await service.SendJsonAsync(new OneBotGroupMute(bot.BotUin, @event.IsMuted ? "ban" : "lift_ban", @event.GroupUin, @event.OperatorUin ?? 0, 0, @event.IsMuted ? -1 : 0));
         };
-        
+
         bot.Invoker.OnFriendRequestEvent += async (_, @event) =>
         {
             logger.LogInformation(@event.ToString());
@@ -54,7 +56,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 await service.SendJsonAsync(new OneBotGroupRequest(bot.BotUin, @event.InvitorUin, @event.GroupUin, "invite", request.Comment, flag));
             }
         };
-        
+
         bot.Invoker.OnGroupJoinRequestEvent += async (_, @event) =>
         {
             logger.LogInformation(@event.ToString());
@@ -66,7 +68,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 await service.SendJsonAsync(new OneBotGroupRequest(bot.BotUin, @event.TargetUin, @event.GroupUin, "add", request.Comment, flag));
             }
         };
-        
+
         bot.Invoker.OnGroupInvitationRequestEvent += async (_, @event) =>
         {
             logger.LogInformation(@event.ToString());
@@ -84,21 +86,41 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             logger.LogInformation(@event.ToString());
             await service.SendJsonAsync(new OneBotGroupAdmin(bot.BotUin, @event.IsPromote ? "set" : "unset", @event.GroupUin, @event.AdminUin));
         };
-        
+
         bot.Invoker.OnGroupMemberIncreaseEvent += async (_, @event) =>
         {
             logger.LogInformation(@event.ToString());
             string type = @event.Type.ToString().ToLower();
             await service.SendJsonAsync(new OneBotMemberIncrease(bot.BotUin, type, @event.GroupUin, @event.InvitorUin ?? 0, @event.MemberUin));
         };
-        
+
         bot.Invoker.OnGroupMemberDecreaseEvent += async (_, @event) =>
         {
             logger.LogInformation(@event.ToString());
-            string type = @event.Type.ToString().ToLower();
-            await service.SendJsonAsync(new OneBotMemberDecrease(bot.BotUin, type, @event.GroupUin, @event.OperatorUin ?? 0, @event.MemberUin));
+
+            BotGroupRequest? botGroupRequest = (await bot.ContextCollection.Business.OperationLogic.FetchGroupRequests())
+                ?.AsParallel()
+                .FirstOrDefault(r =>
+                {
+                    return @event.Type switch
+                    {
+                        GroupMemberDecreaseEvent.EventType.Kick => r.EventType == BotGroupRequest.Type.KickMember
+                                                                && r.TargetMemberUin == @event.MemberUin,
+                        GroupMemberDecreaseEvent.EventType.KickMe => r.EventType == BotGroupRequest.Type.KickSelf,
+                        _ => false
+                    } && r.GroupUin == @event.GroupUin;
+                });
+
+            string type = @event.Type switch
+            {
+                GroupMemberDecreaseEvent.EventType.KickMe => "kick_me",
+                GroupMemberDecreaseEvent.EventType.Leave => "leave",
+                GroupMemberDecreaseEvent.EventType.Kick => "kick",
+                _ => @event.Type.ToString()
+            };
+            await service.SendJsonAsync(new OneBotMemberDecrease(bot.BotUin, type, @event.GroupUin, botGroupRequest?.InvitorMemberUin ?? 0, @event.MemberUin));
         };
-        
+
         bot.Invoker.OnGroupMemberMuteEvent += async (_, @event) =>
         {
             logger.LogInformation(@event.ToString());
@@ -117,7 +139,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 OperatorId = @event.OperatorUin
             });
         };
-        
+
         bot.Invoker.OnFriendRecallEvent += async (_, @event) =>
         {
             logger.LogInformation(@event.ToString());

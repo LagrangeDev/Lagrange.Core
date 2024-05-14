@@ -8,5 +8,7 @@ public abstract class WSServiceOptions
 
     public uint HeartBeatInterval { get; set; } = 5000; // by default 5000
 
+    public bool HeartBeatEnable { get; set; } = true;
+
     public string? AccessToken { get; set; }
 }

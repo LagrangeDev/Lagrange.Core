@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -23,6 +24,8 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
     private readonly ILogger _logger = logger;
 
     protected ConnectionContext? ConnCtx;
+
+    private readonly SemaphoreSlim semaphore = new(1, 1);
 
     protected abstract class ConnectionContext(Task connectTask) : IDisposable
     {
@@ -68,18 +71,26 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         await SendJsonAsync(ws, payload, token);
     }
 
-    protected ValueTask SendJsonAsync<T>(ClientWebSocket ws, T payload, CancellationToken token)
+    protected async ValueTask SendJsonAsync<T>(ClientWebSocket ws, T payload, CancellationToken token)
     {
         var json = JsonSerializer.Serialize(payload);
         var buffer = Encoding.UTF8.GetBytes(json);
         Log.LogSendingData(_logger, Tag, json);
-        return ws.SendAsync(buffer.AsMemory(), WebSocketMessageType.Text, true, token);
+        await semaphore.WaitAsync(token);
+        try
+        {
+            await ws.SendAsync(buffer.AsMemory(), WebSocketMessageType.Text, true, token);
+        }
+        finally
+        {
+            semaphore.Release();
+        }
     }
 
-    protected ClientWebSocket CreateDefaultWebSocket()
+    protected ClientWebSocket CreateDefaultWebSocket(string role)
     {
         var ws = new ClientWebSocket();
-        ws.Options.SetRequestHeader("X-Client-Role", "Universal");
+        ws.Options.SetRequestHeader("X-Client-Role", role);
         ws.Options.SetRequestHeader("X-Self-ID", context.BotUin.ToString());
         ws.Options.SetRequestHeader("User-Agent", Constant.OneBotImpl);
         if (_options.AccessToken != null) ws.Options.SetRequestHeader("Authorization", $"Bearer {_options.AccessToken}");
@@ -119,7 +130,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
             {
                 if (_options.UseUniversalClient)
                 {
-                    using var ws = CreateDefaultWebSocket();
+                    using var ws = CreateDefaultWebSocket("Universal");
                     var connTask = ws.ConnectAsync(url, stoppingToken);
                     using var connCtx = new UniversalConnectionContext(ws, connTask);
                     ConnCtx = connCtx;
@@ -129,7 +140,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                     await SendJsonAsync(ws, lifecycle, stoppingToken);
 
                     var recvTask = ReceiveLoop(ws, stoppingToken);
-                    if (_options.HeartBeatInterval > 0)
+                    if (_options.HeartBeatEnable && _options.HeartBeatInterval > 0)
                     {
                         var heartbeatTask = HeartbeatLoop(ws, stoppingToken);
                         await Task.WhenAll(recvTask, heartbeatTask);
@@ -141,10 +152,10 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                 }
                 else
                 {
-                    using var wsApi = CreateDefaultWebSocket();
+                    using var wsApi = CreateDefaultWebSocket("Api");
                     var apiConnTask = wsApi.ConnectAsync(apiUrl, stoppingToken);
 
-                    using var wsEvent = CreateDefaultWebSocket();
+                    using var wsEvent = CreateDefaultWebSocket("Event");
                     var eventConnTask = wsEvent.ConnectAsync(eventUrl, stoppingToken);
 
                     var connTask = Task.WhenAll(apiConnTask, eventConnTask);
@@ -156,7 +167,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                     await SendJsonAsync(wsEvent, lifecycle, stoppingToken);
 
                     var recvTask = ReceiveLoop(wsApi, stoppingToken);
-                    if (_options.HeartBeatInterval > 0)
+                    if (_options.HeartBeatEnable && _options.HeartBeatInterval > 0)
                     {
                         var heartbeatTask = HeartbeatLoop(wsEvent, stoppingToken);
                         await Task.WhenAll(recvTask, heartbeatTask);
@@ -166,7 +177,6 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                         await recvTask;
                     }
                 }
-
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
@@ -176,12 +186,14 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
             catch (WebSocketException e) when (e.InnerException is HttpRequestException)
             {
                 Log.LogClientReconnect(_logger, Tag, _options.ReconnectInterval);
-                var interval = TimeSpan.FromMilliseconds(_options.HeartBeatInterval);
+                var interval = TimeSpan.FromMilliseconds(_options.ReconnectInterval);
                 await Task.Delay(interval, stoppingToken);
             }
             catch (Exception e)
             {
                 Log.LogClientDisconnected(_logger, e, Tag);
+                var interval = TimeSpan.FromMilliseconds(_options.ReconnectInterval);
+                await Task.Delay(interval, stoppingToken);
             }
         }
     }
@@ -195,6 +207,12 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
             while (true)
             {
                 var result = await ws.ReceiveAsync(buffer.AsMemory(received), token);
+                if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Close", token);
+                    break;
+                }
+
                 received += result.Count;
                 if (result.EndOfMessage) break;
 
@@ -209,12 +227,24 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
     private async Task HeartbeatLoop(ClientWebSocket ws, CancellationToken token)
     {
         var interval = TimeSpan.FromMilliseconds(_options.HeartBeatInterval);
+        Stopwatch sw = new();
+
         while (true)
         {
             var status = new OneBotStatus(true, true);
             var heartBeat = new OneBotHeartBeat(context.BotUin, (int)_options.HeartBeatInterval, status);
+
+            sw.Start();
             await SendJsonAsync(ws, heartBeat, token);
-            await Task.Delay(interval, token);
+            sw.Stop();
+
+            // Implementing precise intervals by subtracting Stopwatch's timing from configured intervals
+            var waitingTime = interval - sw.Elapsed;
+            if (waitingTime >= TimeSpan.Zero)
+            {
+                await Task.Delay(waitingTime, token);
+            }
+            sw.Reset();
         }
     }
 

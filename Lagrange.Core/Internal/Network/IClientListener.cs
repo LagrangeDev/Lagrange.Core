@@ -23,5 +23,5 @@ internal interface IClientListener
     /// <summary>
     /// On socket error
     /// </summary>
-    public void OnSocketError(Exception e);
+    public void OnSocketError(Exception e, ReadOnlyMemory<byte> data);
 }

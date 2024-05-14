@@ -22,7 +22,7 @@ public class GroupMemberIncreaseEvent : EventBase
 
     public enum EventType : uint
     {
-        Approve = 0,
-        Invite = 6
+        Approve = 130,
+        Invite = 131
     }
 }

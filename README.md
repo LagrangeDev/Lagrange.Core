@@ -60,6 +60,14 @@ By using or accessing Lagrange.Core, the user acknowledges and agrees to release
 
 Please use Lagrange.Core responsibly and in accordance with the law.
 
+## SignServer
+
+https://sign.lagrangecore.org/api/sign
+
+Thanks for 外国热心网友 for Provision of Azure Servlet
+
+** Built-in SignServer is now provided, Enjoy! **
+
 ## Features List
 
 | Protocol | Support | Login                     | Support | Messages  | Support | Operations        | Support | Events              | Support |
@@ -290,7 +298,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
-  "SignServerUrl": "",
+  "SignServerUrl": "https://sign.lagrangecore.org/api/sign",
   "Account": {
     "Uin": 0,
     "Password": "",
@@ -313,13 +321,15 @@ Please use Lagrange.Core responsibly and in accordance with the law.
       "Suffix": "/onebot/v11/ws",
       "ReconnectInterval": 5000,
       "HeartBeatInterval": 5000,
+      "HeartBeatEnable": true,
       "AccessToken": ""
     },
     {
       "Type": "ForwardWebSocket",
-      "Host": "127.0.0.1",
+      "Host": "*",
       "Port": 8081,
       "HeartBeatInterval": 5000,
+      "HeartBeatEnable": true,
       "AccessToken": ""
     },
     {
@@ -328,6 +338,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
       "Port": 8082,
       "Suffix": "/",
       "HeartBeatInterval": 5000,
+      "HeartBeatEnable": true,
       "AccessToken": ""
     },
     {
@@ -340,6 +351,10 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 }
 ```
 
+> [!WARNING]
+> 
+> On Linux, `Host` for `ForwardWebSocket` and `Http` must use the same value as `Host` in the request header, except for `*` and `+`! This is an upstream bug.
+
 ## NOTICE BEFORE LOGIN
 
 - The NewDeviceLogin feature has not been implemented yet. It is recommended to use QRCode login for now.
@@ -351,6 +366,8 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 ~~Thanks KonataDev/TheSnowfield for Provision of Signature API~~
 
-Signature API is now not provided, you may need to find it somewhere and inherit `SignProvider` class for `CustomSignProvider` in `BotConfig`
+~~Signature API is now not provided, you may need to find it somewhere and inherit `SignProvider` class for `CustomSignProvider` in `BotConfig`~~
+
+- ~~Built-in SignServer is now provided, Enjoy!~~
 
 - Signature of Windows and macOS is missing, you need to figure out by your self

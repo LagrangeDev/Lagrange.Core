@@ -41,7 +41,10 @@ internal class RecordDownloadService : BaseService<RecordDownloadEvent>
             },
             Download = new DownloadReq
             {
-                Node = input.Node,
+                Node = input.Node ?? new IndexNode
+                {
+                    FileUuid = input.FileUuid
+                },
                 Download = new DownloadExt
                 {
                     Video = new VideoDownloadExt
@@ -61,7 +64,7 @@ internal class RecordDownloadService : BaseService<RecordDownloadEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out RecordDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpResponse<NTV2RichMediaResp>>(input);
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var body = payload.Body.Download;
         string url = $"https://{body.Info.Domain}{body.Info.UrlPath}{body.RKeyParam}";
         

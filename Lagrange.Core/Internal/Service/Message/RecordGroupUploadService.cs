@@ -21,8 +21,8 @@ internal class RecordGroupUploadService : BaseService<RecordGroupUploadEvent>
     {
         if (input.Entity.AudioStream is null) throw new Exception();
         
-        string md5 = input.Entity.AudioStream.Md5(true);
-        string sha1 = input.Entity.AudioStream.Sha1(true);
+        string md5 = input.Entity.AudioStream.Value.Md5(true);
+        string sha1 = input.Entity.AudioStream.Value.Sha1(true);
 
         var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq
         {
@@ -50,7 +50,7 @@ internal class RecordGroupUploadService : BaseService<RecordGroupUploadEvent>
                     {
                         FileInfo = new FileInfo
                         {
-                            FileSize = (uint)input.Entity.AudioStream.Length,
+                            FileSize = (uint)input.Entity.AudioStream.Value.Length,
                             FileHash = md5,
                             FileSha1 = sha1,
                             FileName = md5 + ".amr",
@@ -98,7 +98,7 @@ internal class RecordGroupUploadService : BaseService<RecordGroupUploadEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out RecordGroupUploadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<NTV2RichMediaResp>>(input);
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var upload = packet.Body.Upload;
         var compat = Serializer.Deserialize<RichText>(upload.CompatQMsg.AsSpan());
         

@@ -5,7 +5,7 @@ namespace Lagrange.Core.Utility.Crypto;
  
 internal class AesGcmImpl
 {
-    public byte[] Encrypt(byte[] data, byte[] key)
+    public static byte[] Encrypt(byte[] data, byte[] key)
     {
         using var aes = new AesGcm(key);
         var iv = ByteGen.GenRandomBytes(12);
@@ -21,7 +21,7 @@ internal class AesGcmImpl
         return result.ToArray();
     }
     
-    public byte[] Decrypt(byte[] data, byte[] key)
+    public static byte[] Decrypt(byte[] data, byte[] key)
     {
         using var aes = new AesGcm(key);
         var iv = data[..12];

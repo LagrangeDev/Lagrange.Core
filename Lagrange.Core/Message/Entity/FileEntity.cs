@@ -115,4 +115,6 @@ public class FileEntity : IMessageEntity
     }
 
     public string ToPreviewString() => $"[File] {FileName} ({FileSize}): {FileUrl ?? "failed to receive file url"}";
+
+    public string ToPreviewText() => $"[文件] {FileName}";
 }

@@ -74,6 +74,9 @@ public static class GroupExt
 
     public static Task<bool> GroupSetSpecialTitle(this BotContext bot, uint groupUin, uint targetUin, string title)
         => bot.ContextCollection.Business.OperationLogic.GroupSetSpecialTitle(groupUin, targetUin, title);
+    
+    public static Task<bool> GroupSetMessageReaction(this BotContext bot, uint groupUin, uint sequence, string code)
+        => bot.ContextCollection.Business.OperationLogic.SetMessageReaction(groupUin, sequence, code);
 
     #region Group File System
 
@@ -91,6 +94,9 @@ public static class GroupExt
 
     public static Task<bool> GroupFSMove(this BotContext bot, uint groupUin, string fileId, string parentDirectory, string targetDirectory)
         => bot.ContextCollection.Business.OperationLogic.GroupFSMove(groupUin, fileId, parentDirectory, targetDirectory);
+    
+    public static Task<bool> GroupFSDelete(this BotContext bot, uint groupUin, string fileId)
+        => bot.ContextCollection.Business.OperationLogic.GroupFSDelete(groupUin, fileId);
     
     public static Task<bool> GroupFSUpload(this BotContext bot, uint groupUin, FileEntity fileEntity, string targetDirectory = "/")
         => bot.ContextCollection.Business.OperationLogic.GroupFSUpload(groupUin, fileEntity, targetDirectory);

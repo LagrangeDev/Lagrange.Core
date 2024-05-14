@@ -40,7 +40,7 @@ internal class FileDownloadService : BaseService<FileDownloadEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out FileDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0xE37_1200Response>>(input);
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xE37_1200Response>>(input);
         
         var urlBuilder = new StringBuilder()
             .Append("http://")

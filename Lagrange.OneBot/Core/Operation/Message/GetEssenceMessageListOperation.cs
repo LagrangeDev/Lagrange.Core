@@ -29,7 +29,7 @@ public class GetEssenceMessageListOperation(TicketService ticket) : IOperation
                 var response = await ticket.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
                 string raw = await response.Content.ReadAsStringAsync();
                 var @object = JsonSerializer.Deserialize<RequestBody>(raw);
-                if (@object == null) continue;
+                if (@object?.Data.MsgList == null) break;
 
                 foreach (var msg in @object.Data.MsgList)
                 {
@@ -91,7 +91,7 @@ file class RequestBody
 [Serializable]
 file class Data
 {
-    [JsonPropertyName("msg_list")] public MsgList[] MsgList { get; set; }
+    [JsonPropertyName("msg_list")] public MsgList[]? MsgList { get; set; }
 
     [JsonPropertyName("is_end")] public bool IsEnd { get; set; }
 

@@ -1,6 +1,7 @@
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation.Extra;
+using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 using BitConverter = Lagrange.Core.Utility.Binary.BitConverter;
 
@@ -37,7 +38,7 @@ public class MentionEntity : IMessageEntity
         var reserve = new MentionExtra
         {
             Type = Uin == 0 ? 1 : 2,
-            Field4 = 0,
+            Uin = 0,
             Field5 = 0,
             Uid = Uid,
         };
@@ -59,11 +60,14 @@ public class MentionEntity : IMessageEntity
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
-        if (elems.Text is { Str: not null, Attr6Buf: not null } text && text.Attr6Buf.Length != 0)
+        if (elems.Text is { Str: not null, Attr6Buf: { } attr, PbReserve: not null })
         {
-            return text.Attr6Buf[7..11] is { } uin
-                ? new MentionEntity(text.Str) { Uin = BitConverter.ToUInt32(uin, false) }
-                : null;
+            return new MentionEntity
+            {
+                Name = elems.Text.Str,
+                Uin = BitConverter.ToUInt32(attr.AsSpan()[7..11], false),
+                Uid = ""
+            };
         }
         
         return null;
@@ -73,4 +77,6 @@ public class MentionEntity : IMessageEntity
     {
         return $"[Mention]: {Name}({Uin})";
     }
+
+    public string ToPreviewText() => $"{Name} ";
 }

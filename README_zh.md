@@ -294,7 +294,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
-  "SignServerUrl": "",
+  "SignServerUrl": "https://sign.lagrangecore.org/api/sign",
   "Account": {
     "Uin": 0,
     "Password": "",
@@ -317,13 +317,15 @@ Please use Lagrange.Core responsibly and in accordance with the law.
       "Suffix": "/onebot/v11/ws",
       "ReconnectInterval": 5000,
       "HeartBeatInterval": 5000,
+      "HeartBeatEnable": true,
       "AccessToken": ""
     },
     {
       "Type": "ForwardWebSocket",
-      "Host": "127.0.0.1",
+      "Host": "*",
       "Port": 8081,
       "HeartBeatInterval": 5000,
+      "HeartBeatEnable": true,
       "AccessToken": ""
     },
     {
@@ -332,6 +334,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
       "Port": 8082,
       "Suffix": "/",
       "HeartBeatInterval": 5000,
+      "HeartBeatEnable": true,
       "AccessToken": ""
     },
     {
@@ -344,6 +347,10 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 }
 ```
 
+> [!WARNING]
+> 
+> 在 Linux 上，用于 `ForwardWebSocket` 和 `Http` 的 `Host` 必须使用与请求头中的 `Host` 相同的值，但 `*` 和 `+` 除外！这是一个上游错误。
+
 ## 登录前须知
 
 - 目前新设备登录尚未实现，建议使用二维码登录
@@ -355,6 +362,8 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
   > ~~感谢 KonataDev/TheSnowfield 提供的签名 API~~
   >
-  > 暂不提供签名 API，您可能需要在某个地方找到它并在 `BotConfig` 继承 `SignProvider` 类的 `CustomSignProviderBotConfig`
+  > ~~暂不提供签名 API，您可能需要在某个地方找到它并在 `BotConfig` 继承 `SignProvider` 类的 `CustomSignProviderBotConfig`~~
+  > 
+- ~~内置签名服务器已经上线~~
 
 - 如需使用 Windows 和 macOS 协议，你需要自行解决签名

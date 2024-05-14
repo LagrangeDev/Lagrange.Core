@@ -26,9 +26,9 @@ public sealed class MessageService
     private readonly IConfiguration _config;
     private readonly Dictionary<Type, List<(string Type, SegmentBase Factory)>> _entityToFactory;
     private readonly bool _stringPost;
-    
+
     private static readonly JsonSerializerOptions Options;
-    
+
     static MessageService()
     {
         Options = new JsonSerializerOptions { TypeInfoResolver = new DefaultJsonTypeInfoResolver { Modifiers = { ModifyTypeInfo } } };
@@ -46,7 +46,7 @@ public sealed class MessageService
         invoker.OnFriendMessageReceived += OnFriendMessageReceived;
         invoker.OnGroupMessageReceived += OnGroupMessageReceived;
         invoker.OnTempMessageReceived += OnTempMessageReceived;
-        
+
         _entityToFactory = new Dictionary<Type, List<(string, SegmentBase)>>();
         foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
         {
@@ -67,28 +67,33 @@ public sealed class MessageService
         var record = (MessageRecord)e.Chain;
         _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
 
-        var request = ConvertToPrivateMsg(bot.BotUin, e.Chain, record.MessageHash);
+        if (_config.GetValue<bool>("Message:IgnoreSelf") && e.Chain.FriendUin == bot.BotUin) return; // ignore self message
+
+        var request = ConvertToPrivateMsg(bot.BotUin, e.Chain);
 
         _ = _service.SendJsonAsync(request);
     }
 
-    public object ConvertToPrivateMsg(uint uin, MessageChain chain, int hash)
+    public object ConvertToPrivateMsg(uint uin, MessageChain chain)
     {
         var segments = Convert(chain);
+        int hash = MessageRecord.CalcMessageHash(chain.MessageId, chain.Sequence);
         string raw = ToRawMessage(segments);
         object request = _stringPost ? new OneBotPrivateStringMsg(uin, new OneBotSender(chain.FriendUin, chain.FriendInfo?.Nickname ?? string.Empty), "friend")
-            {
-                MessageId = hash,
-                UserId = chain.FriendUin,
-                Message = raw,
-                RawMessage = raw
-            } : new OneBotPrivateMsg(uin, new OneBotSender(chain.FriendUin, chain.FriendInfo?.Nickname ?? string.Empty), "friend")
-            {
-                MessageId = hash,
-                UserId = chain.FriendUin,
-                Message = segments,
-                RawMessage = raw
-            };
+        {
+            MessageId = hash,
+            UserId = chain.FriendUin,
+            Message = raw,
+            RawMessage = raw,
+            TargetId = chain.TargetUin,
+        } : new OneBotPrivateMsg(uin, new OneBotSender(chain.FriendUin, chain.FriendInfo?.Nickname ?? string.Empty), "friend")
+        {
+            MessageId = hash,
+            UserId = chain.FriendUin,
+            Message = segments,
+            RawMessage = raw,
+            TargetId = chain.TargetUin
+        };
         return request;
     }
 
@@ -96,18 +101,18 @@ public sealed class MessageService
     {
         var record = (MessageRecord)e.Chain;
         _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
-        
         if (_config.GetValue<bool>("Message:IgnoreSelf") && e.Chain.FriendUin == bot.BotUin) return; // ignore self message
 
-        var request = ConvertToGroupMsg(bot.BotUin, e.Chain, record.MessageHash);
+        var request = ConvertToGroupMsg(bot.BotUin, e.Chain);
 
         _ = _service.SendJsonAsync(request);
     }
 
-    public object ConvertToGroupMsg(uint uin, MessageChain chain, int hash)
+    public object ConvertToGroupMsg(uint uin, MessageChain chain)
     {
         var segments = Convert(chain);
-        object request = _stringPost 
+        int hash = MessageRecord.CalcMessageHash(chain.MessageId, chain.Sequence);
+        object request = _stringPost
             ? new OneBotGroupStringMsg(uin, chain.GroupUin ?? 0, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash)
             : new OneBotGroupMsg(uin, chain.GroupUin ?? 0, segments, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash);
         return request;
@@ -117,7 +122,7 @@ public sealed class MessageService
     {
         var record = (MessageRecord)e.Chain;
         _context.GetCollection<MessageRecord>().Insert(new BsonValue(record.MessageHash), record);
-        
+
         var segments = Convert(e.Chain);
         var request = new OneBotPrivateMsg(bot.BotUin, new OneBotSender(e.Chain.FriendUin, e.Chain.FriendInfo?.Nickname ?? string.Empty), "group")
         {
@@ -180,7 +185,7 @@ public sealed class MessageService
         }
         return rawMessageBuilder.ToString();
     }
-    
+
     private static void ModifyTypeInfo(JsonTypeInfo ti)
     {
         if (ti.Kind != JsonTypeInfoKind.Object) return;

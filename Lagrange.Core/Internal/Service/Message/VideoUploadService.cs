@@ -21,8 +21,8 @@ internal class VideoUploadService : BaseService<VideoUploadEvent>
     {
         if (input.Entity.VideoStream is null) throw new Exception();
         
-        string md5 = input.Entity.VideoStream.Md5(true);
-        string sha1 = input.Entity.VideoStream.Sha1(true);
+        string md5 = input.Entity.VideoStream.Value.Md5(true);
+        string sha1 = input.Entity.VideoStream.Value.Sha1(true);
         
         var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq
         {
@@ -54,7 +54,7 @@ internal class VideoUploadService : BaseService<VideoUploadEvent>
                     {
                         FileInfo = new FileInfo
                         {
-                            FileSize = (uint)input.Entity.VideoStream.Length,
+                            FileSize = (uint)input.Entity.VideoStream.Value.Length,
                             FileHash = md5,
                             FileSha1 = sha1,
                             FileName = "video.mp4",
@@ -76,7 +76,7 @@ internal class VideoUploadService : BaseService<VideoUploadEvent>
                     {
                         FileInfo = new FileInfo  // dummy images
                         {
-                            FileSize = (uint)input.Entity.VideoStream.Length - 1200,
+                            FileSize = (uint)input.Entity.VideoStream.Value.Length - 1200,
                             FileHash = md5,
                             FileSha1 = sha1,
                             FileName = "video.jpg",
@@ -123,7 +123,7 @@ internal class VideoUploadService : BaseService<VideoUploadEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out VideoUploadEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<NTV2RichMediaResp>>(input);
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var upload = packet.Body.Upload;
         var compat = Serializer.Deserialize<VideoFile>(packet.Body.Upload.CompatQMsg.AsSpan());
         

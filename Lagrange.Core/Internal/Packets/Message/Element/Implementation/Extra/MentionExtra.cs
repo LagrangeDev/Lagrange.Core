@@ -10,7 +10,7 @@ internal class MentionExtra
 {
     [ProtoMember(3)] public int? Type { get; set; } // 1 for All Member, 2 for Specific Member
     
-    [ProtoMember(4)] public int? Field4 { get; set; } // Const Zero
+    [ProtoMember(4)] public uint? Uin { get; set; }
     
     [ProtoMember(5)] public int? Field5 { get; set; } // Const Zero
     

@@ -4,6 +4,7 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Internal.Network;
 using Lagrange.Core.Utility.Binary;
+using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Network;
 
 namespace Lagrange.Core.Internal.Context;
@@ -58,7 +59,7 @@ internal class SocketContext : ContextBase, IClientListener
         return false;
     }
     
-    public Task<bool> Send(byte[] packet) => _tcpClient.Send(packet);
+    public Task<bool> Send(ReadOnlyMemory<byte> packet) => _tcpClient.Send(packet);
 
     public uint GetPacketLength(ReadOnlySpan<byte> header) => BinaryPrimitives.ReadUInt32BigEndian(header);
 
@@ -81,9 +82,12 @@ internal class SocketContext : ContextBase, IClientListener
         }
     }
 
-    public void OnSocketError(Exception e)
+    public void OnSocketError(Exception e, ReadOnlyMemory<byte> data = default)
     {
         Collection.Log.LogFatal(Tag, $"Socket Error: {e.Message}");
+        if (e.StackTrace != null) Collection.Log.LogFatal(Tag, e.StackTrace);
+        if (data.Length > 0) Collection.Log.LogDebug(Tag, $"Data: {data.Span.Hex()}");
+
         _tcpClient.Disconnect();
         if (!_tcpClient.Connected) OnDisconnect();
     }

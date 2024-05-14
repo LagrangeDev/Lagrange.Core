@@ -44,7 +44,7 @@ internal static class SsoPacker
             .WriteBytes(keystore.Session.Tgt, Prefix.Uint32 | Prefix.WithPrefix)
             .WriteString(packet.Command, Prefix.Uint32 | Prefix.WithPrefix)
             .WriteBytes(Array.Empty<byte>(), Prefix.Uint32 | Prefix.WithPrefix) // TODO: unknown
-            .WriteString(device.Guid.ToByteArray().Hex().ToLower(), Prefix.Uint32 | Prefix.WithPrefix)
+            .WriteString(device.Guid.ToByteArray().Hex(true), Prefix.Uint32 | Prefix.WithPrefix)
             .WriteBytes(Array.Empty<byte>(), Prefix.Uint32 | Prefix.WithPrefix) // TODO: unknown
             .WriteString(appInfo.CurrentVersion, Prefix.Uint16 | Prefix.WithPrefix) // Actually at wtlogin.trans_emp, this string is empty and only prefix 00 02 is given, but we can just simply ignore that situation
             .WriteBytes(stream.ToArray(), Prefix.Uint32 | Prefix.WithPrefix), Prefix.Uint32 | Prefix.WithPrefix); // packet end
@@ -66,8 +66,9 @@ internal static class SsoPacker
         int isCompressed = packet.ReadInt(); 
         packet.ReadBytes(Prefix.Uint32 | Prefix.LengthOnly); // Dummy Sso header
 
-        if (retCode == 0) return new SsoPacket(12, command, sequence, isCompressed == 0 ? packet : InflatePacket(packet));
-        throw new Exception($"Packet '{command}' returns {retCode} with seq: {sequence}, extra: {extra}");
+        return retCode == 0 
+            ? new SsoPacket(12, command, sequence, isCompressed == 0 ? packet : InflatePacket(packet)) 
+            : new SsoPacket(12, command, sequence, retCode, extra);
     }
 
     private static BinaryPacket InflatePacket(BinaryPacket original)

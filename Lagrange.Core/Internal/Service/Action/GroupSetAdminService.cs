@@ -32,7 +32,7 @@ internal class GroupSetAdminService : BaseService<GroupSetAdminEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out GroupSetAdminEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x1096_1Response>>(input);
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x1096_1Response>>(input);
         
         output = GroupSetAdminEvent.Result((int)packet.ErrorCode);
         extraEvents = null;

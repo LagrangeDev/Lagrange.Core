@@ -11,10 +11,11 @@ public class BotGroupMember
         Uid = string.Empty;
         MemberCard = string.Empty;
         MemberName = string.Empty;
+        SpecialTitle = string.Empty;
     }
     
     internal BotGroupMember(uint uin, string uid, GroupMemberPermission permission, uint groupLevel, string? memberCard, 
-        string memberName, DateTime joinTime, DateTime lastMsgTime)
+        string memberName, string? specialTitle, DateTime joinTime, DateTime lastMsgTime)
     {
         Uin = uin;
         Uid = uid;
@@ -22,6 +23,7 @@ public class BotGroupMember
         GroupLevel = groupLevel;
         MemberCard = memberCard;
         MemberName = memberName;
+        SpecialTitle = specialTitle;
         JoinTime = joinTime;
         LastMsgTime = lastMsgTime;
     }
@@ -38,6 +40,8 @@ public class BotGroupMember
     
     public string MemberName { get; set; }
     
+    public string? SpecialTitle { get; set; }
+
     public DateTime JoinTime { get; set; }
     
     public DateTime LastMsgTime { get; set; }

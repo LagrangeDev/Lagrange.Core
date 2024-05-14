@@ -33,7 +33,7 @@ internal class GroupKickMemberService : BaseService<GroupKickMemberEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
         out GroupKickMemberEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var packet = Serializer.Deserialize<OidbSvcTrpcTcpResponse<OidbSvcTrpcTcp0x8A0_1Response>>(input);
+        var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x8A0_1Response>>(input);
         
         output = GroupKickMemberEvent.Result((int)packet.ErrorCode);
         extraEvents = null;

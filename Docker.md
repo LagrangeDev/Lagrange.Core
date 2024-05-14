@@ -38,7 +38,7 @@ docker run -td -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -
 >       4. Press any key
 >       5. Exit the container using `Ctrl + P` `Ctrl + Q`
 >
-> 2. If the host needs to access the Implementation (e.g., `Http`, `ForwardWebSocket`), please configure the Host of Implementation as `0.0.0.0` or `*`
+> 2. If the host needs to access the Implementation (e.g., `Http`, `ForwardWebSocket`), please configure the Host of Implementation as `*`
 > 3. If the implementation needs to access the host network (e.g., `HttpPost`, `ReverseWebSocket`), please configure the `Host` of implementation to be `host.docker.internal`.
 
 ## Migration from older versions
