@@ -16,9 +16,9 @@ namespace Lagrange.OneBot.Core.Network.Service;
 public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptionsSnapshot<ForwardWSServiceOptions> options, BotContext context) : BackgroundService, ILagrangeWebService
 {
     #region Initialization
-    private readonly ILogger<ForwardWSService> _logger = logger;
+
     private readonly ForwardWSServiceOptions _options = options.Value;
-    private readonly BotContext _context = context;
+
     #endregion
 
     #region Lifecycle
@@ -32,7 +32,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
         _listener.Prefixes.Add($"http://{host}:{_options.Port}/");
         _listener.Start();
 
-        foreach (string prefix in _listener.Prefixes) Log.LogServerStarted(_logger, prefix);
+        foreach (string prefix in _listener.Prefixes) Log.LogServerStarted(logger, prefix);
 
         // then obtain the HttpListenerContext
         return base.StartAsync(token);
@@ -51,14 +51,14 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {
-            Log.LogWaitConnectException(_logger, e);
+            Log.LogWaitConnectException(logger, e);
         }
     }
 
     public override async Task StopAsync(CancellationToken token)
     {
         // Get the task of all currently connected tcs before stopping it
-        Task[] tasks = _connections.Values.Select(c => c.Tcs.Task).ToArray();
+        var tasks = _connections.Values.Select(c => c.Tcs.Task).ToArray();
 
         // Stop obtaining the HttpListenerContext first
         await base.StopAsync(token);
@@ -74,21 +74,21 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
     #region Connect
     private readonly ConcurrentDictionary<string, ConnectionContext> _connections = [];
 
-    private async Task HandleHttpListenerContext(HttpListenerContext context, CancellationToken token)
+    private async Task HandleHttpListenerContext(HttpListenerContext context1, CancellationToken token)
     {
         // Generating an identifier for this context
         string identifier = Guid.NewGuid().ToString();
 
-        HttpListenerResponse response = context.Response;
+        var response = context1.Response;
 
         try
         {
-            Log.LogConnect(_logger, identifier);
+            Log.LogConnect(logger, identifier);
 
             // Validating AccessToken
-            if (!ValidatingAccessToken(context))
+            if (!ValidatingAccessToken(context1))
             {
-                Log.LogValidatingAccessTokenFail(_logger, identifier);
+                Log.LogValidatingAccessTokenFail(logger, identifier);
 
                 response.StatusCode = (int)HttpStatusCode.Forbidden;
                 response.Close();
@@ -97,9 +97,9 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
             }
 
             // Validating whether it is a WebSocket request
-            if (!context.Request.IsWebSocketRequest)
+            if (!context1.Request.IsWebSocketRequest)
             {
-                Log.LogNotWebSocketRequest(_logger, identifier);
+                Log.LogNotWebSocketRequest(logger, identifier);
 
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 response.Close();
@@ -108,27 +108,23 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
             }
 
             // Upgrade to WebSocket
-            WebSocketContext wsContext = await context.AcceptWebSocketAsync(null).WaitAsync(token);
+            var wsContext = await context1.AcceptWebSocketAsync(null).WaitAsync(token);
 
             // Building and store ConnectionContext
-            CancellationTokenSource cts = CancellationTokenSource.CreateLinkedTokenSource(token);
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
             _connections.TryAdd(identifier, new(wsContext, cts));
 
             string path = wsContext.RequestUri.LocalPath;
-            bool isApi = path == "/api" || path == "/api/";
-            bool isEvent = path == "/event" || path == "/event/";
+            bool isApi = path is "/api" or "/api/";
+            bool isEvent = path is "/event" or "/event/";
 
             // Only API interfaces do not require sending heartbeats
             if (!isApi)
             {
                 // Send ConnectLifecycleMetaEvent
-                await SendJsonAsync(
-                    new OneBotLifecycle(_context.BotUin, "connect"),
-                    identifier,
-                    token
-                );
+                await SendJsonAsync(new OneBotLifecycle(context.BotUin, "connect"), identifier, token);
 
-                if (_options.HeartBeatEnable && _options.HeartBeatInterval > 0)
+                if (_options is { HeartBeatEnable: true, HeartBeatInterval: > 0 })
                 {
                     _ = HeartbeatAsyncLoop(identifier, cts.Token);
                 }
@@ -136,27 +132,28 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
 
             // The Event interface does not need to receive messages
             // but still needs to receive Close messages to close the connection
-            if (isEvent) _ = WaitCloseAsyncLoop(identifier, cts.Token);
-            // The Universal interface requires receiving messages
-            else _ = ReceiveAsyncLoop(identifier, cts.Token);
+            _ = isEvent 
+                ? WaitCloseAsyncLoop(identifier, cts.Token)
+                : ReceiveAsyncLoop(identifier, cts.Token);  // The Universal interface requires receiving messages
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {
-            Log.LogHandleHttpListenerContextException(_logger, identifier, e);
+            Log.LogHandleHttpListenerContextException(logger, identifier, e);
 
             // Attempt to send a 500 response code
             try
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 response.Close();
-
-                return;
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
     }
 
-    private bool ValidatingAccessToken(HttpListenerContext context)
+    private bool ValidatingAccessToken(HttpListenerContext httpContext)
     {
         // If AccessToken is not configured
         // then allow access unconditionally
@@ -165,10 +162,10 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
         string? token = null;
 
         // Retrieve the Authorization request header
-        string? authorization = context.Request.Headers["Authorization"];
+        string? authorization = httpContext.Request.Headers["Authorization"];
         // If the Authorization request header is not present
         // retrieve the access_token from the QueryString
-        if (authorization == null) token = context.Request.QueryString["access_token"];
+        if (authorization == null) token = httpContext.Request.QueryString["access_token"];
         // If the Authorization authentication method is Bearer
         // then retrieve the AccessToken
         else if (authorization.StartsWith("Bearer ")) token = authorization["Bearer ".Length..];
@@ -192,10 +189,9 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
                 int received = 0;
                 while (true)
                 {
-                    ValueTask<ValueWebSocketReceiveResult> resultTask = connection.WsContext.WebSocket
-                        .ReceiveAsync(buffer.AsMemory(received), default);
+                    var resultTask = connection.WsContext.WebSocket.ReceiveAsync(buffer.AsMemory(received), default);
 
-                    ValueWebSocketReceiveResult result = !resultTask.IsCompleted ?
+                    var result = !resultTask.IsCompleted ?
                         await resultTask.AsTask().WaitAsync(token) :
                         resultTask.Result;
 
@@ -215,7 +211,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
                 }
                 string message = Encoding.UTF8.GetString(buffer.AsSpan(0, received));
 
-                Log.LogReceive(_logger, identifier, message);
+                Log.LogReceive(logger, identifier, message);
 
                 OnMessageReceived?.Invoke(this, new(message, identifier));
 
@@ -226,10 +222,10 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
         {
             bool isCanceled = e is OperationCanceledException;
 
-            if (!isCanceled) Log.LogReceiveException(_logger, identifier, e);
+            if (!isCanceled) Log.LogReceiveException(logger, identifier, e);
 
-            WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure;
-            CancellationToken t = default;
+            var status = WebSocketCloseStatus.NormalClosure;
+            var t = default(CancellationToken);
             if (!isCanceled)
             {
                 status = WebSocketCloseStatus.InternalServerError;
@@ -275,10 +271,10 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
         {
             bool isCanceled = e is OperationCanceledException;
 
-            if (!isCanceled) Log.LogWaitCloseException(_logger, identifier, e);
+            if (!isCanceled) Log.LogWaitCloseException(logger, identifier, e);
 
-            WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure;
-            CancellationToken t = default;
+            var status = WebSocketCloseStatus.NormalClosure;
+            var t = default(CancellationToken);
             if (!isCanceled)
             {
                 status = WebSocketCloseStatus.InternalServerError;
@@ -309,24 +305,13 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
             while (true)
             {
                 sw.Start();
-                // Send HeartbeatMetaEvent
-                await SendJsonAsync(
-                    new OneBotHeartBeat(
-                        _context.BotUin,
-                        (int)_options.HeartBeatInterval,
-                        new OneBotStatus(true, true)
-                    ),
-                    identifier,
-                    token
-                );
+                var heartbeat = new OneBotHeartBeat(context.BotUin, (int)_options.HeartBeatInterval, new OneBotStatus(true, true));
+                await SendJsonAsync(heartbeat, identifier, token);
                 sw.Stop();
 
                 // Implementing precise intervals by subtracting Stopwatch's timing from configured intervals
                 var waitingTime = interval - sw.Elapsed;
-                if (waitingTime >= TimeSpan.Zero)
-                {
-                    await Task.Delay(waitingTime, token);
-                }
+                if (waitingTime >= TimeSpan.Zero) await Task.Delay(waitingTime, token);
 
                 sw.Reset();
 
@@ -337,10 +322,10 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
         {
             bool isCanceled = e is OperationCanceledException;
 
-            if (!isCanceled) Log.LogHeartbeatException(_logger, identifier, e);
+            if (!isCanceled) Log.LogHeartbeatException(logger, identifier, e);
 
-            WebSocketCloseStatus status = WebSocketCloseStatus.NormalClosure;
-            CancellationToken t = default;
+            var status = WebSocketCloseStatus.NormalClosure;
+            var t = default(CancellationToken);
             if (!isCanceled)
             {
                 status = WebSocketCloseStatus.InternalServerError;
@@ -362,15 +347,21 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
     public async ValueTask SendJsonAsync<T>(T json, string? identifier = null, CancellationToken token = default)
     {
         byte[] payload = JsonSerializer.SerializeToUtf8Bytes(json);
-        if (identifier != null) await SendBytesAsync(payload, identifier, token);
-        else await Task.WhenAll(_connections
-            .Where(c =>
-            {
-                string path = c.Value.WsContext.RequestUri.LocalPath;
-                return path != "/api" && path != "/api/";
-            })
-            .Select(c => SendBytesAsync(payload, c.Key, token))
-        );
+        if (identifier != null)
+        {
+            await SendBytesAsync(payload, identifier, token);
+        }
+        else
+        {
+            await Task.WhenAll(_connections
+                .Where(c =>
+                {
+                    string path = c.Value.WsContext.RequestUri.LocalPath;
+                    return path != "/api" && path != "/api/";
+                })
+                .Select(c => SendBytesAsync(payload, c.Key, token))
+            );
+        }
     }
 
     public async Task SendBytesAsync(byte[] payload, string identifier, CancellationToken token)
@@ -381,7 +372,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
 
         try
         {
-            Log.LogSend(_logger, identifier, payload);
+            Log.LogSend(logger, identifier, payload);
             await connection.WsContext.WebSocket.SendAsync(payload.AsMemory(), WebSocketMessageType.Text, true, token);
         }
         finally
@@ -404,11 +395,11 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {
-            Log.LogDisconnectException(_logger, identifier, e);
+            Log.LogDisconnectException(logger, identifier, e);
         }
         finally
         {
-            Log.LogDisconnect(_logger, identifier);
+            Log.LogDisconnect(logger, identifier);
 
             connection.Tcs.SetResult();
         }
