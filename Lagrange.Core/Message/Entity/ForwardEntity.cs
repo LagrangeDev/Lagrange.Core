@@ -9,11 +9,11 @@ namespace Lagrange.Core.Message.Entity;
 public class ForwardEntity : IMessageEntity
 {
     public DateTime Time { get; set; }
-    
+
     public ulong MessageId { get; set; }
-    
+
     public uint Sequence { get; set; }
-    
+
     public string? Uid { get; set; }
 
     public uint TargetUin { get; set; }
@@ -21,7 +21,7 @@ public class ForwardEntity : IMessageEntity
     internal List<Elem> Elements { get; }
 
     private string? SelfUid { get; set; }
-    
+
     public ForwardEntity()
     {
         Sequence = 0;
@@ -38,7 +38,7 @@ public class ForwardEntity : IMessageEntity
         TargetUin = chain.FriendUin;
         MessageId = chain.MessageId;
     }
-    
+
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
         var forwardReserve = new SrcMsg.Preserve
@@ -75,7 +75,8 @@ public class ForwardEntity : IMessageEntity
                     ToUin = 0
                 }
             },
-            new(){
+            new()
+            {
                 Text = new Text
                 {
                     Str = null,
@@ -84,7 +85,7 @@ public class ForwardEntity : IMessageEntity
             }
         };
     }
-    
+
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
         if (elems.SrcMsg is { } srcMsg)
