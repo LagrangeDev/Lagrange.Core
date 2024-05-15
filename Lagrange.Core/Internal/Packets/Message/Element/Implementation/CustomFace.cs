@@ -80,7 +80,7 @@ internal class CustomFace
     [ProtoContract]
     public class PbReserve1
     {
-        [ProtoMember(1)] public int Field1 { get; set; }
+        [ProtoMember(1)] public int SubType { get; set; }
 
         [ProtoMember(3)] public int Field3 { get; set; }
 
