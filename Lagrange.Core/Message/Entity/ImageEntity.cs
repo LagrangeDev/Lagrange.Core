@@ -166,5 +166,5 @@ public class ImageEntity : IMessageEntity
             1 => "[动画表情]",
             _ => "[图片]",
         }
-        : "[图片]";
+        : Summary;
 }
