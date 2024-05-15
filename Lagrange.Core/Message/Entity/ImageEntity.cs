@@ -146,12 +146,12 @@ public class ImageEntity : IMessageEntity
     
     private static int GetImageTypeFromFaceOldData(CustomFace face)
     {
-        if (face.OldData?.Length < 5)
+        if (face.OldData.Length < 5)
         {
             return 0;
         }
         // maybe legacy PCQQ(TIM)
-        return face.OldData?[4].ToString("X2") switch
+        return face.OldData[4].ToString("X2") switch
         {
             "36" => 1,
             _ => 0,
