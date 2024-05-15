@@ -38,6 +38,8 @@ public class ImageEntity : IMessageEntity
     internal CustomFace? CompatFace { get; set; }
 
     internal string? Summary { get; set; }
+    
+    internal int SubType { get; set; }
 
     public ImageEntity() { }
 
@@ -95,7 +97,8 @@ public class ImageEntity : IMessageEntity
                     FilePath = image.FilePath,
                     ImageSize = image.FileLen,
                     ImageUrl = $"{BaseUrl}{image.OrigUrl}",
-                    Summary = image.PbRes.Summary
+                    Summary = image.PbRes.Summary,
+                    SubType = image.PbRes.SubType
                 };
 
             }
@@ -106,7 +109,8 @@ public class ImageEntity : IMessageEntity
                 FilePath = image.FilePath,
                 ImageSize = image.FileLen,
                 ImageUrl = $"{LegacyBaseUrl}{image.OrigUrl}",
-                Summary = image.PbRes.Summary
+                Summary = image.PbRes.Summary,
+                SubType = image.PbRes.SubType
             };
         }
 
@@ -120,7 +124,8 @@ public class ImageEntity : IMessageEntity
                     FilePath = face.FilePath,
                     ImageSize = face.Size,
                     ImageUrl = $"{BaseUrl}{face.OrigUrl}",
-                    Summary = face.PbReserve?.Summary
+                    Summary = face.PbReserve?.Summary,
+                    SubType = face.PbReserve?.SubType ?? GetImageTypeFromFaceOldData(face)
                 };
 
             }
@@ -131,14 +136,35 @@ public class ImageEntity : IMessageEntity
                 FilePath = face.FilePath,
                 ImageSize = face.Size,
                 ImageUrl = $"{LegacyBaseUrl}{face.OrigUrl}",
-                Summary = face.PbReserve?.Summary
+                Summary = face.PbReserve?.Summary,
+                SubType = face.PbReserve?.SubType ?? GetImageTypeFromFaceOldData(face)
             };
         }
 
         return null;
     }
+    
+    private static int GetImageTypeFromFaceOldData(CustomFace face)
+    {
+        if (face.OldData.Length < 5)
+        {
+            return 0;
+        }
+        // maybe legacy PCQQ(TIM)
+        return face.OldData[4].ToString("X2") switch
+        {
+            "36" => 1,
+            _ => 0,
+        };
+    }
 
     public string ToPreviewString() => $"[Image: {PictureSize.X}x{PictureSize.Y}] {ToPreviewText()} {FilePath} {ImageSize} {ImageUrl}";
 
-    public string ToPreviewText() => string.IsNullOrEmpty(Summary) ? "[图片]" : Summary;
+    public string ToPreviewText() => string.IsNullOrEmpty(Summary)
+        ? SubType switch
+        {
+            1 => "[动画表情]",
+            _ => "[图片]",
+        }
+        : Summary;
 }
