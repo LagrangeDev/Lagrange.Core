@@ -182,6 +182,8 @@ public sealed partial class HttpService(
         catch (Exception e)
         {
             Log.LogHandleError(_logger, e);
+            response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            response.Close();
         }
     }
 
