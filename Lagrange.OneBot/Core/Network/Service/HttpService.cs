@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using System.Net;
-using System.Net.NetworkInformation;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using Lagrange.OneBot.Core.Network.Options;
 using Microsoft.Extensions.Hosting;
@@ -120,35 +120,55 @@ public sealed partial class HttpService(
                     payload = JsonSerializer.Serialize(new { action, @params });
                     break;
                 }
-                case "POST" when request.ContentType == "application/json":
-                {
-                    using var reader = new StreamReader(request.InputStream);
-                    var body = await reader.ReadToEndAsync(token);
-                    Log.LogReceived(_logger, identifier, body);
-                    payload = $"{{\"action\":\"{action}\",\"params\":{body}}}";
-                    break;
-                }
-                case "POST" when request.ContentType == "application/x-www-form-urlencoded":
-                {
-                    using var reader = new StreamReader(request.InputStream);
-                    var body = await reader.ReadToEndAsync(token);
-                    Log.LogReceived(_logger, identifier, body);
-                    var @params = body.Split('&')
-                        .Select(pair => pair.Split('=', 2))
-                        .ToDictionary(pair => pair[0], pair => Uri.UnescapeDataString(pair[1]));
-                    payload = JsonSerializer.Serialize(new { action, @params });
-                    break;
-                }
                 case "POST":
-                    Log.LogUnsupportedContentType(_logger, request.ContentType ?? string.Empty);
-                    response.StatusCode = (int)HttpStatusCode.NotAcceptable; // make them happy
-                    response.Close();
-                    return;
+                {
+                    if (!MediaTypeHeaderValue.TryParse(request.ContentType, out var mediaType))
+                    {
+                        Log.LogCannotParseMediaType(_logger, request.ContentType ?? string.Empty);
+                        response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
+                        response.Close();
+                        return;
+                    }
+
+                    switch (mediaType.MediaType)
+                    {
+                        case "application/json":
+                        {
+
+                            using var reader = new StreamReader(request.InputStream);
+                            var body = await reader.ReadToEndAsync(token);
+                            Log.LogReceived(_logger, identifier, body);
+                            payload = $"{{\"action\":\"{action}\",\"params\":{body}}}";
+                            break;
+                        }
+                        case "application/x-www-form-urlencoded":
+                        {
+                            using var reader = new StreamReader(request.InputStream);
+                            var body = await reader.ReadToEndAsync(token);
+                            Log.LogReceived(_logger, identifier, body);
+                            var @params = body.Split('&')
+                                .Select(pair => pair.Split('=', 2))
+                                .ToDictionary(pair => pair[0], pair => Uri.UnescapeDataString(pair[1]));
+                            payload = JsonSerializer.Serialize(new { action, @params });
+                            break;
+                        }
+                        default:
+                        {
+                            Log.LogUnsupportedContentType(_logger, request.ContentType ?? string.Empty);
+                            response.StatusCode = (int)HttpStatusCode.NotAcceptable; // make them happy
+                            response.Close();
+                            return;
+                        }
+                    }
+                    break;
+                }
                 default:
+                {
                     Log.LogUnsupportedMethod(_logger, request.HttpMethod);
                     response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
                     response.Close();
                     return;
+                }
             }
 
             Log.LogReceived(_logger, identifier, payload);
@@ -197,6 +217,8 @@ public sealed partial class HttpService(
         [LoggerMessage(EventId = 2, Level = LogLevel.Trace, Message = "Send(Conn: {identifier}: {s})")]
         public static partial void LogSend(ILogger logger, string identifier, string s);
 
+        [LoggerMessage(EventId = 992, Level = LogLevel.Warning, Message = "Cannot parse media type: {mediaType}")]
+        public static partial void LogCannotParseMediaType(ILogger logger, string mediaType);
 
         [LoggerMessage(EventId = 993, Level = LogLevel.Warning, Message = "Conn: {identifier} auth failed")]
         public static partial void LogAuthFailed(ILogger logger, string identifier);
