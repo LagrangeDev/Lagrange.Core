@@ -18,7 +18,7 @@ internal class Elem
 	
 	[ProtoMember(5)] public TransElem? TransElem { get; set; }
 	
-	[ProtoMember(6)] public MarketFace? MarketFace { get; set; }
+	[ProtoMember(6)] public Marketface? Marketface { get; set; }
 	
 	[ProtoMember(8)] public CustomFace? CustomFace { get; set; }
 	

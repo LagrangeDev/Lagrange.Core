@@ -5,23 +5,23 @@ using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Utility.Extension;
 
-[MessageElement(typeof(MarketFace))]
-public class MarketFaceEntity : IMessageEntity
+[MessageElement(typeof(Marketface))]
+public class MarketfaceEntity : IMessageEntity
 {
-    public string FaceId { get; }
+    public string EmojiId { get; }
 
-    public int TabId { get; }
+    public int EmojiPackageId { get; }
 
     public string Key { get; }
 
     public string Summary { get; }
 
-    public MarketFaceEntity() : this(string.Empty, default, string.Empty, string.Empty) { }
+    public MarketfaceEntity() : this(string.Empty, default, string.Empty, string.Empty) { }
 
-    public MarketFaceEntity(string faceId, int tabId, string key, string summary)
+    public MarketfaceEntity(string faceId, int tabId, string key, string summary)
     {
-        FaceId = faceId;
-        TabId = tabId;
+        EmojiId = faceId;
+        EmojiPackageId = tabId;
         Key = key;
         Summary = summary;
     }
@@ -32,13 +32,13 @@ public class MarketFaceEntity : IMessageEntity
         {
             new()
             {
-                MarketFace = new()
+                Marketface = new()
                 {
                     Summary = Summary,
                     ItemType = 6,
                     Info = 1,
-                    FaceId = FaceId.UnHex(),
-                    TabId = TabId,
+                    FaceId = EmojiId.UnHex(),
+                    TabId = EmojiPackageId,
                     SubType = 3,
                     Key = Key,
                     // Param = 
@@ -57,18 +57,18 @@ public class MarketFaceEntity : IMessageEntity
 
     IMessageEntity? IMessageEntity.UnpackElement(Elem elem)
     {
-        if (elem.MarketFace == null) return null;
+        if (elem.Marketface == null) return null;
 
-        return new MarketFaceEntity(
-            elem.MarketFace.FaceId.Hex(true),
-            elem.MarketFace.TabId,
-            elem.MarketFace.Key,
-            elem.MarketFace.Summary
+        return new MarketfaceEntity(
+            elem.Marketface.FaceId.Hex(true),
+            elem.Marketface.TabId,
+            elem.Marketface.Key,
+            elem.Marketface.Summary
         );
     }
 
     public string ToPreviewString()
     {
-        return $"[{nameof(MarketFaceEntity)}: TabId: {TabId}; FaceId: {FaceId}; Key: {Key}; Summary: {Summary}]";
+        return $"[{nameof(MarketfaceEntity)}: TabId: {EmojiPackageId}; FaceId: {EmojiId}; Key: {Key}; Summary: {Summary}]";
     }
 }
