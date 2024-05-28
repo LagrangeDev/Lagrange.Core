@@ -6,7 +6,7 @@ using ProtoBuf;
 namespace Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 
 [ProtoContract]
-internal class MarketFace
+internal class Marketface
 {
     [ProtoMember(1)] public string Summary { get; set; }
 
@@ -26,11 +26,11 @@ internal class MarketFace
 
     [ProtoMember(11)] public int Height { get; set; }
 
-    [ProtoMember(13)] public MarketFaceReserve PbReserve { get; set; }
+    [ProtoMember(13)] public MarketfaceReserve PbReserve { get; set; }
 }
 
 [ProtoContract]
-internal class MarketFaceReserve
+internal class MarketfaceReserve
 {
     [ProtoMember(8)] public int Field8 { get; set; }
 

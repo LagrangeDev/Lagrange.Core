@@ -7,37 +7,37 @@ using Lagrange.Core.Utility.Network;
 namespace Lagrange.OneBot.Message.Entity;
 
 [Serializable]
-public partial class MarketFaceSegment(string faceId, int tabId, string key, string? summary)
+public partial class MfaceSegment(string emojiId, int emojiPackageId, string key, string? summary)
 {
-    [JsonPropertyName("face_id")] public string FaceId { get; set; } = faceId;
+    [JsonPropertyName("emoji_package_id")] public int EmojiPackageId { get; set; } = emojiPackageId;
 
-    [JsonPropertyName("tab_id")] public int TabId { get; set; } = tabId;
+    [JsonPropertyName("emoji_id")] public string EmojiId { get; set; } = emojiId;
 
     [JsonPropertyName("key")] public string Key { get; set; } = key;
 
     [JsonPropertyName("summary")] public string? Summary { get; set; } = summary;
 
-    public MarketFaceSegment() : this(string.Empty, default, string.Empty, null) { }
+    public MfaceSegment() : this(string.Empty, default, string.Empty, null) { }
 }
 
-[SegmentSubscriber(typeof(MarketFaceEntity), "marketface")]
-public partial class MarketFaceSegment : SegmentBase
+[SegmentSubscriber(typeof(MarketfaceEntity), "mface")]
+public partial class MfaceSegment : SegmentBase
 {
     public override void Build(MessageBuilder builder, SegmentBase segment)
     {
-        if (segment is not MarketFaceSegment mfs) return;
+        if (segment is not MfaceSegment mfs) return;
 
         if (mfs.Summary == null)
         {
             JsonElement tabJson = JsonDocument.Parse(
                 Http.GetAsync(
-                    $"https://i.gtimg.cn/club/item/parcel/{mfs.TabId % 10}/{mfs.TabId}.json"
+                    $"https://i.gtimg.cn/club/item/parcel/{mfs.EmojiPackageId % 10}/{mfs.EmojiPackageId}.json"
                 ).Result
             ).RootElement;
 
             foreach (JsonElement imgJson in tabJson.GetProperty("imgs").EnumerateArray())
             {
-                if (imgJson.GetProperty("id").GetString() == mfs.FaceId)
+                if (imgJson.GetProperty("id").GetString() == mfs.EmojiId)
                 {
                     mfs.Summary = $"[{imgJson.GetProperty("name").GetString()}]" ?? "[\u5546\u57ce\u8868\u60c5]";
                     break;
@@ -47,13 +47,13 @@ public partial class MarketFaceSegment : SegmentBase
             mfs.Summary ??= "[\u5546\u57ce\u8868\u60c5]";
         }
 
-        builder.Add(new MarketFaceEntity(mfs.FaceId, mfs.TabId, mfs.Key, mfs.Summary));
+        builder.Add(new MarketfaceEntity(mfs.EmojiId, mfs.EmojiPackageId, mfs.Key, mfs.Summary));
     }
 
     public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
     {
-        if (entity is not MarketFaceEntity mfe) throw new ArgumentException("Invalid entity type.");
+        if (entity is not MarketfaceEntity mfe) throw new ArgumentException("Invalid entity type.");
 
-        return new MarketFaceSegment(mfe.FaceId, mfe.TabId, mfe.Key, mfe.Summary);
+        return new MfaceSegment(mfe.EmojiId, mfe.EmojiPackageId, mfe.Key, mfe.Summary);
     }
 }
