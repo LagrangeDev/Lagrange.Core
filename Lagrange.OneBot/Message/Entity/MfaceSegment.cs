@@ -7,8 +7,10 @@ using Lagrange.Core.Utility.Network;
 namespace Lagrange.OneBot.Message.Entity;
 
 [Serializable]
-public partial class MfaceSegment(string emojiId, int emojiPackageId, string key, string? summary)
+public partial class MfaceSegment(string? url, string emojiId, int emojiPackageId, string key, string? summary)
 {
+    [JsonPropertyName("url")] public string? Url { get; set; } = url;
+
     [JsonPropertyName("emoji_package_id")] public int EmojiPackageId { get; set; } = emojiPackageId;
 
     [JsonPropertyName("emoji_id")] public string EmojiId { get; set; } = emojiId;
@@ -17,7 +19,7 @@ public partial class MfaceSegment(string emojiId, int emojiPackageId, string key
 
     [JsonPropertyName("summary")] public string? Summary { get; set; } = summary;
 
-    public MfaceSegment() : this(string.Empty, default, string.Empty, null) { }
+    public MfaceSegment() : this(null, string.Empty, default, string.Empty, null) { }
 }
 
 [SegmentSubscriber(typeof(MarketfaceEntity), "mface")]
@@ -54,6 +56,6 @@ public partial class MfaceSegment : SegmentBase
     {
         if (entity is not MarketfaceEntity mfe) throw new ArgumentException("Invalid entity type.");
 
-        return new MfaceSegment(mfe.EmojiId, mfe.EmojiPackageId, mfe.Key, mfe.Summary);
+        return new MfaceSegment($"https://gxh.vip.qq.com/club/item/parcel/item/{mfe.EmojiId[..2]}/{mfe.EmojiId}/raw300.gif", mfe.EmojiId, mfe.EmojiPackageId, mfe.Key, mfe.Summary);
     }
 }
