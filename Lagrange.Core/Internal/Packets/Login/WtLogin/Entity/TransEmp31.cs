@@ -21,12 +21,14 @@ internal class TransEmp31 : TransEmp
     public TransEmp31(BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device) 
         : base(QrCodeCommand, keystore, appInfo, device) { }
 
-    protected override BinaryPacket ConstructTransEmp() => new BinaryPacket()
+    protected override BinaryPacket ConstructTlv() => new BinaryPacket()
         .WriteUshort(0)
-        .WriteUlong(0)
+        .WriteUint((uint)AppInfo.AppId)
+        .WriteUlong(0) // uin
+        .WriteBytes(Array.Empty<byte>()) // TGT
         .WriteByte(0)
-        .WritePacket(TlvPacker.PackQrCode(Keystore.Session.UnusualSign == null ? ConstructTlvs : ConstructTlvsPassword))
-        .WriteByte(0x03);
+        .WriteBytes(Array.Empty<byte>(), Prefix.Uint16 | Prefix.LengthOnly)
+        .WritePacket(TlvPacker.PackQrCode(Keystore.Session.UnusualSign == null ? ConstructTlvs : ConstructTlvsPassword));
 
     public static Dictionary<ushort, TlvBody> Deserialize(BinaryPacket packet, BotKeystore keystore, out byte[] signature)
     {

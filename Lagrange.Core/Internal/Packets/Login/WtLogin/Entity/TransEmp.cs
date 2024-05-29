@@ -16,35 +16,35 @@ internal abstract class TransEmp : WtLoginBase
         _qrCodeCommand = qrCmd;
     }
 
-    protected override BinaryPacket ConstructBody()
+    protected override BinaryPacket ConstructData()
     {
-        var packet = new BinaryPacket().WriteByte(0); // known const
-        
-        packet.Barrier(w =>
-        {
-            w.WriteUint((uint)AppInfo.AppId)
-                .WriteUint(0x00000072) // const
-                .WriteUshort(0) // const 0
-                .WriteByte(0) // const 0
-                .WriteUint((uint)DateTimeOffset.Now.ToUnixTimeSeconds()) // length actually starts here
-                .WriteByte(0x02) // header for packet, counted into length of next barrier manually
-                .Barrier(w => w
-                    .WriteUshort(_qrCodeCommand)
-                    .WriteUlong(0) // const 0
-                    .WriteUint(0) // const 0
-                    .WriteUlong(0) // const 0 
-                    .WriteUshort(3) // const 3
-                    .WriteUshort(0) // const 0
-                    .WriteUshort(50) // unknown const
-                    .WriteUlong(0)
-                    .WriteUint(0)
-                    .WriteUshort(0)
-                    .WriteUint((uint)AppInfo.AppId)
-                    .WritePacket(ConstructTransEmp()), Prefix.Uint16 | Prefix.WithPrefix, 1); // addition is the packet start counted in
+        var tlv = ConstructTlv();
 
-        }, Prefix.Uint16 | Prefix.WithPrefix, -13); // -13 is the length of zeros, which could be found at TransEmp31 and TransEmp12.ConstructTransEmp()
+        var newPacket =  new BinaryPacket() // length of WriteUshort(43 + tlv.Length + 1) refers to this section
+            .WriteByte(2)
+            .WriteUshort((ushort)(43 + tlv.Length + 1)) // _head_len = 43 + data.size +1
+            .WriteUshort(_qrCodeCommand)
+            .WriteBytes(new byte[21])
+            .WriteByte(0x03)
+            .WriteShort(0x00) // close
+            .WriteShort(0x32) // Version Code: 50
+            .WriteUint(0) // trans_emp sequence
+            .WriteUlong(0) // dummy uin
+            .WritePacket(tlv)
+            .WriteByte(3);
 
-        return packet;
+        var requestBody = new BinaryPacket()
+            .WriteUint((uint)DateTimeOffset.Now.ToUnixTimeSeconds())
+            .WritePacket(newPacket);
+
+        return new BinaryPacket()
+            .WriteByte(0x00) // encryptMethod == EncryptMethod.EM_ST || encryptMethod == EncryptMethod.EM_ECDH_ST
+            .WriteUshort((ushort)requestBody.Length)
+            .WriteUint((uint)AppInfo.AppId)
+            .WriteUint(0x72) // Role
+            .WriteBytes(Array.Empty<byte>(), Prefix.Uint16 | Prefix.LengthOnly) // uSt
+            .WriteBytes(Array.Empty<byte>(), Prefix.Uint8 | Prefix.LengthOnly) // rollback
+            .WritePacket(requestBody);
     }
 
     public static BinaryPacket DeserializeBody(BotKeystore keystore, BinaryPacket packet, out ushort command)
@@ -60,5 +60,5 @@ internal abstract class TransEmp : WtLoginBase
         return packet;
     }
 
-    protected abstract BinaryPacket ConstructTransEmp();
+    protected abstract BinaryPacket ConstructTlv();
 }

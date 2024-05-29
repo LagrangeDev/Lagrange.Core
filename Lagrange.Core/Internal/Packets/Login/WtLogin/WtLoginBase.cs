@@ -26,7 +26,7 @@ internal abstract class WtLoginBase
     
     public BinaryPacket ConstructPacket()
     {
-        var body = ConstructBody();
+        var body = ConstructData();
         var encrypt = Keystore.SecpImpl.Encrypt(body.ToArray());
         
         var packet = new BinaryPacket()
@@ -43,13 +43,11 @@ internal abstract class WtLoginBase
                 .WriteUshort(0) // insId
                 .WriteUshort(AppInfo.AppClientVersion) // cliType
                 .WriteUint(0) // retryTime
-                .WriteByte(1) // const
-                .WriteByte(1) // const
-                .WriteBytes(Keystore.Stub.RandomKey.AsSpan()) // randKey
-                .WriteUshort(0x102) // unknown const, 腾讯你妈妈死啦
-                .WriteBytes(Keystore.SecpImpl.GetPublicKey(), Prefix.Uint16 | Prefix.LengthOnly) // pubKey
+                .WritePacket(BuildEncryptHead())
                 .WriteBytes(encrypt.AsSpan())
                 .WriteByte(3), Prefix.Uint16 | Prefix.WithPrefix, 1); // 0x03 is the packet end
+        
+        // for the addition of 1, the packet start should be counted in
         
         return packet;
     }
@@ -74,5 +72,12 @@ internal abstract class WtLoginBase
         return decrypted;
     }
 
-    protected abstract BinaryPacket ConstructBody();
+    protected abstract BinaryPacket ConstructData();
+
+    private BinaryPacket BuildEncryptHead() => new BinaryPacket()
+        .WriteByte(1) // const
+        .WriteByte(1) // const
+        .WriteBytes(Keystore.Stub.RandomKey.AsSpan()) // randKey
+        .WriteUshort(0x102) // unknown const, 腾讯你妈妈死啦
+        .WriteBytes(Keystore.SecpImpl.GetPublicKey(), Prefix.Uint16 | Prefix.LengthOnly); // pubKey
 }
