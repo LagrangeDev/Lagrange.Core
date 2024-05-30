@@ -110,11 +110,28 @@ internal class CachingLogic : LogicBase
     {
         var fetchFriendsEvent = FetchFriendsEvent.Create();
         var events = await Collection.Business.SendEvent(fetchFriendsEvent);
-        var friends = events.Count != 0 ? ((FetchFriendsEvent)events[0]).Friends : new List<BotFriend>();
+        
+        if (events.Count != 0)
+        {
+            var @event = (FetchFriendsEvent)events[0];
+            uint? nextUin = @event.NextUin;
 
-        foreach (var friend in friends) _uinToUid.TryAdd(friend.Uin, friend.Uid);
-        _cachedFriends.Clear();
-        _cachedFriends.AddRange(friends);
+            while (nextUin != null)
+            {
+                var next = FetchFriendsEvent.Create(nextUin);
+                var results = await Collection.Business.SendEvent(next);
+                @event.Friends.AddRange(((FetchFriendsEvent)results[0]).Friends);
+                nextUin = ((FetchFriendsEvent)results[0]).NextUin;
+            }
+            
+            foreach (var friend in @event.Friends) _uinToUid.TryAdd(friend.Uin, friend.Uid);
+            _cachedFriends.Clear();
+            _cachedFriends.AddRange(@event.Friends);
+        }
+        else
+        {
+            Collection.Log.LogWarning(Tag, "Failed to resolve friends uid and cache.");
+        }
     }
 
     private async Task ResolveMembersUid(uint groupUin)
@@ -141,6 +158,7 @@ internal class CachingLogic : LogicBase
         else
         {
             _cachedGroupMembers[groupUin] = new List<BotGroupMember>();
+            Collection.Log.LogWarning(Tag, $"Failed to resolve group {groupUin} members uid and cache.");
         }
     }
 }
