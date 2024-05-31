@@ -13,11 +13,15 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 [OidbSvcTrpcTcp(0xfd4, 1)]
 internal class OidbSvcTrpcTcp0xFD4_1
 {
-    [ProtoMember(2)] public uint Field2 { get; set; } = 300;
+    [ProtoMember(2)] public uint FriendCount { get; set; } = 300;  // paging get num
     
     [ProtoMember(4)] public uint Field4 { get; set; } = 0;
     
+    [ProtoMember(5)] public OidbSvcTrpcTcp0xFD4_1Uin NextUin { get; set; }
+    
     [ProtoMember(6)] public uint Field6 { get; set; } = 1;
+
+    [ProtoMember(7)] public uint Field7 { get; set; } = int.MaxValue;
     
     [ProtoMember(10001)] public List<OidbSvcTrpcTcp0xFD4_1Body> Body { get; set; }
 
@@ -32,4 +36,10 @@ internal class OidbSvcTrpcTcp0xFD4_1Body
     [ProtoMember(1)] public uint Type { get; set; }
     
     [ProtoMember(2)] public OidbNumber Number { get; set; }
+}
+
+[ProtoContract]
+internal class OidbSvcTrpcTcp0xFD4_1Uin
+{
+    [ProtoMember(1)] public uint Uin { get; set; }
 }

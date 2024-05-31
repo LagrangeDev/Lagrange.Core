@@ -98,6 +98,9 @@ public static class GroupExt
     public static Task<bool> GroupFSDelete(this BotContext bot, uint groupUin, string fileId)
         => bot.ContextCollection.Business.OperationLogic.GroupFSDelete(groupUin, fileId);
     
+    public static Task<bool> GroupFSCreateFolder(this BotContext bot, uint groupUin, string name)
+        => bot.ContextCollection.Business.OperationLogic.GroupFSCreateFolder(groupUin, name);
+    
     public static Task<bool> GroupFSUpload(this BotContext bot, uint groupUin, FileEntity fileEntity, string targetDirectory = "/")
         => bot.ContextCollection.Business.OperationLogic.GroupFSUpload(groupUin, fileEntity, targetDirectory);
 
