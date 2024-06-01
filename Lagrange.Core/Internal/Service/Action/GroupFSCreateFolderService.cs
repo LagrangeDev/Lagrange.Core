@@ -24,7 +24,7 @@ internal class GroupFSCreateFolderService : BaseService<GroupFSCreateFolderEvent
                 RootDirectory = "/",
                 FolderName = input.Name
             }
-        });
+        }, false, true);
         
         output = packet.Serialize();
         extraPackets = null;
