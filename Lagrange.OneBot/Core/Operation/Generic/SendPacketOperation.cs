@@ -25,7 +25,7 @@ public class SendPacketOperation : IOperation
                 Sequence = sequence,
                 RetCode = task.RetCode,
                 Extra = task.Extra,
-                Result = task.Payload.ToArray().Hex()
+                Result = task.Payload.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix).Hex()
             }, 0, "ok");
         }
 
