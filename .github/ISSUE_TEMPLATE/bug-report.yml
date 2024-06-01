@@ -139,7 +139,7 @@ body:
   - type: textarea
     id: logging
     attributes:
-      label: 日志记录（可选）
+      label: Trace 级别日志记录（可选）
       render: Shell
 
   # Optional | Extra description
