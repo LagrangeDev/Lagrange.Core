@@ -43,6 +43,7 @@ public class LagrangeApp : IHost
         _hostApp = host;
         Logger = Services.GetRequiredService<ILogger<LagrangeApp>>();
 
+        Services.GetRequiredService<MusicSigner>();
         MessageService = Services.GetRequiredService<MessageService>();
         OperationService = Services.GetRequiredService<OperationService>();
     }
