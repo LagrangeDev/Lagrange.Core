@@ -18,11 +18,11 @@ public class MusicSigner
 
         if (string.IsNullOrEmpty(_signServer))
         {
-            logger.LogWarning("MusicSignature Service is not available, login may be failed");
+            logger.LogWarning("MusicSignServer is not available, sign may be failed");
         }
         else
         {
-            logger.LogInformation("MusicSignature Service is successfully established");
+            logger.LogInformation("MusicSignServer Service is successfully established");
         }
     }
 
