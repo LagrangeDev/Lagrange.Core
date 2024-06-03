@@ -59,23 +59,23 @@ internal sealed unsafe class EcdhProvider
 
             return new EllipticPoint(new BigInteger(x), new BigInteger(y));
         }
-
-        var px = new BigInteger(x);
-        var x3 = px * px * px % Curve.P;
-        var ax = px * Curve.P;
-        var right = (x3 + ax + Curve.B) % Curve.P;
-
-        var tmp = (Curve.P + 1) >> 2;
-        var py = BigInteger.ModPow(right, tmp, Curve.P);
-
-        if (py.IsEven)
+        else
         {
-            tmp = Curve.P;
-            tmp -= py;
-            py = tmp;
-        }
+            var px = new BigInteger(x);
+            var x3 = px * px * px;
+            var ax = px * Curve.A;
+            var right = (x3 + ax + Curve.B) % Curve.P;
 
-        return new EllipticPoint(px, py);
+            var tmp = (Curve.P + 1) >> 2;
+            var py = BigInteger.ModPow(right, tmp, Curve.P);
+
+            if (!(py.IsEven && publicKey[0] == 0x02 || !py.IsEven && publicKey[0] == 0x03))
+            {
+                py = Curve.P - py;
+            }
+
+            return new EllipticPoint(px, py);
+        }
     }
 
     

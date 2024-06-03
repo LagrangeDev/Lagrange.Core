@@ -198,6 +198,7 @@ internal class MessagingLogic : LogicBase
             {
                 foreach (var chain in chains)
                 {
+                    await ResolveChainMetadata(chain);
                     await ResolveOutgoingChain(chain);
                     await Collection.Highway.UploadResources(chain);
                 }
@@ -378,11 +379,17 @@ internal class MessagingLogic : LogicBase
             chain.GroupMemberInfo = chain.FriendUin == 0 
                 ? groups.FirstOrDefault(x => x.Uin == Collection.Keystore.Uin) 
                 : groups.FirstOrDefault(x => x.Uin == chain.FriendUin);
+
+            chain.Uid ??= chain.GroupMemberInfo?.Uid;
         }
         else
         {
             var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
-            if (friends.FirstOrDefault(x => x.Uin == chain.FriendUin) is { } friend) chain.FriendInfo = friend;
+            if (friends.FirstOrDefault(x => x.Uin == chain.FriendUin) is { } friend)
+            {
+                chain.FriendInfo = friend;
+                chain.Uid ??= friend.Uid;
+            }
         }
     }
 }

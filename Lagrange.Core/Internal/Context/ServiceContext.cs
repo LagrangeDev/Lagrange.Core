@@ -114,6 +114,8 @@ internal partial class ServiceContext : ContextBase
         return result;
     }
     
+    public int GetNewSequence() => _sequenceProvider.GetNewSequence();
+    
     private class SequenceProvider
     {
         private readonly ConcurrentDictionary<string, int> _sessionSequence = new();

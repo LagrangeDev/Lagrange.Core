@@ -26,13 +26,13 @@ public sealed class MessageChain : List<IMessageEntity>
 
     #region Internal Properties
 
-    internal string? SelfUid { get; }
+    internal string? SelfUid { get; set; }
 
-    internal string? Uid { get; }
+    internal string? Uid { get; set; }
 
-    internal bool IsGroup { get; }
+    internal bool IsGroup { get; set; }
 
-    internal List<Elem> Elements { get; }
+    internal List<Elem> Elements { get; set; }
 
     #endregion
 
