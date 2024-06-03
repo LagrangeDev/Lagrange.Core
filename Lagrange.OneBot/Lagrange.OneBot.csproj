@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <LangVersion>preview</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Version>0.0.3</Version>
+        <Title>Lagrange.OneBot</Title>
+        <RepositoryUrl>https://github.com/LagrangeDev/Lagrange.Core</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\appsettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\appsettings.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Konata.Codec" Version="1.4.2" />
+        <PackageReference Include="LiteDB" Version="5.0.17" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+        <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="1.6.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Lagrange.Core\Lagrange.Core.csproj" />
+    </ItemGroup>
+
+</Project>

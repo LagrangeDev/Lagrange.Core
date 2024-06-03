@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lagrange.Core", "Lagrange.Core\Lagrange.Core.csproj", "{909C99CC-0CB7-4A34-8C75-AD25E6AEA535}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lagrange.Core.Test", "Lagrange.Core.Test\Lagrange.Core.Test.csproj", "{D64B6BAB-CD20-4660-8A6E-BCC936652204}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lagrange.OneBot", "Lagrange.OneBot\Lagrange.OneBot.csproj", "{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "SolutionItem", "{ACE96E15-65D1-471B-913A-A1014F0D003E}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		README_zh.md = README_zh.md
+		Docker.md = Docker.md
+		Docker_zh.md = Docker_zh.md
+		LICENSE = LICENSE
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lagrange.Kritor", "Lagrange.Kritor\Lagrange.Kritor.csproj", "{FD0A15C0-600E-44A9-BAA8-6FAE0A1CA7EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{909C99CC-0CB7-4A34-8C75-AD25E6AEA535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{909C99CC-0CB7-4A34-8C75-AD25E6AEA535}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{909C99CC-0CB7-4A34-8C75-AD25E6AEA535}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{909C99CC-0CB7-4A34-8C75-AD25E6AEA535}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D64B6BAB-CD20-4660-8A6E-BCC936652204}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D64B6BAB-CD20-4660-8A6E-BCC936652204}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D64B6BAB-CD20-4660-8A6E-BCC936652204}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D64B6BAB-CD20-4660-8A6E-BCC936652204}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37AEDD3B-9B9F-4782-ADD5-BA2436FB2507}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD0A15C0-600E-44A9-BAA8-6FAE0A1CA7EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD0A15C0-600E-44A9-BAA8-6FAE0A1CA7EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD0A15C0-600E-44A9-BAA8-6FAE0A1CA7EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD0A15C0-600E-44A9-BAA8-6FAE0A1CA7EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

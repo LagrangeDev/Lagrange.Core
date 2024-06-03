@@ -1,0 +1,37 @@
+name: 新功能提议
+description: 希望拥有新的功能
+title: '[Feature Request]: '
+labels: ["enhancement"]
+
+body:
+  # User's README
+  - type: markdown
+    attributes:
+      value: |
+        ### 为了项目的长久稳定，请不要要求提供一些敏感操作的新功能
+        ### 项目人手有限，如果您有能力，请考虑提交PR
+        ### 当 Owner 或 Member 认为该 Feature Request 不合适，可能直接关闭 ISSUE
+
+  # Env | Lagrange Project
+  - type: dropdown
+    id: lagrange-project
+    attributes:
+      label: Lagrange项目
+      description: 请选择您希望在哪个具体 Lagrange 项目中添加新需求
+      options:
+        - Audio
+        - Core
+        - OneBot
+        - 其它（请在下方说明）
+    validations:
+      required: true
+
+  # Input | Feature Content
+  - type: textarea
+    id: feature-content
+    attributes:
+      label: 新需求内容
+      description: |
+        请尽可能详细描述您的需求，如果可以，请提供代码样例或参考项目
+    validations:
+      required: true
