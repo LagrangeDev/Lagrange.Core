@@ -8,7 +8,7 @@ namespace Lagrange.OneBot.Utility;
 
 public class MusicSigner
 {
-    private static string _signServer;
+    private static string? _signServer;
 
     private readonly static HttpClient _client = new();
 
