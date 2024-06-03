@@ -117,6 +117,7 @@ public sealed class LagrangeAppBuilder
         });
         Services.AddSingleton<SignProvider, OneBotSigner>();
 
+        Services.AddSingleton<MusicSigner>();
         Services.AddSingleton<NotifyService>();
         Services.AddSingleton<MessageService>();
         Services.AddSingleton<OperationService>();
