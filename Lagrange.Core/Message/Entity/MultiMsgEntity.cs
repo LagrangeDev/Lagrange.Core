@@ -197,7 +197,7 @@ public class MultiMsgEntity : IMessageEntity
     {
         [XmlAttribute("serviceID")] public uint ServiceId { get; set; } // 35
 
-        [XmlAttribute("templateID")] public uint TemplateId { get; set; } // 1
+        [XmlAttribute("templateID")] public int TemplateId { get; set; } // 1
 
         [XmlAttribute("action")] public string Action { get; set; } = "viewMultiMsg";
 
