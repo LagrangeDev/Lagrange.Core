@@ -22,7 +22,7 @@
 # 8081 端口用于正向 WebSocket 和 Http-post
 # /path-to-data 被用于存储程序运行时产生的文件
 # UID Env 和 GID Env 用于设置文件权限
-docker run -td -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -g) ghcr.io/konatadev/lagrange.onebot:edge
+docker run -td -p 8081:8081 -v /path-to-data:/app/data -e UID=$UID -e GID=$(id -g) ghcr.io/lagrangedev/lagrange.onebot:edge
 ```
 
 > [!IMPORTANT]
