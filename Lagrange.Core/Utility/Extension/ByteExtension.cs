@@ -61,9 +61,7 @@ internal static class ByteExtension
 
     public static string Md5(this byte[] bytes, bool lower = false)
     {
-        using var md5 = MD5.Create();
-        var hash = md5.ComputeHash(bytes);
-        return hash.Hex(lower);
+        return MD5.HashData(bytes).Hex(lower);
     }
     
     public static async Task<string> Md5Async(this byte[] bytes, bool lower = false)

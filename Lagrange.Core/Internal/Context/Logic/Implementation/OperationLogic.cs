@@ -276,7 +276,7 @@ internal class OperationLogic : LogicBase
         return results.Count != 0 && results[0].ResultCode == 0;
     }
 
-    public async Task<bool> RequestFriend(uint targetUin, string message, string question)
+    public async Task<bool> RequestFriend(uint targetUin, string question, string message)
     {
         var requestFriendSearchEvent = RequestFriendSearchEvent.Create(targetUin);
         var searchEvents = await Collection.Business.SendEvent(requestFriendSearchEvent);

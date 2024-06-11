@@ -8,7 +8,7 @@ internal static class ByteGen
     public static byte[] GenRandomBytes(int length)
     {
         var bytes = new byte[length];
-        for (int i = 0; i < length; ++i) bytes[i] = (byte) Random.Shared.Next(0, 256);
+        Random.Shared.NextBytes(bytes);
         return bytes;
     }
 }
