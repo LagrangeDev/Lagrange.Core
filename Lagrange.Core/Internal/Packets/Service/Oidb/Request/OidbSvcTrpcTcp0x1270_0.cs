@@ -6,6 +6,7 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 // ReSharper disable InconsistentNaming
 
 [ProtoContract]
+[OidbSvcTrpcTcp(0x1270, 0)]
 internal class OidbSvcTrpcTcp0x1270_0
 {
     [ProtoMember(1)] public OidbSvcTrpcTcp0x1270_0Device Device { get; set; }
