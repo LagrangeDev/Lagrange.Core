@@ -428,4 +428,11 @@ internal class OperationLogic : LogicBase
         var results = await Collection.Business.SendEvent(setReactionEvent);
         return results.Count != 0 && results[0].ResultCode == 0;
     }
+    
+    public async Task<bool> SetNeedToConfirmSwitch(bool enableNoNeed)
+    {
+        var setNeedToConfirmSwitchEvent = SetNeedToConfirmSwitchEvent.Create(enableNoNeed);
+        var results = await Collection.Business.SendEvent(setNeedToConfirmSwitchEvent);
+        return results.Count != 0 && results[0].ResultCode == 0;
+    }
 }
