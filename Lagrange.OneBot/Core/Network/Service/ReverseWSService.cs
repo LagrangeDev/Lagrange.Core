@@ -18,6 +18,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
     private const string Tag = nameof(ReverseWSService);
 
     private string _urlStr = string.Empty;
+    private readonly string _identifier = Guid.NewGuid().ToString();
 
     public event EventHandler<MsgRecvEventArgs>? OnMessageReceived;
 
@@ -77,7 +78,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
     {
         var json = JsonSerializer.Serialize(payload);
         var buffer = Encoding.UTF8.GetBytes(json);
-        Log.LogSendingData(_logger, Tag, _urlStr, json);
+        Log.LogSendingData(_logger, Tag, _identifier, json);
         await semaphore.WaitAsync(token);
         try
         {
@@ -138,7 +139,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                     ConnCtx = connCtx;
                     await connTask;
 
-                    Log.LogConnected(_logger, Tag, _urlStr);
+                    Log.LogConnected(_logger, Tag, _identifier, _urlStr);
                     var lifecycle = new OneBotLifecycle(context.BotUin, "connect");
                     await SendJsonAsync(ws, lifecycle, stoppingToken);
 
@@ -188,13 +189,13 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
             }
             catch (WebSocketException e) when (e.InnerException is HttpRequestException)
             {
-                Log.LogClientReconnect(_logger, Tag, _urlStr, _options.ReconnectInterval);
+                Log.LogClientReconnect(_logger, Tag, _identifier, _options.ReconnectInterval);
                 var interval = TimeSpan.FromMilliseconds(_options.ReconnectInterval);
                 await Task.Delay(interval, stoppingToken);
             }
             catch (Exception e)
             {
-                Log.LogClientDisconnected(_logger, e, Tag, _urlStr);
+                Log.LogClientDisconnected(_logger, e, Tag, _identifier);
                 var interval = TimeSpan.FromMilliseconds(_options.ReconnectInterval);
                 await Task.Delay(interval, stoppingToken);
             }
@@ -222,7 +223,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                 if (received == buffer.Length) Array.Resize(ref buffer, received << 1);
             }
             string text = Encoding.UTF8.GetString(buffer, 0, received);
-            Log.LogDataReceived(_logger, Tag, _urlStr, text);
+            Log.LogDataReceived(_logger, Tag, _identifier, text);
             OnMessageReceived?.Invoke(this, new MsgRecvEventArgs(text)); // Handle user handlers error?
         }
     }
@@ -264,13 +265,13 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
             InvalidUrl
         }
 
-        [LoggerMessage(EventId = (int)EventIds.Connected, Level = LogLevel.Trace, Message = "[{tag}] Connect: {url}")]
-        public static partial void LogConnected(ILogger logger, string tag, string url);
+        [LoggerMessage(EventId = (int)EventIds.Connected, Level = LogLevel.Trace, Message = "[{tag}] Connect({identifier}): {url}")]
+        public static partial void LogConnected(ILogger logger, string tag, string identifier, string url);
 
-        [LoggerMessage(EventId = (int)EventIds.SendingData, Level = LogLevel.Trace, Message = "[{tag}] Send to {url}: {data}")]
-        public static partial void LogSendingData(ILogger logger, string tag, string url, string data);
+        [LoggerMessage(EventId = (int)EventIds.SendingData, Level = LogLevel.Trace, Message = "[{tag}] Send({identifier}): {data}")]
+        public static partial void LogSendingData(ILogger logger, string tag, string identifier, string data);
 
-        public static void LogDataReceived(ILogger logger, string tag, string url, string data)
+        public static void LogDataReceived(ILogger logger, string tag, string identifier, string data)
         {
             if (logger.IsEnabled(LogLevel.Trace))
             {
@@ -278,18 +279,18 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
                 {
                     data = string.Concat(data.AsSpan(0, 1024), "...", (data.Length - 1024).ToString(), "bytes");
                 }
-                InternalLogDataReceived(logger, tag, url, data);
+                InternalLogDataReceived(logger, tag, identifier, data);
             }
         }
 
-        [LoggerMessage(EventId = (int)EventIds.DataReceived, Level = LogLevel.Trace, Message = "[{tag}] Receive client {url}: {data}", SkipEnabledCheck = true)]
-        private static partial void InternalLogDataReceived(ILogger logger, string tag, string url, string data);
+        [LoggerMessage(EventId = (int)EventIds.DataReceived, Level = LogLevel.Trace, Message = "[{tag}] Receive({identifier}): {data}", SkipEnabledCheck = true)]
+        private static partial void InternalLogDataReceived(ILogger logger, string tag, string identifier, string data);
 
-        [LoggerMessage(EventId = (int)EventIds.ClientDisconnected, Level = LogLevel.Warning, Message = "[{tag}] Client {url} disconnected")]
-        public static partial void LogClientDisconnected(ILogger logger, Exception e, string tag, string url);
+        [LoggerMessage(EventId = (int)EventIds.ClientDisconnected, Level = LogLevel.Warning, Message = "[{tag}] Disconnect({identifier})")]
+        public static partial void LogClientDisconnected(ILogger logger, Exception e, string tag, string identifier);
 
-        [LoggerMessage(EventId = (int)EventIds.ClientReconnect, Level = LogLevel.Information, Message = "[{tag}] Client {url} reconnecting at interval of {interval}")]
-        public static partial void LogClientReconnect(ILogger logger, string tag, string url, uint interval);
+        [LoggerMessage(EventId = (int)EventIds.ClientReconnect, Level = LogLevel.Information, Message = "[{tag}] Reconnecting {identifier} at interval of {interval}")]
+        public static partial void LogClientReconnect(ILogger logger, string tag, string identifier, uint interval);
 
         [LoggerMessage(EventId = (int)EventIds.InvalidUrl, Level = LogLevel.Error, Message = "[{tag}] Invalid configuration was detected, url: {url}")]
         public static partial void LogInvalidUrl(ILogger logger, string tag, string url);

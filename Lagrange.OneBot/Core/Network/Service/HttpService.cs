@@ -81,16 +81,19 @@ public sealed partial class HttpService(
         var response = context.Response; // no using cause we might need to use it in SendJsonAsync
         var query = request.QueryString; // avoid creating a new nvc every get
 
+
         try
         {
             string identifier = Guid.NewGuid().ToString();
+            Log.LogRequest(_logger, identifier, request.RemoteEndPoint.ToString());
+
             if (!string.IsNullOrEmpty(_options.AccessToken))
             {
                 var authorization = request.Headers.Get("Authorization") ??
                                     (query["access_token"] is { } accessToken ? $"Bearer {accessToken}" : null);
                 if (authorization is null)
                 {
-                    Log.LogAuthFailed(_logger, identifier, request.RemoteEndPoint.ToString());
+                    Log.LogAuthFailed(_logger, identifier);
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     response.Headers.Add("WWW-Authenticate", "Bearer");
                     response.Close();
@@ -99,7 +102,7 @@ public sealed partial class HttpService(
 
                 if (authorization != $"Bearer {_options.AccessToken}")
                 {
-                    Log.LogAuthFailed(_logger, identifier, request.RemoteEndPoint.ToString());
+                    Log.LogAuthFailed(_logger, identifier);
                     response.StatusCode = (int)HttpStatusCode.Forbidden;
                     response.Close();
                     return;
@@ -213,6 +216,7 @@ public sealed partial class HttpService(
         private enum EventIds
         {
             Started = 1,
+            Request,
             Received,
             Send,
 
@@ -229,6 +233,9 @@ public sealed partial class HttpService(
         [LoggerMessage(EventId = (int)EventIds.Started, Level = LogLevel.Information, Message = "HttpService started at {prefix}")]
         public static partial void LogStarted(ILogger logger, string prefix);
 
+        [LoggerMessage(EventId = (int)EventIds.Request, Level = LogLevel.Information, Message = "Request(Conn: {identifier} from {ip})")]
+        public static partial void LogRequest(ILogger logger, string identifier, string ip);
+
         [LoggerMessage(EventId = (int)EventIds.Received, Level = LogLevel.Information, Message = "Receive(Conn: {identifier}: {s})")]
         public static partial void LogReceived(ILogger logger, string identifier, string s);
 
@@ -238,8 +245,8 @@ public sealed partial class HttpService(
         [LoggerMessage(EventId = (int)EventIds.CannotParseMediaType, Level = LogLevel.Warning, Message = "Cannot parse media type: {mediaType}")]
         public static partial void LogCannotParseMediaType(ILogger logger, string mediaType);
 
-        [LoggerMessage(EventId = (int)EventIds.AuthFailed, Level = LogLevel.Warning, Message = "Conn: {identifier} from {ip} auth failed")]
-        public static partial void LogAuthFailed(ILogger logger, string identifier, string ip);
+        [LoggerMessage(EventId = (int)EventIds.AuthFailed, Level = LogLevel.Warning, Message = "Conn: {identifier} auth failed")]
+        public static partial void LogAuthFailed(ILogger logger, string identifier);
 
         [LoggerMessage(EventId = (int)EventIds.UnsupportedContentType, Level = LogLevel.Warning, Message = "Unsupported content type: {contentType}")]
         public static partial void LogUnsupportedContentType(ILogger logger, string contentType);
