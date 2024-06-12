@@ -267,7 +267,7 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         [LoggerMessage(EventId = (int)EventIds.Connected, Level = LogLevel.Trace, Message = "[{tag}] Connect: {url}")]
         public static partial void LogConnected(ILogger logger, string tag, string url);
 
-        [LoggerMessage(EventId = (int)EventIds.SendingData, Level = LogLevel.Trace, Message = "[{tag}] Send: {data}")]
+        [LoggerMessage(EventId = (int)EventIds.SendingData, Level = LogLevel.Trace, Message = "[{tag}] Send to {url}: {data}")]
         public static partial void LogSendingData(ILogger logger, string tag, string url, string data);
 
         public static void LogDataReceived(ILogger logger, string tag, string url, string data)
