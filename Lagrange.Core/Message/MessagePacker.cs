@@ -144,7 +144,7 @@ internal static class MessagePacker
 
         switch (message.Body?.RichText?.Ptt)
         {
-            case { } groupPtt when chain.IsGroup && groupPtt.FileId == 0:  //  for legacy ptt
+            case { } groupPtt when chain.IsGroup && groupPtt.FileId != 0:  //  for legacy ptt
                 chain.Add(new RecordEntity(groupPtt.GroupFileKey, groupPtt.FileName));
                 break;
             case { } privatePtt when !chain.IsGroup: 
