@@ -30,6 +30,9 @@ public static class BotExt
     public static bool SubmitCaptcha(this BotContext bot, string ticket, string randStr)
         => bot.ContextCollection.Business.WtExchangeLogic.SubmitCaptcha(ticket, randStr);
     
+    public static Task<bool> SetNeedToConfirmSwitch(this BotContext bot, bool needToConfirm) 
+        => bot.ContextCollection.Business.OperationLogic.SetNeedToConfirmSwitch(needToConfirm);
+    
     /// <summary>
     /// Use this method to update keystore, so EasyLogin may be preformed next time by using this keystore
     /// </summary>

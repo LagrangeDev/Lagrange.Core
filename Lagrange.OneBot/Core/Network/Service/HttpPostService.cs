@@ -42,7 +42,7 @@ public partial class HttpPostService(IOptionsSnapshot<HttpPostServiceOptions> op
         if (payload is OneBotResult) return; // ignore api result
 
         var json = JsonSerializer.Serialize(payload);
-        Log.LogSendingData(_logger, Tag, json);
+        Log.LogSendingData(_logger, Tag, _url.ToString(), json);
         using var request = new HttpRequestMessage(HttpMethod.Post, _url)
         {
             Headers = { { "X-Self-ID", context.BotUin.ToString() } },
@@ -60,7 +60,7 @@ public partial class HttpPostService(IOptionsSnapshot<HttpPostServiceOptions> op
         }
         catch (HttpRequestException ex)
         {
-            Log.LogPostFailed(_logger, ex, Tag);
+            Log.LogPostFailed(_logger, ex, Tag, _url.ToString());
         }
     }
 
@@ -122,13 +122,21 @@ public partial class HttpPostService(IOptionsSnapshot<HttpPostServiceOptions> op
 
     private static partial class Log
     {
-        [LoggerMessage(EventId = 1, Level = LogLevel.Trace, Message = "[{tag}] Send: {data}")]
-        public static partial void LogSendingData(ILogger logger, string tag, string data);
+        private enum EventIds
+        {
+            SendingData = 1,
 
-        [LoggerMessage(EventId = 5, Level = LogLevel.Error, Message = "[{tag}] Post failed")]
-        public static partial void LogPostFailed(ILogger logger, Exception ex, string tag);
+            PostFailed = 1001,
+            InvalidUrl
+        }
 
-        [LoggerMessage(EventId = 10, Level = LogLevel.Error, Message = "[{tag}] Invalid configuration was detected, url: {url}")]
+        [LoggerMessage(EventId = (int)EventIds.SendingData, Level = LogLevel.Trace, Message = "[{tag}] Send to {url}: {data}")]
+        public static partial void LogSendingData(ILogger logger, string tag, string url, string data);
+
+        [LoggerMessage(EventId = (int)EventIds.PostFailed, Level = LogLevel.Error, Message = "[{tag}] Post to {url} failed")]
+        public static partial void LogPostFailed(ILogger logger, Exception ex, string tag, string url);
+
+        [LoggerMessage(EventId = (int)EventIds.InvalidUrl, Level = LogLevel.Error, Message = "[{tag}] Invalid configuration was detected, url: {url}")]
         public static partial void LogInvalidUrl(ILogger logger, string tag, string url);
     }
 }
