@@ -38,7 +38,7 @@ internal class WtExchangeLogic : LogicBase
     internal WtExchangeLogic(ContextCollection collection) : base(collection)
     {
         _transEmpTask = new TaskCompletionSource<bool>();
-        _reLoginTimer = new Timer(async _ => await ReLogin(), null, TimeSpan.MaxValue, TimeSpan.FromDays(15));
+        _reLoginTimer = new Timer(async _ => await ReLogin(), null, Timeout.Infinite, Timeout.Infinite);
     }
 
     public override async Task Incoming(ProtocolEvent e)
