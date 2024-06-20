@@ -42,6 +42,11 @@ public class BotConfig
     /// Highway Uploading Concurrency, if the image failed to send, set this to 1
     /// </summary>
     public uint HighwayConcurrent { get; set; } = 4;
+
+    /// <summary>
+    /// Refresh the session when the session is about to expired
+    /// </summary>
+    public bool AutoReLogin { get; set; } = true;
 }
 
 /// <summary>
