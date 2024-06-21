@@ -46,7 +46,8 @@ public sealed class LagrangeAppBuilder
             Protocol = isSuccess ? protocol : Protocols.Linux,
             AutoReconnect = bool.Parse(Configuration["Account:AutoReconnect"] ?? "true"),
             UseIPv6Network = bool.Parse(Configuration["Account:UseIPv6Network"] ?? "false"),
-            GetOptimumServer = bool.Parse(Configuration["Account:GetOptimumServer"] ?? "true")
+            GetOptimumServer = bool.Parse(Configuration["Account:GetOptimumServer"] ?? "true"),
+            AutoReLogin = bool.Parse(Configuration["Account:AutoReLogin"] ?? "true"),
         };
 
         BotKeystore keystore;
