@@ -62,10 +62,12 @@ internal static class SsoPacker
         int retCode = packet.ReadInt();
         string extra = packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix);
         string command = packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix);
-        packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix); // unknown
-        int isCompressed = packet.ReadInt(); 
-        packet.ReadBytes(Prefix.Uint32 | Prefix.LengthOnly); // Dummy Sso header
-
+        int msgCookieLength = packet.ReadInt() - 4;
+        var msgCookie = packet.ReadBytes(msgCookieLength);
+        int isCompressed = packet.ReadInt();
+        int reserveFieldLength = packet.ReadInt();
+        var reserveField = packet.ReadBytes(reserveFieldLength);
+        
         return retCode == 0 
             ? new SsoPacket(12, command, sequence, isCompressed == 0 ? packet : InflatePacket(packet)) 
             : new SsoPacket(12, command, sequence, retCode, extra);
