@@ -26,6 +26,8 @@ internal class WtExchangeLogic : LogicBase
 {
     private const string Tag = nameof(WtExchangeLogic);
 
+    private readonly Timer _reLoginTimer;
+    
     private readonly TaskCompletionSource<bool> _transEmpTask;
     private TaskCompletionSource<(string, string)>? _captchaTask;
 
@@ -36,6 +38,7 @@ internal class WtExchangeLogic : LogicBase
     internal WtExchangeLogic(ContextCollection collection) : base(collection)
     {
         _transEmpTask = new TaskCompletionSource<bool>();
+        _reLoginTimer = new Timer(async _ => await ReLogin(), null, Timeout.Infinite, Timeout.Infinite);
     }
 
     public override async Task Incoming(ProtocolEvent e)
@@ -407,7 +410,7 @@ internal class WtExchangeLogic : LogicBase
 
     }
 
-    public  async Task<bool> BotOnline(BotOnlineEvent.OnlineReason reason = BotOnlineEvent.OnlineReason.Login)
+    public async Task<bool> BotOnline(BotOnlineEvent.OnlineReason reason = BotOnlineEvent.OnlineReason.Login)
     {
         var registerEvent = StatusRegisterEvent.Create();
         var registerResponse = await Collection.Business.SendEvent(registerEvent);
@@ -424,7 +427,14 @@ internal class WtExchangeLogic : LogicBase
 
             await Collection.Business.PushEvent(InfoSyncEvent.Create());
 
-            return resp.Message.Contains("register success");
+            bool result = resp.Message.Contains("register success");
+            if (result)
+            {
+                _reLoginTimer.Change(TimeSpan.FromDays(15), TimeSpan.FromDays(15));
+                Collection.Log.LogInfo(Tag, "AutoReLogin Enabled, session would be refreshed in 15 days period");
+            }
+
+            return result;
         }
         
         return false;
@@ -450,6 +460,51 @@ internal class WtExchangeLogic : LogicBase
         var unusualEvent = UnusualEasyLoginEvent.Create();
         var result = await Collection.Business.SendEvent(unusualEvent);
         return result.Count != 0 && ((UnusualEasyLoginEvent)result[0]).Success;
+    }
+
+    private async Task ReLogin()
+    {
+        Collection.Log.LogInfo(Tag, "Session is about to expire, try to relogin and refresh");
+        if (Collection.Keystore.Session.TempPassword == null)
+        {
+            Collection.Log.LogInfo(Tag, "A2 is null, abort");
+            return;
+        }
+        
+        var d2 = Collection.Keystore.Session.D2;
+        var d2Key = Collection.Keystore.Session.D2Key;
+        var tgt = Collection.Keystore.Session.Tgt; // save the original state
+        
+        Collection.Socket.Disconnect();
+        Collection.Keystore.ClearSession();
+        await Collection.Socket.Connect();
+
+        if (await KeyExchange())
+        {
+            var easyLoginEvent = EasyLoginEvent.Create();
+            var easyLoginResult = await Collection.Business.SendEvent(easyLoginEvent);
+            if (easyLoginResult.Count != 0)
+            {
+                var result = (EasyLoginEvent)easyLoginResult[0];
+                if ((LoginCommon.Error)result.ResultCode == LoginCommon.Error.Success)
+                {
+                    Collection.Log.LogInfo(Tag, "Login Success, try to register services");
+                    if (await BotOnline(BotOnlineEvent.OnlineReason.Reconnect)) return; 
+                    
+                    Collection.Log.LogInfo(Tag, "Re-login failed, please refresh manually");
+                }
+            }
+        }
+        else
+        {
+            Collection.Log.LogInfo(Tag, "Key Exchange Failed, trying to online, please refresh manually");
+        }
+        
+        Collection.Keystore.Session.D2 = d2;
+        Collection.Keystore.Session.D2Key = d2Key;
+        Collection.Keystore.Session.Tgt = tgt;
+
+        await BotOnline(BotOnlineEvent.OnlineReason.Reconnect);
     }
     
     public bool SubmitCaptcha(string ticket, string randStr) => _captchaTask?.TrySetResult((ticket, randStr)) ?? false;
