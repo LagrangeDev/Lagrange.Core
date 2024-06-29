@@ -8,13 +8,13 @@ using Lagrange.Core.Utility.Extension;
 [MessageElement(typeof(Marketface))]
 public class MarketfaceEntity : IMessageEntity
 {
-    public string EmojiId { get; }
+    public string EmojiId { get; set; }
 
-    public int EmojiPackageId { get; }
+    public int EmojiPackageId { get; set; }
 
-    public string Key { get; }
+    public string Key { get; set; }
 
-    public string Summary { get; }
+    public string Summary { get; set; }
 
     public MarketfaceEntity() : this(string.Empty, default, string.Empty, string.Empty) { }
 
