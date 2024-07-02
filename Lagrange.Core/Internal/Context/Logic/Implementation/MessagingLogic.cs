@@ -6,6 +6,7 @@ using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.Notify;
 using Lagrange.Core.Internal.Event.System;
+using Lagrange.Core.Internal.Packets.Message.Notify;
 using Lagrange.Core.Internal.Service;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
@@ -27,6 +28,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(GroupSysRecallEvent))]
 [EventSubscribe(typeof(GroupSysRequestJoinEvent))]
 [EventSubscribe(typeof(GroupSysRequestInvitationEvent))]
+[EventSubscribe(typeof(GroupSysEssenceEvent))]
 [EventSubscribe(typeof(FriendSysRecallEvent))]
 [EventSubscribe(typeof(FriendSysRequestEvent))]
 [EventSubscribe(typeof(FriendSysPokeEvent))]
@@ -112,6 +114,12 @@ internal class MessagingLogic : LogicBase
                 if (decrease.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.OperatorUid);
                 var decreaseArgs = new GroupMemberDecreaseEvent(decrease.GroupUin, memberUin, operatorUin, decrease.Type);
                 Collection.Invoker.PostEvent(decreaseArgs);
+                break;
+            }
+            case GroupSysEssenceEvent essence:
+            {
+                var essenceArgs = new GroupEssenceEvent(essence.GroupUin, essence.Sequence, essence.SetFlag, essence.FromUin, essence.OperatorUin);
+                Collection.Invoker.PostEvent(essenceArgs);
                 break;
             }
             case FriendSysRequestEvent info:
