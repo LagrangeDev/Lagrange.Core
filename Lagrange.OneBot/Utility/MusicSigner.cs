@@ -38,7 +38,7 @@ public class MusicSigner
             { "audio" , musicSegment.Audio },
             { "title" , musicSegment.Title },
             { "image" , musicSegment.Image },
-            { "singer" , musicSegment.Singer },
+            { "singer" , musicSegment.Content },
         };
 
         try
