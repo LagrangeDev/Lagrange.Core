@@ -12,7 +12,7 @@ internal class FetchMFaceKeyOperation : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload?.GetValue<string[]>() is { Length: not 0 } emojiIds)
+        if (payload?["emoji_ids"]?.Deserialize<string[]>() is { Length: not 0 } emojiIds)
         {
             if (await context.FetchMarketFaceKey([.. emojiIds]) is { Count: not 0 } keys)
             {
