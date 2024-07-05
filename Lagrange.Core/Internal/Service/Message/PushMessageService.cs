@@ -151,6 +151,15 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 }
                 break;
             }
+            case Event0x2DCSubType.GroupEssenceNotice when msg.Message.Body?.MsgContent is { } content:
+            {
+                var essence = Serializer.Deserialize<GroupEssenceMessage>(content.AsSpan());
+                var essenceMsg = essence.EssenceMessage;
+                var groupEssenceEvent = GroupSysEssenceEvent.Result(essenceMsg.GroupUin, essenceMsg.MsgSequence,
+                    essenceMsg.SetFlag, essenceMsg.MemberUin, essenceMsg.OperatorUin);
+                extraEvents.Add(groupEssenceEvent);
+                break;
+            }
             default:
             {
                 Console.WriteLine($"Unknown Event0x2DC message type: {pkgType}: {payload.Hex()}");
@@ -227,7 +236,8 @@ internal class PushMessageService : BaseService<PushMessageEvent>
     private enum Event0x2DCSubType
     {
         GroupRecallNotice = 17,
-        GroupMuteNotice = 12
+        GroupMuteNotice = 12,
+        GroupEssenceNotice = 21
     }
     
     private enum Event0x210SubType
