@@ -1,4 +1,6 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core.Entity.Action;
@@ -10,9 +12,9 @@ internal class FetchMFaceKeyOperation : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload?["emoji_id"]?.AsArray().Select(node=>node?.GetValue<string>()!).ToList() is { Count: not 0 } emojiIds)
+        if (payload?.GetValue<string[]>() is { Length: not 0 } emojiIds)
         {
-            if (await context.FetchMarketFaceKey(emojiIds) is { Count: not 0 } keys)
+            if (await context.FetchMarketFaceKey([.. emojiIds]) is { Count: not 0 } keys)
             {
                 return new(keys, 0, "ok");
             }
