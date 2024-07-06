@@ -31,15 +31,28 @@ public class MusicSigner
     {
         if (string.IsNullOrEmpty(_signServer)) return null;
 
-        var payload = new JsonObject()
+        JsonObject payload;
+        if (musicSegment.Songid == "")
         {
-            { "type" , musicSegment.Type },
-            { "url" , musicSegment.Url },
-            { "audio" , musicSegment.Audio },
-            { "title" , musicSegment.Title },
-            { "image" , musicSegment.Image },
-            { "singer" , musicSegment.Content },
-        };
+            payload = new JsonObject()
+            {
+                { "type" , musicSegment.Type },
+                { "url" , musicSegment.Url },
+                { "audio" , musicSegment.Audio },
+                { "title" , musicSegment.Title },
+                { "image" , musicSegment.Image },
+                { "singer" , musicSegment.Content },
+            };
+        }
+        else
+        {
+            payload = new JsonObject()
+            {
+                { "type" , musicSegment.Type },
+                { "id" , musicSegment.Songid },
+            };
+        }
+
 
         try
         {

@@ -48,7 +48,7 @@ public class TicketService
         return hash & 2147483647;
     }
 
-    private async Task<string?> GetSKey()
+    public async Task<string?> GetSKey()
     {
         if (DateTime.Now < _sKey.ExpireTime) return _sKey.SKey;
 

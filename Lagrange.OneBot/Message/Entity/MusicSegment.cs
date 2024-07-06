@@ -7,9 +7,9 @@ using Lagrange.OneBot.Utility;
 namespace Lagrange.OneBot.Message.Entity;
 
 [Serializable]
-public partial class MusicSegment(string type, string url, string audio, string title, string image, string content)
+public partial class MusicSegment(string type, string url, string audio, string title, string image, string content , string songid)
 {
-    public MusicSegment() : this("", "", "", "", "", "") { }
+    public MusicSegment() : this("", "", "", "", "", "", "") { }
 
     [JsonPropertyName("type")][CQProperty] public string Type { get; set; } = type;
 
@@ -20,8 +20,11 @@ public partial class MusicSegment(string type, string url, string audio, string 
     [JsonPropertyName("title")][CQProperty] public string Title { get; set; } = title;
 
     [JsonPropertyName("content")][CQProperty] public string Content { get; set; } = content;
-    
+
     [JsonPropertyName("image")][CQProperty] public string Image { get; set; } = image;
+
+    [JsonPropertyName("id")][CQProperty] public string Songid { get; set; } = songid;
+
 }
 
 [SegmentSubscriber(typeof(ImageEntity), "music")]
