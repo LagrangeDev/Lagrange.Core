@@ -17,7 +17,7 @@ public class GetGroupInfoOperation : IOperation
         {
             var result = (await context.FetchGroups(message.NoCache)).FirstOrDefault(x => x.GroupUin == message.GroupId);
 
-            if (result == null && message.NoCache == false)
+            if (result == null && !message.NoCache)
             {
                 result = (await context.FetchGroups(true)).FirstOrDefault(x => x.GroupUin == message.GroupId);
             }
