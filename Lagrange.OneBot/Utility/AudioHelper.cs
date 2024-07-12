@@ -17,11 +17,84 @@ public static class AudioHelper
         Ogg,
     }
 
+    /// <summary>
+    /// Detect audio type
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="type"></param>
+    /// <returns></returns>
     [Obsolete("public static AudioFormat DetectAudio(byte[] data)")]
     public static bool DetectAudio(byte[] data, out AudioFormat type)
     {
         return (type = DetectAudio(data)) != AudioFormat.Unknown;
     }
+
+    private static readonly KeyValuePair<UInt128, AudioFormat>[] _mapper =
+    [
+        // WAV
+        //  R  I  F  F              W  A  V  E  f  m  t
+        // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+        // |52|49|46|46|  |  |  |  |57|41|56|45|66|6D|74|
+        // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+        // 0           4           8           12       15
+        new(new(0x5249464600000000UL, 0x57415645666D7400UL), AudioFormat.Wav),
+        // TENSILKV3
+        //     #  !  S  I  L  K
+        // +--+--+--+--+--+--+--+
+        // |02|23|21|53|49|4C|4B|
+        // +--+--+--+--+--+--+--+
+        // 0           4        7
+        new(new(0x02232153494C4B00UL, 0x0000000000000000UL), AudioFormat.TenSilkV3),
+        // AMR
+        //  #  !  A  M  R
+        // +--+--+--+--+--+
+        // |23|21|41|4D|52|
+        // +--+--+--+--+--+
+        // 0           4  5
+        new(new(0x2321414D52000000UL, 0x0000000000000000UL), AudioFormat.Amr),
+        // SILKV3
+        //  #  !  S  I  L  K
+        // +--+--+--+--+--+--+
+        // |23|21|53|49|4C|4B|
+        // +--+--+--+--+--+--+
+        // 0           4     6
+        new(new(0x232153494C4B0000UL, 0x0000000000000000UL), AudioFormat.SilkV3),
+        // Ogg
+        //  O  g  g  S
+        // +--+--+--+--+
+        // |4F|67|67|53|
+        // +--+--+--+--+
+        // 0           4
+        new(new(0x4F67675300000000UL, 0x0000000000000000UL), AudioFormat.Ogg),
+        // MP3 ID3
+        //  I  D  3
+        // +--+--+--+
+        // |49|44|33|
+        // +--+--+--+
+        // 0        3
+        new(new(0x4944330000000000UL, 0x0000000000000000UL), AudioFormat.Mp3),
+        // MP3 no ID3
+        //  ÿ  û
+        // +--+--+
+        // |FF|F2|
+        // +--+--+
+        // 0     2
+        new(new(0xFFF2000000000000UL,0x0000000000000000UL), AudioFormat.Mp3),
+        // MP3 no ID3
+        //  ÿ  û
+        // +--+--+
+        // |FF|F3|
+        // +--+--+
+        // 0     2
+        new(new(0xFFF3000000000000UL,0x0000000000000000UL), AudioFormat.Mp3),
+        // MP3 no ID3
+        //  ÿ  û
+        // +--+--+
+        // |FF|FB|
+        // +--+--+
+        // 0     2
+        new(new(0xFFFB000000000000UL,0x0000000000000000UL), AudioFormat.Mp3),
+    ];
 
     /// <summary>
     /// Detect audio type
@@ -31,92 +104,16 @@ public static class AudioHelper
     /// <returns></returns>
     public static AudioFormat DetectAudio(byte[] data)
     {
-        // special
-
-        // WAV
-        //  R  I  F  F              W  A  V  E  f  m  t
-        // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-        // |52|49|46|46|  |  |  |  |57|41|56|45|66|6D|74|
-        // +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-        // 0           4           8           12       15
-        if (
-            BinaryPrimitives.ReadUInt32BigEndian(data.AsSpan(0, sizeof(uint))) == 0x52494646U &&
-            BinaryPrimitives.ReadUInt64BigEndian(data.AsSpan(7, sizeof(ulong))) << 8 == 0x57415645666D7400UL
-        )
+        UInt128 value = BinaryPrimitives.ReadUInt128BigEndian(data.AsSpan(0, 16));
+        foreach ((UInt128 head, AudioFormat format) in _mapper)
         {
-            return AudioFormat.Wav;
+            if ((value & head) == head) return format;
         }
-
-        ulong value = BinaryPrimitives.ReadUInt64BigEndian(data.AsSpan(0, sizeof(ulong)));
-
-        // TENSILKV3
-        //     #  !  S  I  L  K
-        // +--+--+--+--+--+--+--+
-        // |02|23|21|53|49|4C|4B|
-        // +--+--+--+--+--+--+--+
-        // 0           4        7
-        if (value >> 8 == 0x0002232153494C4BUL) return AudioFormat.TenSilkV3;
-
-        // AMR
-        //     #  !  A  M  R
-        // +--+--+--+--+--+--+
-        // |02|23|21|41|4D|52|
-        // +--+--+--+--+--+--+
-        // 0           4     6
-        if (value >> 16 == 0x0000022321414D52UL) return AudioFormat.Amr;
-
-        // SILKV3
-        //  #  !  S  I  L  K
-        // +--+--+--+--+--+--+
-        // |23|21|53|49|4C|4B|
-        // +--+--+--+--+--+--+
-        // 0           4     6
-        if (value >> 16 == 0x0000232153494C4BUL) return AudioFormat.SilkV3;
-
-        // Ogg
-        //  O  g  g  S
-        // +--+--+--+--+
-        // |4F|67|67|53
-        // +--+--+--+--+
-        if (value >> 32 == 0x000000004F676753UL) return AudioFormat.Ogg;
-
-        // MP3 ID3
-        //  I  D  3
-        // +--+--+--+
-        // |49|44|33|
-        // +--+--+--+
-        // 0        3
-        if (value >> 40 == 0x0000000000494433UL) return AudioFormat.Mp3;
-
-        // MP3 no ID3
-        //  ÿ  û
-        // +--+--+
-        // |FF|F2|
-        // +--+--+
-        // 0     2
-        if (value >> 48 == 0x000000000000FFF2UL) return AudioFormat.Mp3;
-
-        // MP3 no ID3
-        //  ÿ  û
-        // +--+--+
-        // |FF|F3|
-        // +--+--+
-        // 0     2
-        if (value >> 48 == 0x000000000000FFF3UL) return AudioFormat.Mp3;
-
-        // MP3 no ID3
-        //  ÿ  û
-        // +--+--+
-        // |FF|FB|
-        // +--+--+
-        // 0     2
-        if (value >> 48 == 0x000000000000FFFBUL) return AudioFormat.Mp3;
-
         return AudioFormat.Unknown;
     }
 
     private static readonly byte[] _silk_end = [0xFF, 0xFF];
-    
+
     public static double GetSilkTime(byte[] data, int offset = 0)
     {
         int count = 0;
