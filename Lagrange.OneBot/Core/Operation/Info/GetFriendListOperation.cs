@@ -14,6 +14,7 @@ public class GetFriendListOperation : IOperation
         {
             UserId = x.Uin,
             NickName = x.Nickname,
-            Remark = x.Remarks
+            Remark = x.Remarks,
+            Group = x.Group
         }).ToArray(), 0, "ok");
 }

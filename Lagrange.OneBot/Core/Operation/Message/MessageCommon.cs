@@ -249,7 +249,7 @@ public partial class MessageCommon
                     _ => throw new Exception()
                 };
                 string uid = context.ContextCollection.Keystore.Uid ?? throw new InvalidOperationException();
-                chain.FriendInfo = new BotFriend(uint.Parse(element.Uin), uid, element.Name, string.Empty, string.Empty);
+                chain.FriendInfo = new BotFriend(uint.Parse(element.Uin), uid, element.Name, string.Empty, string.Empty, string.Empty);
                 chains.Add(chain);  // as fake is constructed, use uid from bot itself to upload image
             }
         }

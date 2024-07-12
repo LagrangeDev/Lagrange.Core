@@ -10,4 +10,6 @@ public class OneBotFriend
     [JsonPropertyName("nickname")] public string NickName { get; set; } = "";
 
     [JsonPropertyName("remark")] public string Remark { get; set; } = "";
+
+    [JsonPropertyName("group")] public string Group { get; set; } = "";
 }
