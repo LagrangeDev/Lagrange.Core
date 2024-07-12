@@ -61,7 +61,8 @@ internal class FetchFriendsService : BaseService<FetchFriendsEvent>
                 properties[20002],
                 properties[102],
                 properties[102],
-                groups.GetValueOrDefault(f.CustomGroup, "\u4f60\u7684\u597d\u53cb")
+                f.CustomGroup,
+                groups[f.CustomGroup]
             );
         }).ToList();
 

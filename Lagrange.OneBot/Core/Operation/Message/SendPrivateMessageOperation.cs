@@ -39,6 +39,7 @@ public sealed class SendPrivateMessageOperation(MessageCommon common, LiteDataba
                 context.BotName ?? string.Empty,
                 string.Empty,
                 string.Empty,
+                0,
                 string.Empty
             ),
             GroupMemberInfo = null,
