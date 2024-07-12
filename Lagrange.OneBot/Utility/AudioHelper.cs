@@ -17,6 +17,12 @@ public static class AudioHelper
         Ogg,
     }
 
+    [Obsolete("public static AudioFormat DetectAudio(byte[] data)")]
+    public static bool DetectAudio(byte[] data, out AudioFormat type)
+    {
+        return (type = DetectAudio(data)) != AudioFormat.Unknown;
+    }
+
     /// <summary>
     /// Detect audio type
     /// </summary>
@@ -107,6 +113,20 @@ public static class AudioHelper
         if (value >> 48 == 0x000000000000FFFBUL) return AudioFormat.Mp3;
 
         return AudioFormat.Unknown;
+    }
+
+    private static readonly byte[] _silk_end = [0xFF, 0xFF];
+    
+    public static double GetSilkTime(byte[] data, int offset = 0)
+    {
+        int count = 0;
+        for (int i = 9 + offset; i < data.Length && !data.AsSpan(i, 2).SequenceEqual(_silk_end); i += 2 + BinaryPrimitives.ReadUInt16LittleEndian(data.AsSpan(i, 2)))
+        {
+            count++;
+        }
+        // Because the silk encoder encodes each 20ms sample as a block,
+        // So that we can calculate the total time easily.
+        return count * 0.02;
     }
 
     /// <summary>
