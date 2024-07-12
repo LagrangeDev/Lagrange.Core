@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Runtime.InteropServices;
 using Lagrange.Core.Utility.Binary;
 using BitConverter = System.BitConverter;
 
@@ -104,7 +105,20 @@ public static class AudioHelper
     /// <returns></returns>
     public static AudioFormat DetectAudio(byte[] data)
     {
-        UInt128 value = BinaryPrimitives.ReadUInt128BigEndian(data.AsSpan(0, 16));
+        UInt128 value;
+        if (BitConverter.IsLittleEndian)
+        {
+            // UInt128 internally handles low and high bits according to BigEndian and LittleEndian?
+            value = new(
+                BinaryPrimitives.ReverseEndianness(MemoryMarshal.Read<ulong>(data.AsSpan(0, 8))),
+                BinaryPrimitives.ReverseEndianness(MemoryMarshal.Read<ulong>(data.AsSpan(8, 8)))
+            );
+        }
+        else
+        {
+            value = MemoryMarshal.Read<UInt128>(data.AsSpan(0, 16));
+        }
+
         foreach ((UInt128 head, AudioFormat format) in _mapper)
         {
             if ((value & head) == head) return format;
