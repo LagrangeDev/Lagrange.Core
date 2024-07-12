@@ -105,6 +105,9 @@ public static class AudioHelper
     /// <returns></returns>
     public static AudioFormat DetectAudio(byte[] data)
     {
+#if NET8_0_OR_GREATER
+        UInt128 value = BinaryPrimitives.ReadUInt128BigEndian(data.AsSpan(0, 16));
+#else
         UInt128 value;
         if (BitConverter.IsLittleEndian)
         {
@@ -118,6 +121,7 @@ public static class AudioHelper
         {
             value = MemoryMarshal.Read<UInt128>(data.AsSpan(0, 16));
         }
+#endif
 
         foreach ((UInt128 head, AudioFormat format) in _mapper)
         {
