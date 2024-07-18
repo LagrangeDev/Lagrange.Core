@@ -12,5 +12,5 @@ internal class NTDeviceSign
     
     [ProtoMember(16)] public string? Uid { get; set; }
     
-    [ProtoMember(24)] public Sign? Sign { get; set; }
+    [ProtoMember(24)] public SecInfo? Sign { get; set; }
 }

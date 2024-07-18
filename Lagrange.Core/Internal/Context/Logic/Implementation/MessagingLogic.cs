@@ -10,6 +10,7 @@ using Lagrange.Core.Internal.Service;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using FriendPokeEvent = Lagrange.Core.Event.EventArg.FriendPokeEvent;
+using GroupPokeEvent = Lagrange.Core.Event.EventArg.GroupPokeEvent;
 
 namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 
@@ -27,6 +28,8 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(GroupSysRecallEvent))]
 [EventSubscribe(typeof(GroupSysRequestJoinEvent))]
 [EventSubscribe(typeof(GroupSysRequestInvitationEvent))]
+[EventSubscribe(typeof(GroupSysEssenceEvent))]
+[EventSubscribe(typeof(GroupSysPokeEvent))]
 [EventSubscribe(typeof(FriendSysRecallEvent))]
 [EventSubscribe(typeof(FriendSysRequestEvent))]
 [EventSubscribe(typeof(FriendSysPokeEvent))]
@@ -112,6 +115,18 @@ internal class MessagingLogic : LogicBase
                 if (decrease.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.OperatorUid);
                 var decreaseArgs = new GroupMemberDecreaseEvent(decrease.GroupUin, memberUin, operatorUin, decrease.Type);
                 Collection.Invoker.PostEvent(decreaseArgs);
+                break;
+            }
+            case GroupSysEssenceEvent essence:
+            {
+                var essenceArgs = new GroupEssenceEvent(essence.GroupUin, essence.Sequence, essence.SetFlag, essence.FromUin, essence.OperatorUin);
+                Collection.Invoker.PostEvent(essenceArgs);
+                break;
+            }
+            case GroupSysPokeEvent poke:
+            {
+                var pokeArgs = new GroupPokeEvent(poke.GroupUin, poke.OperatorUin, poke.TargetUin, poke.Action, poke.Suffix);
+                Collection.Invoker.PostEvent(pokeArgs);
                 break;
             }
             case FriendSysRequestEvent info:

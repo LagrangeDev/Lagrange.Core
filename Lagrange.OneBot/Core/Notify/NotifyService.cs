@@ -160,5 +160,16 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 TargetId = bot.BotUin
             });
         };
+        
+        bot.Invoker.OnGroupPokeEvent += async (_, @event) =>
+        {
+            logger.LogInformation(@event.ToString());
+            await service.SendJsonAsync(new OneBotGroupPoke(bot.BotUin)
+            {
+                GroupId = @event.GroupUin,
+                UserId = @event.OperatorUin,
+                TargetId = @event.TargetUin
+            });
+        };
     }
 }

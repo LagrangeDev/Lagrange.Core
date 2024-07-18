@@ -110,7 +110,7 @@ Thanks for 外国热心网友 for Provision of Azure Servlet
 | [Share]          |   🔴    |
 | [Contact]        |   🔴    |
 | [Location]       |   🟢    |
-| [Music]          |   🔴    |
+| [Music]          |   🟢    |
 | [Reply]          |   🟢    |
 | [Forward]        |   🟢    |
 | [Node]           |   🟢    |
@@ -240,7 +240,7 @@ Thanks for 外国热心网友 for Provision of Azure Servlet
 | Notice   | [Friend Add]                   |   🟢    |
 | Notice   | [Group Recall Message]         |   🟢    |
 | Notice   | [Friend Recall Message]        |   🟢    |
-| Notice   | [Group Poke]                   |   🔴    |
+| Notice   | [Group Poke]                   |   🟢    |
 | Notice   | [Group red envelope luck king] |   🔴    |
 | Notice   | [Group Member Honor Changed]   |   🔴    |
 | Request  | [Add Friend Request]           |   🟢    |
@@ -298,7 +298,7 @@ Thanks for 外国热心网友 for Provision of Azure Servlet
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
-  "SignServerUrl": "https://sign.lagrangecore.org/api/sign",
+  "SignServerUrl": "https://sign.lagrangecore.org/api/sign/25765",
   "Account": {
     "Uin": 0,
     "Password": "",
