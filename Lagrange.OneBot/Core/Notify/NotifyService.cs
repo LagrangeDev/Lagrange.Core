@@ -157,10 +157,12 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             {
                 SenderId = @event.OperatorUin,
                 UserId = @event.TargetUin,
-                TargetId = bot.BotUin
+                TargetId = bot.BotUin,
+                Action = @event.Action,
+                Suffix = @event.Suffix
             });
         };
-        
+
         bot.Invoker.OnGroupPokeEvent += async (_, @event) =>
         {
             logger.LogInformation(@event.ToString());
@@ -168,7 +170,9 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             {
                 GroupId = @event.GroupUin,
                 UserId = @event.OperatorUin,
-                TargetId = @event.TargetUin
+                TargetId = @event.TargetUin,
+                Action = @event.Action,
+                Suffix = @event.Suffix
             });
         };
     }
