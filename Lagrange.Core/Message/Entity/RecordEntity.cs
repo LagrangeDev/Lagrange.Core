@@ -12,36 +12,37 @@ namespace Lagrange.Core.Message.Entity;
 public class RecordEntity : IMessageEntity
 {
     public int AudioLength { get; set; }
-    
+
     public string FilePath { get; set; } = string.Empty;
 
     public string AudioName { get; set; } = string.Empty;
-    
-    public int AudioSize => (int?)AudioStream?.Value.Length ?? default;
-    
+
+    public int AudioSize { get; }
+
     public string AudioUrl { get; set; } = string.Empty;
 
     #region Internal Properties
 
     internal Lazy<Stream>? AudioStream { get; set; }
-    
+
     internal string? AudioUuid { get; set; }
-    
+
     internal string? FileSha1 { get; set; }
-    
+
     internal MsgInfo? MsgInfo { get; set; }
-    
+
     internal RichText? Compat { get; set; }
 
     #endregion
-    
+
     internal RecordEntity() { }
-    
+
     public RecordEntity(string filePath, int audioLength = 0)
     {
         FilePath = filePath;
         AudioStream = new Lazy<Stream>(() => new FileStream(filePath, FileMode.Open, FileAccess.Read));
         AudioLength = audioLength;
+        AudioSize = (int?)AudioStream?.Value.Length ?? default;
     }
 
     public RecordEntity(byte[] file, int audioLength = 0)
@@ -49,6 +50,7 @@ public class RecordEntity : IMessageEntity
         FilePath = string.Empty;
         AudioStream = new Lazy<Stream>(() => new MemoryStream(file));
         AudioLength = audioLength;
+        AudioSize = (int?)AudioStream?.Value.Length ?? default;
     }
 
     internal RecordEntity(string audioUuid, string audioName)
@@ -56,11 +58,11 @@ public class RecordEntity : IMessageEntity
         AudioUuid = audioUuid;
         AudioName = audioName;
     }
-    
+
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
         var common = MsgInfo.Serialize();
-        
+
         return new Elem[]
         {
             new()
@@ -89,11 +91,11 @@ public class RecordEntity : IMessageEntity
                 MsgInfo = extra
             };
         }
-        
+
         return null;
     }
 
-    public string ToPreviewString() =>  $"[{nameof(RecordEntity)}: {AudioUrl}]";
+    public string ToPreviewString() => $"[{nameof(RecordEntity)}: {AudioUrl}]";
 
     public string ToPreviewText() => "[语音]";
 }
