@@ -2,12 +2,22 @@ namespace Lagrange.Core.Internal.Event.Notify;
 
 internal class FriendSysPokeEvent : ProtocolEvent
 {
-    public uint FriendUin { get; }
+    public uint OperatorUin { get; }
+    
+    public uint TargetUin { get; }
 
-    private FriendSysPokeEvent(uint friendUin) : base(0)
+    public string Action { get; }
+    
+    public string Suffix { get; }
+    
+    private FriendSysPokeEvent(uint operatorUin, uint targetUin, string action, string suffix) : base(0)
     {
-        FriendUin = friendUin;
+        OperatorUin = operatorUin;
+        TargetUin = targetUin;
+        Action = action;
+        Suffix = suffix;
     }
-
-    public static FriendSysPokeEvent Result(uint friendUin) => new(friendUin);
+    
+    public static FriendSysPokeEvent Result(uint operatorUin, uint targetUin, string action, string suffix) 
+        => new(operatorUin, targetUin, action, suffix);
 }

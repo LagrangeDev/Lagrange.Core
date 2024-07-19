@@ -9,25 +9,18 @@ public class BotAppInfo
     public string VendorOs { get; private set; }
     
     public string Kernel { get; private set; }
-    
-    public string BaseVersion { get; private set; }
-    
+
     public string CurrentVersion { get; private set; }
-    
-    public int BuildVersion { get; private set; }
-    
+
     public int MiscBitmap { get; private set; }
     
     public string PtVersion { get; private set; }
     
-    public int PtOsVersion { get; private set; }
+    public int SsoVersion { get; private set; }
     
     public string PackageName { get; private set; }
     
     public string WtLoginSdk { get; private set; }
-    
-    /// <summary>Or Known as QUA</summary>
-    public string PackageSign { get; private set; }
 
     public int AppId { get; private set; }
     
@@ -49,20 +42,16 @@ public class BotAppInfo
         Os = "Linux",
         Kernel = "Linux",
         VendorOs = "linux",
-        
-        BaseVersion = "3.1.1-11223",
-        CurrentVersion = "3.1.2-13107",
-        BuildVersion = 13107,
+        CurrentVersion = "3.2.10-25765",
         MiscBitmap = 32764,
         PtVersion = "2.0.0",
-        PtOsVersion = 19,
+        SsoVersion = 19,
         PackageName = "com.tencent.qq",
         WtLoginSdk = "nt.wtlogin.0.0.1",
-        PackageSign = "V1_LNX_NQ_3.1.2-13107_RDM_B",
         AppId = 1600001615,
-        SubAppId = 537146866,
+        SubAppId = 537234773,
         AppIdQrCode = 13697054,
-        AppClientVersion = 13172,
+        AppClientVersion = 25765,
         
         MainSigMap = 169742560,
         SubSigMap = 0,
@@ -74,16 +63,12 @@ public class BotAppInfo
         Os = "Mac",
         Kernel = "Darwin",
         VendorOs = "mac",
-
-        BaseVersion = "6.9.17-12118",
         CurrentVersion = "6.9.23-20139",
-        BuildVersion = 20139,
         PtVersion = "2.0.0",
         MiscBitmap = 32764,
-        PtOsVersion = 23,
+        SsoVersion = 23,
         PackageName = "com.tencent.qq",
         WtLoginSdk = "nt.wtlogin.0.0.1",
-        PackageSign = "V1_MAC_NQ_6.9.23-20139_RDM_B",
         AppId = 1600001602,
         SubAppId = 537200848,
         AppIdQrCode = 537200848,
@@ -99,16 +84,12 @@ public class BotAppInfo
         Os = "Windows",
         Kernel = "Windows_NT",
         VendorOs = "win32",
-
-        BaseVersion = "9.9.1-15489",
         CurrentVersion = "9.9.2-15962",
-        BuildVersion = 15962,
         PtVersion = "2.0.0",
         MiscBitmap = 32764,
-        PtOsVersion = 23,
+        SsoVersion = 23,
         PackageName = "com.tencent.qq",
         WtLoginSdk = "nt.wtlogin.0.0.1",
-        PackageSign = "V1_WIN_NQ_9.9.2-15962_RDM_B",
         AppId = 1600001604,
         SubAppId = 537138217,
         AppIdQrCode = 537138217,
