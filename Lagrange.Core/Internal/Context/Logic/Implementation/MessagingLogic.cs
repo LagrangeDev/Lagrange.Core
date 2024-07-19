@@ -192,7 +192,7 @@ internal class MessagingLogic : LogicBase
             }
             case FriendSysPokeEvent poke:
             {
-                var pokeArgs = new FriendPokeEvent(poke.FriendUin);
+                var pokeArgs = new FriendPokeEvent(poke.OperatorUin, poke.TargetUin, poke.Action, poke.Suffix);
                 Collection.Invoker.PostEvent(pokeArgs);
                 break;
             }
