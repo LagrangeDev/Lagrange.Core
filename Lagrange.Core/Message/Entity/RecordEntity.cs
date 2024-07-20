@@ -42,7 +42,7 @@ public class RecordEntity : IMessageEntity
         FilePath = filePath;
         AudioStream = new Lazy<Stream>(() => new FileStream(filePath, FileMode.Open, FileAccess.Read));
         AudioLength = audioLength;
-        AudioSize = (int?)new System.IO.FileInfo(filePath)?.Length ?? default;
+        AudioSize = (int)new System.IO.FileInfo(filePath).Length;
     }
 
     public RecordEntity(byte[] file, int audioLength = 0)
