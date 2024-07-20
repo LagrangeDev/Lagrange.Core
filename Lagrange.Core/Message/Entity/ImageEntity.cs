@@ -11,6 +11,7 @@ namespace Lagrange.Core.Message.Entity;
 
 [MessageElement(typeof(NotOnlineImage))]
 [MessageElement(typeof(CustomFace))]
+[MessageElement(typeof(CommonElem))]
 public class ImageEntity : IMessageEntity
 {
     private const string BaseUrl = "https://multimedia.nt.qq.com.cn";
@@ -87,6 +88,20 @@ public class ImageEntity : IMessageEntity
 
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
+        if (elems.CommonElem is { BusinessType: 20 or 10 } common)
+        {
+            var extra = Serializer.Deserialize<MsgInfo>(common.PbElem.AsSpan());
+            var index = extra.MsgInfoBody[0].Index;
+
+            return new ImageEntity
+            {
+                PictureSize = new Vector2(index.Info.Width, index.Info.Height),
+                FilePath = index.Info.FileName,
+                ImageSize = index.Info.FileSize,
+                MsgInfo = extra
+            };
+        }
+        
         if (elems.NotOnlineImage is { } image)
         {
             if (image.OrigUrl.Contains("&fileid=")) // NTQQ's shit
