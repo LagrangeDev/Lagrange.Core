@@ -153,10 +153,14 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             }
             case Event0x2DCSubType.GroupEssenceNotice when msg.Message.Body?.MsgContent is { } content:
             {
-                var essence = Serializer.Deserialize<GroupEssenceMessage>(content.AsSpan());
+                using var packet = new BinaryPacket(content);
+                _ = packet.ReadUint();  // group uin
+                _ = packet.ReadByte();  // unknown byte
+                var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
+                var essence = Serializer.Deserialize<NotifyMessageBody>(proto);
                 var essenceMsg = essence.EssenceMessage;
                 var groupEssenceEvent = GroupSysEssenceEvent.Result(essenceMsg.GroupUin, essenceMsg.MsgSequence,
-                    essenceMsg.SetFlag, essenceMsg.MemberUin, essenceMsg.OperatorUin);
+                    essenceMsg.Random, essenceMsg.SetFlag, essenceMsg.MemberUin, essenceMsg.OperatorUin);
                 extraEvents.Add(groupEssenceEvent);
                 break;
             }

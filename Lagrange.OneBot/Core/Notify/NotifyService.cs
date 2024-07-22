@@ -175,5 +175,18 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 Suffix = @event.Suffix
             });
         };
+
+        bot.Invoker.OnGroupEssenceEvent += async (_, @event) =>
+        {
+            logger.LogInformation(@event.ToString());
+            await service.SendJsonAsync(new OneBotGroupEssence(bot.BotUin)
+            {
+                SubType = @event.IsSet ? "add" : "delete",
+                GroupId = @event.GroupUin,
+                SenderId = @event.FromUin,
+                OperatorId = @event.OperatorUin,
+                MessageId = MessageRecord.CalcMessageHash(@event.Random, @event.Sequence),
+            });
+        };
     }
 }

@@ -47,4 +47,6 @@ public partial class EventInvoker
     public event LagrangeEvent<FriendPokeEvent>? OnFriendPokeEvent;
     
     public event LagrangeEvent<GroupPokeEvent>? OnGroupPokeEvent;
+
+    public event LagrangeEvent<GroupEssenceEvent>? OnGroupEssenceEvent;
 }
