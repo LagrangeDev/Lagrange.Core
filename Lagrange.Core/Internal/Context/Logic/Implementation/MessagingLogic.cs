@@ -119,7 +119,7 @@ internal class MessagingLogic : LogicBase
             }
             case GroupSysEssenceEvent essence:
             {
-                var essenceArgs = new GroupEssenceEvent(essence.GroupUin, essence.Sequence, essence.SetFlag, essence.FromUin, essence.OperatorUin);
+                var essenceArgs = new GroupEssenceEvent(essence.GroupUin, essence.Sequence, essence.Random, essence.SetFlag, essence.FromUin, essence.OperatorUin);
                 Collection.Invoker.PostEvent(essenceArgs);
                 break;
             }

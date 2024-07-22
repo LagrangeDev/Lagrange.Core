@@ -4,20 +4,6 @@ namespace Lagrange.Core.Internal.Packets.Message.Notify;
 #pragma warning disable CS8618
 
 [ProtoContract]
-internal class GroupEssenceMessage
-{
-    // [ProtoMember(4)] public uint GroupUin; 有两个4
-
-    [ProtoMember(13)] public uint Field13;
-
-    [ProtoMember(33)] public EssenceMessage EssenceMessage;
-
-    [ProtoMember(37)] public uint MsgSequence;
-
-    [ProtoMember(39)] public uint Field39;
-}
-
-[ProtoContract]
 internal class EssenceMessage
 {
     [ProtoMember(1)] public uint GroupUin;
