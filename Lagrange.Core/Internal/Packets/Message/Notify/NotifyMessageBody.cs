@@ -17,6 +17,8 @@ internal class NotifyMessageBody
     [ProtoMember(11)] public GroupRecall Recall { get; set; }
     
     [ProtoMember(26)] public GeneralGrayTipInfo GeneralGrayTip { get; set; }
+
+    [ProtoMember(33)] public EssenceMessage EssenceMessage;
 }
 
 [ProtoContract]

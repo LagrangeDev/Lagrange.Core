@@ -120,16 +120,19 @@ internal class WtExchangeLogic : LogicBase
             try
             {
                 if (await BotOnline()) return true;
+
+                Collection.Log.LogWarning(Tag, "Register by session failed, try to login by EasyLogin");
             }
             catch
             {
                 Collection.Log.LogWarning(Tag, "Register by session failed, try to login by EasyLogin");
-                Collection.Keystore.ClearSession();
             }
         }
 
         if (Collection.Keystore.Session.ExchangeKey == null)
         {
+            Collection.Keystore.ClearSession();
+
             if (!await KeyExchange())
             {
                 Collection.Log.LogInfo(Tag, "Key Exchange Failed, please try again later");
