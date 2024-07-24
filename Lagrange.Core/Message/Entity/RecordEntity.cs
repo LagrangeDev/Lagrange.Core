@@ -50,7 +50,10 @@ public class RecordEntity : IMessageEntity
         FilePath = string.Empty;
         AudioStream = new Lazy<Stream>(() => new MemoryStream(file));
         AudioLength = audioLength;
-        AudioSize = file?.Length ?? default;
+        if (file == null) {
+            throw new ArgumentNullException(nameof(file));
+        }
+        AudioSize = file.Length;
     }
 
     internal RecordEntity(string audioUuid, string audioName)
