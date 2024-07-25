@@ -155,9 +155,37 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             logger.LogInformation(@event.ToString());
             await service.SendJsonAsync(new OneBotFriendPoke(bot.BotUin)
             {
-                SenderId = @event.FriendUin,
-                UserId = @event.FriendUin,
-                TargetId = bot.BotUin
+                SenderId = @event.OperatorUin,
+                UserId = @event.OperatorUin,
+                TargetId = bot.BotUin,
+                Action = @event.Action,
+                Suffix = @event.Suffix
+            });
+        };
+
+        bot.Invoker.OnGroupPokeEvent += async (_, @event) =>
+        {
+            logger.LogInformation(@event.ToString());
+            await service.SendJsonAsync(new OneBotGroupPoke(bot.BotUin)
+            {
+                GroupId = @event.GroupUin,
+                UserId = @event.OperatorUin,
+                TargetId = @event.TargetUin,
+                Action = @event.Action,
+                Suffix = @event.Suffix
+            });
+        };
+
+        bot.Invoker.OnGroupEssenceEvent += async (_, @event) =>
+        {
+            logger.LogInformation(@event.ToString());
+            await service.SendJsonAsync(new OneBotGroupEssence(bot.BotUin)
+            {
+                SubType = @event.IsSet ? "add" : "delete",
+                GroupId = @event.GroupUin,
+                SenderId = @event.FromUin,
+                OperatorId = @event.OperatorUin,
+                MessageId = MessageRecord.CalcMessageHash(@event.Random, @event.Sequence),
             });
         };
     }

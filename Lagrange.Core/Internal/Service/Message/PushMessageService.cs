@@ -126,7 +126,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         {
             case Event0x2DCSubType.GroupRecallNotice when msg.Message.Body?.MsgContent is { } content:
             {
-                var packet = new BinaryPacket(content);
+                using var packet = new BinaryPacket(content);
                 _ = packet.ReadUint();  // group uin
                 _ = packet.ReadByte();  // unknown byte
                 var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
@@ -153,11 +153,32 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             }
             case Event0x2DCSubType.GroupEssenceNotice when msg.Message.Body?.MsgContent is { } content:
             {
-                var essence = Serializer.Deserialize<GroupEssenceMessage>(content.AsSpan());
+                using var packet = new BinaryPacket(content);
+                _ = packet.ReadUint();  // group uin
+                _ = packet.ReadByte();  // unknown byte
+                var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
+                var essence = Serializer.Deserialize<NotifyMessageBody>(proto);
                 var essenceMsg = essence.EssenceMessage;
                 var groupEssenceEvent = GroupSysEssenceEvent.Result(essenceMsg.GroupUin, essenceMsg.MsgSequence,
-                    essenceMsg.SetFlag, essenceMsg.MemberUin, essenceMsg.OperatorUin);
+                    essenceMsg.Random, essenceMsg.SetFlag, essenceMsg.MemberUin, essenceMsg.OperatorUin);
                 extraEvents.Add(groupEssenceEvent);
+                break;
+            }
+            case Event0x2DCSubType.GroupGreyTipNotice when msg.Message.Body?.MsgContent is { } content:
+            {
+                using var packet = new BinaryPacket(content);
+                uint groupUin = packet.ReadUint();  // group uin
+                _ = packet.ReadByte();  // unknown byte
+                var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
+                var greyTip = Serializer.Deserialize<NotifyMessageBody>(proto);
+                
+                var templates = greyTip.GeneralGrayTip.MsgTemplParam.ToDictionary(x => x.Name, x => x.Value);
+
+                if (greyTip.GeneralGrayTip.BusiType == 12)  // poke
+                {
+                    var groupPokeEvent = GroupSysPokeEvent.Result(groupUin, uint.Parse(templates["uin_str1"]), uint.Parse(templates["uin_str2"]), templates["action_str"], templates["suffix_str"]);
+                    extraEvents.Add(groupPokeEvent);
+                }
                 break;
             }
             default:
@@ -199,10 +220,16 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 // 0A710A4008AFB39FF80A1218755F54305768425A6368695A684555496253786F6F63474128AFB39FF80A3218755F54305768425A6368695A684555496253786F6F634741122108900410D40118D4012090845428A0850230ECB982AF06609084D48080808080021A0A0A00120608BDCCF4E802180122340A0E33302E3137312E3135392E32333510FE9D011A1E10900418A08502209084D480808080800230D401380140AFB39FF80A4801
                 break;
             }
-            case Event0x210SubType.FriendPokeNotice:
+            case Event0x210SubType.FriendPokeNotice when msg.Message.Body?.MsgContent is { } content:
             {
-                var poke = FriendSysPokeEvent.Result(msg.Message.ResponseHead.FromUin);
-                extraEvents.Add(poke);
+                var greyTip = Serializer.Deserialize<GeneralGrayTipInfo>(content.AsSpan());
+                var templates = greyTip.MsgTemplParam.ToDictionary(x => x.Name, x => x.Value);
+                
+                if (greyTip.BusiType == 12)  // poke
+                {
+                    var groupPokeEvent = FriendSysPokeEvent.Result(uint.Parse(templates["uin_str1"]), uint.Parse(templates["uin_str2"]), templates["action_str"], templates["suffix_str"]);
+                    extraEvents.Add(groupPokeEvent);
+                }
                 break;
             }
             default:
@@ -237,7 +264,8 @@ internal class PushMessageService : BaseService<PushMessageEvent>
     {
         GroupRecallNotice = 17,
         GroupMuteNotice = 12,
-        GroupEssenceNotice = 21
+        GroupEssenceNotice = 21,
+        GroupGreyTipNotice = 20
     }
     
     private enum Event0x210SubType

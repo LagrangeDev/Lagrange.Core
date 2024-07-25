@@ -11,7 +11,7 @@ internal class LinuxSigner : SignProvider
 {
     private readonly HttpClient _client = new();
 
-    private const string Url = "https://sign.lagrangecore.org/api/sign";
+    private const string Url = "https://sign.lagrangecore.org/api/sign/25765";
 
     private readonly Timer _timer;
 

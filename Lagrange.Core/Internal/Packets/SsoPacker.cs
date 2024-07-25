@@ -21,14 +21,14 @@ internal static class SsoPacker
     {
         var writer = new BinaryPacket();
 
-        var sign = signProvider.Sign(packet.Command, packet.Sequence, packet.Payload.ToArray(), out var software, out var token);
+        var sign = signProvider.Sign(packet.Command, packet.Sequence, packet.Payload.ToArray(), out var extra, out var token);
         var signature = new NTDeviceSign
         {
-            Sign = sign == null ? null : new Sign
+            Sign = sign == null ? null : new SecInfo
             {
-                S = software == null ? new Software { Ver = appInfo.PackageSign } : Serializer.Deserialize<Software>(new MemoryStream(software)),
-                Token = token,
-                Signature = sign
+                SecSign = sign,
+                SecToken = token,
+                SecExtra = extra
             },
             Trace = StringGen.GenerateTrace(),
             Uid = keystore.Uid

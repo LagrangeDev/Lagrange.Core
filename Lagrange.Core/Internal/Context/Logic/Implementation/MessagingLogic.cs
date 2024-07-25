@@ -6,11 +6,11 @@ using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.Notify;
 using Lagrange.Core.Internal.Event.System;
-using Lagrange.Core.Internal.Packets.Message.Notify;
 using Lagrange.Core.Internal.Service;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using FriendPokeEvent = Lagrange.Core.Event.EventArg.FriendPokeEvent;
+using GroupPokeEvent = Lagrange.Core.Event.EventArg.GroupPokeEvent;
 
 namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 
@@ -29,6 +29,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(GroupSysRequestJoinEvent))]
 [EventSubscribe(typeof(GroupSysRequestInvitationEvent))]
 [EventSubscribe(typeof(GroupSysEssenceEvent))]
+[EventSubscribe(typeof(GroupSysPokeEvent))]
 [EventSubscribe(typeof(FriendSysRecallEvent))]
 [EventSubscribe(typeof(FriendSysRequestEvent))]
 [EventSubscribe(typeof(FriendSysPokeEvent))]
@@ -118,8 +119,14 @@ internal class MessagingLogic : LogicBase
             }
             case GroupSysEssenceEvent essence:
             {
-                var essenceArgs = new GroupEssenceEvent(essence.GroupUin, essence.Sequence, essence.SetFlag, essence.FromUin, essence.OperatorUin);
+                var essenceArgs = new GroupEssenceEvent(essence.GroupUin, essence.Sequence, essence.Random, essence.SetFlag, essence.FromUin, essence.OperatorUin);
                 Collection.Invoker.PostEvent(essenceArgs);
+                break;
+            }
+            case GroupSysPokeEvent poke:
+            {
+                var pokeArgs = new GroupPokeEvent(poke.GroupUin, poke.OperatorUin, poke.TargetUin, poke.Action, poke.Suffix);
+                Collection.Invoker.PostEvent(pokeArgs);
                 break;
             }
             case FriendSysRequestEvent info:
@@ -185,7 +192,7 @@ internal class MessagingLogic : LogicBase
             }
             case FriendSysPokeEvent poke:
             {
-                var pokeArgs = new FriendPokeEvent(poke.FriendUin);
+                var pokeArgs = new FriendPokeEvent(poke.OperatorUin, poke.TargetUin, poke.Action, poke.Suffix);
                 Collection.Invoker.PostEvent(pokeArgs);
                 break;
             }
