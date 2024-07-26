@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Internal.Context.Attributes;
 using Lagrange.Core.Internal.Event;
@@ -22,6 +23,8 @@ internal class CachingLogic : LogicBase
     private readonly List<BotFriend> _cachedFriends;
     private readonly Dictionary<uint, List<BotGroupMember>> _cachedGroupMembers;
 
+    private readonly ConcurrentDictionary<uint, BotUserInfo> _cacheUsers;
+
     internal CachingLogic(ContextCollection collection) : base(collection)
     {
         _uinToUid = new Dictionary<uint, string>();
@@ -30,6 +33,8 @@ internal class CachingLogic : LogicBase
 
         _cachedFriends = new List<BotFriend>();
         _cachedGroupMembers = new Dictionary<uint, List<BotGroupMember>>();
+
+        _cacheUsers = new();
     }
 
     public override Task Incoming(ProtocolEvent e)
@@ -96,6 +101,13 @@ internal class CachingLogic : LogicBase
         return _cachedFriends;
     }
 
+    public async Task<BotUserInfo?> GetCachedUsers(uint uin, bool refreshCache)
+    {
+        if (!_cacheUsers.ContainsKey(uin) || refreshCache) await ResolveUser(uin);
+        if (!_cacheUsers.TryGetValue(uin, out BotUserInfo? info)) return null;
+        return info;
+    }
+
     private async Task CacheUid(uint groupUin, bool force = false)
     {
         if (!_cachedGroups.Contains(groupUin) || force)
@@ -110,7 +122,7 @@ internal class CachingLogic : LogicBase
     {
         var fetchFriendsEvent = FetchFriendsEvent.Create();
         var events = await Collection.Business.SendEvent(fetchFriendsEvent);
-        
+
         if (events.Count != 0)
         {
             var @event = (FetchFriendsEvent)events[0];
@@ -123,7 +135,7 @@ internal class CachingLogic : LogicBase
                 @event.Friends.AddRange(((FetchFriendsEvent)results[0]).Friends);
                 nextUin = ((FetchFriendsEvent)results[0]).NextUin;
             }
-            
+
             foreach (var friend in @event.Friends) _uinToUid.TryAdd(friend.Uin, friend.Uid);
             _cachedFriends.Clear();
             _cachedFriends.AddRange(@event.Friends);
@@ -159,6 +171,16 @@ internal class CachingLogic : LogicBase
         {
             _cachedGroupMembers[groupUin] = new List<BotGroupMember>();
             Collection.Log.LogWarning(Tag, $"Failed to resolve group {groupUin} members uid and cache.");
+        }
+    }
+
+    private async Task ResolveUser(uint uin)
+    {
+        var events = await Collection.Business.SendEvent(FetchUserInfoEvent.Create(uin));
+
+        if (events.Count != 0 && events[0] is FetchUserInfoEvent { } @event)
+        {
+            _cacheUsers.AddOrUpdate(uin, @event.UserInfo, (_key, _value) => @event.UserInfo);
         }
     }
 }

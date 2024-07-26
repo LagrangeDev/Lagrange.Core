@@ -152,8 +152,8 @@ public static class OperationExt
         return bot.ContextCollection.Business.OperationLogic.GetRoamMessage(targetChain.FriendUin, timestamp, count);
     }
 
-    public static Task<BotUserInfo?> FetchUserInfo(this BotContext bot, uint uin)
-        => bot.ContextCollection.Business.OperationLogic.FetchUserInfo(uin);
+    public static Task<BotUserInfo?> FetchUserInfo(this BotContext bot, uint uin, bool refreshCache = false)
+        => bot.ContextCollection.Business.OperationLogic.FetchUserInfo(uin, refreshCache);
 
     public static Task<List<string>?> FetchCustomFace(this BotContext bot)
         => bot.ContextCollection.Business.OperationLogic.FetchCustomFace();

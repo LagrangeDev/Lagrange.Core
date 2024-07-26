@@ -412,11 +412,9 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupSetSpecialTitleEvent)events[0]).ResultCode == 0;
     }
 
-    public async Task<BotUserInfo?> FetchUserInfo(uint uin)
+    public async Task<BotUserInfo?> FetchUserInfo(uint uin, bool refreshCache = false)
     {
-        var fetchUserInfoEvent = FetchUserInfoEvent.Create(uin);
-        var events = await Collection.Business.SendEvent(fetchUserInfoEvent);
-        return events.Count != 0 ? ((FetchUserInfoEvent)events[0]).UserInfo : null;
+        return await Collection.Business.CachingLogic.GetCachedUsers(uin, refreshCache);
     }
 
     public async Task<bool> SetMessageReaction(uint groupUin, uint sequence, string code)
