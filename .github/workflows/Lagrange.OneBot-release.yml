@@ -49,7 +49,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Lagrange.OneBot_all
-          path: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0.zip
+          path: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip
 
   NightlyRelease:
     name: Nightly Release
