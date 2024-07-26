@@ -13,14 +13,10 @@ public class GetFriendListOperation : IOperation
 
         new((await context.FetchFriends(true)).Select(friend =>
         {
-            var task = context.FetchUserInfo(friend.Uin, true);
-            task.Wait();
-            var user = task.Result ?? throw new Exception("Are you kidding me?");
-
             return new OneBotFriend
             {
                 UserId = friend.Uin,
-                QId = user.Qid,
+                QId = friend.Qid,
                 NickName = friend.Nickname,
                 Remark = friend.Remarks
             };
