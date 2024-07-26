@@ -414,10 +414,7 @@ internal class OperationLogic : LogicBase
 
     public async Task<BotUserInfo?> FetchUserInfo(uint uin)
     {
-        string? uid = await Collection.Business.CachingLogic.ResolveUid(null, uin);
-        if (uid == null) return null;
-
-        var fetchUserInfoEvent = FetchUserInfoEvent.Create(uid);
+        var fetchUserInfoEvent = FetchUserInfoEvent.Create(uin);
         var events = await Collection.Business.SendEvent(fetchUserInfoEvent);
         return events.Count != 0 ? ((FetchUserInfoEvent)events[0]).UserInfo : null;
     }
