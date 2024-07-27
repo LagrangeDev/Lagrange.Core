@@ -34,11 +34,21 @@ jobs:
 
       - run: zip -r Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip ./Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
 
-      - uses: softprops/action-gh-release@v2
+      # - uses: softprops/action-gh-release@v2
+      #   with:
+      #     tag_name: nightly-test
+      #     name: Nightly Release Test
+      #     prerelease: true
+      #     body: "> ⚠️This is a nightly release.\n> ⚠️This is not the latest version."
+      #     files: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: ncipollo/release-action@v1
         with:
-          tag_name: nightly-test
-          name: Nightly Release Test
+          tag: nightly
+          name: "Nightly Release"
           prerelease: true
           body: "> ⚠️This is a nightly release.\n> ⚠️This is not the latest version."
-          files: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip
-          # token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip
+          allowUpdates: true
+          removeArtifacts: true
