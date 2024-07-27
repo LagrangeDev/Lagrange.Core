@@ -44,4 +44,3 @@ jobs:
           prerelease: true
           body: "> ⚠️This is a nightly release.\n> ⚠️This is not the latest version."
           files: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
