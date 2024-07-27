@@ -3,8 +3,22 @@ name: Lagrange.OneBot Release
 on:
   workflow_dispatch:
 
+env:
+  GH_TOKEN: ${{ github.token }}
+
 jobs:
-  build:
+  reset-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: gh release delete nightly --cleanup-tag -y -R ${{ github.repository }}
+
+      - run: echo -e "> ⚠️This is a nightly release.\r\n> ⚠️This is not the latest version." > note
+
+      - run: gh release create nightly -F ./note -p -t "Nightly Release" -R ${{ github.repository }}
+
+  build-and-upload-release:
+    needs: reset-release
     runs-on: ubuntu-latest
 
     permissions:
@@ -38,16 +52,8 @@ jobs:
       - run: |
           if [[ ${{ matrix.runtimeIdentifier }} == 'win-x64' || ${{ matrix.runtimeIdentifier }} == 'win-x86' ]]; then
             zip -r Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip ./Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
+            gh release upload nightly Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip -R ${{ github.repository }}
           else
             tar -czvf Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.tar.gz ./Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
+            gh release upload nightly Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.tar.gz -R ${{ github.repository }}
           fi
-
-      - uses: softprops/action-gh-release@v2
-        with:
-          tag_name: nightly
-          name: Nightly Release
-          prerelease: true
-          body: "> ⚠️This is a nightly release.\n> ⚠️This is not the latest version."
-          files: |
-            Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip
-            Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.tar.gz
