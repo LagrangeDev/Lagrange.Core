@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  Build:
+    runs-on: windows-latest
 
     strategy:
       matrix:
@@ -26,29 +26,71 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-dotnet@v4
+      - name: Install .NET
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: '8.0.x'
 
-      - run: dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
+      - name: Build Lagrange.OneBot .NET 8.0
+        shell: powershell
+        run: |
+          dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
+      - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 8.0
+        uses: actions/upload-artifact@v3
+        with:
+          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0
+          path: Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
 
-      - run: zip -r Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip ./Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
+      - name: Compress files
+        run: Compress-Archive -Path 'Lagrange.OneBot\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish' -DestinationPath 'Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip'
 
-      # - uses: softprops/action-gh-release@v2
-      #   with:
-      #     tag_name: nightly-test
-      #     name: Nightly Release Test
-      #     prerelease: true
-      #     body: "> ⚠️This is a nightly release.\n> ⚠️This is not the latest version."
-      #     files: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip
-      #     token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Prepare release files
+        uses: actions/upload-artifact@v3
+        with:
+          name: Lagrange.OneBot_all
+          path: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip
 
-      - uses: ncipollo/release-action@v1
+  NightlyRelease:
+    name: Nightly Release
+    runs-on: ubuntu-latest
+    needs: Build
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update Nightly Tag
+        run: |
+          git tag -f nightly
+          git push -f origin nightly
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: Lagrange.OneBot_all
+          path: ./bin
+      - name: Update Nightly Release
+        uses: ncipollo/release-action@v1
         with:
           tag: nightly
           name: "Nightly Release"
           prerelease: true
           body: "> ⚠️This is a nightly release.\n> ⚠️This is not the latest version."
-          artifacts: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip
+          artifacts: |
+            ./bin/*
           allowUpdates: true
           removeArtifacts: true
+
+  ClearTempArtifacts:
+    name: Clear Temp Artifacts
+    if: always()
+    runs-on: ubuntu-latest
+    needs:
+      - NightlyRelease
+    permissions:
+      actions: write
+    steps:
+      - uses: geekyeggo/delete-artifact@v2
+        with:
+          name: |
+            Lagrange.OneBot_all
