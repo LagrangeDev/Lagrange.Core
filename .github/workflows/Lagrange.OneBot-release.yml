@@ -42,6 +42,8 @@ jobs:
             tar -czvf Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.tar.gz ./Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
           fi
 
+      - run: git push --delete origin nightly
+
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: nightly
