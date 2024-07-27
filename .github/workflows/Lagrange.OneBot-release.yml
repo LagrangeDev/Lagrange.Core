@@ -36,7 +36,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
-          tag: nightly
+          tag_name: nightly
           name: Nightly Release
           prerelease: true
           body: "> ⚠️This is a nightly release.\n> ⚠️This is not the latest version."
