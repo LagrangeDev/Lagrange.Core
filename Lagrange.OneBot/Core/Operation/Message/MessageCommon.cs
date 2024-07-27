@@ -40,7 +40,7 @@ public partial class MessageCommon
 
     public MessageBuilder ParseFakeChain(OneBotFakeNode message, uint? groupUin)
     {
-        var builder = groupUin != null 
+        var builder = groupUin != null
             ? MessageBuilder.FakeGroup((uint)groupUin, uint.Parse(message.Uin))
             : MessageBuilder.Friend(uint.Parse(message.Uin));
         BuildMessages(builder, message.Content);
@@ -50,17 +50,17 @@ public partial class MessageCommon
 
     public MessageBuilder ParseFakeChain(OneBotFakeNodeSimple message, uint? groupUin)
     {
-        var builder = groupUin != null 
+        var builder = groupUin != null
             ? MessageBuilder.FakeGroup((uint)groupUin, uint.Parse(message.Uin))
             : MessageBuilder.Friend(uint.Parse(message.Uin));
         BuildMessages(builder, message.Content);
-        
+
         return builder;
     }
 
     public MessageBuilder ParseFakeChain(OneBotFakeNodeText message, uint? groupUin)
     {
-        var builder = groupUin != null 
+        var builder = groupUin != null
             ? MessageBuilder.FakeGroup((uint)groupUin, uint.Parse(message.Uin))
             : MessageBuilder.Friend(uint.Parse(message.Uin));
         BuildMessages(builder, message.Content);
@@ -249,7 +249,14 @@ public partial class MessageCommon
                     _ => throw new Exception()
                 };
                 string uid = context.ContextCollection.Keystore.Uid ?? throw new InvalidOperationException();
-                chain.FriendInfo = new BotFriend(uint.Parse(element.Uin), uid, element.Name, string.Empty, string.Empty);
+                chain.FriendInfo = new BotFriend(
+                    uint.Parse(element.Uin),
+                    uid,
+                    element.Name,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty
+                );
                 chains.Add(chain);  // as fake is constructed, use uid from bot itself to upload image
             }
         }

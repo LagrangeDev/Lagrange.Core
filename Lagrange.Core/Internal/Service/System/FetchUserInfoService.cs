@@ -21,12 +21,19 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
     {
         var keys = new List<uint> { 20002, 27394, 20009, 20031, 101, 103, 102, 20022, 20023, 20024, 24002, 27037, 27049, 20011, 20016, 20021, 20003, 20004, 20005, 20006, 20020, 20026, 24007, 104, 105, 42432, 42362, 41756, 41757, 42257, 27372, 42315, 107, 45160, 45161, 27406, 62026, 20037 };
 
-        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE1_2>(new OidbSvcTrpcTcp0xFE1_2
-        {
-            Uid = input.Uid,
-            Field2 = 0,
-            Keys = keys.Select(x => new OidbSvcTrpcTcp0xFE1_2Key { Key = x }).ToList()
-        });
+        object packet = input.Uid == null
+            ? new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE1_2Uin>(new OidbSvcTrpcTcp0xFE1_2Uin
+            {
+                Uin = input.Uin,
+                Field2 = 0,
+                Keys = keys.Select(x => new OidbSvcTrpcTcp0xFE1_2Key { Key = x }).ToList()
+            }, 0xfe1, 2, false, true) 
+            : new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE1_2>(new OidbSvcTrpcTcp0xFE1_2
+            {
+                Uid = input.Uid,
+                Field2 = 0,
+                Keys = keys.Select(x => new OidbSvcTrpcTcp0xFE1_2Key { Key = x }).ToList()
+            }, 0xfe1, 2);
 
         output = packet.Serialize();
         extraPackets = null;
@@ -43,7 +50,8 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
 
         var birthday = GetBirthday(str[20031]);
         var reg = DateTime.UnixEpoch.AddSeconds(num[20026]);
-        var info = new BotUserInfo(payload.Body.Body.Uin, payload.Body.Body.Uid, str[20002], birthday, str[20020], str[20003], str[20021], num[20037], reg, num[20009]);
+        string? qid = str.GetValueOrDefault<uint, string>(27394);
+        var info = new BotUserInfo(payload.Body.Body.Uin, str[20002], birthday, str[20020], str[20003], str[20021], num[20037], reg, num[20009], qid);
 
         output = FetchUserInfoEvent.Result(0, info);
         extraEvents = null;
@@ -56,7 +64,7 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         var year = bin.ReadUshort();
         var month = bin.ReadByte();
         var day = bin.ReadByte();
-        if (year != 0 && month >= 1 && month <= 12 && day >= 1 && day <= DateTime.DaysInMonth(year, month))
+        if (year != 0 && month is >= 1 and <= 12 && day >= 1 && day <= DateTime.DaysInMonth(year, month))
         {
             return new DateTime(year, month, day);
         }

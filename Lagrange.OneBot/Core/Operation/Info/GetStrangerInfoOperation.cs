@@ -2,9 +2,11 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Lagrange.Core;
 using Lagrange.Core.Common.Entity;
+using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core.Entity;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Operation.Converters;
+using Lagrange.OneBot.Utility;
 
 namespace Lagrange.OneBot.Core.Operation.Info;
 
@@ -15,27 +17,20 @@ public class GetStrangerInfoOperation : IOperation
     {
         if (payload.Deserialize<OneBotGetStrangerInfo>(SerializerOptions.DefaultOptions) is { } stranger)
         {
-            BotGroupMember? target = null;
-
-            foreach (var group in await context.ContextCollection.Business.CachingLogic.GetCachedGroups(!stranger.NoCache))
+            if (await context.FetchUserInfo(stranger.UserId) is { } info)
             {
-                foreach (var member in await context.ContextCollection.Business.CachingLogic.GetCachedMembers(group.GroupUin, false))
+                return new OneBotResult(new OneBotStranger
                 {
-                    if (stranger.UserId == member.Uin)
-                    {
-                        target = member;
-                        break;
-                    }
-                }
-                
-                if (target != null) break;
+                    UserId = info.Uin,
+                    QId = info.Qid,
+                    NickName = info.Nickname,
+                    Sex = info.Gender.ToOneBotString(),
+                    Age = info.Age
+                }, 0, "ok");
             }
 
-            return target != null 
-                ? new OneBotResult(new OneBotStranger { UserId = target.Uin, NickName = target.MemberName }, 0, "ok") 
-                : new OneBotResult(null, 1, "member not found");
+            return new OneBotResult(null, -1, "failed");
         }
-
         throw new Exception();
     }
 }

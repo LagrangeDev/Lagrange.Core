@@ -61,12 +61,12 @@ jobs:
         uses: actions/upload-artifact@v4
         if: github.event_name != 'pull_request'
         with:
-          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_7.0
+          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net7.0_NoSelfContained
           path: Lagrange.OneBot/bin/Debug/net7.0/${{ matrix.runtimeIdentifier }}/publish
 
       - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 8.0
         uses: actions/upload-artifact@v4
         if: github.event_name != 'pull_request'
         with:
-          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_8.0
+          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_NoSelfContained
           path: Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish

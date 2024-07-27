@@ -2,10 +2,9 @@ namespace Lagrange.Core.Common.Entity;
 
 public class BotUserInfo
 {
-    internal BotUserInfo(uint uin, string uid, string nickname, DateTime birthday, string city, string country, string school, uint age, DateTime registerTime, uint gender)
+    internal BotUserInfo(uint uin, string nickname, DateTime birthday, string city, string country, string school, uint age, DateTime registerTime, uint gender, string? qid)
     {
         Uin = uin;
-        Uid = uid;
         Avatar = $"https://q1.qlogo.cn/g?b=qq&nk={Uin}&s=640";
         Nickname = nickname;
         Birthday = birthday;
@@ -15,11 +14,10 @@ public class BotUserInfo
         Age = age;
         RegisterTime = registerTime;
         Gender = (GenderInfo)gender;
+        Qid = qid;
     }
 
     public uint Uin { get; set; }
-    
-    internal string Uid { get; set; }
     
     public string Avatar { get; set; }
     
@@ -38,6 +36,8 @@ public class BotUserInfo
     public DateTime RegisterTime { get; set; }
     
     public GenderInfo Gender { get; set; }
+    
+    public string? Qid { get; set; }
 
     public enum GenderInfo
     {
