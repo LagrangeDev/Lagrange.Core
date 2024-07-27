@@ -7,7 +7,7 @@ using Lagrange.OneBot.Core.Operation.Converters;
 
 namespace Lagrange.OneBot.Core.Operation.Group;
 
-[Operation("set_group_bot_hd")]
+[Operation("send_group_bot_callback")]
 public class SetGroupBothdOperation : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
