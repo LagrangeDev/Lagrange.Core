@@ -35,7 +35,12 @@ jobs:
 
       - run: dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
 
-      - run: zip -r Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip ./Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
+      - run: |
+          if [[ ${{ matrix.runtimeIdentifier }} == 'win-x64' || ${{ matrix.runtimeIdentifier }} == 'win-x86' ]]; then
+            zip -r Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip ./Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
+          else
+            tar -czvf Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.tar.gz ./Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
+          fi
 
       - uses: softprops/action-gh-release@v2
         with:
@@ -43,4 +48,6 @@ jobs:
           name: Nightly Release
           prerelease: true
           body: "> ⚠️This is a nightly release.\n> ⚠️This is not the latest version."
-          files: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip
+          files: |
+            Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.zip
+            Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_SelfContained.tar.gz
