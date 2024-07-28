@@ -26,7 +26,7 @@ internal class FetchFriendsService : BaseService<FetchFriendsEvent>
             FriendCount = MaxFriendCount, // max value
             Body = new List<OidbSvcTrpcTcp0xFD4_1Body>
             {
-                new() { Type = 1, Number = new OidbNumber { Numbers = { 103, 102, 20002 } } },
+                new() { Type = 1, Number = new OidbNumber { Numbers = { 103, 102, 20002, 27394 } } },
                 new() { Type = 4, Number = new OidbNumber { Numbers = { 100, 101, 102 } } }
             }
         });
@@ -38,6 +38,7 @@ internal class FetchFriendsService : BaseService<FetchFriendsEvent>
          * 102：个性签名
          * 103：备注
          * 20002：昵称
+         * 27394：QID
          */
         
         output = packet.Serialize();
@@ -55,7 +56,7 @@ internal class FetchFriendsService : BaseService<FetchFriendsEvent>
         {
             var additional = raw.Additional.First(x => x.Type == 1);
             var properties = Property(additional.Layer1.Properties);
-            friends.Add(new BotFriend(raw.Uin, raw.Uid, properties[20002], properties[103], properties[102]));
+            friends.Add(new BotFriend(raw.Uin, raw.Uid, properties[20002], properties[103], properties[102], properties[27394]));
         }
         
         output = FetchFriendsEvent.Result(0, friends, packet.Body.Next?.Uin); // 全家4完了才能想出来这种分页的逻辑

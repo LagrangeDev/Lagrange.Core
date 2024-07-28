@@ -7,7 +7,7 @@
 ![C#](https://img.shields.io/badge/OneBot-%20.NET_7-blue)
 
 [![License](https://img.shields.io/static/v1?label=LICENSE&message=GPL-3.0&color=lightrey)](/LICENSE)
-[![Telegram](https://img.shields.io/endpoint?url=https%3A%2F%2Ftelegram-badge-4mbpu8e0fit4.runkit.sh%2F%3Furl%3Dhttps%3A%2F%2Ft.me%2F%2B6HNTeJO0JqtlNmRl)](https://t.me/+6HNTeJO0JqtlNmRl)
+[![Telegram](https://img.shields.io/badge/Chat-Telegram-27A7E7)](https://t.me/+6HNTeJO0JqtlNmRl)
 
 [![Image](https://trendshift.io/api/badge/repositories/3486)](https://trendshift.io/repositories/3486)
 
@@ -76,7 +76,7 @@ Thanks for 外国热心网友 for Provision of Azure Servlet
 | macOS    |   🟢    | Password                  |   🟢    | Text / At |   🟢    | Recall            |   🟢    | BotOnline           |   🟢    |
 | Linux    |   🟢    | EasyLogin                 |   🟢    | Records   |   🟢    | Leave Group       |   🟢    | BotOffline          |   🟢    |
 |          |         | UnusalDevice<br/>Password |   🔴    | QFace     |   🟢    | Set Special Title |   🟢    | Message              |   🟢    |
-|          |         | UnusalDevice<br/>Easy     |   🟢    | Json      |   🟢    | Kick Member       |   🟢    | ~~Poke~~             |   🔴    |
+|          |         | UnusalDevice<br/>Easy     |   🟢    | Json      |   🟢    | Kick Member       |   🟢    | Poke             |   🟢    |
 |          |         | NewDeviceVerify           |   🟢    | Xml       |   🟢    | Mute Member       |   🟢    | MessageRecall        |   🟢    |
 |          |         |                           |         | Forward   |   🟢    | Set Admin          |   🟢    | GroupMemberDecrease  |   🟢    |
 |          |         |                           |         | Video     |   🟢    | Friend Request     |   🟢    | GroupMemberIncrease  |   🟢    |

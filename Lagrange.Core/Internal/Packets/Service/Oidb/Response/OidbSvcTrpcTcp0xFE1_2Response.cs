@@ -16,7 +16,7 @@ internal class OidbSvcTrpcTcp0xFE1_2Response
 [ProtoContract]
 internal class OidbSvcTrpcTcp0xFE1_2ResponseBody
 {
-    [ProtoMember(1)] public string Uid { get; set; } = "";
+    // [ProtoMember(1)] public string Uid { get; set; } = "";
     
     [ProtoMember(2)] public OidbSvcTrpcTcp0xFE1_2ResponseProperty Properties { get; set; }
     

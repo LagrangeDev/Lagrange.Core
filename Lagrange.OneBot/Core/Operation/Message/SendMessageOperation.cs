@@ -38,6 +38,7 @@ public sealed class SendMessageOperation(MessageCommon common, LiteDatabase data
                 context.ContextCollection.Keystore.Uid ?? string.Empty,
                 context.BotName ?? string.Empty,
                 string.Empty,
+                string.Empty,
                 string.Empty
             ),
             GroupMemberInfo = null,

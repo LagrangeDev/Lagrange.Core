@@ -8,10 +8,13 @@ internal class FetchUserInfoEvent : ProtocolEvent
 {
     public BotUserInfo UserInfo { get; }
     
-    public string Uid { get; }
+    public uint Uin { get; }
+    
+    public string? Uid { get; }
 
-    private FetchUserInfoEvent(string uid) : base(true)
+    private FetchUserInfoEvent(uint uin, string? uid) : base(true)
     {
+        Uin = uin;
         Uid = uid;
     }
 
@@ -20,7 +23,9 @@ internal class FetchUserInfoEvent : ProtocolEvent
         UserInfo = userInfo;
     }
 
-    public static FetchUserInfoEvent Create(string uid) => new(uid);
+    public static FetchUserInfoEvent Create(uint uid) => new(uid, null);
+    
+    public static FetchUserInfoEvent Create(string uid) => new(0, uid);
 
     public static FetchUserInfoEvent Result(int resultCode, BotUserInfo userInfo) =>
         new(resultCode, userInfo);

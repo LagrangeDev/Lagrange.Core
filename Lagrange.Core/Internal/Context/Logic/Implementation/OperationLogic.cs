@@ -75,6 +75,20 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(muteGroupMemberEvent);
         return events.Count != 0 && ((GroupSetAdminEvent)events[0]).ResultCode == 0;
     }
+    
+    public async Task<bool> SetGroupBot(uint BotId , uint On , uint groupUin)
+    {
+        var muteBotEvent = GroupSetBotEvent.Create(BotId, On, groupUin);
+        var events = await Collection.Business.SendEvent(muteBotEvent);
+        return events.Count != 0 && ((GroupSetBotEvent)events[0]).ResultCode == 0;
+    }
+
+        public async Task<bool> SetGroupBotHD(uint BotId , uint groupUin)
+    {
+        var muteBotEvent = GroupSetBothdEvent.Create(BotId, groupUin);
+        var events = await Collection.Business.SendEvent(muteBotEvent);
+        return events.Count != 0 && ((GroupSetBothdEvent)events[0]).ResultCode == 0;
+    }
 
     public async Task<bool> RenameGroupMember(uint groupUin, uint targetUin, string targetName)
     {
@@ -412,14 +426,9 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupSetSpecialTitleEvent)events[0]).ResultCode == 0;
     }
 
-    public async Task<BotUserInfo?> FetchUserInfo(uint uin)
+    public async Task<BotUserInfo?> FetchUserInfo(uint uin, bool refreshCache = false)
     {
-        string? uid = await Collection.Business.CachingLogic.ResolveUid(null, uin);
-        if (uid == null) return null;
-
-        var fetchUserInfoEvent = FetchUserInfoEvent.Create(uid);
-        var events = await Collection.Business.SendEvent(fetchUserInfoEvent);
-        return events.Count != 0 ? ((FetchUserInfoEvent)events[0]).UserInfo : null;
+        return await Collection.Business.CachingLogic.GetCachedUsers(uin, refreshCache);
     }
 
     public async Task<bool> SetMessageReaction(uint groupUin, uint sequence, string code)

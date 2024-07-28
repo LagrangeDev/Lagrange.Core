@@ -284,7 +284,7 @@ internal static class MessagePacker
         }
         else
         {
-            @base.FriendInfo = new BotFriend(0, message.ResponseHead.FromUid ?? string.Empty, message.ResponseHead.Forward?.FriendName ?? string.Empty, string.Empty, string.Empty);
+            @base.FriendInfo = new BotFriend(0, message.ResponseHead.FromUid ?? string.Empty, message.ResponseHead.Forward?.FriendName ?? string.Empty, string.Empty, string.Empty, string.Empty);
         }
         
         return @base;
