@@ -23,11 +23,11 @@ public partial class MusicSegment(string? type, string url, string audio, string
 
     [JsonPropertyName("image")][CQProperty] public string Image { get; set; } = image;
 
-    [JsonPropertyName("appid")][CQProperty] public string Appid { get; set; } = appid;
+    [JsonPropertyName("appid")] public string Appid { get; set; } = appid;
 
-    [JsonPropertyName("sign")][CQProperty] public string Sign { get; set; } = sign;
+    [JsonPropertyName("sign")] public string Sign { get; set; } = sign;
 
-    [JsonPropertyName("package_name")][CQProperty] public string PackageName { get; set; } = packageName;
+    [JsonPropertyName("package_name")] public string PackageName { get; set; } = packageName;
 }
 
 [SegmentSubscriber(typeof(ImageEntity), "music")]
