@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Lagrange.OneBot.Utility;
@@ -31,15 +32,33 @@ public class MusicSigner
     {
         if (string.IsNullOrEmpty(_signServer)) return null;
 
-        var payload = new JsonObject()
+        JsonObject payload;
+        if (musicSegment.Type != null)
         {
-            { "type" , musicSegment.Type },
-            { "url" , musicSegment.Url },
-            { "audio" , musicSegment.Audio },
-            { "title" , musicSegment.Title },
-            { "image" , musicSegment.Image },
-            { "singer" , musicSegment.Content },
-        };
+            payload = new JsonObject()
+            {
+                { "type" , musicSegment.Type },
+                { "url" , musicSegment.Url },
+                { "audio" , musicSegment.Audio },
+                { "title" , musicSegment.Title },
+                { "image" , musicSegment.Image },
+                { "singer" , musicSegment.Content },
+            };
+        }
+        else
+        {
+            payload = new JsonObject()
+            {
+                { "url" , musicSegment.Url },
+                { "audio" , musicSegment.Audio },
+                { "title" , musicSegment.Title },
+                { "image" , musicSegment.Image },
+                { "singer" , musicSegment.Content },
+                { "appid", ulong.Parse(musicSegment.Appid) },
+                { "sign", musicSegment.Sign },
+                { "package_name", musicSegment.PackageName },
+            };
+        }
 
         try
         {
