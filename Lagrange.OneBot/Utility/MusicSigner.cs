@@ -41,6 +41,11 @@ public class MusicSigner
             { "singer" , musicSegment.Content },
         };
 
+        if (musicSegment.Id.Length > 0)
+        {
+            payload.Add("id", musicSegment.Id);
+        }
+
         try
         {
             var message = _client.PostAsJsonAsync(_signServer, payload).Result;

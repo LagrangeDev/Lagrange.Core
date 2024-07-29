@@ -13,6 +13,8 @@ public partial class MusicSegment(string type, string url, string audio, string 
 
     [JsonPropertyName("type")][CQProperty] public string Type { get; set; } = type;
 
+    [JsonPropertyName("id")][CQProperty] public string Id { get; set; } = String.Empty;
+
     [JsonPropertyName("url")][CQProperty] public string Url { get; set; } = url;
 
     [JsonPropertyName("audio")][CQProperty] public string Audio { get; set; } = audio;
@@ -20,7 +22,7 @@ public partial class MusicSegment(string type, string url, string audio, string 
     [JsonPropertyName("title")][CQProperty] public string Title { get; set; } = title;
 
     [JsonPropertyName("content")][CQProperty] public string Content { get; set; } = content;
-    
+
     [JsonPropertyName("image")][CQProperty] public string Image { get; set; } = image;
 }
 
