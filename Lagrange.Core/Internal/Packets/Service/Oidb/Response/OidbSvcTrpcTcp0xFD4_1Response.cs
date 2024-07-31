@@ -18,10 +18,20 @@ internal class OidbSvcTrpcTcp0xFD4_1Response
     [ProtoMember(7)] public uint SelfUin { get; set; }
 
     [ProtoMember(101)] public List<OidbFriend> Friends { get; set; }
+
+    [ProtoMember(102)] public List<OidbGroup> Groups { get; set; }
 }
 
 [ProtoContract]
 internal class OidbSvcTrpcTcp0xFD4_1ResponseUin
 {
     [ProtoMember(1)] public uint Uin { get; set; }
+}
+
+[ProtoContract]
+internal class OidbGroup
+{
+    [ProtoMember(1)] public uint GroupId { get; set; }
+
+    [ProtoMember(2)] public string GroupName { get; set; }
 }

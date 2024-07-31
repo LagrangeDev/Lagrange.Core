@@ -25,7 +25,7 @@ internal static class MessagePacker
 {
     private static readonly Dictionary<Type, List<PropertyInfo>> EntityToElem;
     private static readonly Dictionary<Type, IMessageEntity> Factory;
-    
+
     static MessagePacker()
     {
         EntityToElem = new Dictionary<Type, List<PropertyInfo>>();
@@ -34,7 +34,7 @@ internal static class MessagePacker
         var assembly = Assembly.GetExecutingAssembly();
         var types = assembly.GetTypeWithMultipleAttributes<MessageElementAttribute>(out var attributeArrays);
         var elemType = typeof(Elem);
-        
+
         for (int i = 0; i < types.Count; i++)
         {
             var type = types[i];
@@ -73,12 +73,12 @@ internal static class MessagePacker
                 message.Body.MsgContent = stream.ToArray();
             }
         }
-        
+
         BuildAdditional(chain, message);
 
         return message;
     }
-    
+
     public static PushMsgBody BuildFake(MessageChain chain, string selfUid)
     {
         var message = BuildFakePacketBase(chain, selfUid);
@@ -87,7 +87,7 @@ internal static class MessagePacker
         {
             entity.SetSelfUid(selfUid);
             message.Body?.RichText?.Elems.AddRange(entity.PackElement());
-            
+
             if (message.Body != null)
             {
                 if (entity.PackMessageContent() is not { } content) continue;
@@ -104,26 +104,26 @@ internal static class MessagePacker
     private static void BuildAdditional(MessageChain chain, Internal.Packets.Message.Message message)
     {
         if (message.Body?.RichText == null) return;
-        
+
         foreach (var entity in chain)
         {
             switch (entity)
             {
                 case RecordEntity { Compat: { } compat }:  // Append Tag 04 -> Ptt
-                {
-                    message.Body.RichText.Ptt = compat.Ptt;
-                    message.Body.RichText.Elems.AddRange(compat.Elems);
-                    break;
-                }
+                    {
+                        message.Body.RichText.Ptt = compat.Ptt;
+                        message.Body.RichText.Elems.AddRange(compat.Elems);
+                        break;
+                    }
             }
         }
     }
-    
+
     public static MessageChain Parse(PushMsgBody message, bool isFake = false)
     {
         var chain = isFake ? ParseFakeChain(message) : ParseChain(message);
 
-        if (message.Body?.RichText is { Elems: { } elements}) // 怎么Body还能是null的
+        if (message.Body?.RichText is { Elems: { } elements }) // 怎么Body还能是null的
         {
             foreach (var element in elements)
             {
@@ -131,7 +131,7 @@ internal static class MessagePacker
                 {
                     foreach (var expectElem in expectElems)
                     {
-                        if (expectElem.GetValueByExpr(element) is not null && 
+                        if (expectElem.GetValueByExpr(element) is not null &&
                             Factory[entityType].UnpackElement(element) is { } entity)
                         {
                             chain.Add(entity);
@@ -147,8 +147,8 @@ internal static class MessagePacker
             case { } groupPtt when chain.IsGroup && groupPtt.FileId != 0:  //  for legacy ptt
                 chain.Add(new RecordEntity(groupPtt.GroupFileKey, groupPtt.FileName));
                 break;
-            case { } privatePtt when !chain.IsGroup: 
-                if (chain.OfType<RecordEntity>().FirstOrDefault(x => x.AudioName == privatePtt.FileName) == null) 
+            case { } privatePtt when !chain.IsGroup:
+                if (chain.OfType<RecordEntity>().FirstOrDefault(x => x.AudioName == privatePtt.FileName) == null)
                     chain.Add(new RecordEntity(privatePtt.FileUuid, privatePtt.FileName));
                 break;
         }
@@ -159,13 +159,13 @@ internal static class MessagePacker
     public static MessageChain ParsePrivateFile(PushMsgBody message)
     {
         if (message.Body?.MsgContent == null) throw new Exception();
-        
+
         var chain = ParseChain(message);
 
         var extra = Serializer.Deserialize<FileExtra>(message.Body.MsgContent.AsSpan());
         var file = extra.File;
 
-        if ( file is { FileSize: not null, FileName: not null, FileMd5: not null, FileUuid: not null, FileHash: not null })
+        if (file is { FileSize: not null, FileName: not null, FileMd5: not null, FileUuid: not null, FileHash: not null })
         {
             chain.Add(new FileEntity((long)file.FileSize, file.FileName, file.FileMd5, file.FileUuid, file.FileHash));
             return chain;
@@ -243,29 +243,29 @@ internal static class MessagePacker
         },
         Body = new MessageBody { RichText = new RichText { Elems = new List<Elem>() } }
     };
-    
+
     private static MessageChain ParseChain(PushMsgBody message)
     {
         var chain = message.ResponseHead.Grp == null
             ? new MessageChain(
                 message.ResponseHead.FromUin,
-                message.ResponseHead.ToUid ?? string.Empty , 
-                message.ResponseHead.FromUid ?? string.Empty, 
+                message.ResponseHead.ToUid ?? string.Empty,
+                message.ResponseHead.FromUid ?? string.Empty,
                 message.ResponseHead.ToUin,
                 message.ContentHead.Sequence ?? 0,
                 message.ContentHead.NewId ?? 0,
                 message.ContentHead.Type == 141 ? MessageChain.MessageType.Temp : MessageChain.MessageType.Friend)
-            
+
             : new MessageChain(
-                message.ResponseHead.Grp.GroupUin, 
-                message.ResponseHead.FromUin, 
+                message.ResponseHead.Grp.GroupUin,
+                message.ResponseHead.FromUin,
                 message.ContentHead.Sequence ?? 0,
                 message.ContentHead.NewId ?? 0);
 
         if (message.Body?.RichText?.Elems is { } elems) chain.Elements.AddRange(elems);
 
         chain.Time = DateTimeOffset.FromUnixTimeSeconds(message.ContentHead.Timestamp ?? 0).DateTime;
-        
+
         return chain;
     }
 
@@ -284,9 +284,17 @@ internal static class MessagePacker
         }
         else
         {
-            @base.FriendInfo = new BotFriend(0, message.ResponseHead.FromUid ?? string.Empty, message.ResponseHead.Forward?.FriendName ?? string.Empty, string.Empty, string.Empty, string.Empty);
+            @base.FriendInfo = new BotFriend(
+                0,
+                message.ResponseHead.FromUid ?? string.Empty,
+                message.ResponseHead.Forward?.FriendName ?? string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                new()
+            );
         }
-        
+
         return @base;
     }
 

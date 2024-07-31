@@ -17,7 +17,7 @@ namespace Lagrange.Core.Internal.Service.System;
 internal class FetchFriendsService : BaseService<FetchFriendsEvent>
 {
     private const int MaxFriendCount = 300;
-    
+
     protected override bool Build(FetchFriendsEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out BinaryPacket output, out List<BinaryPacket>? extraPackets)
     {
@@ -32,7 +32,7 @@ internal class FetchFriendsService : BaseService<FetchFriendsEvent>
         });
 
         if (input.NextUin != null) packet.Body.NextUin = new OidbSvcTrpcTcp0xFD4_1Uin { Uin = input.NextUin.Value };
-        
+
         /*
          * OidbNumber里面的东西代表你想要拿到的Property，这些Property将会在返回的数据里面的Preserve的Field，
          * 102：个性签名
@@ -40,7 +40,7 @@ internal class FetchFriendsService : BaseService<FetchFriendsEvent>
          * 20002：昵称
          * 27394：QID
          */
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
@@ -51,14 +51,21 @@ internal class FetchFriendsService : BaseService<FetchFriendsEvent>
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFD4_1Response>>(input);
 
-        var friends = new List<BotFriend>();
-        foreach (var raw in packet.Body.Friends)
+        var groups = Group(packet.Body.Groups);
+        var friends = packet.Body.Friends.Select(f =>
         {
-            var additional = raw.Additional.First(x => x.Type == 1);
-            var properties = Property(additional.Layer1.Properties);
-            friends.Add(new BotFriend(raw.Uin, raw.Uid, properties[20002], properties[103], properties[102], properties[27394]));
-        }
-        
+            var properties = Property(f.Additional.First(a => a.Type == 1).Layer1.Properties);
+            return new BotFriend(
+                f.Uin,
+                f.Uid,
+                properties[20002],
+                properties[102],
+                properties[102],
+                properties[27394],
+                new(f.CustomGroup, groups[f.CustomGroup])
+            );
+        }).ToList();
+
         output = FetchFriendsEvent.Result(0, friends, packet.Body.Next?.Uin); // 全家4完了才能想出来这种分页的逻辑
         extraEvents = null;
         return true;
@@ -66,8 +73,11 @@ internal class FetchFriendsService : BaseService<FetchFriendsEvent>
 
     private static Dictionary<uint, string> Property(List<OidbFriendProperty> properties)
     {
-        var dict = new Dictionary<uint, string>(properties.Capacity);
-        foreach (var property in properties) dict[property.Code] = property.Value;
-        return dict;
+        return properties.ToDictionary(p => p.Code, p => p.Value);
+    }
+
+    private static Dictionary<uint, string> Group(List<OidbGroup> groups)
+    {
+        return groups.ToDictionary(g => g.GroupId, g => g.GroupName);
     }
 }

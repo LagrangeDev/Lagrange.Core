@@ -255,7 +255,8 @@ public partial class MessageCommon
                     element.Name,
                     string.Empty,
                     string.Empty,
-                    string.Empty
+                    string.Empty,
+                    new()
                 );
                 chains.Add(chain);  // as fake is constructed, use uid from bot itself to upload image
             }

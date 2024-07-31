@@ -39,7 +39,8 @@ public sealed class SendMessageOperation(MessageCommon common, LiteDatabase data
                 context.BotName ?? string.Empty,
                 string.Empty,
                 string.Empty,
-                string.Empty
+                string.Empty,
+                new()
             ),
             GroupMemberInfo = null,
             Entities = chain,

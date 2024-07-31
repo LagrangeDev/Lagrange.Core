@@ -18,7 +18,8 @@ public class GetFriendListOperation : IOperation
                 UserId = friend.Uin,
                 QId = friend.Qid,
                 NickName = friend.Nickname,
-                Remark = friend.Remarks
+                Remark = friend.Remarks,
+                Group = new() { GroupId = friend.Group.GroupId, GroupName = friend.Group.GroupName },
             };
         }).ToArray(), 0, "ok");
 }
