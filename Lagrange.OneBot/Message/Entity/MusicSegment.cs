@@ -13,6 +13,8 @@ public partial class MusicSegment(string? type, string url, string audio, string
 
     [JsonPropertyName("type")][CQProperty] public string? Type { get; set; } = type;
 
+    [JsonPropertyName("id")][CQProperty] public string Id { get; set; } = String.Empty;
+
     [JsonPropertyName("url")][CQProperty] public string Url { get; set; } = url;
 
     [JsonPropertyName("audio")][CQProperty] public string Audio { get; set; } = audio;
