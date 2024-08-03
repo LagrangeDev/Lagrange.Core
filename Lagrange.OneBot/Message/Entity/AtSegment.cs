@@ -5,11 +5,15 @@ using Lagrange.Core.Message.Entity;
 namespace Lagrange.OneBot.Message.Entity;
 
 [Serializable]
-public partial class AtSegment(uint at)
+public partial class AtSegment(uint at, string? name)
 {
-    public AtSegment() : this(0) { }
+    public AtSegment() : this(0, null) { }
+    
+    public AtSegment(uint at) : this(at, null) { }
     
     [JsonPropertyName("qq")] [CQProperty] public string At { get; set; } = at.ToString();
+    
+    [JsonPropertyName("name")] [CQProperty] public string? Name { get; set; } = name;
 }
 
 [SegmentSubscriber(typeof(MentionEntity), "at")]
@@ -23,7 +27,7 @@ public partial class AtSegment : SegmentBase
     public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
     {
         if (entity is not MentionEntity mentionEntity) throw new ArgumentException("Invalid entity type.");
-        
-        return new AtSegment(mentionEntity.Uin);
+
+        return new AtSegment(mentionEntity.Uin, mentionEntity.Name);
     }
 }
