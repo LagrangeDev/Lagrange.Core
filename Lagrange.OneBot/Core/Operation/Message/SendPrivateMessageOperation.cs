@@ -25,7 +25,7 @@ public sealed class SendPrivateMessageOperation(MessageCommon common, LiteDataba
 
         var result = await context.SendMessage(chain);
 
-        if (!result.Sequence.HasValue || result.Sequence.Value == 0) return new OneBotResult(null, -1, "failed");
+        if (!result.Sequence.HasValue || result.Sequence.Value == 0) return new OneBotResult(null, -1000, "failed");
 
         int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence.Value);
 
