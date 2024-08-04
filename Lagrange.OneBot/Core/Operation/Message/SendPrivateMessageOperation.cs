@@ -24,7 +24,10 @@ public sealed class SendPrivateMessageOperation(MessageCommon common, LiteDataba
         };
 
         var result = await context.SendMessage(chain);
-        int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence ?? 0);
+
+        if (!result.Sequence.HasValue || result.Sequence.Value == 0) return new OneBotResult(null, (int)result.Result, "failed");
+
+        int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence.Value);
 
         database.GetCollection<MessageRecord>().Insert(hash, new()
         {
@@ -46,6 +49,6 @@ public sealed class SendPrivateMessageOperation(MessageCommon common, LiteDataba
             MessageHash = hash
         });
 
-        return new OneBotResult(new OneBotMessageResponse(hash), (int)result.Result, "ok");
+        return new OneBotResult(new OneBotMessageResponse(hash), 0, "ok");
     }
 }

@@ -3,7 +3,7 @@ namespace Lagrange.Core.Utility.Sign;
 public abstract class SignProvider
 {
     protected bool Available = true;
-    
+
     protected static readonly string[] WhiteListCommand =
     {
         "trpc.o3.ecdh_access.EcdhAccess.SsoEstablishShareKey",
@@ -42,10 +42,9 @@ public abstract class SignProvider
         "OidbSvcTrpcTcp.0xf57_9",
         "OidbSvcTrpcTcp.0xf55_1",
         "OidbSvcTrpcTcp.0xf67_1",
-        "OidbSvcTrpcTcp.0xf67_5"
+        "OidbSvcTrpcTcp.0xf67_5",
+        "OidbSvcTrpcTcp.0x6d9_4"
     };
-    
-    public abstract byte[]? Sign(string cmd, uint seq, byte[] body, out byte[]? ver, out string? token);
 
-    public abstract bool Test();
+    public abstract byte[]? Sign(string cmd, uint seq, byte[] body, out byte[]? ver, out string? token);
 }

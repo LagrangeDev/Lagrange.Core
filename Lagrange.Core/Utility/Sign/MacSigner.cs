@@ -45,7 +45,7 @@ internal class MacSigner : SignProvider
         }
     }
 
-    public override bool Test()
+    public bool Test()
     {
         throw new NotImplementedException();
     }

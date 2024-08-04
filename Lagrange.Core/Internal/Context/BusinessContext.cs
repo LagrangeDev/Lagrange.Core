@@ -113,8 +113,7 @@ internal class BusinessContext : ContextBase
         catch (Exception e)
         {
             Collection.Log.LogWarning(Tag, $"Error when processing the event: {@event}");
-            Collection.Log.LogWarning(Tag, e.Message);
-            if (e.StackTrace != null) Collection.Log.LogWarning(Tag, e.StackTrace);
+            Collection.Log.LogWarning(Tag, e.ToString());
         }
         
         return result;

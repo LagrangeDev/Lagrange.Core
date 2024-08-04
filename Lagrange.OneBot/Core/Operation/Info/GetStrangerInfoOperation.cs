@@ -17,7 +17,7 @@ public class GetStrangerInfoOperation : IOperation
     {
         if (payload.Deserialize<OneBotGetStrangerInfo>(SerializerOptions.DefaultOptions) is { } stranger)
         {
-            if (await context.FetchUserInfo(stranger.UserId) is { } info)
+            if (await context.FetchUserInfo(stranger.UserId, stranger.NoCache) is { } info)
             {
                 return new OneBotResult(new OneBotStranger
                 {

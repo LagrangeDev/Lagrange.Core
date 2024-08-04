@@ -22,7 +22,7 @@ internal abstract class Program
             using var istr = assm.GetManifestResourceStream("Lagrange.OneBot.Resources.appsettings.json")!;
             using var temp = File.Create("appsettings.json");
             istr.CopyTo(temp);
-            
+
             istr.Close();
             temp.Close();
 

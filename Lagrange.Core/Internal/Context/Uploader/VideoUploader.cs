@@ -29,9 +29,8 @@ internal class VideoUploader : IHighwayUploader
                     BlockSize = 1024 * 1024,
                     Hash = new NTHighwayHash { FileSha1 = new List<byte[]> { index.Info.FileSha1.UnHex() } }
                 };
-                var extStream = extend.Serialize();
 
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1001, stream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1001, stream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extend.Serialize().ToArray());
                 if (!hwSuccess)
                 {
                     await stream.Value.DisposeAsync();
@@ -65,9 +64,8 @@ internal class VideoUploader : IHighwayUploader
                     BlockSize = 1024 * 1024,
                     Hash = new NTHighwayHash { FileSha1 = Common.CalculateStreamBytes(stream.Value) }
                 };
-                var extStream = extend.Serialize();
 
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1005, stream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1005, stream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extend.Serialize().ToArray());
                 if (!hwSuccess)
                 {
                     await stream.Value.DisposeAsync();

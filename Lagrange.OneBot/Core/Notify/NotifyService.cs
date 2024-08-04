@@ -6,11 +6,12 @@ using Lagrange.Core.Message.Entity;
 using Lagrange.OneBot.Core.Entity.Notify;
 using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Database;
+using LiteDB;
 using Microsoft.Extensions.Logging;
 
 namespace Lagrange.OneBot.Core.Notify;
 
-public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger, LagrangeWebSvcCollection service)
+public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger, LiteDatabase database, LagrangeWebSvcCollection service)
 {
     public void RegisterEvents()
     {
@@ -187,6 +188,32 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 OperatorId = @event.OperatorUin,
                 MessageId = MessageRecord.CalcMessageHash(@event.Random, @event.Sequence),
             });
+        };
+
+        bot.Invoker.OnGroupReactionEvent += async (bot, @event) =>
+        {
+            logger.LogInformation(@event.ToString());
+
+            var record = database
+                .GetCollection<MessageRecord>()
+                .FindOne(Query.And(
+                    Query.EQ("GroupUin", new BsonValue(@event.TargetGroupUin)),
+                    Query.EQ("Sequence", new BsonValue(@event.TargetSequence))
+                ));
+
+            if (record == null)
+            {
+                logger.LogWarning("No message record found for GroupUin: {GroupUin}, Sequence: {Sequence}", @event.TargetGroupUin, @event.TargetSequence);
+            }
+
+            await service.SendJsonAsync(new OneBotGroupReaction(
+                bot.BotUin,
+                @event.TargetGroupUin,
+                record?.MessageHash ?? 0,
+                @event.OperatorUin,
+                @event.IsAdd ? "add" : "remove",
+                @event.Code
+            ));
         };
     }
 }

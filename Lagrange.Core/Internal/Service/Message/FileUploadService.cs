@@ -4,7 +4,6 @@ using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Response;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
@@ -15,7 +14,7 @@ namespace Lagrange.Core.Internal.Service.Message;
 internal class FileUploadService : BaseService<FileUploadEvent>
 {
     protected override bool Build(FileUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+        out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         if (input.Entity.FileStream is null) throw new Exception();
 

@@ -22,10 +22,13 @@ public class SendGroupForwardOperation(MessageCommon common) : IOperation
 
             var multi = new MultiMsgEntity(forward.GroupId, [.. chains]);
             var chain = MessageBuilder.Group(forward.GroupId).Add(multi).Build();
-            var ret = await context.SendMessage(chain);
-            int hash = MessageRecord.CalcMessageHash(chain.MessageId, ret.Sequence ?? 0);
+            var result = await context.SendMessage(chain);
 
-            return new OneBotResult(new OneBotForwardResponse(hash, multi.ResId ?? ""), (int)ret.Result, "ok");
+            if (!result.Sequence.HasValue || result.Sequence.Value == 0) return new OneBotResult(null, (int)result.Result, "failed");
+
+            int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence.Value);
+
+            return new OneBotResult(new OneBotForwardResponse(hash, multi.ResId ?? ""), 0, "ok");
         }
 
         throw new Exception();

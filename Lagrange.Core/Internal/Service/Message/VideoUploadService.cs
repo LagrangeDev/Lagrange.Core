@@ -4,11 +4,9 @@ using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 using FileInfo = Lagrange.Core.Internal.Packets.Service.Oidb.Common.FileInfo;
-using GroupInfo = Lagrange.Core.Internal.Packets.Service.Oidb.Common.GroupInfo;
 
 namespace Lagrange.Core.Internal.Service.Message;
 
@@ -16,8 +14,8 @@ namespace Lagrange.Core.Internal.Service.Message;
 [Service("OidbSvcTrpcTcp.0x11e9_100")]
 internal class VideoUploadService : BaseService<VideoUploadEvent>
 {
-    protected override bool Build(VideoUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(VideoUploadEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         if (input.Entity.VideoStream is null) throw new Exception();
         

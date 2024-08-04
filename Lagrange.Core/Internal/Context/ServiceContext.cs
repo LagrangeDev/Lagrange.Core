@@ -4,7 +4,6 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Packets;
 using Lagrange.Core.Internal.Service;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Internal.Context;
@@ -14,7 +13,7 @@ namespace Lagrange.Core.Internal.Context;
 /// <para>Instantiate the Service by <see cref="System.Reflection"/> and store such</para>
 /// <para>Translate the event into <see cref="ProtocolEvent"/>, you may manually dispatch the packet to <see cref="PacketContext"/></para>
 /// </summary>
-internal partial class ServiceContext : ContextBase
+internal class ServiceContext : ContextBase
 {
     private const string Tag = nameof(ServiceContext);
     
@@ -71,11 +70,12 @@ internal partial class ServiceContext : ContextBase
 
             if (success && binary != null)
             {
-                result.Add(new SsoPacket(attribute.PacketType, attribute.Command, (uint)_sequenceProvider.GetNewSequence(), binary));
+                result.Add(new SsoPacket(attribute.PacketType, attribute.Command, (uint)_sequenceProvider.GetNewSequence(), binary.ToArray()));
                 
-                if (extraPackets != null)
+                if (extraPackets is { } extra)
                 {
-                    result.AddRange(extraPackets.Select(extra => new SsoPacket(attribute.PacketType, attribute.Command, (uint)_sequenceProvider.GetNewSequence(), extra)));
+                    var packets = extra.Select(e => new SsoPacket(attribute.PacketType, attribute.Command, (uint)_sequenceProvider.GetNewSequence(), e.ToArray()));
+                    result.AddRange(packets);
                 }
                 
                 Collection.Log.LogDebug(Tag, $"Outgoing SSOFrame: {attribute.Command}");
@@ -91,16 +91,15 @@ internal partial class ServiceContext : ContextBase
     public List<ProtocolEvent> ResolveEventByPacket(SsoPacket packet)
     {
         var result = new List<ProtocolEvent>();
-        var payload = packet.Payload.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix);
         
         if (!_services.TryGetValue(packet.Command, out var service))
         {
             Collection.Log.LogWarning(Tag, $"Unsupported SSOFrame Received: {packet.Command}");
-            Collection.Log.LogDebug(Tag, $"Unsuccessful SSOFrame Payload: {payload.Hex()}");
+            Collection.Log.LogDebug(Tag, $"Unsuccessful SSOFrame Payload: {packet.Payload.Hex()}");
             return result; // 没找到 滚蛋吧
         }
 
-        bool success = service.Parse(payload, Keystore, AppInfo, DeviceInfo, out var @event, out var extraEvents);
+        bool success = service.Parse(packet.Payload, Keystore, AppInfo, DeviceInfo, out var @event, out var extraEvents);
 
         if (success)
         {
@@ -109,7 +108,6 @@ internal partial class ServiceContext : ContextBase
             
             Collection.Log.LogDebug(Tag, $"Incoming SSOFrame: {packet.Command}");
         }
-        packet.Dispose();
         
         return result;
     }

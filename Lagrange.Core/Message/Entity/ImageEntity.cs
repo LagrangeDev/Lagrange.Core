@@ -98,7 +98,8 @@ public class ImageEntity : IMessageEntity
                 PictureSize = new Vector2(index.Info.Width, index.Info.Height),
                 FilePath = index.Info.FileName,
                 ImageSize = index.Info.FileSize,
-                MsgInfo = extra
+                MsgInfo = extra,
+                SubType = (int)extra.ExtBizInfo.Pic.BizType,
             };
         }
         
@@ -161,7 +162,7 @@ public class ImageEntity : IMessageEntity
     
     private static int GetImageTypeFromFaceOldData(CustomFace face)
     {
-        if (face.OldData.Length < 5)
+        if (face.OldData == null || face.OldData.Length < 5)
         {
             return 0;
         }

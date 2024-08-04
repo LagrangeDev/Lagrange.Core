@@ -23,23 +23,23 @@ namespace Lagrange.OneBot;
 public class LagrangeApp : IHost
 {
     private readonly IHost _hostApp;
-    
+
     public IServiceProvider Services => _hostApp.Services;
 
     public ILogger<LagrangeApp> Logger { get; }
-    
+
     public IConfiguration Configuration => Services.GetRequiredService<IConfiguration>();
-    
+
     public BotContext Instance => Services.GetRequiredService<BotContext>();
-    
+
     public LagrangeWebSvcCollection WebService => Services.GetRequiredService<LagrangeWebSvcCollection>();
 
     public MessageService MessageService { get; set; }
-    
+
     public OperationService OperationService { get; set; }
 
     private bool _isFirstLogin;
-    
+
     internal LagrangeApp(IHost host)
     {
         _hostApp = host;
@@ -75,20 +75,20 @@ public class LagrangeApp : IHost
         Instance.Invoker.OnBotOnlineEvent += async (_, args) =>
         {
             if (args.Reason == BotOnlineEvent.OnlineReason.Reconnect && !_isFirstLogin) return;
-            
+
             var keystore = Instance.UpdateKeystore();
             Logger.LogInformation($"Bot Online: {keystore.Uin}");
             string json = JsonSerializer.Serialize(keystore, new JsonSerializerOptions { WriteIndented = true });
-            
+
             // Adapters should be started here instead of at the start of application
             await WebService.StartAsync(cancellationToken);
             Services.GetRequiredService<NotifyService>().RegisterEvents();
-            
+
             await File.WriteAllTextAsync(Configuration["ConfigPath:Keystore"] ?? "keystore.json", json, cancellationToken);
 
             _isFirstLogin = false;
         };
-        
+
         if (string.IsNullOrEmpty(Configuration["Account:Password"]) &&
             Instance.ContextCollection.Keystore.Session.TempPassword == null) // EasyLogin and PasswordLogin is both disabled
         {
@@ -97,8 +97,9 @@ public class LagrangeApp : IHost
             if (await Instance.FetchQrCode() is { } qrCode)
             {
                 QrCodeHelper.Output(qrCode.Url ?? "", Configuration.GetValue<bool>("QrCode:ConsoleCompatibilityMode"));
+                Logger.LogInformation($"Please scan the QR code above, Url: {qrCode.Url}");
                 await File.WriteAllBytesAsync($"qr-{Instance.BotUin}.png", qrCode.QrCode ?? Array.Empty<byte>(), cancellationToken);
-                
+
                 _ = Task.Run(Instance.LoginByQrCode, cancellationToken);
             }
         }
@@ -125,14 +126,14 @@ public class LagrangeApp : IHost
     public async Task StopAsync(CancellationToken cancellationToken = new())
     {
         Logger.LogInformation("Lagrange.OneBot Implementation has stopped");
-        
+
         Instance.Dispose();
 
         Services.GetRequiredService<LiteDatabase>().Dispose();
         await WebService.StopAsync(cancellationToken);
         await _hostApp.StopAsync(cancellationToken);
     }
-    
+
     public void Dispose()
     {
         _hostApp.Dispose();
