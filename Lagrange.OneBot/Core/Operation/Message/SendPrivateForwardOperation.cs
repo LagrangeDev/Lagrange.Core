@@ -24,7 +24,10 @@ public class SendPrivateForwardOperation(MessageCommon common, LiteDatabase data
             var multi = new MultiMsgEntity(null, [.. chains]);
             var chain = MessageBuilder.Friend(forward.UserId).Add(multi).Build();
             var result = await context.SendMessage(chain);
-            int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence ?? 0);
+
+            if (!result.Sequence.HasValue || result.Sequence.Value == 0) return new OneBotResult(null, -1, "failed");
+
+            int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence.Value);
 
             database.GetCollection<MessageRecord>().Insert(hash, new()
             {

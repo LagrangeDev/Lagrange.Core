@@ -24,7 +24,7 @@ public class OneBotSigner : SignProvider
         _signServer = config["SignServerUrl"] ?? "";
         _logger = logger;
         _client = new HttpClient();
-        
+
         if (string.IsNullOrEmpty(_signServer))
         {
             Available = false;
@@ -34,7 +34,7 @@ public class OneBotSigner : SignProvider
         {
             logger.LogInformation("Signature Service is successfully established");
         }
-        
+
         _timer = new Timer(_ =>
         {
             bool reconnect = Available = Test();
@@ -48,7 +48,7 @@ public class OneBotSigner : SignProvider
         token = null;
         if (!WhiteListCommand.Contains(cmd)) return null;
         if (!Available || string.IsNullOrEmpty(_signServer)) return new byte[35]; // Dummy signature
-        
+
         var payload = new JsonObject
         {
             { "cmd", cmd },
@@ -70,7 +70,7 @@ public class OneBotSigner : SignProvider
         {
             Available = false;
             _timer.Change(0, 5000);
-            
+
             _logger.LogWarning("Failed to get signature, using dummy signature");
             return new byte[35]; // Dummy signature
         }
