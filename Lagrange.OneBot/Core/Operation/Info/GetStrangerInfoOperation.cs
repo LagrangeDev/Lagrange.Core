@@ -25,7 +25,8 @@ public class GetStrangerInfoOperation : IOperation
                     QId = info.Qid,
                     NickName = info.Nickname,
                     Sex = info.Gender.ToOneBotString(),
-                    Age = info.Age
+                    Age = info.Age,
+                    Level = info.Level
                 }, 0, "ok");
             }
 

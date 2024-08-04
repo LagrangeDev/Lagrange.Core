@@ -14,4 +14,6 @@ public class OneBotStranger
     [JsonPropertyName("sex")] public string Sex { get; set; } = "unknown";
 
     [JsonPropertyName("age")] public uint Age { get; set; }
+    
+    [JsonPropertyName("level")] public uint Level { get; set; }
 }
