@@ -2,7 +2,6 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Packets.Action.HttpConn;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 using BitConverter = Lagrange.Core.Utility.Binary.BitConverter;
@@ -14,7 +13,7 @@ namespace Lagrange.Core.Internal.Service.System;
 internal class HighwayUrlService : BaseService<HighwayUrlEvent>
 {
     protected override bool Build(HighwayUrlEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+        out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new HttpConn0x6ff_501
         {

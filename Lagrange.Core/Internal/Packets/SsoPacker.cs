@@ -1,14 +1,11 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Packets.System;
-using Lagrange.Core.Utility;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Binary.Compression;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.Core.Utility.Generator;
 using Lagrange.Core.Utility.Sign;
 using ProtoBuf;
-using static Lagrange.Core.Utility.Binary.BinaryPacket;
-using BitConverter = Lagrange.Core.Utility.Binary.BitConverter;
 
 namespace Lagrange.Core.Internal.Packets;
 
@@ -57,32 +54,27 @@ internal static class SsoPacker
     /// </summary>
     public static SsoPacket Parse(BinaryPacket packet)
     {
-        uint _ = packet.ReadUint(); // header length
-        uint sequence = packet.ReadUint();
-        int retCode = packet.ReadInt();
-        string extra = packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix);
-        string command = packet.ReadString(Prefix.Uint32 | Prefix.WithPrefix);
-        int msgCookieLength = packet.ReadInt() - 4;
-        var msgCookie = packet.ReadBytes(msgCookieLength);
-        int isCompressed = packet.ReadInt();
-        int reserveFieldLength = packet.ReadInt();
-        var reserveField = packet.ReadBytes(reserveFieldLength);
+        var head = packet.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix);
+        var headReader = new BinaryPacket(head);
+        
+        uint sequence = headReader.ReadUint();
+        int retCode = headReader.ReadInt();
+        string extra = headReader.ReadString(Prefix.Uint32 | Prefix.WithPrefix);
+        string command = headReader.ReadString(Prefix.Uint32 | Prefix.WithPrefix);
+        var msgCookie = headReader.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix);
+        int isCompressed = headReader.ReadInt();
+        var reserveField = headReader.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix);
+        
+        var body = packet.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix).ToArray();
+        var raw = isCompressed switch
+        {
+            0 or 4 => body,
+            1 => ZCompression.ZDecompress(body, false),
+            _ => throw new Exception($"Unknown compression type: {isCompressed}")
+        };
         
         return retCode == 0 
-            ? new SsoPacket(12, command, sequence, isCompressed == 0 ? packet : InflatePacket(packet)) 
+            ? new SsoPacket(12, command, sequence, raw) 
             : new SsoPacket(12, command, sequence, retCode, extra);
-    }
-
-    private static BinaryPacket InflatePacket(BinaryPacket original)
-    {
-        var raw = original.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix);
-        var decompressed = ZCompression.ZDecompress(raw);
-        
-        var stream = new MemoryStream();
-        stream.Write(BitConverter.GetBytes(decompressed.Length + sizeof(int), false));
-        stream.Write(decompressed);
-        stream.Position = 0;
-        
-        return new BinaryPacket(stream);
     }
 }

@@ -3,7 +3,6 @@ using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
@@ -13,8 +12,8 @@ namespace Lagrange.Core.Internal.Service.Action;
 [Service("OidbSvcTrpcTcp.0x8fc_2")]
 internal class GroupSetSpecialTitleService : BaseService<GroupSetSpecialTitleEvent>
 {
-    protected override bool Build(GroupSetSpecialTitleEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(GroupSetSpecialTitleEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x8FC>(new OidbSvcTrpcTcp0x8FC
         {

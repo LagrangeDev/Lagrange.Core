@@ -17,7 +17,7 @@ public class SendPacketOperation : IOperation
         if (payload.Deserialize<OneBotSendPacket>() is { } send)
         {
             int sequence = context.ContextCollection.Service.GetNewSequence();
-            var ssoPacket = new SsoPacket(send.Type, send.Command, (uint)sequence, new BinaryPacket(send.Data.UnHex()));
+            var ssoPacket = new SsoPacket(send.Type, send.Command, (uint)sequence, send.Data.UnHex());
             var task = await context.ContextCollection.Packet.SendPacket(ssoPacket);
 
             return new OneBotResult(new OneBotSendPacketResponse
@@ -25,7 +25,7 @@ public class SendPacketOperation : IOperation
                 Sequence = sequence,
                 RetCode = task.RetCode,
                 Extra = task.Extra,
-                Result = task.Payload.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix).Hex()
+                Result = task.Payload.Hex()
             }, 0, "ok");
         }
 
