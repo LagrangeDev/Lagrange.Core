@@ -3,7 +3,6 @@ using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
@@ -13,8 +12,8 @@ namespace Lagrange.Core.Internal.Service.System;
 [Service("OidbSvcTrpcTcp.0x1277_0")]
 internal class SetNeedToConfirmSwitchService : BaseService<SetNeedToConfirmSwitchEvent>
 {
-    protected override bool Build(SetNeedToConfirmSwitchEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(SetNeedToConfirmSwitchEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x1277_0>(new OidbSvcTrpcTcp0x1277_0
         {

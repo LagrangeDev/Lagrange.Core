@@ -3,7 +3,6 @@ using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
@@ -13,8 +12,8 @@ namespace Lagrange.Core.Internal.Service.Message;
 [Service("OidbSvcTrpcTcp.0x6d9_4")]
 internal class GroupSendFileService : BaseService<GroupSendFileEvent>
 {
-    protected override bool Build(GroupSendFileEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(GroupSendFileEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x6D9_4>(new OidbSvcTrpcTcp0x6D9_4
         {

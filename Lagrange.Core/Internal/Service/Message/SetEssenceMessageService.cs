@@ -3,7 +3,6 @@ using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
@@ -13,8 +12,8 @@ namespace Lagrange.Core.Internal.Service.Message;
 [Service("OidbSvcTrpcTcp.0xeac_1")]
 internal class SetEssenceMessageService : BaseService<SetEssenceMessageEvent>
 {
-    protected override bool Build(SetEssenceMessageEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(SetEssenceMessageEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xEAC>(new OidbSvcTrpcTcp0xEAC
         {

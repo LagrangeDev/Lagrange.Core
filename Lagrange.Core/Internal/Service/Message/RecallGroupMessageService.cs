@@ -2,9 +2,7 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Packets.Message;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
-using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Message;
 
@@ -12,8 +10,8 @@ namespace Lagrange.Core.Internal.Service.Message;
 [Service("trpc.msg.msg_svc.MsgService.SsoGroupRecallMsg")]
 internal class RecallGroupMessageService : BaseService<RecallGroupMessageEvent>
 {
-    protected override bool Build(RecallGroupMessageEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(RecallGroupMessageEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new GroupRecallMsg
         {

@@ -51,12 +51,12 @@ internal class TransEmpService : BaseService<TransEmpEvent>
         return true;
     }
     
-    protected override bool Build(TransEmpEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(TransEmpEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+        out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         output = input.EventState == TransEmpEvent.State.FetchQrCode
-            ? new TransEmp31(keystore, appInfo, device).ConstructPacket()
-            : new TransEmp12(keystore, appInfo, device).ConstructPacket();
+            ? new TransEmp31(keystore, appInfo, device).ConstructPacket().ToArray()
+            : new TransEmp12(keystore, appInfo, device).ConstructPacket().ToArray();
         
         extraPackets = null;
         return true;

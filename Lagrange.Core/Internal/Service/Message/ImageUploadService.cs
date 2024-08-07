@@ -1,12 +1,10 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
-using Lagrange.Core.Internal.Packets.Message.Component;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Utility;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 using FileInfo = Lagrange.Core.Internal.Packets.Service.Oidb.Common.FileInfo;
@@ -17,8 +15,8 @@ namespace Lagrange.Core.Internal.Service.Message;
 [Service("OidbSvcTrpcTcp.0x11c5_100")]
 internal class ImageUploadService : BaseService<ImageUploadEvent>
 {
-    protected override bool Build(ImageUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(ImageUploadEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         if (input.Entity.ImageStream is null) throw new Exception();
         

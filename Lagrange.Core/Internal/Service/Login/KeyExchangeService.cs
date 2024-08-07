@@ -17,8 +17,8 @@ internal class KeyExchangeService : BaseService<KeyExchangeEvent>
 {
     private const string GcmCalc2Key = "e2733bf403149913cbf80c7a95168bd4ca6935ee53cd39764beebe2e007e3aee";
 
-    protected override bool Build(KeyExchangeEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(KeyExchangeEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         output = BuildPacket(keystore, device).Serialize();
         extraPackets = null;

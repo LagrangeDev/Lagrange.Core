@@ -5,7 +5,6 @@ using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Utility;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 using FileInfo = Lagrange.Core.Internal.Packets.Service.Oidb.Common.FileInfo;
@@ -17,8 +16,8 @@ namespace Lagrange.Core.Internal.Service.Message;
 [Service("OidbSvcTrpcTcp.0x11c4_100")]
 internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
 {
-    protected override bool Build(ImageGroupUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(ImageGroupUploadEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         if (input.Entity.ImageStream is null) throw new Exception();
         

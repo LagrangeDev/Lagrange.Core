@@ -6,7 +6,6 @@ using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Generics;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Response;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
@@ -18,8 +17,8 @@ internal class FetchFriendsService : BaseService<FetchFriendsEvent>
 {
     private const int MaxFriendCount = 300;
     
-    protected override bool Build(FetchFriendsEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(FetchFriendsEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFD4_1>(new OidbSvcTrpcTcp0xFD4_1
         {
