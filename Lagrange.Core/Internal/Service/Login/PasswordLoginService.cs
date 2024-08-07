@@ -17,8 +17,8 @@ namespace Lagrange.Core.Internal.Service.Login;
 [Service("trpc.login.ecdh.EcdhService.SsoNTLoginPasswordLogin")]
 internal class PasswordLoginService : BaseService<PasswordLoginEvent>
 {
-    protected override bool Build(PasswordLoginEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(PasswordLoginEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var plainBody = new SsoNTLoginPasswordLogin
         {

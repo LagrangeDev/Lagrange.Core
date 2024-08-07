@@ -5,7 +5,6 @@ using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Response;
 using Lagrange.Core.Utility.Extension;
-using Lagrange.Core.Utility.Binary;
 using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Action;
@@ -14,8 +13,8 @@ namespace Lagrange.Core.Internal.Service.Action;
 [Service("OidbSvcTrpcTcp.0x6d6_2")]
 internal class GroupFSDownloadService : BaseService<GroupFSDownloadEvent>
 {
-    protected override bool Build(GroupFSDownloadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(GroupFSDownloadEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x6D6>(new OidbSvcTrpcTcp0x6D6
         {

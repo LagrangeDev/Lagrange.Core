@@ -2,9 +2,7 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Packets.System;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
-using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.System;
 
@@ -13,7 +11,7 @@ namespace Lagrange.Core.Internal.Service.System;
 internal class SsoAliveService : BaseService<SsoAliveEvent>
 {
     protected override bool Build(SsoAliveEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+        out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         using var stream = new MemoryStream();
         var packet = new NTSsoHeartBeat { Type = 1 };

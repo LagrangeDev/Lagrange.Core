@@ -8,10 +8,10 @@ namespace Lagrange.Core.Internal.Service.System;
 [Service("Client.CorrectTime", 13)]
 internal class CorrectTimeService : BaseService<CorrectTimeEvent>
 {
-    protected override bool Build(CorrectTimeEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(CorrectTimeEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
-        output = new BinaryPacket().WriteUint(4);
+        output = new BinaryPacket().WriteUint(4).ToArray();
         extraPackets = null;
         return true;
     }

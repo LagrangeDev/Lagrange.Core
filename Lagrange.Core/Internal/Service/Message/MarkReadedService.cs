@@ -2,7 +2,6 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Packets.Message;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Internal.Service.Message;
@@ -12,7 +11,7 @@ namespace Lagrange.Core.Internal.Service.Message;
 internal class MarkReadedService : BaseService<MarkReadedEvent>
 {
     protected override bool Build(MarkReadedEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+        out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = input.TargetUid == null ? new SsoReadedReport
         {

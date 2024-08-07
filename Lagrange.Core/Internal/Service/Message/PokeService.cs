@@ -3,7 +3,6 @@ using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
@@ -14,8 +13,8 @@ namespace Lagrange.Core.Internal.Service.Message;
 [Service("OidbSvcTrpcTcp.0xed3_1")]
 internal class PokeService : BaseService<FriendPokeEvent>
 {
-    protected override bool Build(FriendPokeEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(FriendPokeEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+        out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         switch (input)
         {
