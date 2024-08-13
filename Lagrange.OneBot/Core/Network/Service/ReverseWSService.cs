@@ -96,6 +96,8 @@ public partial class ReverseWSService(IOptionsSnapshot<ReverseWSServiceOptions> 
         ws.Options.SetRequestHeader("X-Client-Role", role);
         ws.Options.SetRequestHeader("X-Self-ID", context.BotUin.ToString());
         ws.Options.SetRequestHeader("User-Agent", Constant.OneBotImpl);
+        if (options.Value.IgnoreSslCertificate) ws.Options.RemoteCertificateValidationCallback = (_, _, _, _) => true;
+        
         if (_options.AccessToken != null) ws.Options.SetRequestHeader("Authorization", $"Bearer {_options.AccessToken}");
         ws.Options.KeepAliveInterval = Timeout.InfiniteTimeSpan;
         return ws;
