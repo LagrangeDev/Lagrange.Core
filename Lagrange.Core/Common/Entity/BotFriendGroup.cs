@@ -1,5 +1,6 @@
 namespace Lagrange.Core.Common.Entity;
 
+[Serializable]
 public struct BotFriendGroup
 {
     public uint GroupId { get; }
