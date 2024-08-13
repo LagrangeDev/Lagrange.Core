@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 
 namespace Lagrange.OneBot.Core.Network.Service;
 
-public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptionsSnapshot<ForwardWSServiceOptions> options, BotContext context) : BackgroundService, ILagrangeWebService
+public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptionsSnapshot<ForwardWSServiceOptions> options, BotContext botContext) : BackgroundService, ILagrangeWebService
 {
     #region Initialization
 
@@ -74,19 +74,19 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
     #region Connect
     private readonly ConcurrentDictionary<string, ConnectionContext> _connections = [];
 
-    private async Task HandleHttpListenerContext(HttpListenerContext context1, CancellationToken token)
+    private async Task HandleHttpListenerContext(HttpListenerContext httpContext, CancellationToken token)
     {
         // Generating an identifier for this context
         string identifier = Guid.NewGuid().ToString();
 
-        var response = context1.Response;
+        var response = httpContext.Response;
 
         try
         {
             Log.LogConnect(logger, identifier);
 
             // Validating AccessToken
-            if (!ValidatingAccessToken(context1))
+            if (!ValidatingAccessToken(httpContext))
             {
                 Log.LogValidatingAccessTokenFail(logger, identifier);
 
@@ -97,7 +97,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
             }
 
             // Validating whether it is a WebSocket request
-            if (!context1.Request.IsWebSocketRequest)
+            if (!httpContext.Request.IsWebSocketRequest)
             {
                 Log.LogNotWebSocketRequest(logger, identifier);
 
@@ -108,11 +108,11 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
             }
 
             // Upgrade to WebSocket
-            var wsContext = await context1.AcceptWebSocketAsync(null).WaitAsync(token);
+            var wsContext = await httpContext.AcceptWebSocketAsync(null).WaitAsync(token);
 
             // Building and store ConnectionContext
             var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
-            _connections.TryAdd(identifier, new(wsContext, cts));
+            _connections.TryAdd(identifier, new(httpContext, wsContext, cts));
 
             string path = wsContext.RequestUri.LocalPath;
             bool isApi = path is "/api" or "/api/";
@@ -122,7 +122,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
             if (!isApi)
             {
                 // Send ConnectLifecycleMetaEvent
-                await SendJsonAsync(new OneBotLifecycle(context.BotUin, "connect"), identifier, token);
+                await SendJsonAsync(new OneBotLifecycle(botContext.BotUin, "connect"), identifier, token);
 
                 if (_options is { HeartBeatEnable: true, HeartBeatInterval: > 0 })
                 {
@@ -132,7 +132,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
 
             // The Event interface does not need to receive messages
             // but still needs to receive Close messages to close the connection
-            _ = isEvent 
+            _ = isEvent
                 ? WaitCloseAsyncLoop(identifier, cts.Token)
                 : ReceiveAsyncLoop(identifier, cts.Token);  // The Universal interface requires receiving messages
         }
@@ -305,7 +305,7 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
             while (true)
             {
                 sw.Start();
-                var heartbeat = new OneBotHeartBeat(context.BotUin, (int)_options.HeartBeatInterval, new OneBotStatus(true, true));
+                var heartbeat = new OneBotHeartBeat(botContext.BotUin, (int)_options.HeartBeatInterval, new OneBotStatus(true, true));
                 await SendJsonAsync(heartbeat, identifier, token);
                 sw.Stop();
 
@@ -392,6 +392,8 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
             await connection.WsContext.WebSocket
                 .CloseAsync(status, null, token)
                 .WaitAsync(TimeSpan.FromSeconds(5), token);
+
+            connection.HttpContext.Response.Close();
         }
         catch (Exception e) when (e is not OperationCanceledException)
         {
@@ -407,9 +409,10 @@ public partial class ForwardWSService(ILogger<ForwardWSService> logger, IOptions
     #endregion
 
     #region ConnectionContext
-    public class ConnectionContext(WebSocketContext context, CancellationTokenSource cts)
+    public class ConnectionContext(HttpListenerContext httpContext, WebSocketContext wsContext, CancellationTokenSource cts)
     {
-        public WebSocketContext WsContext { get; } = context;
+        public HttpListenerContext HttpContext { get; } = httpContext;
+        public WebSocketContext WsContext { get; } = wsContext;
         public SemaphoreSlim SendSemaphoreSlim { get; } = new(1);
         public CancellationTokenSource Cts { get; } = cts;
         public TaskCompletionSource Tcs { get; } = new();
