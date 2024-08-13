@@ -1,5 +1,6 @@
 namespace Lagrange.Core.Common.Entity;
 
+[Serializable]
 public class BotGroup
 {
     internal BotGroup(uint groupUin, string groupName, uint memberCount, uint maxMember)

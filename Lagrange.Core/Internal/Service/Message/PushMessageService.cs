@@ -124,6 +124,15 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         var pkgType = (Event0x2DCSubType)(msg.Message.ContentHead.SubType ?? 0);
         switch (pkgType)
         {
+            case Event0x2DCSubType.GroupReactionNotice when msg.Message.Body?.MsgContent is { } content:
+            {
+                using var packet = new BinaryPacket(content);
+                _ = packet.ReadUint();  // group uin
+                _ = packet.ReadByte();  // unknown byte
+                var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
+                
+                break;
+            }
             case Event0x2DCSubType.GroupRecallNotice when msg.Message.Body?.MsgContent is { } content:
             {
                 using var packet = new BinaryPacket(content);
@@ -262,10 +271,11 @@ internal class PushMessageService : BaseService<PushMessageEvent>
 
     private enum Event0x2DCSubType
     {
-        GroupRecallNotice = 17,
         GroupMuteNotice = 12,
+        GroupReactionNotice = 16,
+        GroupRecallNotice = 17,
         GroupEssenceNotice = 21,
-        GroupGreyTipNotice = 20
+        GroupGreyTipNotice = 20,
     }
     
     private enum Event0x210SubType

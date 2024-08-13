@@ -1,5 +1,6 @@
 namespace Lagrange.Core.Common.Entity;
 
+[Serializable]
 public class BotFolderEntry : IBotFSEntry
 {
     public string FolderId { get; set; }

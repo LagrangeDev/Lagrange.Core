@@ -1,5 +1,6 @@
 namespace Lagrange.Core.Common.Entity;
 
+[Serializable]
 public class BotGroupRequest
 {
     internal BotGroupRequest(
