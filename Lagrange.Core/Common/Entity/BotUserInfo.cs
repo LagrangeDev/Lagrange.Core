@@ -1,5 +1,6 @@
 namespace Lagrange.Core.Common.Entity;
 
+[Serializable]
 public class BotUserInfo
 {
     internal BotUserInfo(uint uin, string nickname, DateTime birthday, string city, string country, string school, uint age, DateTime registerTime, uint gender, string? qid, uint level)
