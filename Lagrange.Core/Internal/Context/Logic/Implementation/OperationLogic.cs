@@ -83,9 +83,9 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupSetBotEvent)events[0]).ResultCode == 0;
     }
 
-        public async Task<bool> SetGroupBotHD(uint BotId , uint groupUin)
+        public async Task<bool> SetGroupBotHD(uint BotId , uint groupUin, string? data)
     {
-        var muteBotEvent = GroupSetBothdEvent.Create(BotId, groupUin);
+        var muteBotEvent = GroupSetBothdEvent.Create(BotId, groupUin, data);
         var events = await Collection.Business.SendEvent(muteBotEvent);
         return events.Count != 0 && ((GroupSetBothdEvent)events[0]).ResultCode == 0;
     }

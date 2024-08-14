@@ -8,5 +8,7 @@ public class OneBotSetGroupBothd
     [JsonPropertyName("group_id")] public uint GroupId { get; set; }
     
     [JsonPropertyName("bot_id")] public uint BotId { get; set; }
+
+    [JsonPropertyName("data")] public string? Data { get; set; }
     
 }

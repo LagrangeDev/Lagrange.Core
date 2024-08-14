@@ -6,15 +6,18 @@ internal class GroupSetBothdEvent : ProtocolEvent
     
     public uint GroupUin { get; set; }
 
-    private GroupSetBothdEvent(uint botId, uint groupuin) : base(0)
+    public string? Data { get; set; }
+
+    private GroupSetBothdEvent(uint botId, uint groupuin, string? data) : base(0)
     {
         BotId = botId;
         GroupUin = groupuin;
+        Data = data;
     }
 
     private GroupSetBothdEvent(int resultCode) : base(resultCode) { }
     
-    public static GroupSetBothdEvent Create(uint botId, uint groupuin) => new(botId, groupuin);
+    public static GroupSetBothdEvent Create(uint botId, uint groupuin, string? data) => new(botId, groupuin,data);
 
     public static GroupSetBothdEvent Result(int resultCode) => new(resultCode);
 }

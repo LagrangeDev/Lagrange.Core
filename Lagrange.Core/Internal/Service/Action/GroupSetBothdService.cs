@@ -18,7 +18,7 @@ internal class GroupSetBothdService : BaseService<GroupSetBothdEvent>
             BotId = input.BotId,
             Seq = 11111,
             B_id = "",
-            B_data = "",
+            B_data = (input.Data is not null) ? input.Data : "",
             IDD = 0,
             GroupUin = input.GroupUin,
             GroupType = 1
