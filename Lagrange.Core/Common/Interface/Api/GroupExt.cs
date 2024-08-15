@@ -45,6 +45,9 @@ public static class GroupExt
     public static Task<bool> SetGroupBot(this BotContext bot, uint targetUin, uint On, uint groupUin)
         => bot.ContextCollection.Business.OperationLogic.SetGroupBot(targetUin, On, groupUin);
 
+    [Obsolete("Cosider using SetGroupBotHD(BotContext, uint, uint, string?, string?) instead")]
+    public static Task<bool> SetGroupBotHD(this BotContext bot, uint targetUin, uint groupUin)
+        => bot.SetGroupBotHD(targetUin, groupUin, null, null);
     public static Task<bool> SetGroupBotHD(this BotContext bot, uint targetUin, uint groupUin, string? data_1, string? data_2)
         => bot.ContextCollection.Business.OperationLogic.SetGroupBotHD(targetUin, groupUin, data_1, data_2);
     
