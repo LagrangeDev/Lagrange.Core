@@ -32,6 +32,8 @@ jobs:
       - run: gh release create nightly -F ./note -p -t "Nightly Release" -R ${{ github.repository }}
 
   build-and-upload-release:
+    if: ${{ always() }}
+
     needs:
       - create-tag
 
