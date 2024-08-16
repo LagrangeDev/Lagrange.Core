@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 namespace Lagrange.OneBot.Core.Entity.Notify;
 
 [Serializable]
-public class OneBotGroupReaction(uint selfId, uint targetGroupUin, int targetMessage, uint operatorId, string subType, string code)
+public class OneBotGroupReaction(uint selfId, uint groupId, int messageId, uint operatorId, string subType, string code)
     : OneBotNotify(selfId, "reaction")
 {
-    [JsonPropertyName("target_group_uin")] public uint TargetGroupUin { get; } = targetGroupUin;
+    [JsonPropertyName("group_id")] public uint GroupId { get; } = groupId;
 
-    [JsonPropertyName("target_message")] public int TargetMessage { get; } = targetMessage;
+    [JsonPropertyName("message_id")] public int MessageId { get; } = messageId;
 
     [JsonPropertyName("operator_id")] public uint OperatorId { get; } = operatorId;
 
