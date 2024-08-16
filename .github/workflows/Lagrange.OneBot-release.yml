@@ -17,7 +17,6 @@ jobs:
       - run: gh release delete nightly --cleanup-tag -y -R ${{ github.repository }}
 
   create-tag:
-    if: ${{ always() }}
     needs:
       - delete-tag
 
