@@ -49,4 +49,6 @@ public partial class EventInvoker
     public event LagrangeEvent<GroupPokeEvent>? OnGroupPokeEvent;
 
     public event LagrangeEvent<GroupEssenceEvent>? OnGroupEssenceEvent;
+
+    public event LagrangeEvent<GroupReactionEvent>? OnGroupReactionEvent;
 }
