@@ -81,6 +81,7 @@ public sealed class MessageChain : List<IMessageEntity>
         var chainBuilder = new StringBuilder();
 
         chainBuilder.Append("[MessageChain");
+        chainBuilder.Append($" {MessageId} "); // TODO Dark/Delete
         if (GroupUin != null) chainBuilder.Append($"({GroupUin})");
         chainBuilder.Append($"({FriendUin})");
         chainBuilder.Append("] ");
