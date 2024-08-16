@@ -7,7 +7,7 @@ env:
   GH_TOKEN: ${{ github.token }}
 
 jobs:
-  reset-release:
+  delete-tag:
     runs-on: ubuntu-latest
 
     permissions:
@@ -16,12 +16,26 @@ jobs:
     steps:
       - run: gh release delete nightly --cleanup-tag -y -R ${{ github.repository }}
 
+  create-tag:
+    needs:
+      - delete-tag
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
       - run: echo -e "> ⚠️This is a nightly release.\r\n> ⚠️This is not the latest version." > note
 
       - run: gh release create nightly -F ./note -p -t "Nightly Release" -R ${{ github.repository }}
 
   build-and-upload-release:
-    needs: reset-release
+    if: ${{ always() }}
+
+    needs:
+      - create-tag
+
     runs-on: ubuntu-latest
 
     permissions:
