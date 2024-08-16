@@ -7,7 +7,7 @@ public class OneBotSetGroupReaction
 {
     [JsonPropertyName("group_id")] public uint GroupId { get; set; }
 
-    [JsonPropertyName("message_id")] public uint MessageId { get; set; }
+    [JsonPropertyName("message_id")] public int MessageId { get; set; }
 
     [JsonPropertyName("code")] public required string Code { get; set; }
 }
