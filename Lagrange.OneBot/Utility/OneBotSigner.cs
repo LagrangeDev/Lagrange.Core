@@ -51,7 +51,7 @@ public class OneBotSigner : SignProvider
             {
                 { "cmd", cmd },
                 { "seq", seq },
-                { "body", Convert.ToHexString(body) }
+                { "src", Convert.ToHexString(body) }
             })
         };
 
