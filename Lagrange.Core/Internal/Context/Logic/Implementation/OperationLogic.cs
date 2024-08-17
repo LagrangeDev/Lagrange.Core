@@ -24,10 +24,10 @@ internal class OperationLogic : LogicBase
     }
 
     public Task<List<BotFriend>> FetchFriends(bool refreshCache = false) =>
-            Collection.Business.CachingLogic.GetCachedFriends(refreshCache);
+        Collection.Business.CachingLogic.GetCachedFriends(refreshCache);
 
     public Task<List<BotGroupMember>> FetchMembers(uint groupUin, bool refreshCache = false) =>
-            Collection.Business.CachingLogic.GetCachedMembers(groupUin, refreshCache);
+        Collection.Business.CachingLogic.GetCachedMembers(groupUin, refreshCache);
 
     public Task<List<BotGroup>> FetchGroups(bool refreshCache) =>
         Collection.Business.CachingLogic.GetCachedGroups(refreshCache);
@@ -243,7 +243,8 @@ internal class OperationLogic : LogicBase
                 result.State,
                 result.Sequence,
                 result.EventType,
-                result.Comment));
+                result.Comment
+            ));
         }
 
         return results;
