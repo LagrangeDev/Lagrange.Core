@@ -1,11 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Net.Http.Json;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Nodes;
-using Lagrange.Core.Utility.Extension;
-using Lagrange.Core.Utility.Network;
 using Lagrange.Core.Utility.Sign;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -14,9 +11,8 @@ namespace Lagrange.OneBot.Utility;
 
 public class OneBotSigner : SignProvider
 {
-    private readonly string _signServer;
+    private readonly string? _signServer;
     private readonly ILogger _logger;
-    private readonly Timer _timer;
 
     private readonly HttpClient _client;
 
@@ -38,74 +34,49 @@ public class OneBotSigner : SignProvider
             UseProxy = !string.IsNullOrEmpty(signProxyUrl),
         },
         disposeHandler: true);
-        
-        if (string.IsNullOrEmpty(_signServer))
-        {
-            Available = false;
-            logger.LogWarning("Signature Service is not available, login may be failed");
-        }
-        else
-        {
-            logger.LogInformation("Signature Service is successfully established");
-        }
-        
-        _timer = new Timer(_ =>
-        {
-            bool reconnect = Available = Test();
-            if (reconnect) _timer?.Change(-1, 5000);
-        });
+
+        if (string.IsNullOrEmpty(_signServer)) logger.LogWarning("Signature Service is not available, login may be failed");
     }
 
-    public override byte[]? Sign(string cmd, uint seq, byte[] body, [UnscopedRef] out byte[]? ver, [UnscopedRef] out string? token)
+    public override byte[]? Sign(string cmd, uint seq, byte[] body, [UnscopedRef] out byte[]? e, [UnscopedRef] out string? t)
     {
-        ver = null;
-        token = null;
+        // result
+        e = null;
+        t = null;
+
         if (!WhiteListCommand.Contains(cmd)) return null;
-        if (!Available || string.IsNullOrEmpty(_signServer)) return new byte[35]; // Dummy signature
-        
-        var payload = new JsonObject
+
+        if (_signServer == null) throw new Exception("Sign server is not configured");
+
+        HttpRequestMessage request = new()
         {
-            { "cmd", cmd },
-            { "seq", seq },
-            { "src", body.Hex() },
+            Method = HttpMethod.Post,
+            RequestUri = new(_signServer),
+            Content = new StringContent(
+                $"{{\"cmd\":\"{cmd}\",\"seq\":{seq},\"src\":\"{Convert.ToHexString(body)}\"}}",
+                new MediaTypeHeaderValue("application/json")
+            )
         };
 
-        try
-        {
-            var message = _client.PostAsJsonAsync(_signServer, payload).Result;
-            string response = message.Content.ReadAsStringAsync().Result;
-            var json = JsonSerializer.Deserialize<JsonObject>(response);
+        HttpResponseMessage message = _client.Send(request);
 
-            ver = json?["value"]?["extra"]?.ToString().UnHex() ?? Array.Empty<byte>();
-            token = Encoding.ASCII.GetString(json?["value"]?["token"]?.ToString().UnHex() ?? Array.Empty<byte>());
-            return json?["value"]?["sign"]?.ToString().UnHex() ?? new byte[35];
-        }
-        catch
-        {
-            Available = false;
-            _timer.Change(0, 5000);
-            
-            _logger.LogWarning("Failed to get signature, using dummy signature");
-            return new byte[35]; // Dummy signature
-        }
-    }
+        if (message.StatusCode != HttpStatusCode.OK) throw new Exception($"Signer server returned a {message.StatusCode}");
 
-    public override bool Test()
-    {
-        try
-        {
-            string response = Http.GetAsync($"{_signServer}/ping").GetAwaiter().GetResult();
-            if (JsonSerializer.Deserialize<JsonObject>(response)?["code"]?.GetValue<int>() == 0)
-            {
-                _logger.LogInformation("Reconnected to Signature Service successfully");
-                return true;
-            }
-        }
-        catch
-        {
-            return false;
-        }
+        JsonElement json = JsonDocument.Parse(message.Content.ReadAsStream()).RootElement;
 
-        return false;
+        JsonElement valueJson = json.GetProperty("value");
+
+        JsonElement extraJson = valueJson.GetProperty("extra");
+        JsonElement tokenJson = valueJson.GetProperty("token");
+        JsonElement signJson = valueJson.GetProperty("sign");
+
+        string? extra = extraJson.GetString();
+        e = extra != null ? Convert.FromHexString(extra) : [];
+
+        string? token = tokenJson.GetString();
+        t = token != null ? Encoding.UTF8.GetString(Convert.FromHexString(token)) : "";
+
+        string sign = signJson.GetString() ?? throw new Exception("Signer server returned an empty sign");
+        return Convert.FromHexString(sign);
     }
 }

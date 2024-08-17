@@ -24,10 +24,10 @@ internal class OperationLogic : LogicBase
     }
 
     public Task<List<BotFriend>> FetchFriends(bool refreshCache = false) =>
-            Collection.Business.CachingLogic.GetCachedFriends(refreshCache);
+        Collection.Business.CachingLogic.GetCachedFriends(refreshCache);
 
     public Task<List<BotGroupMember>> FetchMembers(uint groupUin, bool refreshCache = false) =>
-            Collection.Business.CachingLogic.GetCachedMembers(groupUin, refreshCache);
+        Collection.Business.CachingLogic.GetCachedMembers(groupUin, refreshCache);
 
     public Task<List<BotGroup>> FetchGroups(bool refreshCache) =>
         Collection.Business.CachingLogic.GetCachedGroups(refreshCache);
@@ -36,6 +36,7 @@ internal class OperationLogic : LogicBase
     {
         var sendMessageEvent = SendMessageEvent.Create(chain);
         var events = await Collection.Business.SendEvent(sendMessageEvent);
+        if (events.Count == 0) return new() { Result = 9057 };
         return ((SendMessageEvent)events[0]).MsgResult;
     }
 
@@ -75,15 +76,15 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(muteGroupMemberEvent);
         return events.Count != 0 && ((GroupSetAdminEvent)events[0]).ResultCode == 0;
     }
-    
-    public async Task<bool> SetGroupBot(uint BotId , uint On , uint groupUin)
+
+    public async Task<bool> SetGroupBot(uint BotId, uint On, uint groupUin)
     {
         var muteBotEvent = GroupSetBotEvent.Create(BotId, On, groupUin);
         var events = await Collection.Business.SendEvent(muteBotEvent);
         return events.Count != 0 && ((GroupSetBotEvent)events[0]).ResultCode == 0;
     }
 
-        public async Task<bool> SetGroupBotHD(uint BotId , uint groupUin, string? data_1, string? data_2)
+    public async Task<bool> SetGroupBotHD(uint BotId, uint groupUin, string? data_1, string? data_2)
     {
         var muteBotEvent = GroupSetBothdEvent.Create(BotId, groupUin, data_1, data_2);
         var events = await Collection.Business.SendEvent(muteBotEvent);
@@ -242,7 +243,8 @@ internal class OperationLogic : LogicBase
                 result.State,
                 result.Sequence,
                 result.EventType,
-                result.Comment));
+                result.Comment
+            ));
         }
 
         return results;

@@ -58,7 +58,7 @@ internal class LinuxSigner : SignProvider
         }
     }
 
-    public override bool Test()
+    public bool Test()
     {
         try
         {
