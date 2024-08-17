@@ -36,7 +36,7 @@ internal class OperationLogic : LogicBase
     {
         var sendMessageEvent = SendMessageEvent.Create(chain);
         var events = await Collection.Business.SendEvent(sendMessageEvent);
-        if (events.Count == 0) return new() { Result = 1 };
+        if (events.Count == 0) return new() { Result = 9057 };
         return ((SendMessageEvent)events[0]).MsgResult;
     }
 
