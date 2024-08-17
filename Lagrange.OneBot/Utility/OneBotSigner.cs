@@ -50,8 +50,6 @@ public class OneBotSigner : SignProvider
 
         if (!WhiteListCommand.Contains(cmd)) return null;
 
-        if (Random.Shared.Next() % 2 == 1) throw new Exception("Test Exception");
-
         if (_signServer == null) throw new Exception("Sign server is not configured");
 
         HttpRequestMessage request = new()
