@@ -23,7 +23,7 @@ public sealed class LagrangeAppBuilder
     
     private readonly HostApplicationBuilder _hostAppBuilder;
 
-    internal LagrangeAppBuilder(string[] args)
+    public LagrangeAppBuilder(string[] args)
     {
         _hostAppBuilder = new HostApplicationBuilder(args);
     }

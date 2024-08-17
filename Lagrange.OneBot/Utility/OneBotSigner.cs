@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -23,7 +24,20 @@ public class OneBotSigner : SignProvider
     {
         _signServer = config["SignServerUrl"] ?? "";
         _logger = logger;
-        _client = new HttpClient();
+        var signProxyUrl = config["SignProxyUrl"];
+        //Only support HTTP proxy
+
+        _client = new HttpClient(handler: new HttpClientHandler
+        {
+            Proxy = string.IsNullOrEmpty(signProxyUrl) ? null : new WebProxy()
+            {
+                Address = new Uri(signProxyUrl),
+                BypassProxyOnLocal = false,
+                UseDefaultCredentials = false,
+            },
+            UseProxy = !string.IsNullOrEmpty(signProxyUrl),
+        },
+        disposeHandler: true);
         
         if (string.IsNullOrEmpty(_signServer))
         {
