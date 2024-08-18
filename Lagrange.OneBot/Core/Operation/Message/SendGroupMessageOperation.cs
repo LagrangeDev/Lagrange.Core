@@ -25,7 +25,7 @@ public sealed class SendGroupMessageOperation(MessageCommon common) : IOperation
 
         var result = await context.SendMessage(chain);
 
-        if (!result.Sequence.HasValue || result.Sequence.Value == 0) return new OneBotResult(null, -1000, "failed");
+        if (!result.Sequence.HasValue || result.Sequence.Value == 0) return new OneBotResult(null, (int)result.Result, "failed");
 
         int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence.Value);
 

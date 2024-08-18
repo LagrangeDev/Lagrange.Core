@@ -24,11 +24,11 @@ public class SendGroupForwardOperation(MessageCommon common) : IOperation
             var chain = MessageBuilder.Group(forward.GroupId).Add(multi).Build();
             var result = await context.SendMessage(chain);
 
-            if (!result.Sequence.HasValue || result.Sequence.Value == 0) return new OneBotResult(null, -1000, "failed");
+            if (!result.Sequence.HasValue || result.Sequence.Value == 0) return new OneBotResult(null, (int)result.Result, "failed");
 
             int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence.Value);
 
-            return new OneBotResult(new OneBotForwardResponse(hash, multi.ResId ?? ""), (int)result.Result, "ok");
+            return new OneBotResult(new OneBotForwardResponse(hash, multi.ResId ?? ""), 0, "ok");
         }
 
         throw new Exception();
