@@ -4,7 +4,6 @@ using Lagrange.Core.Internal.Event.Login;
 using Lagrange.Core.Internal.Packets.Login.NTLogin;
 using Lagrange.Core.Internal.Packets.Login.NTLogin.Plain;
 using Lagrange.Core.Internal.Packets.Login.NTLogin.Plain.Body;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Crypto;
 using ProtoBuf;
 
@@ -14,8 +13,8 @@ namespace Lagrange.Core.Internal.Service.Login;
 [Service("trpc.login.ecdh.EcdhService.SsoNTLoginEasyLoginUnusualDevice")]
 internal class UnusualEasyLoginService : BaseService<UnusualEasyLoginEvent>
 {
-    protected override bool Build(UnusualEasyLoginEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(UnusualEasyLoginEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         if (keystore.Session.TempPassword == null) throw new InvalidOperationException("TempPassword is null");
 

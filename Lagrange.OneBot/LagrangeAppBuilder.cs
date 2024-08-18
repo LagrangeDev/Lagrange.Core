@@ -18,16 +18,16 @@ namespace Lagrange.OneBot;
 public sealed class LagrangeAppBuilder
 {
     private IServiceCollection Services => _hostAppBuilder.Services;
-    
+
     private ConfigurationManager Configuration => _hostAppBuilder.Configuration;
-    
+
     private readonly HostApplicationBuilder _hostAppBuilder;
 
-    internal LagrangeAppBuilder(string[] args)
+    public LagrangeAppBuilder(string[] args)
     {
         _hostAppBuilder = new HostApplicationBuilder(args);
     }
-    
+
     public LagrangeAppBuilder ConfigureConfiguration(string path, bool optional = false, bool reloadOnChange = false)
     {
         Configuration.AddJsonFile(path, optional, reloadOnChange);
@@ -39,7 +39,7 @@ public sealed class LagrangeAppBuilder
     {
         string keystorePath = Configuration["ConfigPath:Keystore"] ?? "keystore.json";
         string deviceInfoPath = Configuration["ConfigPath:DeviceInfo"] ?? "device.json";
-        
+
         bool isSuccess = Enum.TryParse<Protocols>(Configuration["Account:Protocol"], out var protocol);
         var config = new BotConfig
         {
@@ -53,8 +53,8 @@ public sealed class LagrangeAppBuilder
         BotKeystore keystore;
         if (!File.Exists(keystorePath))
         {
-            keystore = Configuration["Account:Uin"] is { } uin && Configuration["Account:Password"] is { } password 
-                    ? new BotKeystore(uint.Parse(uin), password) 
+            keystore = Configuration["Account:Uin"] is { } uin && Configuration["Account:Password"] is { } password
+                    ? new BotKeystore(uint.Parse(uin), password)
                     : new BotKeystore();
             string? directoryPath = Path.GetDirectoryName(keystorePath);
             if (!string.IsNullOrEmpty(directoryPath))
@@ -85,10 +85,10 @@ public sealed class LagrangeAppBuilder
         }
 
         Services.AddSingleton(BotFactory.Create(config, deviceInfo, keystore));
-        
+
         return this;
     }
-    
+
     public LagrangeAppBuilder ConfigureOneBot()
     {
         Services.AddSingleton<LagrangeWebSvcCollection>();
@@ -108,12 +108,14 @@ public sealed class LagrangeAppBuilder
             return services.GetRequiredService<ILagrangeWebServiceFactory>().Create() ?? throw new Exception("Invalid conf detected");
         });
 
-        Services.AddSingleton<LiteDatabase>(x =>
+        Services.AddSingleton(x =>
         {
             string path = Configuration["ConfigPath:Database"] ?? $"lagrange-{Configuration["Account:Uin"]}.db";
-            
-            var db = new LiteDatabase(path);
-            db.CheckpointSize = 50;
+
+            var db = new LiteDatabase(path)
+            {
+                CheckpointSize = 50
+            };
             return db;
         });
         Services.AddSingleton<SignProvider, OneBotSigner>();

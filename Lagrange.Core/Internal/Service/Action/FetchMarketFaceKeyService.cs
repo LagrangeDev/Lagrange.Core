@@ -2,7 +2,6 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Packets.Action;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
@@ -10,14 +9,15 @@ namespace Lagrange.Core.Internal.Service.Action;
 
 [EventSubscribe(typeof(FetchMarketFaceKeyEvent))]
 [Service("BQMallSvc.TabOpReq")]
-internal class FatchMarketFaceKeyService : BaseService<FetchMarketFaceKeyEvent>
+internal class FetchMarketFaceKeyService : BaseService<FetchMarketFaceKeyEvent>
 {
-    protected override bool Build(FetchMarketFaceKeyEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(FetchMarketFaceKeyEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new MarketFaceKeyRequest
         {
             Field1 = 3,
-            Info = new()
+            Info = new MarketFaceInfo
             {
                 FaceIds = input.FaceIds
             },

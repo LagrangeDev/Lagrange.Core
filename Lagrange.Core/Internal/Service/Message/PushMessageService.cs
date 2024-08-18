@@ -1,9 +1,11 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
+using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.Notify;
 using Lagrange.Core.Internal.Packets.Message;
 using Lagrange.Core.Internal.Packets.Message.Notify;
+using Lagrange.Core.Internal.Service.Action;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
@@ -22,7 +24,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
     {
         var message = Serializer.Deserialize<PushMsg>(input);
         var packetType = (PkgType)message.Message.ContentHead.Type;
-        
+
         output = null!;
         extraEvents = new List<ProtocolEvent>();
         switch (packetType)
@@ -82,7 +84,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 {
                     return false;
                 }
-                
+
                 extraEvents.Add(GroupSysAdminEvent.Result(admin.GroupUin, uid, enabled));
                 break;
             }
@@ -124,6 +126,26 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         var pkgType = (Event0x2DCSubType)(msg.Message.ContentHead.SubType ?? 0);
         switch (pkgType)
         {
+            case Event0x2DCSubType.GroupReactionNotice when msg.Message.Body?.MsgContent is { } content:
+            {
+                using var packet = new BinaryPacket(content);
+                _ = packet.ReadUint();  // group uin
+                _ = packet.ReadByte();  // unknown byte
+                var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly); // proto length error
+
+                var reaction = Serializer.Deserialize<GroupReaction>(proto);
+
+                var group = reaction.GroupUid;
+                var uid = reaction.Data.Data.Data.Data.OperatorUid;
+                var type = reaction.Data.Data.Data.Data.Type;
+                var sequence = reaction.Data.Data.Data.Target.Sequence;
+                var code = reaction.Data.Data.Data.Data.Code;
+
+                var groupRecallEvent = GroupSysReactionEvent.Result(group, sequence, uid, type == 1, code);
+                extraEvents.Add(groupRecallEvent);
+
+                break;
+            }
             case Event0x2DCSubType.GroupRecallNotice when msg.Message.Body?.MsgContent is { } content:
             {
                 using var packet = new BinaryPacket(content);
@@ -171,7 +193,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 _ = packet.ReadByte();  // unknown byte
                 var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
                 var greyTip = Serializer.Deserialize<NotifyMessageBody>(proto);
-                
+
                 var templates = greyTip.GeneralGrayTip.MsgTemplParam.ToDictionary(x => x.Name, x => x.Value);
 
                 if (greyTip.GeneralGrayTip.BusiType == 12)  // poke
@@ -224,7 +246,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             {
                 var greyTip = Serializer.Deserialize<GeneralGrayTipInfo>(content.AsSpan());
                 var templates = greyTip.MsgTemplParam.ToDictionary(x => x.Name, x => x.Value);
-                
+
                 if (greyTip.BusiType == 12)  // poke
                 {
                     var groupPokeEvent = FriendSysPokeEvent.Result(uint.Parse(templates["uin_str1"]), uint.Parse(templates["uin_str2"]), templates["action_str"], templates["suffix_str"]);
@@ -239,19 +261,19 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             }
         }
     }
-    
+
     private enum PkgType
     {
         PrivateMessage = 166,
         GroupMessage = 82,
         TempMessage = 141,
-        
+
         Event0x210 = 528,  // friend related event
         Event0x2DC = 732,  // group related event
-        
+
         PrivateRecordMessage = 208,
         PrivateFileMessage = 529,
-        
+
         GroupRequestInvitationNotice = 525, // from group member invitation
         GroupRequestJoinNotice = 84, // directly entered
         GroupInviteNotice = 87,  // the bot self is being invited
@@ -262,12 +284,13 @@ internal class PushMessageService : BaseService<PushMessageEvent>
 
     private enum Event0x2DCSubType
     {
-        GroupRecallNotice = 17,
         GroupMuteNotice = 12,
+        GroupReactionNotice = 16,
+        GroupRecallNotice = 17,
         GroupEssenceNotice = 21,
-        GroupGreyTipNotice = 20
+        GroupGreyTipNotice = 20,
     }
-    
+
     private enum Event0x210SubType
     {
         FriendRequestNotice = 35,

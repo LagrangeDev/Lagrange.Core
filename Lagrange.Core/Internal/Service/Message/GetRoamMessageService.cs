@@ -3,7 +3,6 @@ using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Packets.Message.Action;
 using Lagrange.Core.Message;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
@@ -13,8 +12,8 @@ namespace Lagrange.Core.Internal.Service.Message;
 [Service("trpc.msg.register_proxy.RegisterProxy.SsoGetRoamMsg")]
 internal class GetRoamMessageService : BaseService<GetRoamMessageEvent>
 {
-    protected override bool Build(GetRoamMessageEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(GetRoamMessageEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new SsoGetRoamMsg
         {

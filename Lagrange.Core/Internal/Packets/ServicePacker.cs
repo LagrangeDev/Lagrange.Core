@@ -2,13 +2,12 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Packets.System;
 using Lagrange.Core.Utility.Binary;
 using ProtoBuf;
-using static Lagrange.Core.Utility.Binary.BinaryPacket;
 
 namespace Lagrange.Core.Internal.Packets;
 
 internal static class ServicePacker
 {
-    public static BinaryPacket BuildProtocol13(BinaryPacket packet, BotKeystore keystore, string command, uint sequence)
+    public static BinaryPacket BuildProtocol13(byte[] packet, BotKeystore keystore, string command, uint sequence)
     {
         var frame = new BinaryPacket();
         

@@ -3,7 +3,6 @@ using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Internal.Service.System;
@@ -12,8 +11,8 @@ namespace Lagrange.Core.Internal.Service.System;
 [Service("OidbSvcTrpcTcp.0x5cf_11")]
 internal class FetchFriendRequestsService : BaseService<FetchFriendRequestsEvent>
 {
-    protected override bool Build(FetchFriendRequestsEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(FetchFriendRequestsEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x5CF_11>(new OidbSvcTrpcTcp0x5CF_11
         {

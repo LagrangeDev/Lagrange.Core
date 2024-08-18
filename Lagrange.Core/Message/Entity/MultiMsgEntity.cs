@@ -22,13 +22,13 @@ public class MultiMsgEntity : IMessageEntity
 
     internal MultiMsgEntity() => Chains = new List<MessageChain>();
 
-    internal MultiMsgEntity(string resId)
+    public MultiMsgEntity(string resId)
     {
         ResId = resId;
         Chains = new List<MessageChain>();
     }
 
-    internal MultiMsgEntity(uint? groupUin, List<MessageChain> chains)
+    public MultiMsgEntity(uint? groupUin, List<MessageChain> chains)
     {
         GroupUin = groupUin;
         Chains = chains;

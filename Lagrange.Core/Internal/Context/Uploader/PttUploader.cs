@@ -31,9 +31,8 @@ internal class PttUploader : IHighwayUploader
                     BlockSize = 1024 * 1024,
                     Hash = new NTHighwayHash { FileSha1 = new List<byte[]> { index.Info.FileSha1.UnHex() } }
                 };
-                var extStream = extend.Serialize();
 
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1007, record.AudioStream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1007, record.AudioStream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extend.Serialize().ToArray());
                 if (!hwSuccess)
                 {
                     await record.AudioStream.Value.DisposeAsync();
@@ -67,9 +66,8 @@ internal class PttUploader : IHighwayUploader
                     BlockSize = 1024 * 1024,
                     Hash = new NTHighwayHash { FileSha1 = new List<byte[]> { index.Info.FileSha1.UnHex() } }
                 };
-                var extStream = extend.Serialize();
 
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1008, record.AudioStream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extStream.ToArray());
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1008, record.AudioStream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extend.Serialize().ToArray());
                 if (!hwSuccess)
                 {
                     await record.AudioStream.Value.DisposeAsync();

@@ -3,7 +3,6 @@ using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Packets.Message.Action;
 using Lagrange.Core.Message;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Binary.Compression;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
@@ -14,8 +13,8 @@ namespace Lagrange.Core.Internal.Service.Message;
 [Service("trpc.group.long_msg_interface.MsgService.SsoSendLongMsg")]
 internal class MultiMsgUploadService : BaseService<MultiMsgUploadEvent>
 {
-    protected override bool Build(MultiMsgUploadEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(MultiMsgUploadEvent input, BotKeystore keystore, BotAppInfo appInfo,
+        BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         if (input.Chains == null) throw new ArgumentNullException(nameof(input.Chains));
         

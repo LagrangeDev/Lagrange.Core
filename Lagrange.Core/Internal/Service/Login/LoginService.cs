@@ -51,11 +51,11 @@ internal class LoginService : BaseService<LoginEvent>
         return true;
     }
 
-    protected override bool Build(LoginEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
-        out BinaryPacket output, out List<BinaryPacket>? extraPackets)
+    protected override bool Build(LoginEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+        out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new Packets.Login.WtLogin.Entity.Login(keystore, appInfo, device);
-        output = packet.ConstructPacket();
+        output = packet.ConstructPacket().ToArray();
         
         extraPackets = null;
         return true;

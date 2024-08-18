@@ -1,5 +1,6 @@
 namespace Lagrange.Core.Common.Entity;
 
+[Serializable]
 public class BotFileEntry : IBotFSEntry
 {
     internal string FileId { get; }

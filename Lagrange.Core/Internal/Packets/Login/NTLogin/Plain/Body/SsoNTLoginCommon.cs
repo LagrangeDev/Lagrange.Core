@@ -1,6 +1,5 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Packets.Login.NTLogin.Plain.Universal;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Crypto;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
@@ -11,7 +10,7 @@ namespace Lagrange.Core.Internal.Packets.Login.NTLogin.Plain.Body;
 
 internal static class SsoNTLoginCommon
 {
-    public static BinaryPacket BuildNTLoginPacket(BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, byte[] body)
+    public static Span<byte> BuildNTLoginPacket(BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, byte[] body)
     {
         if (keystore.Session.ExchangeKey == null || keystore.Session.KeySign == null) throw new InvalidOperationException("Key is null");
 
