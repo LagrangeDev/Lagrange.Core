@@ -90,7 +90,7 @@ internal class TaskScheduler : IDisposable
     private void SchedulerThread()
     {
         int minInterval;
-        DateTime startTime;
+        DateTimeOffset startTime;
         List<Schedule> todoList;
         List<Schedule> taskTable;
         ScheduleSorter taskSorter;
@@ -142,7 +142,7 @@ internal class TaskScheduler : IDisposable
         // calculate the remaining
         void WaitOne()
         {
-            startTime = DateTime.Now;
+            startTime = DateTimeOffset.Now;
             {
                 // Set sleep time
                 var sleepTime = minInterval == 0
@@ -162,7 +162,7 @@ internal class TaskScheduler : IDisposable
                     _taskNotify.WaitOne(sleepTime);
                 }
             }
-            var passedTime = (int)((DateTime.Now - startTime).TotalSeconds * 1000);
+            var passedTime = (int)((DateTimeOffset.Now - startTime).TotalSeconds * 1000);
 
             todoList.Clear();  // Calculate the remain
             for (var i = taskTable.Count - 1; i >= 0; --i)
@@ -282,8 +282,8 @@ internal class TaskScheduler : IDisposable
     /// <param name="action"><b>[In]</b> Callback action</param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ObjectDisposedException"></exception>
-    public void RunOnce(string name, DateTime date, Action action)
-        => RunOnce(name, (int) ((date - DateTime.Now).TotalSeconds * 1000), action);
+    public void RunOnce(string name, DateTimeOffset date, Action action)
+        => RunOnce(name, (int) ((date - DateTimeOffset.Now).TotalSeconds * 1000), action);
 
     /// <summary>
     /// Trigger a task to run

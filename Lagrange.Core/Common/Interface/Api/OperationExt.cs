@@ -148,7 +148,7 @@ public static class OperationExt
     /// <param name="count">number of message to be fetched before timestamp</param>
     public static Task<List<MessageChain>?> GetRoamMessage(this BotContext bot, MessageChain targetChain, uint count)
     {
-        uint timestamp = (uint)(targetChain.Time - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+        uint timestamp = (uint)targetChain.Time.ToUnixTimeSeconds();
         return bot.ContextCollection.Business.OperationLogic.GetRoamMessage(targetChain.FriendUin, timestamp, count);
     }
 
@@ -163,7 +163,7 @@ public static class OperationExt
 
     public static Task<bool> MarkAsRead(this BotContext bot, MessageChain targetChain)
     {
-        uint timestamp = (uint)(targetChain.Time - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+        uint timestamp = (uint)targetChain.Time.ToUnixTimeSeconds();
         return bot.ContextCollection.Business.OperationLogic.MarkAsRead(targetChain.GroupUin ?? 0, targetChain.Uid, targetChain.Sequence, timestamp);
     }
 

@@ -16,7 +16,7 @@ public sealed class MessageChain : List<IMessageEntity>
 
     public ulong MessageId { get; }
 
-    public DateTime Time { get; internal set; }
+    public DateTimeOffset Time { get; internal set; }
 
     public BotFriend? FriendInfo { get; internal set; }
 

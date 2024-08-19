@@ -52,8 +52,8 @@ internal class FetchMembersService : BaseService<FetchMembersEvent>
                                member.MemberCard.MemberCard,
                                member.MemberName,
                                member.SpecialTitle,
-                               DateTimeOffset.FromUnixTimeSeconds(member.JoinTimestamp).DateTime,
-                               DateTimeOffset.FromUnixTimeSeconds(member.LastMsgTimestamp).DateTime)).ToList();
+                               DateTimeOffset.FromUnixTimeSeconds(member.JoinTimestamp),
+                               DateTimeOffset.FromUnixTimeSeconds(member.LastMsgTimestamp))).ToList();
         
         output = FetchMembersEvent.Result(members, response.Body.Token);
         extraEvents = null;

@@ -5,13 +5,13 @@ namespace Lagrange.Core.Event;
 /// </summary>
 public abstract class EventBase : EventArgs
 {
-    public DateTime EventTime { get; }
+    public DateTimeOffset EventTime { get; }
 
     public string EventMessage { get; protected set; }
 
     internal EventBase()
     {
-        EventTime = DateTime.Now;
+        EventTime = DateTimeOffset.Now;
         EventMessage = "[Empty Event Message]";
     }
     
