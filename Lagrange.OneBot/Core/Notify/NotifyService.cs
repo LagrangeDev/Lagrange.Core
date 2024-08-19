@@ -201,10 +201,15 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                     Query.EQ("Sequence", new BsonValue(@event.TargetSequence))
                 ));
 
+            if (record == null)
+            {
+                logger.LogWarning("No message record found for GroupUin: {GroupUin}, Sequence: {Sequence}", @event.TargetGroupUin, @event.TargetSequence);
+            }
+
             await service.SendJsonAsync(new OneBotGroupReaction(
                 bot.BotUin,
                 @event.TargetGroupUin,
-                record.MessageHash,
+                record?.MessageHash ?? 0,
                 @event.OperatorUin,
                 @event.IsAdd ? "add" : "remove",
                 @event.Code
