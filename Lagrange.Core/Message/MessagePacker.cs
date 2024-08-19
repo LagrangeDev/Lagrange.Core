@@ -264,7 +264,7 @@ internal static class MessagePacker
 
         if (message.Body?.RichText?.Elems is { } elems) chain.Elements.AddRange(elems);
 
-        chain.Time = DateTimeOffset.FromUnixTimeSeconds(message.ContentHead.Timestamp ?? 0);
+        chain.Time = DateTimeOffset.FromUnixTimeSeconds(message.ContentHead.Timestamp ?? 0).DateTime;
         
         return chain;
     }

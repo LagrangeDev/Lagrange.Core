@@ -46,7 +46,7 @@ internal class NewDeviceLoginService : BaseService<NewDeviceLoginEvent>
                 keystore.Session.D2 = body.Credentials.D2;
                 keystore.Session.D2Key = body.Credentials.D2Key;
                 keystore.Session.TempPassword = body.Credentials.TempPassword;
-                keystore.Session.SessionDate = DateTimeOffset.Now;
+                keystore.Session.SessionDate = DateTime.Now;
 
                 output = NewDeviceLoginEvent.Result(0);
             }
