@@ -23,8 +23,8 @@ public class GetGroupMemberInfoOperation : IOperation
                     result.Uin,
                     result.Permission.ToString().ToLower(), 
                     result.GroupLevel.ToString(), result.MemberCard, result.MemberName, result.SpecialTitle,
-                    (uint)new DateTimeOffset(result.JoinTime).ToUnixTimeSeconds(), 
-                    (uint)new DateTimeOffset(result.LastMsgTime).ToUnixTimeSeconds()), 
+                    (uint)result.JoinTime.ToUnixTimeSeconds(), 
+                    (uint)result.LastMsgTime.ToUnixTimeSeconds()), 
                     0, "ok");
         }
 

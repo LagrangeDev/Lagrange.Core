@@ -27,7 +27,7 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
                 Uin = input.Uin,
                 Field2 = 0,
                 Keys = keys.Select(x => new OidbSvcTrpcTcp0xFE1_2Key { Key = x }).ToList()
-            }, 0xfe1, 2, false, true) 
+            }, 0xfe1, 2, false, true)
             : new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE1_2>(new OidbSvcTrpcTcp0xFE1_2
             {
                 Uid = input.Uid,
@@ -44,12 +44,12 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         out FetchUserInfoEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE1_2Response>>(input);
-        
+
         var str = GetStringProperties(payload.Body.Body.Properties);
         var num = GetNumberProperties(payload.Body.Body.Properties);
 
         var birthday = GetBirthday(str[20031]);
-        var reg = DateTime.UnixEpoch.AddSeconds(num[20026]);
+        var reg = DateTimeOffset.UnixEpoch.AddSeconds(num[20026]);
         string? qid = str.GetValueOrDefault<uint, string>(27394);
         var info = new BotUserInfo(payload.Body.Body.Uin, str[20002], birthday, str[20020], str[20003], str[20021], num[20037], reg, num[20009], qid, num[105]);
 
@@ -58,7 +58,7 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         return true;
     }
 
-    private static DateTime GetBirthday(String birthday)
+    private static DateTimeOffset GetBirthday(String birthday)
     {
         var bin = new BinaryPacket(Encoding.ASCII.GetBytes(birthday));
         var year = bin.ReadUshort();
@@ -66,11 +66,11 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         var day = bin.ReadByte();
         if (year != 0 && month is >= 1 and <= 12 && day >= 1 && day <= DateTime.DaysInMonth(year, month))
         {
-            return new DateTime(year, month, day);
+            return new DateTimeOffset(year, month, day, 0, 0, 0, TimeSpan.FromHours(8));
         }
-        return new DateTime(1970, 1, 1);
+        return new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.FromHours(8));
     }
-    
+
     private static Dictionary<uint, string> GetStringProperties(OidbSvcTrpcTcp0xFE1_2ResponseProperty properties)
     {
         var result = new Dictionary<uint, string>();
@@ -81,7 +81,7 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
 
         return result;
     }
-    
+
     private static Dictionary<uint, uint> GetNumberProperties(OidbSvcTrpcTcp0xFE1_2ResponseProperty properties)
     {
         var result = new Dictionary<uint, uint>();

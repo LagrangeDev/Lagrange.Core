@@ -53,9 +53,9 @@ public class GetGroupRootFilesOperation : IOperation
                             FileName = fileEntry.FileName,
                             BusId = 0,
                             FileSize = fileEntry.FileSize,
-                            UploadTime = fileEntry.UploadedTime.ToTimestamp(),
-                            DeadTime = fileEntry.ExpireTime.ToTimestamp(),
-                            ModifyTime = fileEntry.ModifiedTime.ToTimestamp(),
+                            UploadTime = (uint)fileEntry.UploadedTime.ToUnixTimeSeconds(),
+                            DeadTime = (uint)fileEntry.ExpireTime.ToUnixTimeSeconds(),
+                            ModifyTime = (uint)fileEntry.ModifiedTime.ToUnixTimeSeconds(),
                             DownloadTimes = fileEntry.DownloadedTimes,
                             Uploader = fileEntry.UploaderUin,
                             UploaderName = member?.MemberName ?? string.Empty
@@ -71,7 +71,7 @@ public class GetGroupRootFilesOperation : IOperation
                             GroupId = file.GroupId,
                             FolderId = folderEntry.FolderId,
                             FolderName = folderEntry.FolderName,
-                            CreateTime = folderEntry.CreateTime.ToTimestamp(),
+                            CreateTime = (uint)folderEntry.CreateTime.ToUnixTimeSeconds(),
                             Creator = folderEntry.CreatorUin,
                             CreatorName = member?.MemberName ?? string.Empty,
                             TotalFileCount = folderEntry.TotalFileCount

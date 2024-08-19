@@ -114,7 +114,7 @@ internal class WtExchangeLogic : LogicBase
         }
 
         if (Collection.Keystore.Session.D2.Length > 0 && Collection.Keystore.Session.Tgt.Length > 0 && 
-            DateTime.Now - Collection.Keystore.Session.SessionDate < TimeSpan.FromDays(15))
+            DateTimeOffset.Now - Collection.Keystore.Session.SessionDate < TimeSpan.FromDays(15))
         {
             Collection.Log.LogInfo(Tag, "Session has not expired, using session to login and register status");
             try

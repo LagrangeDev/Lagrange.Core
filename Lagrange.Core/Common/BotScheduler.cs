@@ -71,7 +71,7 @@ public class Scheduler
     /// <param name="date"><b>[In]</b> Execute date</param>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ObjectDisposedException"></exception>
-    public void RunOnce(DateTime date) => Instance.RunOnce(Name, date, () => Action(Bot));
+    public void RunOnce(DateTimeOffset date) => Instance.RunOnce(Name, date, () => Action(Bot));
 
     /// <summary>
     /// Trigger a task to run

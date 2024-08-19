@@ -13,7 +13,7 @@ public class MessageRecord
 
     public uint Sequence { get; set; }
     
-    public DateTime Time { get; set; }
+    public DateTimeOffset Time { get; set; }
     
     public ulong MessageId { get; set; }
     

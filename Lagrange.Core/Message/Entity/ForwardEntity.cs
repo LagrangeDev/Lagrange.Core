@@ -8,7 +8,7 @@ namespace Lagrange.Core.Message.Entity;
 [MessageElement(typeof(SrcMsg))]
 public class ForwardEntity : IMessageEntity
 {
-    public DateTime Time { get; set; }
+    public DateTimeOffset Time { get; set; }
 
     public ulong MessageId { get; set; }
 
@@ -69,7 +69,7 @@ public class ForwardEntity : IMessageEntity
                 {
                     OrigSeqs = new List<uint> { Sequence },
                     SenderUin = TargetUin,
-                    Time = (int)(Time - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds,
+                    Time = (int)Time.ToUnixTimeSeconds(),
                     Elems = Elements,
                     PbReserve = forwardStream.ToArray(),
                     ToUin = 0
