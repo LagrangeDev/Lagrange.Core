@@ -283,7 +283,7 @@ internal class TaskScheduler : IDisposable
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ObjectDisposedException"></exception>
     public void RunOnce(string name, DateTime date, Action action)
-        => RunOnce(name, (int) ((date - DateTime.Now).TotalSeconds * 1000), action);
+        => RunOnce(name, (int)((date - DateTime.Now).TotalSeconds * 1000), action);
 
     /// <summary>
     /// Trigger a task to run
