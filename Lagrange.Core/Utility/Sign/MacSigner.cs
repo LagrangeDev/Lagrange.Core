@@ -39,7 +39,7 @@ internal class MacSigner : SignProvider
         catch (Exception)
         {
             Available = false;
-            Console.WriteLine($"[{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(MacSigner)}] Failed to get signature, using dummy signature");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(MacSigner)}] Failed to get signature, using dummy signature");
             
             return new byte[35]; // Dummy signature
         }

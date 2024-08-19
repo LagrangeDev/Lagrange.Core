@@ -88,7 +88,7 @@ public class FileEntity : IMessageEntity
             FileSize = FileSize,
             Subcmd = 1,
             DangerEvel = 0,
-            ExpireTime = (int)DateTimeOffset.Now.ToUnixTimeSeconds(),
+            ExpireTime = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0) + TimeSpan.FromDays(7)).TotalSeconds,
             FileHash = FileHash
         }
     };

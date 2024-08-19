@@ -72,7 +72,7 @@ public class BotKeystore
         public byte[] D2 { get; set; } = Array.Empty<byte>();
         public byte[] Tgt { get; set; } = Array.Empty<byte>();
         
-        public DateTimeOffset SessionDate { get; set; }
+        public DateTime SessionDate { get; set; }
 
         internal byte[]? QrSign { get; set; } // size: 24
         internal string? QrString { get; set; }

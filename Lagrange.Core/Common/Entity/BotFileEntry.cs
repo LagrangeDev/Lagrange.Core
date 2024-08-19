@@ -1,5 +1,3 @@
-using System;
-
 namespace Lagrange.Core.Common.Entity;
 
 [Serializable]
@@ -13,18 +11,18 @@ public class BotFileEntry : IBotFSEntry
     
     public ulong FileSize { get; }
     
-    public DateTimeOffset ExpireTime { get; }
+    public DateTime ExpireTime { get; }
     
-    public DateTimeOffset ModifiedTime { get; }
+    public DateTime ModifiedTime { get; }
     
     public uint UploaderUin { get; }
     
-    public DateTimeOffset UploadedTime { get; }
+    public DateTime UploadedTime { get; }
     
     public uint DownloadedTimes { get; }
 
     internal BotFileEntry(string fileId, string fileName, string parentDirectory, ulong fileSize, 
-        DateTimeOffset expireTime, DateTimeOffset modifiedTime, uint uploaderUin, DateTimeOffset uploadedTime, uint downloadedTimes)
+        DateTime expireTime, DateTime modifiedTime, uint uploaderUin, DateTime uploadedTime, uint downloadedTimes)
     {
         FileId = fileId;
         FileName = fileName;

@@ -15,7 +15,7 @@ public class BotGroupMember
     }
     
     internal BotGroupMember(uint uin, string uid, GroupMemberPermission permission, uint groupLevel, string? memberCard, 
-        string memberName, string? specialTitle, DateTimeOffset joinTime, DateTimeOffset lastMsgTime)
+        string memberName, string? specialTitle, DateTime joinTime, DateTime lastMsgTime)
     {
         Uin = uin;
         Uid = uid;
@@ -42,9 +42,9 @@ public class BotGroupMember
     
     public string? SpecialTitle { get; set; }
 
-    public DateTimeOffset JoinTime { get; set; }
+    public DateTime JoinTime { get; set; }
     
-    public DateTimeOffset LastMsgTime { get; set; }
+    public DateTime LastMsgTime { get; set; }
 
     public string Avatar => $"https://q1.qlogo.cn/g?b=qq&nk={Uin}&s=640";
 }

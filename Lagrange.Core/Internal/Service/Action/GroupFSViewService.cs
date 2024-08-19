@@ -72,12 +72,12 @@ internal class GroupFSViewService : BaseService<GroupFSViewEvent>
                 IBotFSEntry entry = x.Type switch
                 {
                     1 => new BotFileEntry(f.FileId, f.FileName, f.ParentDirectory, f.FileSize,
-                        DateTimeOffset.UnixEpoch.AddSeconds(f.ExpireTime),
-                        DateTimeOffset.UnixEpoch.AddSeconds(f.ModifiedTime), f.UploaderUin,
-                        DateTimeOffset.UnixEpoch.AddSeconds(f.UploadedTime), f.DownloadedTimes),
+                        DateTime.UnixEpoch.AddSeconds(f.ExpireTime),
+                        DateTime.UnixEpoch.AddSeconds(f.ModifiedTime), f.UploaderUin,
+                        DateTime.UnixEpoch.AddSeconds(f.UploadedTime), f.DownloadedTimes),
                     2 => new BotFolderEntry(s.FolderId, s.ParentDirectoryId, s.FolderName,
-                        DateTimeOffset.UnixEpoch.AddSeconds(s.CreateTime),
-                        DateTimeOffset.UnixEpoch.AddSeconds(s.ModifiedTime), s.CreatorUin, s.TotalFileCount),
+                        DateTime.UnixEpoch.AddSeconds(s.CreateTime),
+                        DateTime.UnixEpoch.AddSeconds(s.ModifiedTime), s.CreatorUin, s.TotalFileCount),
                     _ => throw new Exception("Unrecognized FileSystem Entry Found")
                 };
 

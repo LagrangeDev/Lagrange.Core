@@ -53,7 +53,7 @@ internal class LinuxSigner : SignProvider
             Available = false;
             _timer.Change(0, 5000);
             
-            Console.WriteLine($"[{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(LinuxSigner)}] Failed to get signature, using dummy signature");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(LinuxSigner)}] Failed to get signature, using dummy signature");
             return new byte[20]; // Dummy signature
         }
     }

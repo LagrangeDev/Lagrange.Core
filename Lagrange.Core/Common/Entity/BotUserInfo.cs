@@ -3,7 +3,7 @@ namespace Lagrange.Core.Common.Entity;
 [Serializable]
 public class BotUserInfo
 {
-    internal BotUserInfo(uint uin, string nickname, DateTimeOffset birthday, string city, string country, string school, uint age, DateTimeOffset registerTime, uint gender, string? qid, uint level)
+    internal BotUserInfo(uint uin, string nickname, DateTime birthday, string city, string country, string school, uint age, DateTime registerTime, uint gender, string? qid, uint level)
     {
         Uin = uin;
         Avatar = $"https://q1.qlogo.cn/g?b=qq&nk={Uin}&s=640";
@@ -25,7 +25,7 @@ public class BotUserInfo
     
     public string Nickname { get; set; }
     
-    public DateTimeOffset Birthday { get; set; }
+    public DateTime Birthday { get; set; }
     
     public string City { get; set; }
     
@@ -35,7 +35,7 @@ public class BotUserInfo
     
     public uint Age { get; set; }
     
-    public DateTimeOffset RegisterTime { get; set; }
+    public DateTime RegisterTime { get; set; }
     
     public GenderInfo Gender { get; set; }
     
