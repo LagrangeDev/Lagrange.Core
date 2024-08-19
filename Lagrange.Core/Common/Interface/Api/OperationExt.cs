@@ -152,6 +152,15 @@ public static class OperationExt
         return bot.ContextCollection.Business.OperationLogic.GetRoamMessage(targetChain.FriendUin, timestamp, count);
     }
 
+    /// <summary>
+    /// Do group clock in (群打卡)
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="groupUin">target groupUin</param>
+    /// <returns></returns>
+    public static Task<BotGroupClockInResult> ClockInGroup(this BotContext bot, uint groupUin)
+        => bot.ContextCollection.Business.OperationLogic.ClockInGroup(groupUin);
+
     public static Task<BotUserInfo?> FetchUserInfo(this BotContext bot, uint uin, bool refreshCache = false)
         => bot.ContextCollection.Business.OperationLogic.FetchUserInfo(uin, refreshCache);
 
