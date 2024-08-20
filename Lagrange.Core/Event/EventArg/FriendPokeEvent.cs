@@ -9,14 +9,17 @@ public class FriendPokeEvent : EventBase
     public string Action { get; }
     
     public string Suffix { get; }
+
+    public string ActionImgUrl { get; }
     
-    public FriendPokeEvent(uint operatorUin, uint targetUin, string action, string suffix)
+    public FriendPokeEvent(uint operatorUin, uint targetUin, string action, string suffix, string actionImgUrl)
     { 
         OperatorUin = operatorUin;
         TargetUin = targetUin;
         Action = action;
         Suffix = suffix;
+        ActionImgUrl = actionImgUrl;
         
-        EventMessage = $"{nameof(FriendPokeEvent)}: OperatorUin: {OperatorUin} | TargetUin: {TargetUin} | Action: {Action} | Suffix: {Suffix}";
+        EventMessage = $"{nameof(FriendPokeEvent)}: OperatorUin: {OperatorUin} | TargetUin: {TargetUin} | Action: {Action} | Suffix: {Suffix} | ActionImgUrl: {ActionImgUrl}";
     }
 }
