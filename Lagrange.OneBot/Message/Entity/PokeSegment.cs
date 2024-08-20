@@ -21,7 +21,7 @@ public partial class PokeSegment : SegmentBase
 {
     public override void Build(MessageBuilder builder, SegmentBase segment)
     {
-        if (segment is PokeSegment pokeSegment) builder.Poke(uint.Parse(pokeSegment.Type), uint.Parse(pokeSegment.Strength ?? "0"));
+        if (segment is PokeSegment pokeSegment) builder.Poke(uint.Parse(pokeSegment.Type), pokeSegment.Strength == null ? 0 : uint.Parse(pokeSegment.Strength));
     }
 
     public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
