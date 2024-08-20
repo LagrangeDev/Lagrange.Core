@@ -125,6 +125,7 @@ internal static class MessagePacker
 
         if (message.Body?.RichText is { Elems: { } elements}) // 怎么Body还能是null的
         {
+            IMessageEntity? last = null;
             foreach (var element in elements)
             {
                 foreach (var (entityType, expectElems) in EntityToElem)
@@ -134,6 +135,9 @@ internal static class MessagePacker
                         if (expectElem.GetValueByExpr(element) is not null && 
                             Factory[entityType].UnpackElement(element) is { } entity)
                         {
+                            // Filter duplicate At message
+                            if(entity is MentionEntity && last is ForwardEntity) continue;
+
                             chain.Add(entity);
                             break;
                         }
