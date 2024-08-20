@@ -5,6 +5,7 @@ using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Core.Network.Service;
 using Lagrange.OneBot.Core.Notify;
 using Lagrange.OneBot.Core.Operation;
+using Lagrange.OneBot.Database;
 using Lagrange.OneBot.Message;
 using Lagrange.OneBot.Utility;
 using LiteDB;
@@ -116,6 +117,8 @@ public sealed class LagrangeAppBuilder
             {
                 CheckpointSize = 50
             };
+            db.GetCollection<MessageRecord>().EnsureIndex(record => record.MessageId);
+            db.GetCollection<MessageRecord>().EnsureIndex(record => record.Sequence);
             return db;
         });
         Services.AddSingleton<SignProvider, OneBotSigner>();
