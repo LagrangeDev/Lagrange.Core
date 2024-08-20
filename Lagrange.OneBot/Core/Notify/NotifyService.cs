@@ -158,7 +158,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             {
                 SenderId = @event.OperatorUin,
                 UserId = @event.OperatorUin,
-                TargetId = bot.BotUin,
+                TargetId = @event.TargetUin,
                 Action = @event.Action,
                 Suffix = @event.Suffix
             });
