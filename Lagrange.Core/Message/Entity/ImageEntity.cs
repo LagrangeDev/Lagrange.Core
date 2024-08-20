@@ -162,7 +162,7 @@ public class ImageEntity : IMessageEntity
     
     private static int GetImageTypeFromFaceOldData(CustomFace face)
     {
-        if (face.OldData.Length < 5)
+        if (face.OldData == null || face.OldData.Length < 5)
         {
             return 0;
         }

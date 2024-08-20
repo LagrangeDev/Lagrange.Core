@@ -14,10 +14,10 @@ public sealed class MessageBuilder
     public static MessageBuilder Friend(uint friendUin) => new(new MessageChain(friendUin, "", "")); // automatically set selfUid and friendUid by MessagingLogic
 
     public static MessageBuilder Group(uint groupUin) => new(new MessageChain(groupUin));
-    
-    public static MessageBuilder FakeGroup(uint groupUin, uint memberUin) => 
+
+    public static MessageBuilder FakeGroup(uint groupUin, uint memberUin) =>
             new(new MessageChain(groupUin, memberUin, (uint)Random.Shared.Next(1000000, 9999999)));
-    
+
     /// <summary>
     /// Add a text entity to the message chain
     /// </summary>
@@ -26,10 +26,10 @@ public sealed class MessageBuilder
     {
         var textEntity = new TextEntity(text);
         _chain.Add(textEntity);
-        
+
         return this;
     }
-    
+
     /// <summary>
     /// Add a mention entity to the message chain (@someone)
     /// </summary>
@@ -39,10 +39,10 @@ public sealed class MessageBuilder
     {
         var mentionEntity = new MentionEntity(display, target);
         _chain.Add(mentionEntity);
-        
+
         return this;
     }
-    
+
     /// <summary>
     /// Add a face entity to the message chain
     /// </summary>
@@ -52,7 +52,7 @@ public sealed class MessageBuilder
     {
         var faceEntity = new FaceEntity(id, isLarge);
         _chain.Add(faceEntity);
-        
+
         return this;
     }
 
@@ -64,10 +64,10 @@ public sealed class MessageBuilder
     {
         var forwardEntity = new ForwardEntity(target);
         _chain.Add(forwardEntity);
-        
+
         return this;
     }
-    
+
     /// <summary>
     /// Add a multimsg entity to the message chain (multi message)
     /// </summary>
@@ -77,18 +77,18 @@ public sealed class MessageBuilder
     {
         var multiMsgEntity = new MultiMsgEntity(groupUin, msg.Select(x => x.Build()).ToList());
         _chain.Add(multiMsgEntity);
-        
+
         return this;
     }
-    
+
     public MessageBuilder MultiMsg(uint? groupUin = null, params MessageChain[] chains)
     {
         var multiMsgEntity = new MultiMsgEntity(groupUin, chains.ToList());
         _chain.Add(multiMsgEntity);
-        
+
         return this;
     }
-    
+
     /// <summary>
     /// Add a xml entity to the message chain (card message)
     /// </summary>
@@ -97,10 +97,10 @@ public sealed class MessageBuilder
     {
         var xmlEntity = new XmlEntity(xml);
         _chain.Add(xmlEntity);
-        
+
         return this;
     }
-    
+
     /// <summary>
     /// Add a image entity to the message chain
     /// </summary>
@@ -110,10 +110,10 @@ public sealed class MessageBuilder
     {
         var imageEntity = new ImageEntity(filePath);
         _chain.Add(imageEntity);
-        
+
         return this;
     }
-    
+
     /// <summary>
     /// Add a image entity to the message chain
     /// </summary>
@@ -122,10 +122,10 @@ public sealed class MessageBuilder
     {
         var imageEntity = new ImageEntity(file);
         _chain.Add(imageEntity);
-        
+
         return this;
     }
-    
+
     public MessageBuilder Video(byte[] file, int videoLength = 0)
     {
         var videoEntity = new VideoEntity(file, videoLength);
@@ -174,12 +174,25 @@ public sealed class MessageBuilder
     /// <param name="type">Poke ID, default value is the preset of NTQQ</param>
     public MessageBuilder Poke(uint type = 1)
     {
-        var pokeEntity = new PokeEntity(type);
+        var pokeEntity = new PokeEntity(type, 0);
         _chain.Add(pokeEntity);
 
         return this;
     }
-    
+
+    /// <summary>
+    /// Add a dedicated poke entity to message chain
+    /// </summary>
+    /// <param name="type">Poke ID, default value is the preset of NTQQ</param>
+    /// <param name="strength">Poke strength</param>
+    public MessageBuilder Poke(uint type = 1, uint strength = 0)
+    {
+        var pokeEntity = new PokeEntity(type, strength);
+        _chain.Add(pokeEntity);
+
+        return this;
+    }
+
     /// <summary>
     /// Add a dedicated LightApp entity to message chain
     /// </summary>
@@ -191,68 +204,68 @@ public sealed class MessageBuilder
 
         return this;
     }
-    
+
     public MessageBuilder LongMsg(string resId)
     {
         var longMsgEntity = new LongMsgEntity(resId);
         _chain.Add(longMsgEntity);
-        
+
         return this;
     }
-    
+
     public MessageBuilder LongMsg(MessageChain chain)
     {
         var longMsgEntity = new LongMsgEntity(chain);
         _chain.Add(longMsgEntity);
-        
+
         return this;
     }
-    
+
     public MessageBuilder Markdown(string json)
     {
         var markdownEntity = new MarkdownEntity(json);
         _chain.Add(markdownEntity);
-        
+
         return this;
     }
-    
+
     public MessageBuilder Markdown(MarkdownData data)
     {
         var markdownEntity = new MarkdownEntity(data);
         _chain.Add(markdownEntity);
-        
+
         return this;
     }
-    
+
     public MessageBuilder Keyboard(string json)
     {
         var keyboardEntity = new KeyboardEntity(json);
         _chain.Add(keyboardEntity);
-        
+
         return this;
     }
-    
+
     public MessageBuilder Keyboard(KeyboardData data)
     {
         var keyboardEntity = new KeyboardEntity(data);
         _chain.Add(keyboardEntity);
-        
+
         return this;
     }
-    
+
     public MessageBuilder MarketFace(string faceId, int tabId, string key, string summary)
     {
         var marketFaceEntity = new MarketfaceEntity(faceId, tabId, key, summary);
         _chain.Add(marketFaceEntity);
-        
+
         return this;
     }
-    
+
     public MessageBuilder Add(IMessageEntity entity)
     {
         _chain.Add(entity);
         return this;
     }
-    
+
     public MessageChain Build() => _chain;
 }

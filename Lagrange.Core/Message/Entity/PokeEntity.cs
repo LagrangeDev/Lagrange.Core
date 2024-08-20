@@ -9,24 +9,27 @@ namespace Lagrange.Core.Message.Entity;
 public class PokeEntity : IMessageEntity
 {
     public uint Type { get; }
-    
+
+    public uint Strength { get; }
+
     internal PokeEntity() { }
 
-    public PokeEntity(uint type)
+    public PokeEntity(uint type, uint strength)
     {
         Type = type;
+        Strength = strength;
     }
-    
+
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
         var stream = new MemoryStream();
         Serializer.Serialize(stream, new PokeExtra
         {
             Type = Type,
-            Field7 = 0,
+            Strength = Strength,
             Field8 = 0
         });
-        
+
         return new Elem[]
         {
             new()
@@ -43,14 +46,14 @@ public class PokeEntity : IMessageEntity
 
     IMessageEntity? IMessageEntity.UnpackElement(Elem elem)
     {
-        if (elem is { CommonElem: { ServiceType:2, BusinessType: 1 } common })
+        if (elem is { CommonElem: { ServiceType: 2, BusinessType: 1 } common })
         {
             var poke = Serializer.Deserialize<PokeExtra>(common.PbElem.AsSpan());
-            return new PokeEntity(poke.Type);
+            return new PokeEntity(poke.Type, poke.Strength);
         }
 
         return null;
     }
 
-    public string ToPreviewString() =>  $"[{nameof(PokeEntity)}: {Type}]";
+    public string ToPreviewString() => $"[{nameof(PokeEntity)} | Type: {Type} | Strength: {Strength}]";
 }
