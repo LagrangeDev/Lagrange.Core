@@ -6,19 +6,19 @@ namespace Lagrange.Core.Utility;
 internal sealed class ServiceInjector
 {
     private readonly Dictionary<Type, object> _services = new();
-    
+
     public bool AddService<T>(T service)
     {
         if (service == null) return false;
-        
+
         _services.Add(typeof(T), service);
         return true;
     }
-    
+
     public bool RemoveService<T>() => _services.Remove(typeof(T));
-    
+
     public T GetService<T>() => (T)_services[typeof(T)];
-    
+
     public bool TryGetService<T>(out T? service)
     {
         if (_services.TryGetValue(typeof(T), out object? obj))
@@ -26,13 +26,13 @@ internal sealed class ServiceInjector
             service = (T)obj;
             return true;
         }
-        
+
         service = default;
         return false;
     }
-    
+
     public bool ContainsService<T>() => _services.ContainsKey(typeof(T));
-    
+
     public void Clear() => _services.Clear();
 
     public object this[Type type]
@@ -51,7 +51,7 @@ internal sealed class ServiceInjector
     {
         var constructors = typeof(TInject).GetConstructors();
         if (constructors.Length != 1) throw new InvalidOperationException("The class must have only one constructor");
-        
+
         var constructor = constructors[0];
         var parametersInfo = constructor.GetParameters();
         var constructed = new object?[parametersInfo.Length];
@@ -69,15 +69,15 @@ internal sealed class ServiceInjector
                 else constructed[i] = parameters[i];
             }
         }
-        
+
         return (TInject)constructor.Invoke(constructed);
     }
-    
+
     public object Inject(Type type, object?[]? parameters = null)
     {
         var constructors = type.GetConstructors();
         if (constructors.Length != 1) throw new InvalidOperationException("The class must have only one constructor");
-        
+
         var constructor = constructors[0];
         var parametersInfo = constructor.GetParameters();
         var constructed = new object?[parametersInfo.Length];
@@ -95,7 +95,7 @@ internal sealed class ServiceInjector
                 else constructed[i] = parameters[i];
             }
         }
-        
+
         return constructor.Invoke(constructed);
     }
 }

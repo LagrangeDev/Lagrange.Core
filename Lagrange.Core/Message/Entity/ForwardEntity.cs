@@ -93,6 +93,7 @@ public class ForwardEntity : IMessageEntity
             var reserve = Serializer.Deserialize<SrcMsg.Preserve>(srcMsg.PbReserve.AsSpan());
             return new ForwardEntity
             {
+                Time = DateTimeOffset.FromUnixTimeSeconds(srcMsg.Time ?? 0).LocalDateTime,
                 Sequence = srcMsg.OrigSeqs?[0] ?? 0,
                 TargetUin = (uint)srcMsg.SenderUin,
                 MessageId = reserve.MessageId
@@ -104,7 +105,7 @@ public class ForwardEntity : IMessageEntity
 
     public void SetSelfUid(string selfUid) => SelfUid = selfUid;
 
-    public string ToPreviewString() => $"[Forward]: Sequence: {Sequence}";
+    public string ToPreviewString() => $"[Forward] Time: {Time} Sequence: {Sequence} ";
 
     public string ToPreviewText() => string.Empty;
 }
