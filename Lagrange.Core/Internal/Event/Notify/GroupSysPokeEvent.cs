@@ -12,15 +12,18 @@ internal class GroupSysPokeEvent : ProtocolEvent
     
     public string Suffix { get; }
     
-    private GroupSysPokeEvent(uint groupUin, uint operatorUin, uint targetUin, string action, string suffix) : base(0)
+    public string ActionImgUrl { get; }
+    
+    private GroupSysPokeEvent(uint groupUin, uint operatorUin, uint targetUin, string action, string suffix, string actionImgUrl) : base(0)
     {
         GroupUin = groupUin;
         OperatorUin = operatorUin;
         TargetUin = targetUin;
         Action = action;
         Suffix = suffix;
+        ActionImgUrl = actionImgUrl;
     }
     
-    public static GroupSysPokeEvent Result(uint groupUin, uint operatorUin, uint targetUin, string action, string suffix) 
-        => new(groupUin, operatorUin, targetUin, action, suffix);
+    public static GroupSysPokeEvent Result(uint groupUin, uint operatorUin, uint targetUin, string action, string suffix, string actionImgUrl) 
+        => new(groupUin, operatorUin, targetUin, action, suffix, actionImgUrl);
 }
