@@ -1,4 +1,4 @@
-﻿namespace Lagrange.Core.Event.EventArg;
+namespace Lagrange.Core.Event.EventArg;
 
 public class GroupPokeEvent : EventBase
 {
@@ -12,14 +12,17 @@ public class GroupPokeEvent : EventBase
     
     public string Suffix { get; }
     
-    public GroupPokeEvent(uint groupUin, uint operatorUin, uint targetUin, string action, string suffix)
+    public string ActionImgUrl { get; }
+    
+    public GroupPokeEvent(uint groupUin, uint operatorUin, uint targetUin, string action, string suffix, string actionImgUrl)
     {
         GroupUin = groupUin;
         OperatorUin = operatorUin;
         TargetUin = targetUin;
         Action = action;
         Suffix = suffix;
+        ActionImgUrl = actionImgUrl;
         
-        EventMessage = $"{nameof(GroupPokeEvent)}:  GroupUin: {GroupUin} | OperatorUin: {OperatorUin} | TargetUin: {TargetUin} | Action: {Action} | Suffix: {Suffix}";
+        EventMessage = $"{nameof(GroupPokeEvent)}:  GroupUin: {GroupUin} | OperatorUin: {OperatorUin} | TargetUin: {TargetUin} | Action: {Action} | Suffix: {Suffix} | ActionImgUrl: {ActionImgUrl}";
     }
 }
