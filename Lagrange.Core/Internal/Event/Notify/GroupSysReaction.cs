@@ -12,15 +12,18 @@ internal class GroupSysReactionEvent : ProtocolEvent
 
     public string Code { get; }
 
-    private GroupSysReactionEvent(uint targetGroupUin, uint targetSequence, string operatorUid, bool isAdd, string code) : base(0)
+    public uint Count { get; }
+
+    private GroupSysReactionEvent(uint targetGroupUin, uint targetSequence, string operatorUid, bool isAdd, string code,uint count) : base(0)
     {
         TargetGroupUin = targetGroupUin;
         TargetSequence = targetSequence;
         OperatorUid = operatorUid;
         IsAdd = isAdd;
         Code = code;
+        Count = count;
     }
 
-    public static GroupSysReactionEvent Result(uint groupUin, uint targetSequence, string operatorUid, bool isAdd, string code)
-        => new(groupUin, targetSequence, operatorUid, isAdd, code);
+    public static GroupSysReactionEvent Result(uint groupUin, uint targetSequence, string operatorUid, bool isAdd, string code, uint count)
+        => new(groupUin, targetSequence, operatorUid, isAdd, code, count);
 }

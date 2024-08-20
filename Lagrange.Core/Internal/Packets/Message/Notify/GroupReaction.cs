@@ -44,6 +44,8 @@ internal class GroupReactionData3
 {
     [ProtoMember(1)] public string Code { get; set; }
 
+    [ProtoMember(3)] public uint Count { get; set; }
+
     [ProtoMember(4)] public string OperatorUid { get; set; }
 
     [ProtoMember(5)] public uint Type { get; set; } // 1 Add 2 Remove

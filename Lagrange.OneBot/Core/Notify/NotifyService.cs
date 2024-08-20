@@ -212,7 +212,8 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 record?.MessageHash ?? 0,
                 @event.OperatorUin,
                 @event.IsAdd ? "add" : "remove",
-                @event.Code
+                @event.Code,
+                @event.Count
             ));
         };
     }
