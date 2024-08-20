@@ -196,9 +196,17 @@ internal class PushMessageService : BaseService<PushMessageEvent>
 
                 var templates = greyTip.GeneralGrayTip.MsgTemplParam.ToDictionary(x => x.Name, x => x.Value);
 
+                if (!templates.TryGetValue("action_str", out var actionStr) || actionStr == null)
+                {
+                    if (!templates.TryGetValue("alt_str1", out actionStr) || actionStr == null)
+                    {
+                        actionStr = string.Empty;
+                    }
+                }
+                
                 if (greyTip.GeneralGrayTip.BusiType == 12)  // poke
                 {
-                    var groupPokeEvent = GroupSysPokeEvent.Result(groupUin, uint.Parse(templates["uin_str1"]), uint.Parse(templates["uin_str2"]), templates["action_str"], templates["suffix_str"]);
+                    var groupPokeEvent = GroupSysPokeEvent.Result(groupUin, uint.Parse(templates["uin_str1"]), uint.Parse(templates["uin_str2"]), actionStr, templates["suffix_str"], templates["action_img_url"]);
                     extraEvents.Add(groupPokeEvent);
                 }
                 break;
@@ -247,10 +255,18 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 var greyTip = Serializer.Deserialize<GeneralGrayTipInfo>(content.AsSpan());
                 var templates = greyTip.MsgTemplParam.ToDictionary(x => x.Name, x => x.Value);
 
+                if (!templates.TryGetValue("action_str", out var actionStr) || actionStr == null)
+                {
+                    if (!templates.TryGetValue("alt_str1", out actionStr) || actionStr == null)
+                    {
+                        actionStr = string.Empty;
+                    }
+                }
+
                 if (greyTip.BusiType == 12)  // poke
                 {
-                    var groupPokeEvent = FriendSysPokeEvent.Result(uint.Parse(templates["uin_str1"]), uint.Parse(templates["uin_str2"]), templates["action_str"], templates["suffix_str"]);
-                    extraEvents.Add(groupPokeEvent);
+                    var friendPokeEvent = FriendSysPokeEvent.Result(uint.Parse(templates["uin_str1"]), uint.Parse(templates["uin_str2"]), actionStr, templates["suffix_str"], templates["action_img_url"]);
+                    extraEvents.Add(friendPokeEvent);
                 }
                 break;
             }
