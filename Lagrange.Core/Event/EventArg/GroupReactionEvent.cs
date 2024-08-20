@@ -12,14 +12,17 @@ public class GroupReactionEvent : EventBase
 
     public string Code { get; }
 
-    public GroupReactionEvent(uint targetGroupUin, uint targetSequence, uint operatorUin, bool isAdd, string code)
+    public uint Count { get; }
+
+    public GroupReactionEvent(uint targetGroupUin, uint targetSequence, uint operatorUin, bool isAdd, string code, uint count)
     {
         TargetGroupUin = targetGroupUin;
         TargetSequence = targetSequence;
         OperatorUin = operatorUin;
         IsAdd = isAdd;
         Code = code;
+        Count = count;
 
-        EventMessage = $"{nameof(GroupReactionEvent)}:  TargetGroupUin: {TargetGroupUin} | TargetSequence: {TargetSequence} | OperatorUin: {OperatorUin} | IsAdd: {IsAdd} | Code: {Code}";
+        EventMessage = $"{nameof(GroupReactionEvent)}:  TargetGroupUin: {TargetGroupUin} | TargetSequence: {TargetSequence} | OperatorUin: {OperatorUin} | IsAdd: {IsAdd} | Code: {Code} | Count: {Count}";
     }
 }

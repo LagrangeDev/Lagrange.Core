@@ -126,14 +126,14 @@ internal class MessagingLogic : LogicBase
             }
             case GroupSysPokeEvent poke:
             {
-                var pokeArgs = new GroupPokeEvent(poke.GroupUin, poke.OperatorUin, poke.TargetUin, poke.Action, poke.Suffix);
+                var pokeArgs = new GroupPokeEvent(poke.GroupUin, poke.OperatorUin, poke.TargetUin, poke.Action, poke.Suffix, poke.ActionImgUrl);
                 Collection.Invoker.PostEvent(pokeArgs);
                 break;
             }
             case GroupSysReactionEvent reaction:
             {
                 uint operatorUin = await Collection.Business.CachingLogic.ResolveUin(reaction.TargetGroupUin, reaction.OperatorUid) ?? 0;
-                var pokeArgs = new GroupReactionEvent(reaction.TargetGroupUin, reaction.TargetSequence, operatorUin, reaction.IsAdd, reaction.Code);
+                var pokeArgs = new GroupReactionEvent(reaction.TargetGroupUin, reaction.TargetSequence, operatorUin, reaction.IsAdd, reaction.Code, reaction.Count);
                 Collection.Invoker.PostEvent(pokeArgs);
                 break;
             }
@@ -200,7 +200,7 @@ internal class MessagingLogic : LogicBase
             }
             case FriendSysPokeEvent poke:
             {
-                var pokeArgs = new FriendPokeEvent(poke.OperatorUin, poke.TargetUin, poke.Action, poke.Suffix);
+                var pokeArgs = new FriendPokeEvent(poke.OperatorUin, poke.TargetUin, poke.Action, poke.Suffix, poke.ActionImgUrl);
                 Collection.Invoker.PostEvent(pokeArgs);
                 break;
             }
