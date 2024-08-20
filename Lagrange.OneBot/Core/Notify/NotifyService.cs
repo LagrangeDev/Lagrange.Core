@@ -160,7 +160,8 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 UserId = @event.OperatorUin,
                 TargetId = @event.TargetUin,
                 Action = @event.Action,
-                Suffix = @event.Suffix
+                Suffix = @event.Suffix,
+                ActionImgUrl = @event.ActionImgUrl
             });
         };
 
@@ -173,7 +174,8 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 UserId = @event.OperatorUin,
                 TargetId = @event.TargetUin,
                 Action = @event.Action,
-                Suffix = @event.Suffix
+                Suffix = @event.Suffix,
+                ActionImgUrl = @event.ActionImgUrl
             });
         };
 
