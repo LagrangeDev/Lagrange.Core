@@ -121,7 +121,8 @@ public sealed class LagrangeAppBuilder
                 CheckpointSize = 50
             };
             logger.LogInformation("Indexing in the database...");
-            logger.LogInformation("The first indexing of the old database will load the entire database into memory. Please restart Lagrange.Core after it is completed");
+            logger.LogInformation("The first indexing of the old database will load the entire database into memory.");
+            logger.LogInformation("If this is the first time creating an index for the old database, please restart the application");
             var collection = db.GetCollection<MessageRecord>();
             collection.EnsureIndex(record => record.MessageId);
             collection.EnsureIndex(record => record.Sequence);

@@ -201,6 +201,15 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 Query.EQ("Sequence", new BsonValue(@event.TargetSequence))
             ));
 
+            if (record == null)
+            {
+                logger.LogInformation(
+                    "Unable to find the corresponding message using GroupUin: {} and Sequence: {}",
+                    @event.TargetGroupUin,
+                    @event.TargetSequence
+                );
+            }
+
             await service.SendJsonAsync(new OneBotGroupReaction(
                 bot.BotUin,
                 @event.TargetGroupUin,
