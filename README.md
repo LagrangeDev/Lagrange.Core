@@ -298,7 +298,7 @@ Thanks for 外国热心网友 for Provision of Azure Servlet
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
-  "SignServerUrl": "https://sign.lagrangecore.org/api/sign/25765",
+  "SignServerUrl": "",
   "Account": {
     "Uin": 0,
     "Password": "",
