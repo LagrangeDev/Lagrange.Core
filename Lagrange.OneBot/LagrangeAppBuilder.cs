@@ -12,6 +12,7 @@ using LiteDB;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Lagrange.OneBot;
@@ -109,16 +110,21 @@ public sealed class LagrangeAppBuilder
             return services.GetRequiredService<ILagrangeWebServiceFactory>().Create() ?? throw new Exception("Invalid conf detected");
         });
 
-        Services.AddSingleton(x =>
+        Services.AddSingleton(provider =>
         {
+            var logger = provider.GetRequiredService<ILogger<LagrangeAppBuilder>>();
+
             string path = Configuration["ConfigPath:Database"] ?? $"lagrange-{Configuration["Account:Uin"]}.db";
 
             var db = new LiteDatabase(path)
             {
                 CheckpointSize = 50
             };
-            db.GetCollection<MessageRecord>().EnsureIndex(record => record.MessageId);
-            db.GetCollection<MessageRecord>().EnsureIndex(record => record.Sequence);
+            logger.LogInformation("Indexing in the database...");
+            logger.LogInformation("The first indexing of the old database will load the entire database into memory. Please restart Lagrange.Core after it is completed");
+            var collection = db.GetCollection<MessageRecord>();
+            collection.EnsureIndex(record => record.MessageId);
+            collection.EnsureIndex(record => record.Sequence);
             return db;
         });
         Services.AddSingleton<SignProvider, OneBotSigner>();
