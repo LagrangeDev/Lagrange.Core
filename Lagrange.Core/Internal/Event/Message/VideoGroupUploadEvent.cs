@@ -6,37 +6,29 @@ using Lagrange.Core.Message.Entity;
 
 namespace Lagrange.Core.Internal.Event.Message;
 
-internal class VideoGroupUploadEvent : ProtocolEvent
+internal class VideoGroupUploadEvent : NTV2RichMediaUploadEvent
 {
     public VideoEntity Entity { get; }
     
     public uint GroupUin { get; set; }
     
-    public string? UKey { get; }
-    
-    public MsgInfo MsgInfo { get; }
-    
-    public List<IPv4> Network { get; }
-    
     public VideoFile Compat { get; }
     
-    private VideoGroupUploadEvent(VideoEntity entity, uint groupUin) : base(true)
+    private VideoGroupUploadEvent(VideoEntity entity, uint groupUin)
     {
         Entity = entity;
         GroupUin = groupUin;
     }
 
-    private VideoGroupUploadEvent(int resultCode, string? uKey, MsgInfo msgInfo, List<IPv4> network, VideoFile compat) : base(resultCode)
+    private VideoGroupUploadEvent(int resultCode, MsgInfo msgInfo, string? uKey, List<IPv4> network, List<SubFileInfo> subFiles, VideoFile compat) 
+    : base(resultCode, msgInfo, uKey, network, subFiles)
     {
-        UKey = uKey;
-        MsgInfo = msgInfo;
-        Network = network;
         Compat = compat;
     }
     
     public static VideoGroupUploadEvent Create(VideoEntity entity, uint groupUin)
         => new(entity, groupUin);
 
-    public static VideoGroupUploadEvent Result(int resultCode, string? uKey, MsgInfo msgInfo, List<IPv4> network, VideoFile compat)
-        => new(resultCode, uKey, msgInfo, network, compat);
+    public static VideoGroupUploadEvent Result(int resultCode, MsgInfo msgInfo, string? uKey, List<IPv4> network, List<SubFileInfo> subFiles, VideoFile compat)
+        => new(resultCode, msgInfo, uKey, network, subFiles, compat);
 }
