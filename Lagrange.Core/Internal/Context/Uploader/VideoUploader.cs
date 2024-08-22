@@ -19,6 +19,8 @@ internal class VideoUploader : IHighwayUploader
 
             if (Common.GenerateExt(metaResult) is { } ext)
             {
+                ext.Hash.FileSha1 = Common.CalculateStreamBytes(stream.Value);
+
                 var hash = metaResult.MsgInfo.MsgInfoBody[0].Index.Info.FileHash.UnHex();
                 bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1001, stream.Value, await Common.GetTicket(context), hash, ext.Serialize().ToArray());
                 if (!hwSuccess)
@@ -57,6 +59,8 @@ internal class VideoUploader : IHighwayUploader
             
             if (Common.GenerateExt(metaResult) is { } ext)
             {
+                ext.Hash.FileSha1 = Common.CalculateStreamBytes(stream.Value);
+                
                 var hash = metaResult.MsgInfo.MsgInfoBody[0].Index.Info.FileHash.UnHex();
                 bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1005, stream.Value, await Common.GetTicket(context), hash, ext.Serialize().ToArray());
                 if (!hwSuccess)
