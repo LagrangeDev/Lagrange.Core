@@ -125,7 +125,7 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
         var upload = packet.Body.Upload;
         var compat = Serializer.Deserialize<NotOnlineImage>(upload.CompatQMsg.AsSpan());
         
-        output = ImageUploadEvent.Result((int)packet.ErrorCode, upload.UKey, upload.MsgInfo, upload.IPv4s, compat);
+        output = ImageUploadEvent.Result((int)packet.ErrorCode, upload.MsgInfo, upload.UKey, upload.IPv4s, upload.SubFileInfos, compat);
         extraEvents = null;
         return true;
     }

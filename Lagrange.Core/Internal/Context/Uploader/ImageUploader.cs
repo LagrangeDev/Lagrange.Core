@@ -12,29 +12,19 @@ internal class ImageUploader : IHighwayUploader
 {
     public async Task UploadPrivate(ContextCollection context, MessageChain chain, IMessageEntity entity)
     {
-        if (entity is ImageEntity { ImageStream: not null } image)
+        if (entity is ImageEntity { ImageStream: { } stream } image)
         {
             var uploadEvent = ImageUploadEvent.Create(image, chain.FriendInfo?.Uid ?? "");
             var uploadResult = await context.Business.SendEvent(uploadEvent);
             var metaResult = (ImageUploadEvent)uploadResult[0];
 
-            if (metaResult.UKey != null)
+            if (Common.GenerateExt(metaResult) is { } ext)
             {
-                var index = metaResult.MsgInfo.MsgInfoBody[0].Index;
-                var extend = new NTV2RichMediaHighwayExt
-                {
-                    FileUuid = index.FileUuid,
-                    UKey = metaResult.UKey,
-                    Network = Common.Convert(metaResult.Network),
-                    MsgInfoBody = metaResult.MsgInfo.MsgInfoBody,
-                    BlockSize = 1024 * 1024,
-                    Hash = new NTHighwayHash { FileSha1 = new List<byte[]> { index.Info.FileSha1.UnHex() } }
-                };
-
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1003, image.ImageStream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extend.Serialize().ToArray());
+                var hash = metaResult.MsgInfo.MsgInfoBody[0].Index.Info.FileHash.UnHex();
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1003, stream.Value, await Common.GetTicket(context), hash, ext.Serialize().ToArray());
                 if (!hwSuccess)
                 {
-                    await image.ImageStream.Value.DisposeAsync();
+                    await stream.Value.DisposeAsync();
                     throw new Exception();
                 }
             }
@@ -47,29 +37,19 @@ internal class ImageUploader : IHighwayUploader
 
     public async Task UploadGroup(ContextCollection context, MessageChain chain, IMessageEntity entity)
     {
-        if (entity is ImageEntity { ImageStream: not null } image)
+        if (entity is ImageEntity { ImageStream: { } stream } image)
         {
             var uploadEvent = ImageGroupUploadEvent.Create(image, chain.GroupUin ?? 0);
             var uploadResult = await context.Business.SendEvent(uploadEvent);
             var metaResult = (ImageGroupUploadEvent)uploadResult[0];
 
-            if (metaResult.UKey != null)
+            if (Common.GenerateExt(metaResult) is { } ext)
             {
-                var index = metaResult.MsgInfo.MsgInfoBody[0].Index;
-                var extend = new NTV2RichMediaHighwayExt
-                {
-                    FileUuid = index.FileUuid,
-                    UKey = metaResult.UKey,
-                    Network = Common.Convert(metaResult.Network),
-                    MsgInfoBody = metaResult.MsgInfo.MsgInfoBody,
-                    BlockSize = 1024 * 1024,
-                    Hash = new NTHighwayHash { FileSha1 = new List<byte[]> { index.Info.FileSha1.UnHex() } }
-                };
-
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1004, image.ImageStream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extend.Serialize().ToArray());
+                var hash = metaResult.MsgInfo.MsgInfoBody[0].Index.Info.FileHash.UnHex();
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1004, stream.Value, await Common.GetTicket(context), hash, ext.Serialize().ToArray());
                 if (!hwSuccess)
                 {
-                    await image.ImageStream.Value.DisposeAsync();
+                    await stream.Value.DisposeAsync();
                     throw new Exception();
                 }
             }

@@ -125,7 +125,7 @@ internal class VideoUploadService : BaseService<VideoUploadEvent>
         var upload = packet.Body.Upload;
         var compat = Serializer.Deserialize<VideoFile>(packet.Body.Upload.CompatQMsg.AsSpan());
         
-        output = VideoUploadEvent.Result((int)packet.ErrorCode, upload.UKey, upload.MsgInfo, upload.IPv4s, compat);
+        output = VideoUploadEvent.Result((int)packet.ErrorCode, upload.MsgInfo, upload.UKey, upload.IPv4s, upload.SubFileInfos, compat);
         extraEvents = null;
         return true;
     }

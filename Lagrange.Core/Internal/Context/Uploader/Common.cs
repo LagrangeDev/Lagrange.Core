@@ -1,12 +1,33 @@
-using System.Security.Cryptography;
+using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Packets.Service.Highway;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
+using Lagrange.Core.Utility.Crypto.Provider.Sha;
+using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Internal.Context.Uploader;
 
 internal static class Common
 {
+    public static NTV2RichMediaHighwayExt? GenerateExt(NTV2RichMediaUploadEvent @event)
+    {
+        if (@event.UKey == null) return null;
+        
+        var index = @event.MsgInfo.MsgInfoBody[0].Index;
+        return new NTV2RichMediaHighwayExt
+        {
+            FileUuid = index.FileUuid,
+            UKey = @event.UKey,
+            Network = Convert(@event.Network),
+            MsgInfoBody = @event.MsgInfo.MsgInfoBody,
+            BlockSize = 1024 * 1024,
+            Hash = new NTHighwayHash
+            {
+                FileSha1 = new List<byte[]> { index.Info.FileSha1.UnHex() }
+            }
+        };
+    }
+    
     public static async Task<byte[]> GetTicket(ContextCollection context)
     {
         var hwUrlEvent = HighwayUrlEvent.Create();
@@ -16,22 +37,36 @@ internal static class Common
 
     public static List<byte[]> CalculateStreamBytes(Stream inputStream)
     {
-        int currentOffset = 0;
         const int blockSize = 1024 * 1024;
+        
+        inputStream.Seek(0, SeekOrigin.Begin);
         var byteArrayList = new List<byte[]>();
-
+        var sha1 = new Sha1Stream();
+        
+        var buffer = new byte[Sha1Stream.Sha1BlockSize];
+        var digest = new byte[Sha1Stream.Sha1DigestSize];
+        int lastRead;
+        
         while (true)
         {
-            var buffer = new byte[currentOffset + blockSize];
-            inputStream.Seek(0, SeekOrigin.Begin);
-            int length = inputStream.Read(buffer);
-            Array.Resize(ref buffer, length);
-            byteArrayList.Add(SHA1.HashData(buffer));
+            int read = inputStream.Read(buffer);
+            if (read < Sha1Stream.Sha1BlockSize)
+            {
+                lastRead = read;
+                break;
+            }
             
-            if (length == inputStream.Length) break;
-
-            currentOffset += length;
+            sha1.Update(buffer, Sha1Stream.Sha1BlockSize);
+            if (inputStream.Position % blockSize == 0)
+            {
+                sha1.Hash(digest, false);
+                byteArrayList.Add((byte[])digest.Clone());
+            }
         }
+        
+        sha1.Update(buffer, lastRead);
+        sha1.Final(digest);
+        byteArrayList.Add((byte[])digest.Clone());
 
         return byteArrayList;
     }
