@@ -110,8 +110,23 @@ public class CreateGroupFileFolderOperation : IOperation
     {
         if (payload.Deserialize<OneBotCreateFolder>(SerializerOptions.DefaultOptions) is { } folder)
         {
-            await context.GroupFSCreateFolder(folder.GroupId, folder.Name);
-            return new OneBotResult(null, 0, "ok");
+            var res = await context.GroupFSCreateFolder(folder.GroupId, folder.Name);
+            return new OneBotResult(new JsonObject { { "msg", res.Value } }, res.Key, res.Key == 0 ? "ok" : "failed");
+        }
+
+        throw new Exception();
+    }
+}
+
+[Operation("delete_group_file_folder")]
+public class DeleteGroupFileFolderOperation : IOperation
+{
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
+    {
+        if (payload.Deserialize<OneBotDeleteFolder>(SerializerOptions.DefaultOptions) is { } folder)
+        {
+            var res = await context.GroupFSDeleteFolder(folder.GroupId, folder.FolderId);
+            return new OneBotResult(new JsonObject { { "msg", res.Value } }, res.Key, res.Key == 0 ? "ok" : "failed");
         }
 
         throw new Exception();

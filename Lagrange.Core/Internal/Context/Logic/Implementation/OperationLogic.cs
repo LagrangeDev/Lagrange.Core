@@ -164,11 +164,22 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupFSDeleteEvent)events[0]).ResultCode == 0;
     }
 
-    public async Task<bool> GroupFSCreateFolder(uint groupUin, string name)
+    public async Task<KeyValuePair<int, string>> GroupFSCreateFolder(uint groupUin, string name)
     {
         var groupFSCreateFolderEvent = GroupFSCreateFolderEvent.Create(groupUin, name);
         var events = await Collection.Business.SendEvent(groupFSCreateFolderEvent);
-        return events.Count != 0 && ((GroupFSCreateFolderEvent)events[0]).ResultCode == 0;
+        var retCode = events.Count > 0 ? ((GroupFSCreateFolderEvent)events[0]).ResultCode : -1;
+        var retMsg = events.Count > 0 ? ((GroupFSCreateFolderEvent)events[0]).RetMsg : "";
+        return new(retCode, retMsg);
+    }
+    
+    public async Task<KeyValuePair<int, string>> GroupFSDeleteFolder(uint groupUin, string folderId)
+    {
+        var groupFSDeleteFolderEvent = GroupFSDeleteFolderEvent.Create(groupUin, folderId);
+        var events = await Collection.Business.SendEvent(groupFSDeleteFolderEvent);
+        var retCode = events.Count > 0 ? ((GroupFSDeleteFolderEvent)events[0]).ResultCode : -1;
+        var retMsg = events.Count > 0 ? ((GroupFSDeleteFolderEvent)events[0]).RetMsg : "";
+        return new(retCode, retMsg);
     }
 
     public Task<bool> GroupFSUpload(uint groupUin, FileEntity fileEntity, string targetDirectory)
