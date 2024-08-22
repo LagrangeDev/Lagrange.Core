@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -79,11 +78,20 @@ public class OneBotSigner : SignProvider
 
         if (json.TryGetProperty("platform", out JsonElement platformJson))
         {
-            if (platformJson.GetString() != platform) throw new Exception("Signer signature platform mismatch");
+            if (platformJson.GetString() != platform) throw new Exception("Signer platform mismatch");
         }
+        else
+        {
+            _logger.LogWarning("Signer platform miss");
+        }
+
         if (json.TryGetProperty("version", out JsonElement versionJson))
         {
-            if (versionJson.GetString() != version) throw new Exception("Signer signature version mismatch");
+            if (versionJson.GetString() != version) throw new Exception("Signer version mismatch");
+        }
+        else
+        {
+            _logger.LogWarning("Signer version miss");
         }
 
         var valueJson = json.GetProperty("value");
