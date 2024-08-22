@@ -92,7 +92,7 @@ internal static class Common
         return byteArrayList;
     }
     
-    public static NTHighwayNetwork Convert(List<IPv4> ipv4s) => new()
+    private static NTHighwayNetwork Convert(List<IPv4> ipv4s) => new()
     {
         IPv4s = ipv4s.Select(x => new NTHighwayIPv4
         {
