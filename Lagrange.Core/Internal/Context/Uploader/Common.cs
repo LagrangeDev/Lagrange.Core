@@ -9,6 +9,8 @@ namespace Lagrange.Core.Internal.Context.Uploader;
 
 internal static class Common
 {
+    private const int BlockSize = 1024 * 1024;
+    
     public static NTV2RichMediaHighwayExt? GenerateExt(NTV2RichMediaUploadEvent @event)
     {
         if (@event.UKey == null) return null;
@@ -20,7 +22,26 @@ internal static class Common
             UKey = @event.UKey,
             Network = Convert(@event.Network),
             MsgInfoBody = @event.MsgInfo.MsgInfoBody,
-            BlockSize = 1024 * 1024,
+            BlockSize = BlockSize,
+            Hash = new NTHighwayHash
+            {
+                FileSha1 = new List<byte[]> { index.Info.FileSha1.UnHex() }
+            }
+        };
+    }
+    
+    public static NTV2RichMediaHighwayExt? GenerateExt(NTV2RichMediaUploadEvent @event, SubFileInfo subFile)
+    {
+        if (subFile.UKey == null) return null;
+        
+        var index = @event.MsgInfo.MsgInfoBody[1].Index;
+        return new NTV2RichMediaHighwayExt
+        {
+            FileUuid = index.FileUuid,
+            UKey = subFile.UKey,
+            Network = Convert(subFile.IPv4s),
+            MsgInfoBody = @event.MsgInfo.MsgInfoBody,
+            BlockSize = BlockSize,
             Hash = new NTHighwayHash
             {
                 FileSha1 = new List<byte[]> { index.Info.FileSha1.UnHex() }

@@ -134,7 +134,7 @@ internal class SubFileInfo
 {
     [ProtoMember(1)] public uint SubType { get; set; }
 
-    [ProtoMember(2)] public string UKey { get; set; }
+    [ProtoMember(2)] public string? UKey { get; set; }
     
     [ProtoMember(3)] public uint UKeyTtlSecond { get; set; }
 
