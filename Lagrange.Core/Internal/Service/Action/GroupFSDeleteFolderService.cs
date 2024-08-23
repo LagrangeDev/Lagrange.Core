@@ -1,4 +1,4 @@
-using Lagrange.Core.Common;
+﻿using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
@@ -9,20 +9,19 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Action;
 
-[EventSubscribe(typeof(GroupFSCreateFolderEvent))]
-[Service("OidbSvcTrpcTcp.0x6d7_0")]
-internal class GroupFSCreateFolderService : BaseService<GroupFSCreateFolderEvent>
+[EventSubscribe(typeof(GroupFSDeleteFolderEvent))]
+[Service("OidbSvcTrpcTcp.0x6d7_1")]
+internal class GroupFSDeleteFolderService : BaseService<GroupFSDeleteFolderEvent>
 {
-    protected override bool Build(GroupFSCreateFolderEvent input, BotKeystore keystore, BotAppInfo appInfo,
+    protected override bool Build(GroupFSDeleteFolderEvent input, BotKeystore keystore, BotAppInfo appInfo,
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
-        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x6D7_0>(new OidbSvcTrpcTcp0x6D7_0
+        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x6D7_1>(new OidbSvcTrpcTcp0x6D7_1
         {
-            Create = new OidbSvcTrpcTcp0x6D7_0Create
+            Delete = new OidbSvcTrpcTcp0x6D7_1Delete
             {
                 GroupUin = input.GroupUin,
-                RootDirectory = "/",
-                FolderName = input.Name
+                FolderId = input.FolderId
             }
         }, false, true);
         
@@ -32,11 +31,11 @@ internal class GroupFSCreateFolderService : BaseService<GroupFSCreateFolderEvent
     }
 
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out GroupFSCreateFolderEvent output, out List<ProtocolEvent>? extraEvents)
+        out GroupFSDeleteFolderEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x6D7Response>>(input);
         
-        output = GroupFSCreateFolderEvent.Result(packet.Body.Create.Retcode, packet.Body.Create.RetMsg);
+        output = GroupFSDeleteFolderEvent.Result(packet.Body.Delete.Retcode, packet.Body.Delete.RetMsg);
         extraEvents = null;
         return true;
     }

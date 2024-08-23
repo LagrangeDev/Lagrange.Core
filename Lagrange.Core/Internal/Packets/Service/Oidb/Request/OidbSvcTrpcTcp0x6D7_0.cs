@@ -1,4 +1,4 @@
-using ProtoBuf;
+﻿using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 
@@ -9,14 +9,14 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 /// Create Folder
 /// </summary>
 [ProtoContract]
-[OidbSvcTrpcTcp(0x6D7, 9)]
+[OidbSvcTrpcTcp(0x6D7, 0)]
 internal class OidbSvcTrpcTcp0x6D7_0
 {
-    [ProtoMember(1)] public OidbSvcTrpcTcp0x6D7_0Folder Folder { get; set; }
+    [ProtoMember(1)] public OidbSvcTrpcTcp0x6D7_0Create Create { get; set; }
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0x6D7_0Folder
+internal class OidbSvcTrpcTcp0x6D7_0Create
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
     
