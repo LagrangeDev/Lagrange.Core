@@ -7,37 +7,29 @@ using Lagrange.Core.Message.Entity;
 
 namespace Lagrange.Core.Internal.Event.Message;
 
-internal class ImageUploadEvent : ProtocolEvent
+internal class ImageUploadEvent : NTV2RichMediaUploadEvent
 {
     public ImageEntity Entity { get; }
     
     public string TargetUid { get; set; }
     
-    public string? UKey { get; }
-    
-    public MsgInfo MsgInfo { get; }
-    
-    public List<IPv4> Network { get; }
-    
     public NotOnlineImage Compat { get; }
 
-    private ImageUploadEvent(ImageEntity entity, string targetUid) : base(true)
+    private ImageUploadEvent(ImageEntity entity, string targetUid)
     {
         Entity = entity;
         TargetUid = targetUid;
     }
 
-    private ImageUploadEvent(int resultCode, string? uKey, MsgInfo msgInfo, List<IPv4> network, NotOnlineImage compat) : base(resultCode)
+    private ImageUploadEvent(int resultCode, MsgInfo msgInfo, string? uKey, List<IPv4> network, List<SubFileInfo> subFiles, NotOnlineImage compat) 
+        : base(resultCode, msgInfo, uKey, network, subFiles)
     {
-        UKey = uKey;
-        MsgInfo = msgInfo;
-        Network = network;
         Compat = compat;
     }
     
     public static ImageUploadEvent Create(ImageEntity entity, string targetUid)
         => new(entity, targetUid);
 
-    public static ImageUploadEvent Result(int resultCode, string? uKey, MsgInfo msgInfo, List<IPv4> network, NotOnlineImage compat)
-        => new(resultCode, uKey, msgInfo, network, compat);
+    public static ImageUploadEvent Result(int resultCode, MsgInfo msgInfo, string? uKey, List<IPv4> network, List<SubFileInfo> subFiles, NotOnlineImage compat)
+        => new(resultCode, msgInfo, uKey, network, subFiles, compat);
 }

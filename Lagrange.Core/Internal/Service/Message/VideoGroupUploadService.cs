@@ -18,10 +18,13 @@ internal class VideoGroupUploadService : BaseService<VideoGroupUploadEvent>
     protected override bool Build(VideoGroupUploadEvent input, BotKeystore keystore, BotAppInfo appInfo,
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
-        if (input.Entity.VideoStream is null) throw new Exception();
+        if (input.Entity.VideoStream is null || input.Entity.ThumbnailStream is null) throw new Exception();
         
         string md5 = input.Entity.VideoStream.Value.Md5(true);
         string sha1 = input.Entity.VideoStream.Value.Sha1(true);
+        
+        string thumbMd5 = input.Entity.ThumbnailStream.Value.Md5(true);
+        string thumbSha1 = input.Entity.ThumbnailStream.Value.Sha1(true);
         
         var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq
         {
@@ -71,9 +74,9 @@ internal class VideoGroupUploadService : BaseService<VideoGroupUploadEvent>
                     {
                         FileInfo = new FileInfo  // dummy images
                         {
-                            FileSize = (uint)input.Entity.VideoStream.Value.Length - 1200,
-                            FileHash = md5,
-                            FileSha1 = sha1,
+                            FileSize = (uint)input.Entity.ThumbnailStream.Value.Length,
+                            FileHash = thumbMd5,
+                            FileSha1 = thumbSha1,
                             FileName = "video.jpg",
                             Type = new FileType
                             {
@@ -122,7 +125,7 @@ internal class VideoGroupUploadService : BaseService<VideoGroupUploadEvent>
         var upload = packet.Body.Upload;
         var compat = Serializer.Deserialize<VideoFile>(packet.Body.Upload.CompatQMsg.AsSpan());
         
-        output = VideoGroupUploadEvent.Result((int)packet.ErrorCode, upload.UKey, upload.MsgInfo, upload.IPv4s, compat);
+        output = VideoGroupUploadEvent.Result((int)packet.ErrorCode, upload.MsgInfo, upload.UKey, upload.IPv4s, upload.SubFileInfos, compat);
         extraEvents = null;
         return true;
     }

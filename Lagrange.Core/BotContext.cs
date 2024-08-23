@@ -16,9 +16,9 @@ public class BotContext : IDisposable
 
     internal readonly ContextCollection ContextCollection;
 
-    private readonly BotAppInfo _appInfo;
+    public BotAppInfo AppInfo { get; }
 
-    private readonly BotConfig _config;
+    public BotConfig Config { get; }
 
     private readonly BotDeviceInfo _deviceInfo;
 
@@ -29,12 +29,12 @@ public class BotContext : IDisposable
         Invoker = new EventInvoker(this);
         Scheduler = new Utility.TaskScheduler();
 
-        _config = config;
-        _appInfo = BotAppInfo.ProtocolToAppInfo[config.Protocol];
+        Config = config;
+        AppInfo = BotAppInfo.ProtocolToAppInfo[config.Protocol];
         _deviceInfo = deviceInfo;
         _keystore = keystore;
 
-        ContextCollection = new ContextCollection(_keystore, _appInfo, _deviceInfo, _config, Invoker, Scheduler);
+        ContextCollection = new ContextCollection(_keystore, AppInfo, _deviceInfo, Config, Invoker, Scheduler);
     }
 
     public void Dispose()

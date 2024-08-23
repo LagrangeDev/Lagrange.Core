@@ -13,29 +13,19 @@ internal class PttUploader : IHighwayUploader
 {
     public async Task UploadPrivate(ContextCollection context, MessageChain chain, IMessageEntity entity)
     {
-        if (entity is RecordEntity { AudioStream: not null } record)
+        if (entity is RecordEntity { AudioStream: { } stream } record)
         {
             var uploadEvent = RecordUploadEvent.Create(record, chain.FriendInfo?.Uid ?? "");
             var uploadResult = await context.Business.SendEvent(uploadEvent);
             var metaResult = (RecordUploadEvent)uploadResult[0];
 
-            if (metaResult.UKey != null)
+            if (Common.GenerateExt(metaResult) is { } ext)
             {
-                var index = metaResult.MsgInfo.MsgInfoBody[0].Index;
-                var extend = new NTV2RichMediaHighwayExt
-                {
-                    FileUuid = index.FileUuid,
-                    UKey = metaResult.UKey,
-                    Network = Common.Convert(metaResult.Network),
-                    MsgInfoBody = metaResult.MsgInfo.MsgInfoBody,
-                    BlockSize = 1024 * 1024,
-                    Hash = new NTHighwayHash { FileSha1 = new List<byte[]> { index.Info.FileSha1.UnHex() } }
-                };
-
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1007, record.AudioStream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extend.Serialize().ToArray());
+                var hash = metaResult.MsgInfo.MsgInfoBody[0].Index.Info.FileHash.UnHex();
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1007, stream.Value, await Common.GetTicket(context), hash, ext.Serialize().ToArray());
                 if (!hwSuccess)
                 {
-                    await record.AudioStream.Value.DisposeAsync();
+                    await stream.Value.DisposeAsync();
                     throw new Exception();
                 }
             }
@@ -48,29 +38,19 @@ internal class PttUploader : IHighwayUploader
 
     public async Task UploadGroup(ContextCollection context, MessageChain chain, IMessageEntity entity)
     {
-        if (entity is RecordEntity { AudioStream: not null } record)
+        if (entity is RecordEntity { AudioStream: { } stream } record)
         {
             var uploadEvent = RecordGroupUploadEvent.Create(record, chain.GroupUin ?? 0);
             var uploadResult = await context.Business.SendEvent(uploadEvent);
             var metaResult = (RecordGroupUploadEvent)uploadResult[0];
 
-            if (metaResult.UKey != null)
+            if (Common.GenerateExt(metaResult) is { } ext)
             {
-                var index = metaResult.MsgInfo.MsgInfoBody[0].Index;
-                var extend = new NTV2RichMediaHighwayExt
-                {
-                    FileUuid = index.FileUuid,
-                    UKey = metaResult.UKey,
-                    Network = Common.Convert(metaResult.Network),
-                    MsgInfoBody = metaResult.MsgInfo.MsgInfoBody,
-                    BlockSize = 1024 * 1024,
-                    Hash = new NTHighwayHash { FileSha1 = new List<byte[]> { index.Info.FileSha1.UnHex() } }
-                };
-
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1008, record.AudioStream.Value, await Common.GetTicket(context), index.Info.FileHash.UnHex(), extend.Serialize().ToArray());
+                var hash = metaResult.MsgInfo.MsgInfoBody[0].Index.Info.FileHash.UnHex();
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1008, stream.Value, await Common.GetTicket(context), hash, ext.Serialize().ToArray());
                 if (!hwSuccess)
                 {
-                    await record.AudioStream.Value.DisposeAsync();
+                    await stream.Value.DisposeAsync();
                     throw new Exception();
                 }
             }

@@ -6,37 +6,29 @@ using Lagrange.Core.Message.Entity;
 
 namespace Lagrange.Core.Internal.Event.Message;
 
-internal class RecordGroupUploadEvent : ProtocolEvent
+internal class RecordGroupUploadEvent : NTV2RichMediaUploadEvent
 {
     public RecordEntity Entity { get; }
     
     public uint GroupUin { get; }
     
-    public string? UKey { get; }
-    
-    public MsgInfo MsgInfo { get; }
-    
-    public List<IPv4> Network { get; }
-    
     public RichText Compat { get; }
 
-    private RecordGroupUploadEvent(RecordEntity entity, uint groupUin) : base(true)
+    private RecordGroupUploadEvent(RecordEntity entity, uint groupUin)
     {
         Entity = entity;
         GroupUin = groupUin;
     }
 
-    private RecordGroupUploadEvent(int resultCode, string? uKey, MsgInfo msgInfo, List<IPv4> network, RichText compat) : base(resultCode)
+    private RecordGroupUploadEvent(int resultCode, MsgInfo msgInfo, string? uKey, List<IPv4> network, List<SubFileInfo> subFiles, RichText compat)
+        : base(resultCode, msgInfo, uKey, network, subFiles)
     {
-        UKey = uKey;
-        MsgInfo = msgInfo;
-        Network = network;
         Compat = compat;
     }
 
     public static RecordGroupUploadEvent Create(RecordEntity entity, uint groupUin)
         => new(entity, groupUin);
 
-    public static RecordGroupUploadEvent Result(int resultCode, string? uKey, MsgInfo msgInfo, List<IPv4> network, RichText compat)
-        => new(resultCode, uKey, msgInfo, network, compat);
+    public static RecordGroupUploadEvent Result(int resultCode, MsgInfo msgInfo, string? uKey, List<IPv4> network, List<SubFileInfo> subFiles, RichText compat)
+        => new(resultCode, msgInfo, uKey, network, subFiles, compat);
 }
