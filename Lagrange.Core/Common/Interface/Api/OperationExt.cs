@@ -182,9 +182,21 @@ public static class OperationExt
     public static Task<bool> FriendPoke(this BotContext bot, uint friendUin)
         => bot.ContextCollection.Business.OperationLogic.FriendPoke(friendUin);
 
+    /// <summary>
+    /// Send a special window shake to friend
+    /// </summary>
+    /// <param name="friendUin">target friend uin</param>
+    /// <param name="type">face type</param>
+    /// <param name="count">count of face</param>
     public static Task<MessageResult> FriendSpecialShake(this BotContext bot, uint friendUin, FriendSpecialShakeFaceType type, uint count)
         => bot.ContextCollection.Business.OperationLogic.FriendSpecialShake(friendUin, type, count);
 
+    /// <summary>
+    /// Send a window shake to friend
+    /// </summary>
+    /// <param name="friendUin">target friend uin</param>
+    /// <param name="type">face type</param>
+    /// <param name="strength">How big the face will be displayed ([0,3] is valid)</param>
     public static Task<MessageResult> FriendShake(this BotContext bot, uint friendUin, FriendShakeFaceType type, ushort strength)
         => bot.ContextCollection.Business.OperationLogic.FriendShake(friendUin, type, strength);
 

@@ -37,6 +37,11 @@ public static class FriendShakeFaceTypeExt
         string.Empty, "点赞", "爱心", "哈哈", "猪头", "炸弹", "便便", "亲亲", "药丸", "榴莲", "略略略", "平底锅", "钞票"
     };
 
+    /// <summary>
+    /// Return the name of the shake face type.
+    /// A <see cref="ArgumentOutOfRangeException"/> will be thrown if the type is not valid.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the type is not valid.</exception>
     public static string ToName(this FriendShakeFaceType type)
     {
         int v = (int)type;
@@ -45,6 +50,13 @@ public static class FriendShakeFaceTypeExt
         return nameMapping[v];
     }
 
+
+    /// <summary>
+    /// Tries to get the name of the shake face type.
+    /// Returns null if the type is not valid.
+    /// </summary>
+    /// <param name="type">The shake face type.</param>
+    /// <returns>The name of the shake face type, or null if the type is not valid.</returns>
     public static string? TryGetName(this FriendShakeFaceType type)
     {
         int v = (int)type;
@@ -53,6 +65,11 @@ public static class FriendShakeFaceTypeExt
         return nameMapping[v];
     }
 
+    /// <summary>
+    /// Return the name of the shake face type.
+    /// A <see cref="ArgumentOutOfRangeException"/> will be thrown if the type is not valid.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the type is not valid.</exception>
     public static string ToName(this FriendSpecialShakeFaceType type)
     {
         int v = (int)type;
@@ -61,6 +78,12 @@ public static class FriendShakeFaceTypeExt
         return specialNameMapping[v];
     }
 
+    /// <summary>
+    /// Tries to get the name of the shake face type.
+    /// Returns null if the type is not valid.
+    /// </summary>
+    /// <param name="type">The shake face type.</param>
+    /// <returns>The name of the shake face type, or null if the type is not valid.</returns>
     public static string? TryGetName(this FriendSpecialShakeFaceType type)
     {
         int v = (int)type;
