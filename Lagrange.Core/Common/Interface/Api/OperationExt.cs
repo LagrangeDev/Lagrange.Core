@@ -182,6 +182,12 @@ public static class OperationExt
     public static Task<bool> FriendPoke(this BotContext bot, uint friendUin)
         => bot.ContextCollection.Business.OperationLogic.FriendPoke(friendUin);
 
+    public static Task<MessageResult> FriendSpecialShake(this BotContext bot, uint friendUin, FriendSpecialShakeFaceType type, uint count)
+        => bot.ContextCollection.Business.OperationLogic.FriendSpecialShake(friendUin, type, count);
+
+    public static Task<MessageResult> FriendShake(this BotContext bot, uint friendUin, FriendShakeFaceType type, ushort strength)
+        => bot.ContextCollection.Business.OperationLogic.FriendShake(friendUin, type, strength);
+
     public static Task<List<string>?> FetchMarketFaceKey(this BotContext bot, List<string> faceIds)
         => bot.ContextCollection.Business.OperationLogic.FetchMarketFaceKey(faceIds);
 }
