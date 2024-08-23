@@ -1,3 +1,4 @@
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Message.Entity;
 
 namespace Lagrange.Core.Message;
@@ -257,6 +258,22 @@ public sealed class MessageBuilder
     {
         var marketFaceEntity = new MarketfaceEntity(faceId, tabId, key, summary);
         _chain.Add(marketFaceEntity);
+
+        return this;
+    }
+
+    public MessageBuilder FriendShake(FriendShakeFaceType type, ushort strength)
+    {
+        var friendShakeEntity = new FriendShakeEntity((ushort)type, strength);
+        _chain.Add(friendShakeEntity);
+
+        return this;
+    }
+    
+    public MessageBuilder FriendSpecialShake(FriendSpecialShakeFaceType type, uint count)
+    {
+        var friendSpecialShakeEntity = new FriendSpecialShakeEntity((ushort)type, count, type.ToName());
+        _chain.Add(friendSpecialShakeEntity);
 
         return this;
     }

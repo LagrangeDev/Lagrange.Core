@@ -475,7 +475,7 @@ internal class OperationLogic : LogicBase
     public Task<MessageResult> FriendSpecialShake(uint friendUin, FriendSpecialShakeFaceType type, uint count)
     {
         var chain = MessageBuilder.Friend(friendUin)
-            .Add(new FriendSpecialShakeEntity((ushort)type, count, type.TryGetName() ?? string.Empty))
+            .FriendSpecialShake(type, count)
             .Build();
         return SendMessage(chain);
     }
@@ -483,7 +483,7 @@ internal class OperationLogic : LogicBase
     public Task<MessageResult> FriendShake(uint friendUin, FriendShakeFaceType type, ushort strength)
     {
         var chain = MessageBuilder.Friend(friendUin)
-            .Add(new FriendShakeEntity((ushort)type, strength))
+            .FriendShake(type, strength)
             .Build();
         return SendMessage(chain);
     }
