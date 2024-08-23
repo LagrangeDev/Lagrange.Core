@@ -164,7 +164,7 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupFSDeleteEvent)events[0]).ResultCode == 0;
     }
 
-    public async Task<KeyValuePair<int, string>> GroupFSCreateFolder(uint groupUin, string name)
+    public async Task<(int, string)> GroupFSCreateFolder(uint groupUin, string name)
     {
         var groupFSCreateFolderEvent = GroupFSCreateFolderEvent.Create(groupUin, name);
         var events = await Collection.Business.SendEvent(groupFSCreateFolderEvent);
@@ -173,7 +173,7 @@ internal class OperationLogic : LogicBase
         return new(retCode, retMsg);
     }
     
-    public async Task<KeyValuePair<int, string>> GroupFSDeleteFolder(uint groupUin, string folderId)
+    public async Task<(int, string)> GroupFSDeleteFolder(uint groupUin, string folderId)
     {
         var groupFSDeleteFolderEvent = GroupFSDeleteFolderEvent.Create(groupUin, folderId);
         var events = await Collection.Business.SendEvent(groupFSDeleteFolderEvent);
@@ -463,5 +463,12 @@ internal class OperationLogic : LogicBase
         var fetchMarketFaceKeyEvent = FetchMarketFaceKeyEvent.Create(faceIds);
         var results = await Collection.Business.SendEvent(fetchMarketFaceKeyEvent);
         return results.Count != 0 ? ((FetchMarketFaceKeyEvent)results[0]).Keys : null;
+    }
+
+    public async Task<BotGroupClockInResult> ClockInGroup(uint groupUin)
+    {
+        var groupClockInEvent = GroupClockInEvent.Create(groupUin);
+        var results = await Collection.Business.SendEvent(groupClockInEvent);
+        return ((GroupClockInEvent)results[0]).ResultInfo ?? new BotGroupClockInResult(false);
     }
 }

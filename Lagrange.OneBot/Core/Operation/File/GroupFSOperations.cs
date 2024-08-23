@@ -111,7 +111,7 @@ public class CreateGroupFileFolderOperation : IOperation
         if (payload.Deserialize<OneBotCreateFolder>(SerializerOptions.DefaultOptions) is { } folder)
         {
             var res = await context.GroupFSCreateFolder(folder.GroupId, folder.Name);
-            return new OneBotResult(new JsonObject { { "msg", res.Value } }, res.Key, res.Key == 0 ? "ok" : "failed");
+            return new OneBotResult(new JsonObject { { "msg", res.Item2 } }, res.Item1, res.Item1 == 0 ? "ok" : "failed");
         }
 
         throw new Exception();
@@ -126,7 +126,7 @@ public class DeleteGroupFileFolderOperation : IOperation
         if (payload.Deserialize<OneBotDeleteFolder>(SerializerOptions.DefaultOptions) is { } folder)
         {
             var res = await context.GroupFSDeleteFolder(folder.GroupId, folder.FolderId);
-            return new OneBotResult(new JsonObject { { "msg", res.Value } }, res.Key, res.Key == 0 ? "ok" : "failed");
+            return new OneBotResult(new JsonObject { { "msg", res.Item2 } }, res.Item1, res.Item1 == 0 ? "ok" : "failed");
         }
 
         throw new Exception();
