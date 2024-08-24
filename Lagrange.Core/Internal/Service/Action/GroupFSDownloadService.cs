@@ -38,7 +38,7 @@ internal class GroupFSDownloadService : BaseService<GroupFSDownloadEvent>
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x6D6Response>>(input);
         var download = packet.Body.Download;
 
-        string url = $"https://{download.DownloadIp}:443/ftn_handler/{download.DownloadUrl.Hex(true)}/?fname=";
+        string url = $"https://{download.DownloadDns}:443/ftn_handler/{download.DownloadUrl.Hex(true)}/?fname=";
 
         output = GroupFSDownloadEvent.Result((int)packet.ErrorCode, url);
         extraEvents = null;
