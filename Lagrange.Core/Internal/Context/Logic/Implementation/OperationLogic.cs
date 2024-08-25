@@ -172,7 +172,7 @@ internal class OperationLogic : LogicBase
         var retMsg = events.Count > 0 ? ((GroupFSCreateFolderEvent)events[0]).RetMsg : "";
         return new(retCode, retMsg);
     }
-    
+
     public async Task<(int, string)> GroupFSDeleteFolder(uint groupUin, string folderId)
     {
         var groupFSDeleteFolderEvent = GroupFSDeleteFolderEvent.Create(groupUin, folderId);
@@ -378,6 +378,15 @@ internal class OperationLogic : LogicBase
         var roamEvent = GetRoamMessageEvent.Create(uid, time, count);
         var results = await Collection.Business.SendEvent(roamEvent);
         return results.Count != 0 ? ((GetRoamMessageEvent)results[0]).Chains : null;
+    }
+
+    public async Task<List<MessageChain>?> GetC2cMessage(uint friendUin, uint startSequence, uint endSequence)
+    {
+        if (await Collection.Business.CachingLogic.ResolveUid(null, friendUin) is not { } uid) return null;
+
+        var c2cEvent = GetC2cMessageEvent.Create(uid, startSequence, endSequence);
+        var results = await Collection.Business.SendEvent(c2cEvent);
+        return results.Count != 0 ? ((GetC2cMessageEvent)results[0]).Chains : null;
     }
 
     public async Task<List<string>?> FetchCustomFace()
