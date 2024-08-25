@@ -95,8 +95,8 @@ public static class GroupExt
     public static Task<uint> FetchGroupFSCount(this BotContext bot, uint groupUin)
         => bot.ContextCollection.Business.OperationLogic.FetchGroupFSCount(groupUin);
 
-    public static Task<List<IBotFSEntry>> FetchGroupFSList(this BotContext bot, uint groupUin, string targetDirectory = "/", uint startIndex = 0)
-        => bot.ContextCollection.Business.OperationLogic.FetchGroupFSList(groupUin, targetDirectory, startIndex);
+    public static Task<List<IBotFSEntry>> FetchGroupFSList(this BotContext bot, uint groupUin, string targetDirectory = "/")
+        => bot.ContextCollection.Business.OperationLogic.FetchGroupFSList(groupUin, targetDirectory);
 
     public static Task<string> FetchGroupFSDownload(this BotContext bot, uint groupUin, string fileId)
         => bot.ContextCollection.Business.OperationLogic.FetchGroupFSDownload(groupUin, fileId);
