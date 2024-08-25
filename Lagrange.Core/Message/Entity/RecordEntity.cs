@@ -15,6 +15,8 @@ public class RecordEntity : IMessageEntity
 
     public string FilePath { get; set; } = string.Empty;
 
+    public string AudioMd5 { get; set; } = string.Empty;
+
     public string AudioName { get; set; } = string.Empty;
 
     public int AudioSize { get; }
@@ -50,7 +52,8 @@ public class RecordEntity : IMessageEntity
         FilePath = string.Empty;
         AudioStream = new Lazy<Stream>(() => new MemoryStream(file));
         AudioLength = audioLength;
-        if (file == null) {
+        if (file == null)
+        {
             throw new ArgumentNullException(nameof(file));
         }
         AudioSize = file.Length;
@@ -90,6 +93,7 @@ public class RecordEntity : IMessageEntity
             return new RecordEntity(index.FileUuid, index.Info.FileName)
             {
                 AudioLength = (int)index.Info.Time,
+                AudioMd5 = index.Info.FileHash,
                 FileSha1 = index.Info.FileSha1,
                 MsgInfo = extra
             };
