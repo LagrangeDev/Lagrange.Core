@@ -59,10 +59,11 @@ public class RecordEntity : IMessageEntity
         AudioSize = file.Length;
     }
 
-    internal RecordEntity(string audioUuid, string audioName)
+    internal RecordEntity(string audioUuid, string audioName, string audioMd5)
     {
         AudioUuid = audioUuid;
         AudioName = audioName;
+        AudioMd5 = audioMd5;
     }
 
     IEnumerable<Elem> IMessageEntity.PackElement()
@@ -90,10 +91,9 @@ public class RecordEntity : IMessageEntity
             var extra = Serializer.Deserialize<MsgInfo>(common.PbElem.AsSpan());
             var index = extra.MsgInfoBody[0].Index;
 
-            return new RecordEntity(index.FileUuid, index.Info.FileName)
+            return new RecordEntity(index.FileUuid, index.Info.FileName, index.Info.FileHash)
             {
                 AudioLength = (int)index.Info.Time,
-                AudioMd5 = index.Info.FileHash,
                 FileSha1 = index.Info.FileSha1,
                 MsgInfo = extra
             };
