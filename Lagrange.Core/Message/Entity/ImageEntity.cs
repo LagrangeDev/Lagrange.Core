@@ -22,7 +22,7 @@ public class ImageEntity : IMessageEntity
 
     public string FilePath { get; set; } = string.Empty;
 
-    public string ImageHash { get; set; } = string.Empty;
+    public string ImageMd5 { get; set; } = string.Empty;
 
     public uint ImageSize { get; set; }
 
@@ -99,7 +99,7 @@ public class ImageEntity : IMessageEntity
             {
                 PictureSize = new Vector2(index.Info.Width, index.Info.Height),
                 FilePath = index.Info.FileName,
-                ImageHash = index.Info.FileHash,
+                ImageMd5 = index.Info.FileHash,
                 ImageSize = index.Info.FileSize,
                 MsgInfo = extra,
                 SubType = (int)extra.ExtBizInfo.Pic.BizType,
@@ -114,7 +114,7 @@ public class ImageEntity : IMessageEntity
                 {
                     PictureSize = new Vector2(image.PicWidth, image.PicHeight),
                     FilePath = image.FilePath,
-                    ImageHash = image.PicMd5.Hex(),
+                    ImageMd5 = image.PicMd5.Hex(),
                     ImageSize = image.FileLen,
                     ImageUrl = $"{BaseUrl}{image.OrigUrl}",
                     Summary = image.PbRes.Summary,
@@ -126,7 +126,7 @@ public class ImageEntity : IMessageEntity
             {
                 PictureSize = new Vector2(image.PicWidth, image.PicHeight),
                 FilePath = image.FilePath,
-                ImageHash = image.PicMd5.Hex(),
+                ImageMd5 = image.PicMd5.Hex(),
                 ImageSize = image.FileLen,
                 ImageUrl = $"{LegacyBaseUrl}{image.OrigUrl}",
                 Summary = image.PbRes.Summary,
