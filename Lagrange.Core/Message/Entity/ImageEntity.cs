@@ -22,6 +22,8 @@ public class ImageEntity : IMessageEntity
 
     public string FilePath { get; set; } = string.Empty;
 
+    public string ImageHash { get; set; } = string.Empty;
+
     public uint ImageSize { get; set; }
 
     public string ImageUrl { get; set; } = string.Empty;
@@ -39,7 +41,7 @@ public class ImageEntity : IMessageEntity
     internal CustomFace? CompatFace { get; set; }
 
     internal string? Summary { get; set; }
-    
+
     internal int SubType { get; set; }
 
     public ImageEntity() { }
@@ -55,7 +57,7 @@ public class ImageEntity : IMessageEntity
         FilePath = "";
         ImageStream = new Lazy<Stream>(() => new MemoryStream(file));
     }
-    
+
     public ImageEntity(Stream stream)
     {
         FilePath = "";
@@ -97,12 +99,13 @@ public class ImageEntity : IMessageEntity
             {
                 PictureSize = new Vector2(index.Info.Width, index.Info.Height),
                 FilePath = index.Info.FileName,
+                ImageHash = index.Info.FileHash,
                 ImageSize = index.Info.FileSize,
                 MsgInfo = extra,
                 SubType = (int)extra.ExtBizInfo.Pic.BizType,
             };
         }
-        
+
         if (elems.NotOnlineImage is { } image)
         {
             if (image.OrigUrl.Contains("&fileid=")) // NTQQ's shit
@@ -111,18 +114,19 @@ public class ImageEntity : IMessageEntity
                 {
                     PictureSize = new Vector2(image.PicWidth, image.PicHeight),
                     FilePath = image.FilePath,
+                    ImageHash = image.PicMd5.Hex(),
                     ImageSize = image.FileLen,
                     ImageUrl = $"{BaseUrl}{image.OrigUrl}",
                     Summary = image.PbRes.Summary,
                     SubType = image.PbRes.SubType
                 };
-
             }
 
             return new ImageEntity
             {
                 PictureSize = new Vector2(image.PicWidth, image.PicHeight),
                 FilePath = image.FilePath,
+                ImageHash = image.PicMd5.Hex(),
                 ImageSize = image.FileLen,
                 ImageUrl = $"{LegacyBaseUrl}{image.OrigUrl}",
                 Summary = image.PbRes.Summary,
@@ -159,7 +163,7 @@ public class ImageEntity : IMessageEntity
 
         return null;
     }
-    
+
     private static int GetImageTypeFromFaceOldData(CustomFace face)
     {
         if (face.OldData == null || face.OldData.Length < 5)
