@@ -194,7 +194,7 @@ internal class MessagingLogic : LogicBase
             case FriendSysRecallEvent recall:
             {
                 uint fromUin = await Collection.Business.CachingLogic.ResolveUin(null, recall.FromUid) ?? 0;
-                var recallArgs = new FriendRecallEvent(fromUin, recall.Sequence, recall.Time, recall.Random);
+                var recallArgs = new FriendRecallEvent(fromUin, recall.Sequence, recall.Time, recall.Random, recall.Tip);
                 Collection.Invoker.PostEvent(recallArgs);
                 break;
             }
