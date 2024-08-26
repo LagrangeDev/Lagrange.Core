@@ -63,7 +63,7 @@ internal static class ByteExtension
     {
         return MD5.HashData(bytes).Hex(lower);
     }
-    
+
     public static async Task<string> Md5Async(this byte[] bytes, bool lower = false)
     {
         using var md5 = MD5.Create();
@@ -76,8 +76,8 @@ internal static class ByteExtension
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint ToCharsBuffer(byte value, uint casing = 0)
     {
-        uint difference = BitConverter.IsLittleEndian 
-            ? ((uint)value >> 4) + ((value & 0x0Fu) << 16) - 0x890089u 
+        uint difference = BitConverter.IsLittleEndian
+            ? ((uint)value >> 4) + ((value & 0x0Fu) << 16) - 0x890089u
             : ((value & 0xF0u) << 12) + (value & 0x0Fu) - 0x890089u;
         uint packedResult = ((((uint)-(int)difference & 0x700070u) >> 4) + difference + 0xB900B9u) | casing;
         return packedResult;

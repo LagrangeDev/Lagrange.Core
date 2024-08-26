@@ -16,7 +16,7 @@ internal class OidbSvcTrpcTcp0xFE5_2Response
 internal class OidbSvcTrpcTcp0xFE5_2Group
 {
     [ProtoMember(3)] public uint GroupUin { get; set; }
-    
+
     [ProtoMember(4)] public OidbSvcTrpcTcp0xFE5_2GroupInfo Info { get; set; }
 }
 
@@ -24,11 +24,11 @@ internal class OidbSvcTrpcTcp0xFE5_2Group
 internal class OidbSvcTrpcTcp0xFE5_2GroupInfo
 {
     [ProtoMember(1)] public OidbSvcTrpcTcp0xFE5_2Member GroupOwner { get; set; }
-    
+
     [ProtoMember(3)] public uint MemberMax { get; set; }
-    
+
     [ProtoMember(4)] public uint MemberCount { get; set; }
-    
+
     [ProtoMember(5)] public string GroupName { get; set; }
 }
 

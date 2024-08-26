@@ -10,9 +10,9 @@ namespace Lagrange.Core.Utility.Crypto.Provider.Ecdh;
 internal sealed unsafe class EcdhProvider
 {
     public EllipticCurve Curve { get; }
-    
+
     private BigInteger Secret { get; set; }
-    
+
     private EllipticPoint Public { get; set; }
 
     public EcdhProvider(EllipticCurve curve)
@@ -38,7 +38,7 @@ internal sealed unsafe class EcdhProvider
         var shared = CreateShared(Secret, ecPub);
         return PackShared(shared, isHash);
     }
-    
+
     public EllipticPoint UnpackPublic(byte[] publicKey)
     {
         int length = publicKey.Length;
@@ -78,12 +78,12 @@ internal sealed unsafe class EcdhProvider
         }
     }
 
-    
+
     private byte[] PackShared(EllipticPoint ecShared, bool isHash)
     {
         var x = TakeReverse(ecShared.X.ToByteArray(), Curve.Size);
         if (!isHash) return x;
-        
+
         using var md5 = MD5.Create();
         return md5.ComputeHash(x[..Curve.PackSize]);
     }
@@ -101,7 +101,7 @@ internal sealed unsafe class EcdhProvider
 
         return new BigInteger(temp);
     }
-    
+
     private byte[] PackSecret(BigInteger ecSec)
     {
         var result = ecSec.ToByteArray();
@@ -113,7 +113,7 @@ internal sealed unsafe class EcdhProvider
 
         return result;
     }
-    
+
     private BigInteger GenerateSecret(EllipticPoint point)
     {
         BigInteger result;
@@ -130,7 +130,7 @@ internal sealed unsafe class EcdhProvider
     }
 
     public byte[] PackPublic(bool compress = true) => PackPublic(Public, compress);
-    
+
     public byte[] PackPublic(EllipticPoint ecPub, bool compress = true)
     {
         if (compress)
@@ -139,23 +139,23 @@ internal sealed unsafe class EcdhProvider
             if (result.Length == Curve.Size) Array.Resize(ref result, Curve.Size + 1);
 
             Array.Reverse(result);
-            result[0] = (byte) (ecPub.Y.IsEven ^ ecPub.Y.Sign < 0 ? 0x02 : 0x03);
+            result[0] = (byte)(ecPub.Y.IsEven ^ ecPub.Y.Sign < 0 ? 0x02 : 0x03);
             return result;
         }
 
         var x = TakeReverse(ecPub.X.ToByteArray(), Curve.Size);
         var y = TakeReverse(ecPub.Y.ToByteArray(), Curve.Size);
-        var buffer = new byte [Curve.Size * 2 + 1];
-        
+        var buffer = new byte[Curve.Size * 2 + 1];
+
         buffer[0] = 0x04;
         Buffer.BlockCopy(x, 0, buffer, 1, x.Length);
         Buffer.BlockCopy(y, 0, buffer, y.Length + 1, x.Length);
 
         return buffer;
     }
-    
+
     private EllipticPoint CreatePublic(BigInteger ecSec) => CreateShared(ecSec, Curve.G);
-    
+
     private BigInteger CreateSecret()
     {
         BigInteger result;
@@ -170,7 +170,7 @@ internal sealed unsafe class EcdhProvider
 
         return result;
     }
-    
+
     private EllipticPoint CreateShared(BigInteger ecSec, EllipticPoint ecPub)
     {
         if (ecSec % Curve.N == 0 || ecPub.IsDefault) return default;
@@ -192,7 +192,7 @@ internal sealed unsafe class EcdhProvider
 
         return pr;
     }
-    
+
     private static EllipticPoint PointAdd(EllipticCurve curve, EllipticPoint p1, EllipticPoint p2)
     {
         if (p1.IsDefault) return p2;
@@ -218,11 +218,11 @@ internal sealed unsafe class EcdhProvider
         var xr = Mod(m * m - x1 - x2, curve.P);
         var yr = Mod(m * (x1 - xr) - y1, curve.P);
         var pr = new EllipticPoint(xr, yr);
-        
+
         if (!curve.CheckOn(pr)) throw new Exception();
         return pr;
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static byte[] TakeReverse(byte[] array, int length)
     {
@@ -234,7 +234,7 @@ internal sealed unsafe class EcdhProvider
 
         return result;
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static BigInteger ModInverse(BigInteger a, BigInteger p)
     {

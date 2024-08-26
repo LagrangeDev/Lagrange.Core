@@ -6,5 +6,5 @@ namespace Lagrange.Core.Internal.Packets.Tlv;
 [Tlv(0X118)]
 internal class Tlv118 : TlvBody
 {
-    
+
 }

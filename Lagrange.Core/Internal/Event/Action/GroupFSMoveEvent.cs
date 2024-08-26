@@ -5,18 +5,18 @@ namespace Lagrange.Core.Internal.Event.Action;
 internal class GroupFSMoveEvent : GroupFSOperationEvent
 {
     public string FileId { get; set; }
-    
+
     public string ParentDirectory { get; set; }
-    
+
     public string TargetDirectory { get; set; }
-    
+
     private GroupFSMoveEvent(uint groupUin, string fileId, string parentDirectory, string targetDirectory) : base(groupUin)
     {
         FileId = fileId;
         ParentDirectory = parentDirectory;
         TargetDirectory = targetDirectory;
     }
-    
+
     private GroupFSMoveEvent(int resultCode) : base(resultCode) { }
 
     public static GroupFSMoveEvent Create(uint groupUin, string fileId, string parentDirectory, string targetDirectory)

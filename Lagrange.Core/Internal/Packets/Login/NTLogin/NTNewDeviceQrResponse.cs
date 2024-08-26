@@ -12,9 +12,9 @@ public class NTNewDeviceQrCodeResponse
     [JsonPropertyName("str_url")] public string StrUrl { get; set; }
 
     [JsonPropertyName("ActionStatus")] public string ActionStatus { get; set; }
-    
+
     [JsonPropertyName("str_nt_succ_token")] public string? StrNtSuccToken { get; set; }
-    
+
     [JsonPropertyName("ErrorCode")] public long ErrorCode { get; set; }
 
     [JsonPropertyName("ErrorInfo")] public string ErrorInfo { get; set; }

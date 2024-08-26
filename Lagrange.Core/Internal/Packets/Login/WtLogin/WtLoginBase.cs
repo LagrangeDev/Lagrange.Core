@@ -13,8 +13,8 @@ internal abstract class WtLoginBase
     protected readonly BotDeviceInfo Device;
 
     protected readonly TlvPacker TlvPacker;
-    
-    protected WtLoginBase(string command, ushort cmd, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device) 
+
+    protected WtLoginBase(string command, ushort cmd, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device)
     {
         Command = command;
         Cmd = cmd;
@@ -23,12 +23,12 @@ internal abstract class WtLoginBase
         Device = device;
         TlvPacker = new TlvPacker(appInfo, keystore, device);
     }
-    
+
     public BinaryPacket ConstructPacket()
     {
         var body = ConstructData();
         var encrypt = Keystore.SecpImpl.Encrypt(body.ToArray());
-        
+
         var packet = new BinaryPacket()
             .WriteByte(2) // packet start
             .Barrier(w => w
@@ -46,9 +46,9 @@ internal abstract class WtLoginBase
                 .WritePacket(BuildEncryptHead())
                 .WriteBytes(encrypt.AsSpan())
                 .WriteByte(3), Prefix.Uint16 | Prefix.WithPrefix, 1); // 0x03 is the packet end
-        
+
         // for the addition of 1, the packet start should be counted in
-        
+
         return packet;
     }
 
@@ -56,7 +56,7 @@ internal abstract class WtLoginBase
     {
         uint packetLength = packet.ReadUint();
         if (packet.ReadByte() != 0x02) return new BinaryPacket(); // packet header
-        
+
         ushort internalLength = packet.ReadUshort();
         ushort ver = packet.ReadUshort();
         ushort cmd = packet.ReadUshort();

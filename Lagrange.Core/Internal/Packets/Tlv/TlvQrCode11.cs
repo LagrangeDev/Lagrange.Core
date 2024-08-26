@@ -12,6 +12,6 @@ internal class TlvQrCode11 : TlvBody
     {
         UnusualSign = keystore.Session.UnusualSign ?? throw new InvalidOperationException();
     }
-    
+
     [BinaryProperty(Prefix.None)] public byte[] UnusualSign { get; set; }
 }

@@ -9,9 +9,9 @@ public static class BotFactory
     /// <param name="deviceInfo">Existing DeviceInfo from deserialization</param>
     /// <param name="keystore">Existing Keystore from deserialization</param>
     /// <returns>Created BotContext Instance</returns>
-    public static BotContext Create(BotConfig config, BotDeviceInfo deviceInfo, BotKeystore keystore) => 
+    public static BotContext Create(BotConfig config, BotDeviceInfo deviceInfo, BotKeystore keystore) =>
         new(config, deviceInfo, keystore);
-    
+
     /// <summary>
     /// Create new Bot from Password and uin
     /// </summary>
@@ -20,6 +20,6 @@ public static class BotFactory
     /// <param name="password">The password of account, for Password Login</param>
     /// <param name="device">Created device, should be serialized to files for next use</param>
     /// <returns>Created BotContext Instance</returns>
-    public static BotContext Create(BotConfig config, uint uin, string password, out BotDeviceInfo device) => 
+    public static BotContext Create(BotConfig config, uint uin, string password, out BotDeviceInfo device) =>
         new(config, device = BotDeviceInfo.GenerateInfo(), new BotKeystore(uin, password));
 }

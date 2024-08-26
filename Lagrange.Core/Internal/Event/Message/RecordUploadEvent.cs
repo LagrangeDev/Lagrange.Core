@@ -9,9 +9,9 @@ namespace Lagrange.Core.Internal.Event.Message;
 internal class RecordUploadEvent : NTV2RichMediaUploadEvent
 {
     public RecordEntity Entity { get; }
-    
+
     public string TargetUid { get; set; }
-    
+
     public RichText Compat { get; }
 
     private RecordUploadEvent(RecordEntity entity, string targetUid)
@@ -20,12 +20,12 @@ internal class RecordUploadEvent : NTV2RichMediaUploadEvent
         TargetUid = targetUid;
     }
 
-    private RecordUploadEvent(int resultCode, MsgInfo msgInfo, string? uKey, List<IPv4> network, List<SubFileInfo> subFiles, RichText compat) 
+    private RecordUploadEvent(int resultCode, MsgInfo msgInfo, string? uKey, List<IPv4> network, List<SubFileInfo> subFiles, RichText compat)
         : base(resultCode, msgInfo, uKey, network, subFiles)
     {
         Compat = compat;
     }
-    
+
     public static RecordUploadEvent Create(RecordEntity entity, string targetUid)
         => new(entity, targetUid);
 

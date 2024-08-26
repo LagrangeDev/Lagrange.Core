@@ -7,7 +7,7 @@ namespace Lagrange.Core.Internal.Packets.Action.HttpConn;
 internal class HttpConn
 {
     [ProtoMember(1)] public int Field1 { get; set; } // 0
-    
+
     [ProtoMember(2)] public int Field2 { get; set; } // 0
 
     [ProtoMember(3)] public int Field3 { get; set; } // 16

@@ -9,10 +9,10 @@ public class GroupInvitationRequestEvent : EventBase
         InvitorUin = invitorUin;
         EventMessage = $"[{nameof(GroupInvitationRequestEvent)}] {TargetUin} from {InvitorUin} at {GroupUin}";
     }
-    
+
     public uint GroupUin { get; }
-    
+
     public uint TargetUin { get; }
-    
+
     public uint InvitorUin { get; }
 }

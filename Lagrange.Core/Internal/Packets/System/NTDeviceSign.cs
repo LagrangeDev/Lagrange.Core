@@ -9,8 +9,8 @@ namespace Lagrange.Core.Internal.Packets.System;
 internal class NTDeviceSign
 {
     [ProtoMember(15)] public string Trace { get; set; }
-    
+
     [ProtoMember(16)] public string? Uid { get; set; }
-    
+
     [ProtoMember(24)] public SecInfo? Sign { get; set; }
 }

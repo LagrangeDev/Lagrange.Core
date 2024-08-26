@@ -12,7 +12,7 @@ public class GetVersionInfoOperation : IOperation
     {
         var appInfo = context.ContextCollection.AppInfo;
         string version = $"{appInfo.Os} | {appInfo.CurrentVersion}";
-        
+
         return Task.FromResult(new OneBotResult(new OneBotVersionInfoResponse(version), 0, "ok"));
     }
 }

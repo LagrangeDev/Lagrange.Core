@@ -12,7 +12,7 @@ public sealed class ForwardWSServiceFactory(IServiceProvider services) : Lagrang
         var config = _config ?? throw new InvalidOperationException("Configuration must be provided");
         var options = _services.GetRequiredService<IOptionsSnapshot<ForwardWSServiceOptions>>();
         config.Bind(options.Value);
-            
+
         return _services.GetRequiredService<ForwardWSService>();
     }
 }

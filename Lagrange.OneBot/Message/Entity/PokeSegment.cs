@@ -9,11 +9,11 @@ public partial class PokeSegment(uint type, uint strength)
 {
     public PokeSegment() : this(0, 0) { }
 
-    [JsonPropertyName("type")] [CQProperty] public string Type { get; set; } = type.ToString();
-    
+    [JsonPropertyName("type")][CQProperty] public string Type { get; set; } = type.ToString();
+
     [JsonPropertyName("strength")] public string? Strength { get; set; } = strength.ToString();
 
-    [JsonPropertyName("id")] [CQProperty] public string Id { get; set; } = string.Empty;
+    [JsonPropertyName("id")][CQProperty] public string Id { get; set; } = string.Empty;
 }
 
 [SegmentSubscriber(typeof(PokeEntity), "poke")]
@@ -27,7 +27,7 @@ public partial class PokeSegment : SegmentBase
     public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
     {
         if (entity is not PokeEntity pokeEntity) throw new ArgumentException("Invalid entity type.");
-        
+
         return new PokeSegment(pokeEntity.Type, pokeEntity.Strength);
     }
 }

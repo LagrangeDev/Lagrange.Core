@@ -21,7 +21,7 @@ public class UploadPrivateFile : IOperation
             bool result = await context.UploadFriendFile(file.UserId, entity);
             return new OneBotResult(null, result ? 0 : 1, result ? "ok" : "failed");
         }
-        
+
         throw new Exception();
     }
 }

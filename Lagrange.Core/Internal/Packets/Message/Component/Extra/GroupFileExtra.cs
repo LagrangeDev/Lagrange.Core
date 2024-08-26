@@ -8,11 +8,11 @@ namespace Lagrange.Core.Internal.Packets.Message.Component.Extra;
 internal class GroupFileExtra
 {
     [ProtoMember(1)] public uint Field1 { get; set; }
-    
+
     [ProtoMember(2)] public string FileName { get; set; }
-    
+
     [ProtoMember(3)] public string Display { get; set; }
-    
+
     [ProtoMember(7)] public GroupFileExtraInner Inner { get; set; }
 }
 
@@ -26,15 +26,15 @@ internal class GroupFileExtraInner
 internal class GroupFileExtraInfo
 {
     [ProtoMember(1)] public uint BusId { get; set; }
-    
+
     [ProtoMember(2)] public string FileId { get; set; }
-    
+
     [ProtoMember(3)] public long FileSize { get; set; }
-    
+
     [ProtoMember(4)] public string FileName { get; set; }
-    
+
     [ProtoMember(5)] public uint Field5 { get; set; }
-    
+
     [ProtoMember(7)] public string Field7 { get; set; }
 
     [ProtoMember(8)] public string FileMd5 { get; set; }  // hexed

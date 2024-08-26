@@ -9,9 +9,9 @@ public partial class VideoSegment(string url)
 {
     public VideoSegment() : this("") { }
 
-    [JsonPropertyName("file")] [CQProperty] public string File { get; set; } = url;
-    
-    [JsonPropertyName("url")] public string Url { get; set; }  = url;
+    [JsonPropertyName("file")][CQProperty] public string File { get; set; } = url;
+
+    [JsonPropertyName("url")] public string Url { get; set; } = url;
 }
 
 [SegmentSubscriber(typeof(VideoEntity), "video")]

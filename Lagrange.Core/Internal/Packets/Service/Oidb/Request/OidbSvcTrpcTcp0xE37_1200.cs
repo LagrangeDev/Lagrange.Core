@@ -11,7 +11,7 @@ internal class OidbSvcTrpcTcp0xE37_1200
     [ProtoMember(1)] public uint SubCommand { get; set; } = 1200;
 
     [ProtoMember(2)] public int Field2 { get; set; } = 1; // Unknown
-    
+
     [ProtoMember(14)] public OidbSvcTrpcTcp0xE37_1200Body Body { get; set; }
 
     [ProtoMember(101)] public int Field101 { get; set; } = 3; // Unknown
@@ -27,11 +27,11 @@ internal class OidbSvcTrpcTcp0xE37_1200
 internal class OidbSvcTrpcTcp0xE37_1200Body
 {
     [ProtoMember(10)] public string ReceiverUid { get; set; }
-    
+
     [ProtoMember(20)] public string FileUuid { get; set; }
 
     [ProtoMember(30)] public int Type { get; set; } = 2;
-    
+
     [ProtoMember(60)] public string FileHash { get; set; }
 
     [ProtoMember(601)] public int T2 { get; set; } = 0;

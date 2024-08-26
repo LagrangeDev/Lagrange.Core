@@ -15,16 +15,16 @@ internal class Tlv100 : TlvBody
         AppClientVersion = appInfo.AppClientVersion;
         MainSigMap = appInfo.MainSigMap;
     }
-    
+
     [BinaryProperty] public ushort DbBufVersion { get; set; } = 0; // originally 0x1
-    
+
     [BinaryProperty] public uint SsoVersion { get; set; } = 0x00000005;
-    
+
     [BinaryProperty] public uint AppId { get; set; }
-    
+
     [BinaryProperty] public uint SubAppId { get; set; }
-    
+
     [BinaryProperty] public uint AppClientVersion { get; set; }
-    
+
     [BinaryProperty] public uint MainSigMap { get; set; }
 }

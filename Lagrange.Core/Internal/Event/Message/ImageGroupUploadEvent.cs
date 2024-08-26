@@ -9,9 +9,9 @@ namespace Lagrange.Core.Internal.Event.Message;
 internal class ImageGroupUploadEvent : NTV2RichMediaUploadEvent
 {
     public ImageEntity Entity { get; }
-    
+
     public uint GroupUin { get; }
-    
+
     public CustomFace Compat { get; }
 
     private ImageGroupUploadEvent(ImageEntity entity, uint groupUin)
@@ -20,7 +20,7 @@ internal class ImageGroupUploadEvent : NTV2RichMediaUploadEvent
         GroupUin = groupUin;
     }
 
-    private ImageGroupUploadEvent(int resultCode, MsgInfo msgInfo, string? uKey, List<IPv4> network, List<SubFileInfo> subFiles, CustomFace compat) 
+    private ImageGroupUploadEvent(int resultCode, MsgInfo msgInfo, string? uKey, List<IPv4> network, List<SubFileInfo> subFiles, CustomFace compat)
         : base(resultCode, msgInfo, uKey, network, subFiles)
     {
         Compat = compat;

@@ -181,7 +181,7 @@ internal class OperationLogic : LogicBase
         var retMsg = events.Count > 0 ? ((GroupFSCreateFolderEvent)events[0]).RetMsg : "";
         return new(retCode, retMsg);
     }
-    
+
     public async Task<(int, string)> GroupFSDeleteFolder(uint groupUin, string folderId)
     {
         var groupFSDeleteFolderEvent = GroupFSDeleteFolderEvent.Create(groupUin, folderId);

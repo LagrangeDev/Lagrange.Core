@@ -29,7 +29,7 @@ internal class VideoUploader : IHighwayUploader
                     throw new Exception();
                 }
             }
-            
+
             if (Common.GenerateExt(metaResult, metaResult.SubFiles[0]) is { } subExt)
             {
                 var hash = metaResult.MsgInfo.MsgInfoBody[1].Index.Info.FileHash.UnHex();
@@ -56,11 +56,11 @@ internal class VideoUploader : IHighwayUploader
             var uploadEvent = VideoGroupUploadEvent.Create(video, chain.GroupUin ?? 0);
             var uploadResult = await context.Business.SendEvent(uploadEvent);
             var metaResult = (VideoGroupUploadEvent)uploadResult[0];
-            
+
             if (Common.GenerateExt(metaResult) is { } ext)
             {
                 ext.Hash.FileSha1 = Common.CalculateStreamBytes(stream.Value);
-                
+
                 var hash = metaResult.MsgInfo.MsgInfoBody[0].Index.Info.FileHash.UnHex();
                 bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1005, stream.Value, await Common.GetTicket(context), hash, ext.Serialize().ToArray());
                 if (!hwSuccess)
@@ -81,7 +81,7 @@ internal class VideoUploader : IHighwayUploader
                     throw new Exception();
                 }
             }
-            
+
             video.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             video.Compat = metaResult.Compat;  // for legacy QQ
             await stream.Value.DisposeAsync();

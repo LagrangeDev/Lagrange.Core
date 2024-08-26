@@ -4,11 +4,11 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb;
 internal class OidbSvcTrpcTcpAttribute : Attribute
 {
     public uint Command { get; set; }
-    
+
     public uint SubCommand { get; set; }
-    
+
     public bool IsLafter { get; set; }
-    
+
     public OidbSvcTrpcTcpAttribute(uint command, uint subCommand, bool isLafter = false)
     {
         Command = command;

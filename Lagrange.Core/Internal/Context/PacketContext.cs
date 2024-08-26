@@ -16,10 +16,10 @@ namespace Lagrange.Core.Internal.Context;
 internal class PacketContext : ContextBase
 {
     internal SignProvider SignProvider { private get; set; }
-    
+
     private readonly ConcurrentDictionary<uint, TaskCompletionSource<SsoPacket>> _pendingTasks;
-    
-    public PacketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, BotConfig config) 
+
+    public PacketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, BotConfig config)
         : base(collection, keystore, appInfo, device)
     {
         SignProvider = config.CustomSignProvider ?? appInfo.Os switch
@@ -31,7 +31,7 @@ internal class PacketContext : ContextBase
         };
         _pendingTasks = new ConcurrentDictionary<uint, TaskCompletionSource<SsoPacket>>();
     }
-    
+
     /// <summary>
     /// Send the packet and wait for the corresponding response by the packet's sequence number.
     /// </summary>
@@ -59,7 +59,7 @@ internal class PacketContext : ContextBase
 
         return task.Task;
     }
-    
+
     /// <summary>
     /// Send the packet and don't wait for the corresponding response by the packet's sequence number.
     /// </summary>
@@ -82,17 +82,17 @@ internal class PacketContext : ContextBase
                 return false;
         }
     }
-    
+
     public void DispatchPacket(BinaryPacket packet)
     {
         var service = ServicePacker.Parse(packet, Keystore);
         if (service.Length == 0) return;
 
         var sso = SsoPacker.Parse(service);
-        
+
         if (_pendingTasks.TryRemove(sso.Sequence, out var task))
         {
-            if (sso is { RetCode: not 0, Extra: { } extra})
+            if (sso is { RetCode: not 0, Extra: { } extra })
             {
                 string msg = $"Packet '{sso.Command}' returns {sso.RetCode} with seq: {sso.Sequence}, extra: {extra}";
                 task.SetException(new InvalidOperationException(msg));

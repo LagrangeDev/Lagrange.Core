@@ -3,7 +3,7 @@ namespace Lagrange.Core.Internal.Event.Action;
 internal class SetStatusEvent : ProtocolEvent
 {
     public uint Status { get; }
-    
+
     public uint ExtStatus { get; }
 
     protected SetStatusEvent(uint status, uint extStatus) : base(true)

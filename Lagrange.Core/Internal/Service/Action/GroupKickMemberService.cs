@@ -23,17 +23,17 @@ internal class GroupKickMemberService : BaseService<GroupKickMemberEvent>
             RejectAddRequest = input.RejectAddRequest,
             Field5 = ""
         });
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out GroupKickMemberEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x8A0_1Response>>(input);
-        
+
         output = GroupKickMemberEvent.Result((int)packet.ErrorCode);
         extraEvents = null;
         return true;

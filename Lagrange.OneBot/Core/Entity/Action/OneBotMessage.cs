@@ -9,11 +9,11 @@ namespace Lagrange.OneBot.Core.Entity.Action;
 public class OneBotMessageBase
 {
     [JsonPropertyName("message_type")] public string MessageType { get; set; } = "";
-    
+
     [JsonPropertyName("user_id")] public uint? UserId { get; set; }
-    
+
     [JsonPropertyName("group_id")] public uint? GroupId { get; set; }
-    
+
     [JsonPropertyName("auto_escape")] public bool? AutoEscape { get; set; }
 }
 
@@ -60,13 +60,13 @@ public class OneBotMessageConverter<T, TList, TSimple, TText> : JsonConverter<T>
                     throw new Exception();
             }
         }
-        
+
         throw new Exception("json error");
     }
 
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
     {
         // Null
-        
+
     }
 }

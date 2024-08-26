@@ -36,7 +36,7 @@ internal class GroupSetSpecialTitleService : BaseService<GroupSetSpecialTitleEve
         out GroupSetSpecialTitleEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
-        
+
         output = GroupSetSpecialTitleEvent.Result((int)packet.ErrorCode);
         extraEvents = null;
         return true;

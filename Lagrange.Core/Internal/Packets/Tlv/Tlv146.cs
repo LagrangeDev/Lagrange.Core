@@ -9,10 +9,10 @@ namespace Lagrange.Core.Internal.Packets.Tlv;
 internal class Tlv146 : TlvBody
 {
     [BinaryProperty] public uint State { get; set; }
-    
+
     [BinaryProperty(Prefix.Uint16 | Prefix.LengthOnly)] public string Tag { get; set; }
-    
+
     [BinaryProperty(Prefix.Uint16 | Prefix.LengthOnly)] public string Message { get; set; }
-    
+
     [BinaryProperty] public uint Field0 { get; set; }
 }

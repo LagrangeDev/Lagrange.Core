@@ -33,18 +33,18 @@ internal class FetchMembersService : BaseService<FetchMembersEvent>
             },
             Token = input.Token
         });
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out FetchMembersEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var response = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE7_3Response>>(input);
 
-        var members = response.Body.Members.Select(member => 
+        var members = response.Body.Members.Select(member =>
             new BotGroupMember(member.Uin.Uin,
                                member.Uin.Uid,
                                (GroupMemberPermission)member.Permission,
@@ -54,7 +54,7 @@ internal class FetchMembersService : BaseService<FetchMembersEvent>
                                member.SpecialTitle,
                                DateTimeOffset.FromUnixTimeSeconds(member.JoinTimestamp).DateTime,
                                DateTimeOffset.FromUnixTimeSeconds(member.LastMsgTimestamp).DateTime)).ToList();
-        
+
         output = FetchMembersEvent.Result(members, response.Body.Token);
         extraEvents = null;
         return true;

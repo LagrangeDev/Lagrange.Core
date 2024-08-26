@@ -38,7 +38,7 @@ internal class VideoDownloadService : BaseService<VideoDownloadEvent>
                 },
                 Client = new ClientMeta
                 {
-                    AgentType = 2 
+                    AgentType = 2
                 }
             },
             Download = new DownloadReq
@@ -81,17 +81,17 @@ internal class VideoDownloadService : BaseService<VideoDownloadEvent>
         }, 0x11e9, 200, false, true);
         output = packet.Serialize();
         extraPackets = null;
-        
+
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out VideoDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var body = payload.Body.Download;
         string url = $"https://{body.Info.Domain}{body.Info.UrlPath}{body.RKeyParam}";
-        
+
         output = VideoDownloadEvent.Result((int)payload.ErrorCode, url);
         extraEvents = null;
         return true;

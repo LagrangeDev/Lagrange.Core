@@ -16,12 +16,12 @@ namespace Lagrange.Core.Internal.Context;
 internal class HighwayContext : ContextBase, IDisposable
 {
     private const string Tag = nameof(HighwayContext);
-    
+
     private static readonly RuntimeTypeModel Serializer;
 
     private uint _sequence;
     private Uri? _uri;
-        
+
     private readonly Dictionary<Type, IHighwayUploader> _uploaders;
     private readonly HttpClient _client;
     private readonly int _chunkSize;
@@ -32,7 +32,7 @@ internal class HighwayContext : ContextBase, IDisposable
         Serializer = RuntimeTypeModel.Create();
         Serializer.UseImplicitZeroDefaults = false;
     }
-    
+
     public HighwayContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, BotConfig config)
         : base(collection, keystore, appInfo, device)
     {
@@ -42,12 +42,12 @@ internal class HighwayContext : ContextBase, IDisposable
             var attribute = impl.GetCustomAttribute<HighwayUploaderAttribute>();
             if (attribute != null) _uploaders[attribute.Entity] = (IHighwayUploader)impl.CreateInstance(false);
         }
-        
+
         var handler = new HttpClientHandler
         {
             ServerCertificateCustomValidationCallback = (_, _, _, _) => true,
         };
-        
+
         _client = new HttpClient(handler);
         _client.DefaultRequestHeaders.Add("Accept-Encoding", "identity");
         _client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2)");
@@ -85,7 +85,7 @@ internal class HighwayContext : ContextBase, IDisposable
                 uint uin = Collection.Keystore.Uin;
                 string uid = Collection.Keystore.Uid ?? "";
                 var chain = new MessageChain(uin, uid, uid) { entity };
-                
+
                 await uploader.UploadPrivate(Collection, chain, entity);
             }
             catch
@@ -103,7 +103,7 @@ internal class HighwayContext : ContextBase, IDisposable
             var result = (HighwayUrlEvent)highwayUrlEvent[0];
             _uri = result.HighwayUrls[1][0];
         }
-        
+
         bool success = true;
         var upBlocks = new List<UpBlock>();
 
@@ -126,7 +126,7 @@ internal class HighwayContext : ContextBase, IDisposable
                 var tasks = upBlocks.Select(x => SendUpBlockAsync(x, _uri)).ToArray();
                 var results = await Task.WhenAll(tasks);
                 success &= results.All(x => x);
-                
+
                 upBlocks.Clear();
             }
         }
@@ -171,7 +171,7 @@ internal class HighwayContext : ContextBase, IDisposable
         };
 
         bool isEnd = upBlock.Offset + (ulong)upBlock.Block.Length == upBlock.FileSize;
-        var payload = await SendPacketAsync(highwayHead, new BinaryPacket(upBlock.Block),  server, isEnd);
+        var payload = await SendPacketAsync(highwayHead, new BinaryPacket(upBlock.Block), server, isEnd);
         var (respHead, resp) = ParsePacket(payload);
 
         Collection.Log.LogDebug(Tag, $"Highway Block Result: {respHead.ErrorCode} | {respHead.MsgSegHead?.RetCode} | {respHead.BytesRspExtendInfo?.Hex()} | {resp.ToArray().Hex()}");
@@ -183,7 +183,7 @@ internal class HighwayContext : ContextBase, IDisposable
     {
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, head);
-        
+
         var writer = new BinaryPacket()
                 .WriteByte(0x28) // packet start
                 .WriteInt((int)stream.Length)
@@ -191,7 +191,7 @@ internal class HighwayContext : ContextBase, IDisposable
                 .WriteBytes(stream.ToArray())
                 .WritePacket(buffer)
                 .WriteByte(0x29); // packet end
-        
+
         return SendDataAsync(writer.ToArray(), server, end);
     }
 
@@ -203,13 +203,13 @@ internal class HighwayContext : ContextBase, IDisposable
             int bodyLength = packet.ReadInt();
             var head = Serializer.Deserialize<RespDataHighwayHead>(packet.ReadBytes(headLength));
             var body = packet.ReadPacket(bodyLength);
-            
+
             if (packet.ReadByte() == 0x29) return (head, body);
         }
-        
+
         throw new InvalidOperationException("Invalid packet");
     }
-    
+
     private async Task<BinaryPacket> SendDataAsync(byte[] packet, Uri server, bool end)
     {
         var content = new ByteArrayContent(packet);
@@ -225,16 +225,16 @@ internal class HighwayContext : ContextBase, IDisposable
         var data = await response.Content.ReadAsByteArrayAsync();
         return new BinaryPacket(data);
     }
-    
+
     private record struct UpBlock(
-        int CommandId, 
+        int CommandId,
         uint Uin,
-        uint Sequence, 
+        uint Sequence,
         ulong FileSize,
-        ulong Offset, 
+        ulong Offset,
         byte[] Ticket,
         byte[] FileMd5,
-        byte[] Block, 
+        byte[] Block,
         byte[]? ExtendInfo = null,
         ulong Timestamp = 0);
 

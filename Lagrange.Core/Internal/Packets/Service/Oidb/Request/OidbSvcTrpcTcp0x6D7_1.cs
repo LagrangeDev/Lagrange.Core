@@ -19,6 +19,6 @@ internal class OidbSvcTrpcTcp0x6D7_1
 internal class OidbSvcTrpcTcp0x6D7_1Delete
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
-    
+
     [ProtoMember(3)] public string FolderId { get; set; }
 }

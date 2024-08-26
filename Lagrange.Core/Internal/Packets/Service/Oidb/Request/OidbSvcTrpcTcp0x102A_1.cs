@@ -11,5 +11,5 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 [OidbSvcTrpcTcp(0x102A, 1)]
 internal class OidbSvcTrpcTcp0x102A_1
 {
-    
+
 }

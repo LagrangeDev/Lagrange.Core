@@ -8,6 +8,6 @@ namespace Lagrange.OneBot.Core.Operation.Generic;
 [Operation("fetch_custom_face")]
 internal class FetchCustomFaceOperation : IOperation
 {
-    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload) => 
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload) =>
         new(await context.FetchCustomFace(), 0, "ok");
 }

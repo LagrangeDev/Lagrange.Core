@@ -26,7 +26,7 @@ public class VideoEntity : IMessageEntity
     #region Internal Properties
 
     internal Lazy<Stream>? VideoStream { get; set; }
-    
+
     internal Lazy<Stream>? ThumbnailStream { get; set; }
 
     internal string? VideoUuid { get; }

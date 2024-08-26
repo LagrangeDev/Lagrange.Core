@@ -43,38 +43,38 @@ public partial class RecordSegment : SegmentBase
         {
             // Silk v3 for tx use
             case AudioHelper.AudioFormat.TenSilkV3:
-                {
-                    audioTime = AudioHelper.GetTenSilkTime(audio);
-                    return audio;
-                }
+            {
+                audioTime = AudioHelper.GetTenSilkTime(audio);
+                return audio;
+            }
 
             // Amr format
             // We no need to convert it
             case AudioHelper.AudioFormat.Amr:
-                {
-                    audioTime = audio.Length / 1607.0;
-                    return audio;
-                }
+            {
+                audioTime = audio.Length / 1607.0;
+                return audio;
+            }
 
             // Normal silk v3
             // We need to append a header 0x02
             // and remove 0xFFFF end for it
             case AudioHelper.AudioFormat.SilkV3:
-                {
-                    audio = [0x02, .. audio.AsSpan(0, audio.Length - 2)];
-                    audioTime = AudioHelper.GetTenSilkTime(audio);
-                    return audio;
-                }
+            {
+                audio = [0x02, .. audio.AsSpan(0, audio.Length - 2)];
+                audioTime = AudioHelper.GetTenSilkTime(audio);
+                return audio;
+            }
 
             // Need to convert
             case AudioHelper.AudioFormat.Wav:
             case AudioHelper.AudioFormat.Ogg:
             case AudioHelper.AudioFormat.Mp3:
-                {
-                    var input = new MemoryStream(audio);
-                    var output = new MemoryStream();
+            {
+                var input = new MemoryStream(audio);
+                var output = new MemoryStream();
 
-                    var pipeline = new AudioPipeline() {
+                var pipeline = new AudioPipeline() {
                         format switch {
                             AudioHelper.AudioFormat.Wav => new WavCodec.Decoder(input),
                             AudioHelper.AudioFormat.Ogg => new VorbisCodec.Decoder(input),
@@ -85,11 +85,11 @@ public partial class RecordSegment : SegmentBase
                         new SilkV3Codec.Encoder(),
                         output
                     };
-                    if (!pipeline.Start().Result) throw new Exception("Encode failed");
+                if (!pipeline.Start().Result) throw new Exception("Encode failed");
 
-                    audioTime = pipeline.GetAudioTime();
-                    return output.ToArray();
-                }
+                audioTime = pipeline.GetAudioTime();
+                return output.ToArray();
+            }
 
             // Cannot convert unknown type
             default: throw new Exception("Unknown Fromat");

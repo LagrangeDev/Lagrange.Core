@@ -16,7 +16,7 @@ internal class Tlv16A : TlvBody
     {
         NoPicSig = keystore.Session.NoPicSig ?? Array.Empty<byte>();
     }
-    
+
     [BinaryProperty(Prefix.None)] public byte[] NoPicSig { get; set; }
 }
 

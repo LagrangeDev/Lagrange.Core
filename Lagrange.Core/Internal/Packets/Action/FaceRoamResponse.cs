@@ -8,9 +8,9 @@ namespace Lagrange.Core.Internal.Packets.Action;
 internal class FaceRoamResponse
 {
     [ProtoMember(1)] public uint RetCode { get; set; }
-    
+
     [ProtoMember(2)] public string ErrMsg { get; set; }
-    
+
     [ProtoMember(3)] public uint SubCmd { get; set; }
 
     [ProtoMember(4)] public FaceRoamUserInfo UserInfo { get; set; }
@@ -20,9 +20,9 @@ internal class FaceRoamResponse
 internal class FaceRoamUserInfo
 {
     [ProtoMember(1)] public List<string> FileName { get; set; }
-    
+
     [ProtoMember(2)] public List<string> DeleteFile { get; set; }
-    
+
     [ProtoMember(3)] public string Bid { get; set; }
 
     [ProtoMember(4)] public uint MaxRoamSize { get; set; }

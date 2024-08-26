@@ -12,6 +12,6 @@ internal class FriendPokeEvent : ProtocolEvent
     protected FriendPokeEvent(int resultCode) : base(resultCode) { }
 
     public static FriendPokeEvent Create(uint friendUin) => new(friendUin);
-    
+
     public static FriendPokeEvent Result(int resultCode) => new(resultCode);
 }

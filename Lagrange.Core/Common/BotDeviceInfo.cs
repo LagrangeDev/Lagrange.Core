@@ -8,13 +8,13 @@ namespace Lagrange.Core.Common;
 public class BotDeviceInfo
 {
     public Guid Guid { get; set; }
-    
+
     public byte[] MacAddress { get; set; }
-    
+
     public string DeviceName { get; set; }
-    
+
     public string SystemKernel { get; set; }
-    
+
     public string KernelVersion { get; set; }
 
     public static BotDeviceInfo GenerateInfo() => new()

@@ -10,13 +10,13 @@ internal class TransEmpEvent : ProtocolEvent
     #region TransEmp CMD0x31
 
     public byte[] QrCode { get; }
-    
+
     public uint Expiration { get; }
-    
+
     public string Url { get; }
 
     public string QrSig { get; }
-    
+
     public byte[] Signature { get; }
 
     #endregion
@@ -24,20 +24,20 @@ internal class TransEmpEvent : ProtocolEvent
     #region TransEmp CMD0x12
 
     public byte[]? TgtgtKey { get; }
-    
+
     public byte[]? TempPassword { get; }
-    
+
     public byte[]? NoPicSig { get; }
 
     #endregion
-    
+
     private TransEmpEvent(State eventState) : base(true) => EventState = eventState;
 
-    private TransEmpEvent(int result, byte[] qrCode, uint expiration, string url, string qrSig, byte[] signature) 
+    private TransEmpEvent(int result, byte[] qrCode, uint expiration, string url, string qrSig, byte[] signature)
         : base(result)
     {
         EventState = State.FetchQrCode;
-        
+
         QrCode = qrCode;
         Expiration = expiration;
         Url = url;
@@ -52,13 +52,13 @@ internal class TransEmpEvent : ProtocolEvent
         NoPicSig = noPicSig;
         EventState = State.QueryResult;
     }
-    
+
     public static TransEmpEvent Create(State eventState) => new(eventState);
 
-    public static TransEmpEvent Result(byte[] qrCode, uint expiration, string url, string qrSig, byte[] signature) => 
+    public static TransEmpEvent Result(byte[] qrCode, uint expiration, string url, string qrSig, byte[] signature) =>
         new(0, qrCode, expiration, url, qrSig, signature);
-    
-    public static TransEmpEvent Result(TransEmp12.State state, byte[]? tgtgtKey, byte[]? tempPassword, byte[]? noPicSig) => 
+
+    public static TransEmpEvent Result(TransEmp12.State state, byte[]? tgtgtKey, byte[]? tempPassword, byte[]? noPicSig) =>
         new((int)state, tgtgtKey, tempPassword, noPicSig);
 
     public enum State : byte

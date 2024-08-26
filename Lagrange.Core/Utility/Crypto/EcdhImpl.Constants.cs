@@ -15,10 +15,10 @@ internal partial class EcdhImpl
         Ecdh135 = 0x87,
         Ecdh7 = 0x07
     }
-    
+
     private static readonly Dictionary<CryptMethod, EcdhInfo> CurveTable = new()
     {
-        { 
+        {
             CryptMethod.Prime256V1, new EcdhInfo
             {
                 Curve = EllipticCurve.Prime256V1,
@@ -33,7 +33,7 @@ internal partial class EcdhImpl
                     0xF2, 0x58, 0x89, 0xF6, 0x28, 0xCB, 0xAE, 0x3E,
                     0x8E, 0x73, 0x07, 0x79, 0x14, 0x07, 0x1E, 0xEE,
                     0xBC, 0x10, 0x8F, 0x4E, 0x01, 0x70, 0x05, 0x77,
-                    0x92, 0xBB, 0x17, 0xAA, 0x30, 0x3A, 0xF6, 0x52, 
+                    0x92, 0xBB, 0x17, 0xAA, 0x30, 0x3A, 0xF6, 0x52,
                     0x31, 0x3D, 0x17, 0xC1, 0xAC, 0x81, 0x5E, 0x79
                 }
             }
@@ -43,7 +43,7 @@ internal partial class EcdhImpl
             {
                 Curve = EllipticCurve.Secp192K1,
                 Id = CryptId.Ecdh7,
-                
+
                 PubKey = new byte[]
                 {
                     0x04, 0x92, 0x8D, 0x88, 0x50, 0x67, 0x30, 0x88,
@@ -57,6 +57,6 @@ internal partial class EcdhImpl
             }
         }
     };
-    
+
     private readonly record struct EcdhInfo(EllipticCurve Curve, CryptId Id, byte[] PubKey);
 }

@@ -6,8 +6,8 @@ namespace Lagrange.Core.Internal.Packets.Message.Component.Extra;
 internal class PokeExtra
 {
     [ProtoMember(1)] public uint Type { get; set; }
-    
+
     [ProtoMember(7)] public uint Strength { get; set; }
-    
+
     [ProtoMember(8)] public uint Field8 { get; set; }
 }

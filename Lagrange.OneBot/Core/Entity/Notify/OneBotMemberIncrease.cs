@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace Lagrange.OneBot.Core.Entity.Notify;
 
 [Serializable]
-public class OneBotMemberIncrease(uint selfId, string subType, uint groupId, uint operatorId, uint userId) 
+public class OneBotMemberIncrease(uint selfId, string subType, uint groupId, uint operatorId, uint userId)
     : OneBotNotify(selfId, "group_increase")
 {
     [JsonPropertyName("sub_type")] public string SubType { get; set; } = subType;

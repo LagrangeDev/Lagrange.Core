@@ -46,20 +46,20 @@ internal class ImageGroupDownloadService : BaseService<ImageGroupDownloadEvent>
                 }
             }
         }, 0x11c4, 200, false, true);
-        
+
         output = packet.Serialize();
         extraPackets = null;
-        
+
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out ImageGroupDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var body = payload.Body.Download;
         string url = $"https://{body.Info.Domain}{body.Info.UrlPath}{body.RKeyParam}";
-        
+
         output = ImageGroupDownloadEvent.Result((int)payload.ErrorCode, url);
         extraEvents = null;
         return true;

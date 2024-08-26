@@ -3,7 +3,7 @@ namespace Lagrange.Core.Internal.Event.Action;
 internal class GroupSetReactionEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
-    
+
     public uint Sequence { get; }
 
     public string Code { get; } = string.Empty;

@@ -16,7 +16,7 @@ public class SetGroupBotOperation : IOperation
 
         if (message != null)
         {
-            bool _ = await context.SetGroupBot(message.BotId, message.Enable , message.GroupId);
+            bool _ = await context.SetGroupBot(message.BotId, message.Enable, message.GroupId);
 
             return new OneBotResult(message.BotId, 0, "ok");
         }

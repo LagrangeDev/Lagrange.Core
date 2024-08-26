@@ -7,11 +7,11 @@ namespace Lagrange.Core.Internal.Event.Message;
 internal abstract class NTV2RichMediaUploadEvent : ProtocolEvent
 {
     public MsgInfo MsgInfo { get; }
-    
+
     public string? UKey { get; }
-    
+
     public List<IPv4> Network { get; }
-    
+
     public List<SubFileInfo> SubFiles { get; }
 
     protected NTV2RichMediaUploadEvent() : base(true) { }

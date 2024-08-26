@@ -204,7 +204,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                         actionStr = string.Empty;
                     }
                 }
-                
+
                 if (greyTip.GeneralGrayTip.BusiType == 12)  // poke
                 {
                     var groupPokeEvent = GroupSysPokeEvent.Result(groupUin, uint.Parse(templates["uin_str1"]), uint.Parse(templates["uin_str2"]), actionStr, templates["suffix_str"], templates["action_img_url"]);

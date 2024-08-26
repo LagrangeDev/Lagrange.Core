@@ -7,9 +7,9 @@ namespace Lagrange.Core.Internal.Event.System;
 internal class FetchUserInfoEvent : ProtocolEvent
 {
     public BotUserInfo UserInfo { get; }
-    
+
     public uint Uin { get; }
-    
+
     public string? Uid { get; }
 
     private FetchUserInfoEvent(uint uin, string? uid) : base(true)
@@ -24,7 +24,7 @@ internal class FetchUserInfoEvent : ProtocolEvent
     }
 
     public static FetchUserInfoEvent Create(uint uid) => new(uid, null);
-    
+
     public static FetchUserInfoEvent Create(string uid) => new(0, uid);
 
     public static FetchUserInfoEvent Result(int resultCode, BotUserInfo userInfo) =>

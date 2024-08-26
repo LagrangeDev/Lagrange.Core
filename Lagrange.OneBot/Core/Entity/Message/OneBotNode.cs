@@ -12,7 +12,7 @@ public class OneBotNode(string userId, string nickName, List<OneBotSegment> cont
     [JsonPropertyName("nickname")] public string NickName { get; set; } = nickName;
 
     [JsonPropertyName("content")] public List<OneBotSegment> Content { get; set; } = content;
-    
+
     public IMessageEntity ToEntity() => throw new NotImplementedException();
 
     public override void Build(MessageBuilder builder, SegmentBase segment) => throw new NotImplementedException();

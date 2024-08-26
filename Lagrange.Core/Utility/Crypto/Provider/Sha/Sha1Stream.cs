@@ -35,7 +35,7 @@ public class Sha1Stream
         _state[2] = 0x98BADCFE;
         _state[3] = 0x10325476;
         _state[4] = 0xC3D2E1F0;
-            
+
         _count[0] = 0;
         _count[1] = 0;
     }
@@ -43,13 +43,13 @@ public class Sha1Stream
     private void Transform(byte[] data)  // Transform function
     {
         if (data.Length != 64) throw new ArgumentException("Data must be exactly 64 bytes");
-        
+
         var w = new uint[80]; // 1. Break chunk into sixteen 32-bit words
         for (int i = 0; i < 16; i++)
         {
             w[i] = BinaryPrimitives.ReadUInt32BigEndian(data.AsSpan(i * 4));
         }
-        
+
         for (int i = 16; i < 80; i++) // 2. Extend the sixteen 32-bit words into eighty 32-bit words
         {
             w[i] = (w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16]) << 1 | (w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16]) >> 31;
@@ -84,7 +84,7 @@ public class Sha1Stream
         _state[3] += d;
         _state[4] += e;
     }
-    
+
     public void Update(byte[] data, int len)  // Update SHA1 context
     {
         int index = (_count[0] >> 3) & 0x3F;

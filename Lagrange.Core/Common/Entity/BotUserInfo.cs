@@ -20,27 +20,27 @@ public class BotUserInfo
     }
 
     public uint Uin { get; set; }
-    
+
     public string Avatar { get; set; }
-    
+
     public string Nickname { get; set; }
-    
+
     public DateTime Birthday { get; set; }
-    
+
     public string City { get; set; }
-    
+
     public string Country { get; set; }
-    
+
     public string School { get; set; }
-    
+
     public uint Age { get; set; }
-    
+
     public DateTime RegisterTime { get; set; }
-    
+
     public GenderInfo Gender { get; set; }
-    
+
     public string? Qid { get; set; }
-    
+
     public uint Level { get; set; }
 
     public enum GenderInfo

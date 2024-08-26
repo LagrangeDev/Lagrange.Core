@@ -55,7 +55,7 @@ internal class RecordDownloadService : BaseService<RecordDownloadEvent>
         }, 0x126d, 200, false, true);
         output = packet.Serialize();
         extraPackets = null;
-        
+
         return true;
     }
 
@@ -65,7 +65,7 @@ internal class RecordDownloadService : BaseService<RecordDownloadEvent>
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var body = payload.Body.Download;
         string url = $"https://{body.Info.Domain}{body.Info.UrlPath}{body.RKeyParam}";
-        
+
         output = RecordDownloadEvent.Result((int)payload.ErrorCode, url);
         extraEvents = null;
         return true;

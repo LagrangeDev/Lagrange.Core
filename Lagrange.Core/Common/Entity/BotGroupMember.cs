@@ -13,8 +13,8 @@ public class BotGroupMember
         MemberName = string.Empty;
         SpecialTitle = string.Empty;
     }
-    
-    internal BotGroupMember(uint uin, string uid, GroupMemberPermission permission, uint groupLevel, string? memberCard, 
+
+    internal BotGroupMember(uint uin, string uid, GroupMemberPermission permission, uint groupLevel, string? memberCard,
         string memberName, string? specialTitle, DateTime joinTime, DateTime lastMsgTime)
     {
         Uin = uin;
@@ -27,23 +27,23 @@ public class BotGroupMember
         JoinTime = joinTime;
         LastMsgTime = lastMsgTime;
     }
-    
+
     public uint Uin { get; set; }
-    
+
     internal string Uid { get; set; }
 
     public GroupMemberPermission Permission { get; set; }
-    
+
     public uint GroupLevel { get; set; }
-    
+
     public string? MemberCard { get; set; }
-    
+
     public string MemberName { get; set; }
-    
+
     public string? SpecialTitle { get; set; }
 
     public DateTime JoinTime { get; set; }
-    
+
     public DateTime LastMsgTime { get; set; }
 
     public string Avatar => $"https://q1.qlogo.cn/g?b=qq&nk={Uin}&s=640";

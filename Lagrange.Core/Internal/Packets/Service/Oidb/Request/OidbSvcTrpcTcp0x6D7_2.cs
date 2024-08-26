@@ -19,8 +19,8 @@ internal class OidbSvcTrpcTcp0x6D7_2
 internal class OidbSvcTrpcTcp0x6D7_2Rename
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
-    
+
     [ProtoMember(3)] public string FolderId { get; set; }
-    
+
     [ProtoMember(4)] public string NewFolderName { get; set; }
 }

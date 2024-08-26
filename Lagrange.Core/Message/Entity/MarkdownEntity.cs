@@ -10,13 +10,13 @@ namespace Lagrange.Core.Message.Entity;
 public class MarkdownEntity : IMessageEntity
 {
     public MarkdownData Data { get; set; }
-    
+
     internal MarkdownEntity() => Data = new MarkdownData();
-    
+
     public MarkdownEntity(MarkdownData data) => Data = data;
-    
+
     public MarkdownEntity(string data) => Data = JsonSerializer.Deserialize<MarkdownData>(data) ?? throw new Exception();
-    
+
     IEnumerable<Elem> IMessageEntity.PackElement() => new Elem[]
     {
         new()
@@ -38,6 +38,7 @@ public class MarkdownEntity : IMessageEntity
 [ProtoContract]
 public class MarkdownData
 {
-    [JsonPropertyName("content")] [ProtoMember(1)]
+    [JsonPropertyName("content")]
+    [ProtoMember(1)]
     public string Content { get; set; } = string.Empty;
 }

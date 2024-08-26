@@ -5,9 +5,9 @@ namespace Lagrange.Core.Internal.Event.Action;
 internal class RenameMemberEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
-    
+
     public string TargetUid { get; }
-    
+
     public string TargetName { get; }
 
     private RenameMemberEvent(uint groupUin, string targetUid, string targetName) : base(true)
@@ -16,7 +16,7 @@ internal class RenameMemberEvent : ProtocolEvent
         TargetUid = targetUid;
         TargetName = targetName;
     }
-    
+
     private RenameMemberEvent(int resultCode) : base(resultCode) { }
 
     public static RenameMemberEvent Create(uint groupUin, string targetUid, string targetName) => new(groupUin, targetUid, targetName);

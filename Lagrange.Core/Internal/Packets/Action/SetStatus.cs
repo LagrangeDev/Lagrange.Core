@@ -9,11 +9,11 @@ namespace Lagrange.Core.Internal.Packets.Action;
 internal class SetStatus
 {
     [ProtoMember(1)] public uint Field1 { get; set; } // 10
-    
+
     [ProtoMember(2)] public uint Status { get; set; }
-    
+
     [ProtoMember(3)] public uint ExtStatus { get; set; }
-    
+
     [ProtoMember(4)] public SetStatusCustomExt? CustomExt { get; set; }
 }
 
@@ -23,7 +23,7 @@ internal class SetStatusCustomExt
     [ProtoMember(1)] public uint FaceId { get; set; }
 
     [ProtoMember(2)] public string? Text { get; set; }
-    
+
     [ProtoMember(3)] public uint Field3 { get; set; } // 1
 }
 

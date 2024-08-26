@@ -7,8 +7,8 @@ namespace Lagrange.Core.Internal.Packets.Login.WtLogin.Entity;
 internal class TransEmp12 : TransEmp
 {
     private const ushort QrCodeCommand = 0x12;
-    
-    public TransEmp12(BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device) 
+
+    public TransEmp12(BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device)
         : base(QrCodeCommand, keystore, appInfo, device) { }
 
     protected override BinaryPacket ConstructTlv()

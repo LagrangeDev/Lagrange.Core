@@ -7,7 +7,7 @@ namespace Lagrange.Core.Internal.Packets.Message.Action;
 internal class RecvLongMsgResp
 {
     [ProtoMember(1)] public RecvLongMsgResult Result { get; set; }
-    
+
     [ProtoMember(15)] public LongMsgSettings Settings { get; set; }
 }
 
@@ -15,6 +15,6 @@ internal class RecvLongMsgResp
 internal class RecvLongMsgResult
 {
     [ProtoMember(3)] public string ResId { get; set; }
-    
+
     [ProtoMember(4)] public byte[] Payload { get; set; }
 }

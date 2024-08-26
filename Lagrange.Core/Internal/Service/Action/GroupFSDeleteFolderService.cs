@@ -24,7 +24,7 @@ internal class GroupFSDeleteFolderService : BaseService<GroupFSDeleteFolderEvent
                 FolderId = input.FolderId
             }
         }, false, true);
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
@@ -34,7 +34,7 @@ internal class GroupFSDeleteFolderService : BaseService<GroupFSDeleteFolderEvent
         out GroupFSDeleteFolderEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x6D7Response>>(input);
-        
+
         output = GroupFSDeleteFolderEvent.Result(packet.Body.Delete.Retcode, packet.Body.Delete.RetMsg);
         extraEvents = null;
         return true;

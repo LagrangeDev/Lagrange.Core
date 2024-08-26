@@ -14,7 +14,7 @@ internal class GroupSysReactionEvent : ProtocolEvent
 
     public uint Count { get; }
 
-    private GroupSysReactionEvent(uint targetGroupUin, uint targetSequence, string operatorUid, bool isAdd, string code,uint count) : base(0)
+    private GroupSysReactionEvent(uint targetGroupUin, uint targetSequence, string operatorUid, bool isAdd, string code, uint count) : base(0)
     {
         TargetGroupUin = targetGroupUin;
         TargetSequence = targetSequence;

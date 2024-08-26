@@ -30,7 +30,7 @@ internal class FileDownloadService : BaseService<FileDownloadEvent>
                 T2 = 0
             },
         });
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
@@ -40,7 +40,7 @@ internal class FileDownloadService : BaseService<FileDownloadEvent>
         out FileDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xE37_1200Response>>(input);
-        
+
         var urlBuilder = new StringBuilder()
             .Append("http://")
             .Append(packet.Body.Body.Result.Server).Append(':').Append(packet.Body.Body.Result.Port)

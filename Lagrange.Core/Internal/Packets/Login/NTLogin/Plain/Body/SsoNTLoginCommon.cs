@@ -47,7 +47,7 @@ internal static class SsoNTLoginCommon
                 Aid = aid
             };
         }
-        
+
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, packet);
         var encrypted = AesGcmImpl.Encrypt(stream.ToArray(), keystore.Session.ExchangeKey);
@@ -58,7 +58,7 @@ internal static class SsoNTLoginCommon
             GcmCalc = encrypted,
             Type = 1
         };
-        
+
         return encryptPacket.Serialize();
     }
 }

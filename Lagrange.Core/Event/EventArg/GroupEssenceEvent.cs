@@ -14,7 +14,7 @@ public class GroupEssenceEvent : EventBase
 
     public uint OperatorUin { get; }
 
-    public GroupEssenceEvent(uint groupUin, uint sequence,uint random, uint setFlag, uint fromUin, uint operatorUin)
+    public GroupEssenceEvent(uint groupUin, uint sequence, uint random, uint setFlag, uint fromUin, uint operatorUin)
     {
         GroupUin = groupUin;
         Sequence = sequence;

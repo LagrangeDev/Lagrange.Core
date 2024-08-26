@@ -12,6 +12,6 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 internal class OidbSvcTrpcTcp0x10C0_1
 {
     [ProtoMember(1)] public uint Count { get; set; } // 20
-    
+
     [ProtoMember(2)] public uint Field2 { get; set; } // 0
 }

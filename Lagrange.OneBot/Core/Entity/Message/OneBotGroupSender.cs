@@ -20,7 +20,8 @@ public class OneBotGroupSender(uint userId, string nickname, string card, int le
 
     [JsonPropertyName("level")] public string Level { get; set; } = level.ToString();
 
-    [JsonPropertyName("role")] public string Role { get; set; } = permission switch
+    [JsonPropertyName("role")]
+    public string Role { get; set; } = permission switch
     {
         GroupMemberPermission.Owner => "owner",
         GroupMemberPermission.Admin => "admin",

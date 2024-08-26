@@ -13,7 +13,7 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 internal class OidbSvcTrpcTcp0x89A_0
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
-    
+
     [ProtoMember(2)] public OidbSvcTrpcTcp0x89A_0State State { get; set; }
 }
 

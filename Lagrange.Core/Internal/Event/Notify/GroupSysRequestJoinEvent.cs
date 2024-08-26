@@ -3,7 +3,7 @@ namespace Lagrange.Core.Internal.Event.Notify;
 internal class GroupSysRequestJoinEvent : ProtocolEvent
 {
     public string TargetUid { get; }
-    
+
     public uint GroupUin { get; }
 
     private GroupSysRequestJoinEvent(uint groupUin, string targetUid) : base(0)

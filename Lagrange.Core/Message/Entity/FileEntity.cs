@@ -12,33 +12,33 @@ namespace Lagrange.Core.Message.Entity;
 public class FileEntity : IMessageEntity
 {
     public long FileSize { get; internal set; }
-    
+
     public string FileName { get; internal set; }
-    
+
     public byte[] FileMd5 { get; internal set; }
-    
+
     public string? FileUrl { get; internal set; }
-    
+
     /// <summary>
     /// Only Group File has such field
     /// </summary>
     public string? FileId { get; set; }
-    
+
     internal string? FileUuid { get; set; }
-    
+
     internal string? FileHash { get; set; }
-    
+
     internal Stream? FileStream { get; set; }
-    
+
     internal byte[] FileSha1 { get; set; }
-    
+
     public FileEntity()
     {
         FileName = "";
         FileMd5 = Array.Empty<byte>();
         FileSha1 = Array.Empty<byte>();
     }
-    
+
     /// <summary>
     /// This entity could not be directly sent via <see cref="MessageChain"/>,
     /// it should be sent via <see cref="Lagrange.Core.Common.Interface.Api.GroupExt.GroupFSUpload"/>
@@ -74,14 +74,14 @@ public class FileEntity : IMessageEntity
         FileHash = fileHash;
         FileSha1 = Array.Empty<byte>();
     }
-    
+
     IEnumerable<Elem> IMessageEntity.PackElement() => Array.Empty<Elem>();
 
     object IMessageEntity.PackMessageContent() => new FileExtra
     {
         File = new NotOnlineFile
-        { 
-            FileType = 0, 
+        {
+            FileType = 0,
             FileUuid = FileUuid,
             FileMd5 = FileMd5,
             FileName = FileName,
@@ -92,7 +92,7 @@ public class FileEntity : IMessageEntity
             FileHash = FileHash
         }
     };
-    
+
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
         if (elems.TransElem is { ElemType: 24 } trans)

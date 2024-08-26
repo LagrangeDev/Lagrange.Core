@@ -13,9 +13,9 @@ public class OneBotGroupMsg(uint selfId, uint groupUin, List<OneBotSegment> mess
     [JsonPropertyName("message_id")] public int MessageId { get; set; } = messageId;
 
     [JsonPropertyName("group_id")] public uint GroupId { get; set; } = groupUin;
-    
+
     [JsonPropertyName("user_id")] public uint UserId { get; set; } = member.Uin;
-    
+
     [JsonPropertyName("anonymous")] public object? Anonymous { get; set; } = null;
 
     [JsonPropertyName("message")] public List<OneBotSegment> Message { get; set; } = message;
@@ -37,11 +37,11 @@ public class OneBotGroupStringMsg(uint selfId, uint groupUin, string message, Bo
     [JsonPropertyName("message_id")] public int MessageId { get; set; } = messageId;
 
     [JsonPropertyName("group_id")] public uint GroupId { get; set; } = groupUin;
-    
+
     [JsonPropertyName("user_id")] public uint UserId { get; set; } = member.Uin;
-    
+
     [JsonPropertyName("anonymous")] public object? Anonymous { get; set; } = null;
-    
+
     [JsonPropertyName("message")] public string Message { get; set; } = message;
 
     [JsonPropertyName("raw_message")] public string RawMessage { get; set; } = message;

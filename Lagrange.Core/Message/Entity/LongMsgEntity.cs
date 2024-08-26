@@ -7,7 +7,7 @@ namespace Lagrange.Core.Message.Entity;
 public class LongMsgEntity : IMessageEntity
 {
     public string ResId { get; internal set; }
-    
+
     public MessageChain Chain { get; internal set; }
 
     internal LongMsgEntity()
@@ -21,13 +21,13 @@ public class LongMsgEntity : IMessageEntity
         ResId = resId;
         Chain = MessageBuilder.Group(0).Build();
     }
-    
+
     public LongMsgEntity(MessageChain chain)
     {
         ResId = string.Empty;
         Chain = chain;
     }
-    
+
     IEnumerable<Elem> IMessageEntity.PackElement() => new Elem[]
     {
         new()

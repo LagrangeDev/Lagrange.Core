@@ -6,7 +6,7 @@ internal class TlvEncryptAttribute : Attribute
     public TlvEncryptAttribute(KeyType type) => Type = type;
 
     public KeyType Type { get; }
-    
+
     public enum KeyType
     {
         TgtgtKey,

@@ -20,7 +20,7 @@ public class OneBotFileInfo(string id, string name, ulong size, string url)
     [JsonPropertyName("name")] public string Name { get; set; } = name;
 
     [JsonPropertyName("size")] public ulong Size { get; set; } = size;
-    
+
     [JsonPropertyName("busid")] public uint BusId { get; set; }
 
     [JsonPropertyName("url")] public string Url { get; set; } = url;

@@ -7,9 +7,9 @@ namespace Lagrange.Core.Message.Entity;
 public class TextEntity : IMessageEntity
 {
     public string Text { get; set; }
-    
+
     public TextEntity() => Text = "";
-    
+
     public TextEntity(string text) => Text = text;
 
     IEnumerable<Elem> IMessageEntity.PackElement()
@@ -19,11 +19,11 @@ public class TextEntity : IMessageEntity
             new() { Text = new Text { Str = Text, } }
         };
     }
-    
+
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
         return elems.Text is { Str: not null, Attr6Buf: null } or { Str: not null, Attr6Buf.Length: 0 }
-            ? new TextEntity(elems.Text.Str) 
+            ? new TextEntity(elems.Text.Str)
             : null;
     }
 

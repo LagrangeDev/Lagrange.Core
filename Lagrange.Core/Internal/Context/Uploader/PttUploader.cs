@@ -54,7 +54,7 @@ internal class PttUploader : IHighwayUploader
                     throw new Exception();
                 }
             }
-            
+
             record.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             record.Compat = metaResult.Compat;  // for legacy QQ
             await record.AudioStream.Value.DisposeAsync();

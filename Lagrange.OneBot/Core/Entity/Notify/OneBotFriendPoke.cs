@@ -16,6 +16,6 @@ public class OneBotFriendPoke(uint selfId) : OneBotNotify(selfId, "notify")
     [JsonPropertyName("action")] public string Action { get; set; } = string.Empty;
 
     [JsonPropertyName("suffix")] public string Suffix { get; set; } = string.Empty;
-  
+
     [JsonPropertyName("action_img_url")] public string ActionImgUrl { get; set; } = string.Empty;
 }

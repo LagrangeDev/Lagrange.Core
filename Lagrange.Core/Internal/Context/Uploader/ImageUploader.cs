@@ -28,7 +28,7 @@ internal class ImageUploader : IHighwayUploader
                     throw new Exception();
                 }
             }
-            
+
             image.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             image.CompatImage = metaResult.Compat;  // for legacy QQ
             await image.ImageStream.Value.DisposeAsync();
@@ -53,7 +53,7 @@ internal class ImageUploader : IHighwayUploader
                     throw new Exception();
                 }
             }
-            
+
             image.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             image.CompatFace = metaResult.Compat;  // for legacy QQ
             await image.ImageStream.Value.DisposeAsync();

@@ -13,7 +13,7 @@ public enum LogLevel
 public class BotLogEvent : EventBase
 {
     private const string DateFormat = "yyyy-MM-dd HH:mm:ss";
-    
+
     public string Tag { get; }
 
     public LogLevel Level { get; }
@@ -25,6 +25,6 @@ public class BotLogEvent : EventBase
         EventMessage = content;
     }
 
-    public override string ToString() => 
+    public override string ToString() =>
         $"[{EventTime.ToString(DateFormat)}] [{Tag}] [{Level.ToString().ToUpper()}]: {EventMessage}";
 }

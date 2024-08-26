@@ -4,6 +4,6 @@ namespace Lagrange.Core.Internal.Context.Uploader;
 internal class HighwayUploaderAttribute : Attribute
 {
     public Type Entity { get; }
-    
+
     public HighwayUploaderAttribute(Type entity) => Entity = entity;
 }

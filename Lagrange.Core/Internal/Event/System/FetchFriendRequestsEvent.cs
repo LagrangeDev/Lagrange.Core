@@ -9,6 +9,6 @@ internal class FetchFriendRequestsEvent : ProtocolEvent
     private FetchFriendRequestsEvent(int resultCode) : base(resultCode)
     {
     }
-    
+
     public static FetchFriendRequestsEvent Create() => new();
 }

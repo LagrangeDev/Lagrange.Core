@@ -32,7 +32,7 @@ internal class SendMessageService : BaseService<SendMessageEvent>
             Sequence = response.GroupSequence ?? response.PrivateSequence,
             Timestamp = response.Timestamp1,
         };
-        
+
         output = SendMessageEvent.Result(response.Result, result);
         extraEvents = null;
         return true;

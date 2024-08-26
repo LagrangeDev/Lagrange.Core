@@ -32,7 +32,7 @@ internal class MultiMsgDownloadService : BaseService<MultiMsgDownloadEvent>
                 Field4 = 0
             }
         };
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;

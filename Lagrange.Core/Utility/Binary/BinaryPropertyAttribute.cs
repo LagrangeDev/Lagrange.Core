@@ -4,11 +4,11 @@ namespace Lagrange.Core.Utility.Binary;
 internal class BinaryPropertyAttribute : Attribute
 {
     public Type? Type { get; }
-    
+
     public Prefix? Prefix { get; }
-    
+
     public BinaryPropertyAttribute(Type type) => Type = type;
-    
+
     public BinaryPropertyAttribute(Prefix prefix) => Prefix = prefix;
 
     public BinaryPropertyAttribute()

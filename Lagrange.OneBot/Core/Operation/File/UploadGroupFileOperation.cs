@@ -21,7 +21,7 @@ public class UploadGroupFileOperation : IOperation
             bool result = await context.GroupFSUpload(file.GroupId, entity, file.Folder ?? "/");
             return new OneBotResult(null, result ? 0 : 1, result ? "ok" : "failed");
         }
-        
+
         throw new Exception();
     }
 }

@@ -34,7 +34,7 @@ internal class GetRoamMessageService : BaseService<GetRoamMessageEvent>
     {
         var payload = Serializer.Deserialize<SsoGetRoamMsgResponse>(input);
         var chains = payload.Messages.Select(x => MessagePacker.Parse(x)).ToList();
-        
+
         extraEvents = null;
         output = GetRoamMessageEvent.Result(0, chains);
         return true;

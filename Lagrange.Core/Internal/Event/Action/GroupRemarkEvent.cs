@@ -13,8 +13,8 @@ internal class GroupRemarkEvent : ProtocolEvent
     }
 
     private GroupRemarkEvent(int resultCode) : base(resultCode) { }
-    
+
     public static GroupRemarkEvent Create(uint groupUin, string targetRemark) => new(groupUin, targetRemark);
-    
+
     public static GroupRemarkEvent Result(int resultCode) => new(resultCode);
 }

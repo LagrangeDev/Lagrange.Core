@@ -20,10 +20,10 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         if (input.Entity.ImageStream is null) throw new Exception();
-        
+
         string md5 = input.Entity.ImageStream.Value.Md5(true);
         string sha1 = input.Entity.ImageStream.Value.Sha1(true);
-        
+
         var buffer = new byte[1024]; // parse image header
         int _ = input.Entity.ImageStream.Value.Read(buffer.AsSpan());
         var type = ImageResolver.Resolve(buffer, out var size);
@@ -107,7 +107,7 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
                 NoNeedCompatMsg = false
             }
         }, 0x11c4, 100, false, true);
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
@@ -119,7 +119,7 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var upload = packet.Body.Upload;
         var compat = Serializer.Deserialize<CustomFace>(upload.CompatQMsg.AsSpan());
-        
+
         output = ImageGroupUploadEvent.Result((int)packet.ErrorCode, upload.MsgInfo, upload.UKey, upload.IPv4s, upload.SubFileInfos, compat);
         extraEvents = null;
         return true;

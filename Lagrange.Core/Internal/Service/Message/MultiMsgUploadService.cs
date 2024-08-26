@@ -17,7 +17,7 @@ internal class MultiMsgUploadService : BaseService<MultiMsgUploadEvent>
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         if (input.Chains == null) throw new ArgumentNullException(nameof(input.Chains));
-        
+
         var msgBody = input.Chains.Select(x => MessagePacker.BuildFake(x, keystore.Uid ?? "")).ToList();
         var longMsgResult = new LongMsgResult
         {
@@ -27,7 +27,7 @@ internal class MultiMsgUploadService : BaseService<MultiMsgUploadEvent>
                 ActionData = new LongMsgContent { MsgBody = msgBody }
             }
         };
-        
+
         using var msgStream = new MemoryStream();
         Serializer.Serialize(msgStream, longMsgResult);
         var deflate = GZip.Deflate(msgStream.ToArray());
@@ -49,17 +49,17 @@ internal class MultiMsgUploadService : BaseService<MultiMsgUploadEvent>
                 Field4 = 0
             }
         };
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out MultiMsgUploadEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<SendLongMsgResp>(input);
-        
+
         output = MultiMsgUploadEvent.Result(0, packet.Result.ResId);
         extraEvents = null;
         return true;

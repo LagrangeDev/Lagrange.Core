@@ -18,6 +18,6 @@ internal class HighwayUrlEvent : ProtocolEvent
 
     public static HighwayUrlEvent Create() => new();
 
-    public static HighwayUrlEvent Result(int resultCode, byte[] sigSession, Dictionary<uint, List<Uri>> highwayUrls) => 
+    public static HighwayUrlEvent Result(int resultCode, byte[] sigSession, Dictionary<uint, List<Uri>> highwayUrls) =>
             new(resultCode, sigSession, highwayUrls);
 }

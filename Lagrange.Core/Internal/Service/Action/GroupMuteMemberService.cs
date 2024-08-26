@@ -26,17 +26,17 @@ internal class GroupMuteMemberService : BaseService<GroupMuteMemberEvent>
                 Duration = input.Duration
             }
         });
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out GroupMuteMemberEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x1253_1Response>>(input);
-        
+
         output = GroupMuteMemberEvent.Result((int)packet.ErrorCode);
         extraEvents = null;
         return true;

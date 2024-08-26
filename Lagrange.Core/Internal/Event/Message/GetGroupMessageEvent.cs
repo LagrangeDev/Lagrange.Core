@@ -5,9 +5,9 @@ namespace Lagrange.Core.Internal.Event.Message;
 internal class GetGroupMessageEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
-    
+
     public uint StartSequence { get; }
-    
+
     public uint EndSequence { get; }
 
     public List<MessageChain> Chains { get; } = new();

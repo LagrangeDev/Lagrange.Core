@@ -10,13 +10,13 @@ public class BotGroup
         MemberCount = memberCount;
         MaxMember = maxMember;
     }
-    
+
     public uint GroupUin { get; }
-    
+
     public string GroupName { get; }
-    
+
     public uint MemberCount { get; }
-    
+
     public uint MaxMember { get; }
 
     public string Avatar => $"https://p.qlogo.cn/gh/{GroupUin}/{GroupUin}/0/";

@@ -13,9 +13,9 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 internal class OidbSvcTrpcTcp0x1253_1
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
-    
+
     [ProtoMember(2)] public uint Type { get; set; }
-    
+
     [ProtoMember(3)] public OidbSvcTrpcTcp0x1253_1Body Body { get; set; }
 }
 
@@ -23,6 +23,6 @@ internal class OidbSvcTrpcTcp0x1253_1
 internal class OidbSvcTrpcTcp0x1253_1Body
 {
     [ProtoMember(1)] public string TargetUid { get; set; }
-    
+
     [ProtoMember(2)] public uint Duration { get; set; }
 }

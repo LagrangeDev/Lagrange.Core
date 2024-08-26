@@ -19,6 +19,6 @@ internal class OidbSvcTrpcTcp0xF16_1
 internal class OidbSvcTrpcTcp0xF16_1Body
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
-    
+
     [ProtoMember(3)] public string TargetRemark { get; set; }
 }

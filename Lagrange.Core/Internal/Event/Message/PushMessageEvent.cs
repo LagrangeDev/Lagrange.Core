@@ -10,6 +10,6 @@ internal class PushMessageEvent : ProtocolEvent
     {
         Chain = chain;
     }
-    
+
     public static PushMessageEvent Create(MessageChain chain) => new(0, chain);
 }

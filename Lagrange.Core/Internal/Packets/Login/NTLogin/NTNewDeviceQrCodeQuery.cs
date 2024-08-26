@@ -9,6 +9,6 @@ namespace Lagrange.Core.Internal.Packets.Login.NTLogin;
 internal class NTNewDeviceQrCodeQuery
 {
     [JsonPropertyName("uint32_flag")] public long Uint32Flag { get; set; }
-    
+
     [JsonPropertyName("bytes_token")] public string Token { get; set; }
 }

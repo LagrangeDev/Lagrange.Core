@@ -7,9 +7,9 @@ namespace Lagrange.OneBot.Message.Entity;
 [Serializable]
 public partial class MarkdownSegment(string content)
 {
-    public MarkdownSegment(): this("") { }
-    
-    [JsonPropertyName("content")] [CQProperty] public string Content { get; set; } = content;
+    public MarkdownSegment() : this("") { }
+
+    [JsonPropertyName("content")][CQProperty] public string Content { get; set; } = content;
 }
 
 [SegmentSubscriber(typeof(MarkdownEntity), "markdown")]

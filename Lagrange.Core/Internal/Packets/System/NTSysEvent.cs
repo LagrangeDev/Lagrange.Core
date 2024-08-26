@@ -9,8 +9,8 @@ namespace Lagrange.Core.Internal.Packets.System;
 internal class NTSysEvent
 {
     [ProtoMember(1)] public string Ip { get; set; }
-	
-	[ProtoMember(2)] public long Sid { get; set; }
-	
-	[ProtoMember(3)] public NTSysEventSub Sub { get; set; }
+
+    [ProtoMember(2)] public long Sid { get; set; }
+
+    [ProtoMember(3)] public NTSysEventSub Sub { get; set; }
 }

@@ -8,7 +8,7 @@ namespace Lagrange.OneBot.Core.Entity.Action;
 public class OneBotGroupMessageBase
 {
     [JsonPropertyName("group_id")] public uint GroupId { get; set; }
-    
+
     [JsonPropertyName("auto_escape")] public bool? AutoEscape { get; set; }
 }
 

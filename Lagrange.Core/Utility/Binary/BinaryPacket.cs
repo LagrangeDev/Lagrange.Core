@@ -13,11 +13,11 @@ internal unsafe partial class BinaryPacket : IDisposable  // TODO: Reimplement i
     private readonly MemoryStream _stream;
 
     private readonly BinaryReader _reader;
-    
+
     public long Length => _stream.Length;
-    
+
     public long Remaining => _stream.Length - _stream.Position;
-    
+
     /// <summary>
     /// Create a Packet for write
     /// </summary>
@@ -26,7 +26,7 @@ internal unsafe partial class BinaryPacket : IDisposable  // TODO: Reimplement i
         _stream = new MemoryStream();
         _reader = new BinaryReader(_stream);
     }
-    
+
     /// <summary>
     /// Create a Packet for read
     /// </summary>
@@ -35,7 +35,7 @@ internal unsafe partial class BinaryPacket : IDisposable  // TODO: Reimplement i
         _stream = new MemoryStream(data);
         _reader = new BinaryReader(_stream);
     }
-    
+
     /// <summary>
     /// Create a Packet for read
     /// </summary>
@@ -44,7 +44,7 @@ internal unsafe partial class BinaryPacket : IDisposable  // TODO: Reimplement i
         _stream = new MemoryStream(data.ToArray());
         _reader = new BinaryReader(_stream);
     }
-    
+
     /// <summary>
     /// Create a Packet Reader for read
     /// </summary>
@@ -53,7 +53,7 @@ internal unsafe partial class BinaryPacket : IDisposable  // TODO: Reimplement i
         _stream = stream;
         _reader = new BinaryReader(_stream);
     }
-    
+
     public BinaryPacket WriteString(string value, Prefix flag, int addition = 0)
     {
         WriteLength(value.Length, flag, addition);
@@ -70,7 +70,7 @@ internal unsafe partial class BinaryPacket : IDisposable  // TODO: Reimplement i
     {
         int prefixLength = (byte)flag & 0b0111;
         if (prefixLength == 0) return this;
-        
+
         bool lengthCounted = (flag & Prefix.WithPrefix) > 0;
         int length = (lengthCounted ? prefixLength + origin : origin) + addition;
         _ = prefixLength switch
@@ -97,19 +97,19 @@ internal unsafe partial class BinaryPacket : IDisposable  // TODO: Reimplement i
         value._stream.CopyTo(_stream);
         return this;
     }
-    
+
     public BinaryPacket WriteBool(bool value)
     {
         _stream.WriteByte(value ? (byte)1 : (byte)0);
         return this;
     }
-    
+
     public BinaryPacket WriteByte(byte value)
     {
         _stream.WriteByte(value);
         return this;
     }
-    
+
     public BinaryPacket WriteUshort(ushort value)
     {
         value = BinaryPrimitives.ReverseEndianness(value);
@@ -164,7 +164,7 @@ internal unsafe partial class BinaryPacket : IDisposable  // TODO: Reimplement i
         writer(packet);
         return WriteLength((int)packet.Length, flag, addition).WritePacket(packet);
     }
-    
+
     private int ReadLength(Prefix flag)
     {
         bool lengthCounted = (flag & Prefix.WithPrefix) > 0;
@@ -180,14 +180,14 @@ internal unsafe partial class BinaryPacket : IDisposable  // TODO: Reimplement i
         };
 
         if (lengthCounted) length -= prefixLength;
-    
+
         return length;
     }
-    
+
     public bool ReadBool() => Convert.ToBoolean(_stream.ReadByte());
 
     public byte ReadByte() => (byte)_stream.ReadByte();
-    
+
     public ushort ReadUshort()
     {
         Span<byte> buffer = stackalloc byte[sizeof(ushort)];
@@ -241,8 +241,8 @@ internal unsafe partial class BinaryPacket : IDisposable  // TODO: Reimplement i
     {
         if (_stream.Length - _stream.Position < count) throw new InvalidDataException("Not enough data to read, remaining: " + (_stream.Length - _stream.Position) + " required: " + count);
         if (count < 0) throw new InvalidDataException("Invalid count to read, count: " + count);
-        
-        Span<byte> buffer =  new byte[count];
+
+        Span<byte> buffer = new byte[count];
         _ = _stream.Read(buffer);
         return buffer;
     }
@@ -261,13 +261,13 @@ internal unsafe partial class BinaryPacket : IDisposable  // TODO: Reimplement i
         int length = ReadLength(flag);
         return Encoding.UTF8.GetString(ReadBytes(length));
     }
-    
+
     public string ReadString(int count) => Encoding.UTF8.GetString(ReadBytes(count));
 
     public BinaryPacket ReadPacket(int count) => new(ReadBytes(count).ToArray());
-    
+
     public void Skip(int length) => _reader.BaseStream.Seek(length, SeekOrigin.Current);
-    
+
     public bool IsAvailable(int length) => _stream.Length - _stream.Position >= length;
 
     public byte[] ToArray() => _stream.ToArray();

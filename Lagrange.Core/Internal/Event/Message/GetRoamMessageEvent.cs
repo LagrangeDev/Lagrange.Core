@@ -5,9 +5,9 @@ namespace Lagrange.Core.Internal.Event.Message;
 internal class GetRoamMessageEvent : ProtocolEvent
 {
     public string FriendUid { get; } = string.Empty;
-    
+
     public uint Time { get; }
-    
+
     public uint Count { get; }
 
     public List<MessageChain> Chains { get; } = new();

@@ -22,13 +22,13 @@ internal class RequestFriendSettingService : BaseService<RequestFriendSettingEve
             Field4 = 3999,
             Field5 = 0
         });
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out RequestFriendSettingEvent output, out List<ProtocolEvent>? extraEvents)
     {
         output = RequestFriendSettingEvent.Result(0);

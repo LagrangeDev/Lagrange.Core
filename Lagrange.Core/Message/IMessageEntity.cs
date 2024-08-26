@@ -15,7 +15,7 @@ public interface IMessageEntity
     internal object? PackMessageContent() => null; // virtual method
 
     internal IMessageEntity? UnpackElement(Elem elem); // abstract method
-    
+
     internal void SetSelfUid(string selfUid) { } // virtual method
 
     public string ToPreviewString(); // abstract method

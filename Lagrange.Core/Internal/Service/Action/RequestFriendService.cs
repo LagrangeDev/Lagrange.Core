@@ -13,13 +13,13 @@ namespace Lagrange.Core.Internal.Service.Action;
 internal class RequestFriendService : BaseService<RequestFriendEvent>
 {
     private static readonly RuntimeTypeModel Serializer;
-    
+
     static RequestFriendService()
     {
         Serializer = RuntimeTypeModel.Create();
         Serializer.UseImplicitZeroDefaults = false;
     }
-    
+
     protected override bool Build(RequestFriendEvent input, BotKeystore keystore, BotAppInfo appInfo,
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
@@ -45,7 +45,7 @@ internal class RequestFriendService : BaseService<RequestFriendEvent>
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out RequestFriendEvent output, out List<ProtocolEvent>? extraEvents)
     {
         output = RequestFriendEvent.Result(0);

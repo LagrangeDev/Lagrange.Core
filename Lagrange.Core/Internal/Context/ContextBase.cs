@@ -5,11 +5,11 @@ namespace Lagrange.Core.Internal.Context;
 internal abstract class ContextBase
 {
     protected readonly ContextCollection Collection;
-    
+
     protected readonly BotKeystore Keystore;
-    
+
     protected readonly BotAppInfo AppInfo;
-    
+
     protected readonly BotDeviceInfo DeviceInfo;
 
     protected ContextBase(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device)

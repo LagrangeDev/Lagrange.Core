@@ -25,7 +25,7 @@ internal class GroupFSCreateFolderService : BaseService<GroupFSCreateFolderEvent
                 FolderName = input.Name
             }
         }, false, true);
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
@@ -35,7 +35,7 @@ internal class GroupFSCreateFolderService : BaseService<GroupFSCreateFolderEvent
         out GroupFSCreateFolderEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x6D7Response>>(input);
-        
+
         output = GroupFSCreateFolderEvent.Result(packet.Body.Create.Retcode, packet.Body.Create.RetMsg);
         extraEvents = null;
         return true;

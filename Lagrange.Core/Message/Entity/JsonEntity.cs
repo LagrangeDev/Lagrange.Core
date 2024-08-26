@@ -10,27 +10,27 @@ namespace Lagrange.Core.Message.Entity;
 public class JsonEntity : IMessageEntity
 {
     public string Json { get; set; }
-    
+
     public string ResId { get; set; }
-    
+
     public JsonEntity()
     {
         Json = "";
         ResId = "";
     }
-    
+
     public JsonEntity(string json, string resId = "")
     {
         Json = json;
         ResId = resId;
     }
-    
+
     public JsonEntity(JsonNode json, string resId = "")
     {
         Json = json.ToJsonString();
         ResId = resId;
     }
-    
+
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
         return new Elem[]
@@ -49,7 +49,7 @@ public class JsonEntity : IMessageEntity
             }
         };
     }
-    
+
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
         if (elems.RichMsg is { ServiceId: 1, Template1: not null } richMsg)

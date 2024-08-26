@@ -25,7 +25,7 @@ internal class GroupFSRenameFolderService : BaseService<GroupFSRenameFolderEvent
                 NewFolderName = input.NewFolderName
             }
         }, false, true);
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
@@ -35,7 +35,7 @@ internal class GroupFSRenameFolderService : BaseService<GroupFSRenameFolderEvent
         out GroupFSRenameFolderEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x6D7Response>>(input);
-        
+
         output = GroupFSRenameFolderEvent.Result(packet.Body.Rename.Retcode, packet.Body.Rename.RetMsg);
         extraEvents = null;
         return true;

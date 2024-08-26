@@ -3,7 +3,7 @@ namespace Lagrange.Core.Internal.Event.Action;
 internal class GroupSetSpecialTitleEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
-    
+
     public string TargetUid { get; } = string.Empty;
 
     public string Title { get; } = string.Empty;

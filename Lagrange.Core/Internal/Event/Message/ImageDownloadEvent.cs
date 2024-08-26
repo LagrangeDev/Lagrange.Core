@@ -7,11 +7,11 @@ namespace Lagrange.Core.Internal.Event.Message;
 internal class ImageDownloadEvent : ProtocolEvent
 {
     public string SelfUid { get; }
-    
+
     public IndexNode Node { get; }
-    
+
     public string ImageUrl { get; }
-    
+
     protected ImageDownloadEvent(string selfUid, MsgInfo info) : base(true)
     {
         SelfUid = selfUid;
@@ -22,7 +22,7 @@ internal class ImageDownloadEvent : ProtocolEvent
     {
         ImageUrl = imageUrl;
     }
-    
+
     public static ImageDownloadEvent Create(string selfUid, MsgInfo info) => new(selfUid, info);
 
     public static ImageDownloadEvent Result(int resultCode, string url) => new(resultCode, url);

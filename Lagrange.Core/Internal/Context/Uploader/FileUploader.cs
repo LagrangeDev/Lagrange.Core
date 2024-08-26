@@ -15,11 +15,11 @@ internal static class FileUploader
     public static async Task<bool> UploadPrivate(ContextCollection context, MessageChain chain, IMessageEntity entity)
     {
         if (entity is not FileEntity { FileStream: not null } file) return false;
-        
+
         var uploadEvent = FileUploadEvent.Create(chain.Uid ?? "", file);
         var result = await context.Business.SendEvent(uploadEvent);
         var uploadResp = (FileUploadEvent)result[0];
-        
+
         if (!uploadResp.IsExist)
         {
             var ext = new FileUploadExt
@@ -88,11 +88,11 @@ internal static class FileUploader
     public static async Task<bool> UploadGroup(ContextCollection context, MessageChain chain, IMessageEntity entity, string targetDirectory)
     {
         if (entity is not FileEntity { FileStream: not null } file) return false;
-        
+
         var uploadEvent = GroupFSUploadEvent.Create(chain.GroupUin ?? 0, targetDirectory, file);
         var result = await context.Business.SendEvent(uploadEvent);
         var uploadResp = (GroupFSUploadEvent)result[0];
-        
+
 
         if (!uploadResp.IsExist)
         {
@@ -150,7 +150,7 @@ internal static class FileUploader
             bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(71, file.FileStream, await Common.GetTicket(context), file.FileMd5, ext.Serialize().ToArray());
             if (!hwSuccess) return false;
         }
-        
+
         await file.FileStream.DisposeAsync();
         var sendEvent = GroupSendFileEvent.Create(chain.GroupUin ?? 0, uploadResp.FileId);
         var sendResult = await context.Business.SendEvent(sendEvent);

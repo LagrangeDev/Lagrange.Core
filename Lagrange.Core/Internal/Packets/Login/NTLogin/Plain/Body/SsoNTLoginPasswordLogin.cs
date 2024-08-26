@@ -17,11 +17,11 @@ internal class SsoNTLoginPasswordLogin
     [BinaryProperty] public uint Random { get; set; }
 
     [BinaryProperty] public uint UnknownConst2 { get; set; } = 0;
-    
+
     [BinaryProperty] public uint AppId { get; set; }
-    
+
     [BinaryProperty] public uint Ver { get; set; } = 8001;
-    
+
     [BinaryProperty] public uint UnknownConst3 { get; set; } = 0;
 
     [BinaryProperty] public uint Uin { get; set; }

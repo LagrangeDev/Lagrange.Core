@@ -3,9 +3,9 @@ namespace Lagrange.Core.Internal.Event.Message;
 internal class RemoveEssenceMessageEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
-    
+
     public uint Sequence { get; }
-    
+
     public uint Random { get; }
 
     private RemoveEssenceMessageEvent(uint groupUin, uint sequence, uint random) : base(true)

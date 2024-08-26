@@ -12,7 +12,7 @@ public sealed class ReverseWSServiceFactory(IServiceProvider services) : Lagrang
         var config = _config ?? throw new InvalidOperationException("Configuration must be provided");
         var options = _services.GetRequiredService<IOptionsSnapshot<ReverseWSServiceOptions>>();
         config.Bind(options.Value);
-            
+
         return _services.GetRequiredService<ReverseWSService>();
     }
 }

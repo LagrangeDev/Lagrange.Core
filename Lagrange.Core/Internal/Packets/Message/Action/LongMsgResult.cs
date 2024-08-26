@@ -13,7 +13,7 @@ internal class LongMsgResult
 internal class LongMsgAction
 {
     [ProtoMember(1)] public string ActionCommand { get; set; }
-    
+
     [ProtoMember(2)] public LongMsgContent ActionData { get; set; }
 }
 

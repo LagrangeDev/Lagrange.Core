@@ -23,7 +23,7 @@ internal abstract partial class ClientListener
         {
             var cts = Interlocked.Exchange(ref _cts, null);
             if (cts == null) return;
-            
+
             cts.Cancel();
             cts.Dispose();
             Socket.Dispose();

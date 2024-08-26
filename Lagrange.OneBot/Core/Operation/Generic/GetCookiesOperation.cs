@@ -15,7 +15,7 @@ public class GetCookiesOperation : IOperation
             var cookies = await context.FetchCookies([domain]);
             return new OneBotResult(new JsonObject { { "cookies", cookies[0] } }, 0, "ok");
         }
-        
+
         throw new Exception();
     }
 }

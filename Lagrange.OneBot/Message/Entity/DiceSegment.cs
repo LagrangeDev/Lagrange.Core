@@ -6,7 +6,7 @@ namespace Lagrange.OneBot.Message.Entity;
 [Serializable]
 public partial class DiceSegment
 {
-    
+
 }
 
 [SegmentSubscriber(typeof(FaceEntity), "dice")]

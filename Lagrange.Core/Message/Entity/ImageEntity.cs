@@ -39,7 +39,7 @@ public class ImageEntity : IMessageEntity
     internal CustomFace? CompatFace { get; set; }
 
     internal string? Summary { get; set; }
-    
+
     public int SubType { get; set; }
 
     public ImageEntity() { }
@@ -55,7 +55,7 @@ public class ImageEntity : IMessageEntity
         FilePath = "";
         ImageStream = new Lazy<Stream>(() => new MemoryStream(file));
     }
-    
+
     public ImageEntity(Stream stream)
     {
         FilePath = "";
@@ -102,7 +102,7 @@ public class ImageEntity : IMessageEntity
                 SubType = (int)extra.ExtBizInfo.Pic.BizType,
             };
         }
-        
+
         if (elems.NotOnlineImage is { } image)
         {
             if (image.OrigUrl.Contains("&fileid=")) // NTQQ's shit
@@ -159,7 +159,7 @@ public class ImageEntity : IMessageEntity
 
         return null;
     }
-    
+
     private static int GetImageTypeFromFaceOldData(CustomFace face)
     {
         if (face.OldData == null || face.OldData.Length < 5)

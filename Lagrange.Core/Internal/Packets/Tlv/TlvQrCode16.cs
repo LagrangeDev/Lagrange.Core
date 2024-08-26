@@ -19,15 +19,15 @@ internal class Tlv16QrCode : TlvBody
     }
 
     [BinaryProperty] public uint Field0 { get; } = 0; // unknown
-    
+
     [BinaryProperty] public uint SubAppId { get; }
-    
+
     [BinaryProperty] public uint AppIdQrCode { get; }
-    
+
     [BinaryProperty(Prefix.None)] public byte[] Guid { get; }
-    
+
     [BinaryProperty(Prefix.Uint16 | Prefix.LengthOnly)] public string PackageName { get; }
-    
+
     [BinaryProperty(Prefix.Uint16 | Prefix.LengthOnly)] public string PtVersion { get; }
 
     [BinaryProperty(Prefix.Uint16 | Prefix.LengthOnly)] public string PackageName2 { get; }

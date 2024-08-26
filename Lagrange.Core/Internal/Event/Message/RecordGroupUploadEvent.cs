@@ -9,9 +9,9 @@ namespace Lagrange.Core.Internal.Event.Message;
 internal class RecordGroupUploadEvent : NTV2RichMediaUploadEvent
 {
     public RecordEntity Entity { get; }
-    
+
     public uint GroupUin { get; }
-    
+
     public RichText Compat { get; }
 
     private RecordGroupUploadEvent(RecordEntity entity, uint groupUin)

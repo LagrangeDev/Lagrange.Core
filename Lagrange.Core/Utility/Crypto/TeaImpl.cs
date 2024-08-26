@@ -10,7 +10,7 @@ internal class TeaImpl
         // Console.WriteLine("Data: " + data.Hex() + $" Key: {key.Hex()}");
         return TeaProvider.Encrypt(data, key);
     }
-    
+
     public Span<byte> Decrypt(Span<byte> data, Span<byte> key)
     {
         var decipher = TeaProvider.Decrypt(data, key);

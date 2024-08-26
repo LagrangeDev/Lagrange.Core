@@ -4,13 +4,13 @@ namespace Lagrange.Core.Common.Entity;
 public class BotGroupRequest
 {
     internal BotGroupRequest(
-        uint groupUin, 
-        uint? invitorMemberUin, 
-        string? invitorMemberCard, 
+        uint groupUin,
+        uint? invitorMemberUin,
+        string? invitorMemberCard,
         uint targetMemberUin,
-        string targetMemberCard, 
+        string targetMemberCard,
         uint? operatorUin,
-        string? operatorName, 
+        string? operatorName,
         uint state,
         ulong sequence,
         uint type,
@@ -30,25 +30,25 @@ public class BotGroupRequest
     }
 
     public uint GroupUin { get; set; }
-    
+
     public uint? InvitorMemberUin { get; set; }
-    
+
     public string? InvitorMemberCard { get; set; }
-    
+
     public uint TargetMemberUin { get; set; }
-    
+
     public string TargetMemberCard { get; set; }
-    
+
     public uint? OperatorUin { get; set; }
-    
+
     public string? OperatorName { get; set; }
-    
+
     public Type EventType { get; set; }
-    
+
     public State EventState { get; set; }
-    
+
     internal ulong Sequence { get; set; } // for internal use of Approving Requests
-    
+
     public string? Comment { get; }
 
     public enum State
@@ -58,13 +58,13 @@ public class BotGroupRequest
         Approved = 2,
         Disapproved = 3,
     }
-    
+
     public enum Type
     {
         GroupRequest = 1,
         SelfInvitation = 2,
         KickMember = 6,
-        KickSelf =7,
+        KickSelf = 7,
         ExitGroup = 13,
         GroupInvitation = 22,
     }

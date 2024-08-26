@@ -17,18 +17,18 @@ namespace Lagrange.Core.Internal.Context;
 internal class SocketContext : ContextBase, IClientListener
 {
     private const string Tag = nameof(SocketContext);
-    
+
     private readonly ClientListener _tcpClient;
 
     private readonly BotConfig _config;
 
     private Uri? ServerUri { get; set; }
-    
+
     public uint HeaderSize => 4;
 
     public bool Connected => _tcpClient.Connected;
-    
-    public SocketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, BotConfig config) 
+
+    public SocketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, BotConfig config)
         : base(collection, keystore, appInfo, device)
     {
         _tcpClient = new CallbackClientListener(this);
@@ -43,7 +43,7 @@ internal class SocketContext : ContextBase, IClientListener
         ServerUri = servers.First();
         return await _tcpClient.Connect(ServerUri.Host, ServerUri.Port);
     }
-    
+
     private async Task<bool> Reconnect()
     {
         if (ServerUri != null && !_tcpClient.Connected)
@@ -74,7 +74,7 @@ internal class SocketContext : ContextBase, IClientListener
     public void OnDisconnect()
     {
         Collection.Log.LogFatal(Tag, "Socket Disconnected, Scheduling Reconnect");
-        
+
         if (_config.AutoReconnect)
         {
             Collection.Scheduler.Interval("Reconnect", 10 * 1000, async () =>
@@ -94,7 +94,7 @@ internal class SocketContext : ContextBase, IClientListener
         if (!_tcpClient.Connected) OnDisconnect();
     }
 
-    private static readonly Uri[] HardCodeIPv6Uris = 
+    private static readonly Uri[] HardCodeIPv6Uris =
     {
         new("http://msfwifiv6.3g.qq.com:14000")
     };
@@ -108,7 +108,7 @@ internal class SocketContext : ContextBase, IClientListener
         new("http://14.22.9.84:8080"),
         new("http://119.147.190.138:8080")
     };
-    
+
     private async Task<List<Uri>> OptimumServer(bool requestMsf, bool useIPv6Network = false)
     {
 
@@ -116,18 +116,18 @@ internal class SocketContext : ContextBase, IClientListener
         var latencyTasks = result.Select(uri => Icmp.PingAsync(uri)).ToArray();
         var latency = await Task.WhenAll(latencyTasks);
         Array.Sort(latency, result);
-        
+
         var list = result.ToList();
         for (int i = 0; i < list.Count; i++) Collection.Log.LogVerbose(Tag, $"Server: {list[i]} Latency: {latency[i]}");
         return list;
     }
-    
+
     private static async Task<Uri[]> ResolveDns(bool useIPv6Network = false)
     {
         string dns = useIPv6Network ? "msfwifiv6.3g.qq.com" : "msfwifi.3g.qq.com";
         var addresses = await Dns.GetHostEntryAsync(dns);
         var result = new Uri[addresses.AddressList.Length];
-        
+
         for (int i = 0; i < addresses.AddressList.Length; i++) result[i] = new Uri($"http://{addresses.AddressList[i]}:8080");
 
         return result;

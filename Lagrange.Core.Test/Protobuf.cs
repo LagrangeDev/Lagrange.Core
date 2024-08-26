@@ -8,7 +8,7 @@ public class Protobuf
 {
     public void Test()
     {
-        
+
         var test = new SsoKeyExchange()
         {
             PubKey = new byte[] { 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11 },

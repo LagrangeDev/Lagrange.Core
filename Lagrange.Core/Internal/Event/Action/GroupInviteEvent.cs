@@ -5,7 +5,7 @@ namespace Lagrange.Core.Internal.Event.Action;
 internal class GroupInviteEvent : ProtocolEvent
 {
     public uint GroupUin { get; set; }
-    
+
     public Dictionary<string, uint?> InviteUids { get; }
 
     private GroupInviteEvent(uint groupUin, Dictionary<string, uint?> inviteUids) : base(true)
@@ -16,7 +16,7 @@ internal class GroupInviteEvent : ProtocolEvent
 
     private GroupInviteEvent(int resultCode) : base(resultCode) { }
 
-    public static GroupInviteEvent Create(uint groupUin, Dictionary<string, uint?> inviteUids) 
+    public static GroupInviteEvent Create(uint groupUin, Dictionary<string, uint?> inviteUids)
         => new(groupUin, inviteUids);
 
     public static GroupInviteEvent Result(int resultCode) => new(resultCode);

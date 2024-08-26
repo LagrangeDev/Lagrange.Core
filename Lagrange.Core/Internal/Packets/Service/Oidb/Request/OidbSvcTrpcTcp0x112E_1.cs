@@ -10,9 +10,9 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 internal class OidbSvcTrpcTcp0x112E_1
 {
     [ProtoMember(3)] public uint BotId { get; set; }
-    
+
     [ProtoMember(4)] public uint Seq { get; set; } = 111111;
-    
+
     [ProtoMember(5)] public string B_id { get; set; } = "";
 
     [ProtoMember(6)] public string B_data { get; set; } = "";

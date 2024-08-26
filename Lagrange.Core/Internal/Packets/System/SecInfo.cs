@@ -10,8 +10,8 @@ namespace Lagrange.Core.Internal.Packets.System;
 internal class SecInfo
 {
     [ProtoMember(1)] public byte[]? SecSign { get; set; }
-    
+
     [ProtoMember(2)] public string? SecToken { get; set; }
-    
+
     [ProtoMember(3)] public byte[]? SecExtra { get; set; }
 }

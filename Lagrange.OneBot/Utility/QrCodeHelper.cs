@@ -23,14 +23,17 @@ internal static class QrCodeHelper
                 if (foregroundBlack && !backgroundBlack)
                 {
                     Console.Write(bottomHalfBlock);
-                } else if (!foregroundBlack && backgroundBlack)
+                }
+                else if (!foregroundBlack && backgroundBlack)
                 {
                     Console.Write(topHalfBlock);
-                } else if (foregroundBlack && backgroundBlack)
+                }
+                else if (foregroundBlack && backgroundBlack)
                 {
                     Console.Write(emptyBlock);
 
-                } else if (!foregroundBlack && !backgroundBlack)
+                }
+                else if (!foregroundBlack && !backgroundBlack)
                 {
                     Console.Write(fullBlock);
                 }

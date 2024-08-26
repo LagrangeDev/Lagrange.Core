@@ -20,9 +20,9 @@ internal class TlvQrCodeD1 : TlvBody
         };
         Type = new byte[] { 0x30, 0x01 }; // actually there is a type ext but i'm too lazy to implement it so i just hardcode it
     }
-    
+
     [ProtoMember(1)] public NTOS Sys { get; set; }
-    
+
     [ProtoMember(4)] public byte[] Type { get; set; }
 }
 
@@ -31,6 +31,6 @@ internal class TlvQrCodeD1 : TlvBody
 internal class TlvQrCodeD1Resp : TlvBody
 {
     [ProtoMember(2)] public string Url { get; set; }
-    
+
     [ProtoMember(3)] public string QrSig { get; set; }
 }

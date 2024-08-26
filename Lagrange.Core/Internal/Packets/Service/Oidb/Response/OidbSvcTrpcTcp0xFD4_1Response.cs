@@ -10,15 +10,15 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Response;
 internal class OidbSvcTrpcTcp0xFD4_1Response
 {
     [ProtoMember(2)] public OidbSvcTrpcTcp0xFD4_1ResponseUin? Next { get; set; }
-    
+
     [ProtoMember(3)] public uint DisplayFriendCount { get; set; }
-    
+
     [ProtoMember(6)] public uint Timestamp { get; set; }
-    
+
     [ProtoMember(7)] public uint SelfUin { get; set; }
 
     [ProtoMember(101)] public List<OidbFriend> Friends { get; set; }
-    
+
     [ProtoMember(102)] public List<OidbFriendProperty> Groups { get; set; }
 }
 

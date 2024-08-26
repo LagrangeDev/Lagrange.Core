@@ -7,8 +7,8 @@ namespace Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 internal class CommonElem
 {
     [ProtoMember(1)] public int ServiceType { get; set; }
-    
+
     [ProtoMember(2)] public byte[] PbElem { get; set; }
-    
+
     [ProtoMember(3)] public uint BusinessType { get; set; }
 }

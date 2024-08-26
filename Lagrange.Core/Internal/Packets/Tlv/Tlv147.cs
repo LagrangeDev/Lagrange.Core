@@ -14,10 +14,10 @@ internal class Tlv147 : TlvBody
         PtVersion = appInfo.PtVersion;
         PackageName = appInfo.PackageName;
     }
-    
+
     [BinaryProperty] public uint AppId { get; set; }
-    
+
     [BinaryProperty(Prefix.Uint16 | Prefix.LengthOnly)] public string PtVersion { get; set; }
-    
+
     [BinaryProperty(Prefix.Uint16 | Prefix.LengthOnly)] public string PackageName { get; set; }
 }

@@ -7,6 +7,6 @@ namespace Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 internal class LightAppElem
 {
     [ProtoMember(1)] public byte[] Data { get; set; }
-    
+
     [ProtoMember(2)] public byte[]? MsgResid { get; set; }
 }

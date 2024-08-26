@@ -10,8 +10,8 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 internal class OidbSvcTrpcTcp0x1096_1
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
-    
+
     [ProtoMember(2)] public string Uid { get; set; }
-    
+
     [ProtoMember(3)] public bool IsAdmin { get; set; }
 }

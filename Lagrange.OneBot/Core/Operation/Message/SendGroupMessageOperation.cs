@@ -22,10 +22,10 @@ public sealed class SendGroupMessageOperation(MessageCommon common) : IOperation
             OneBotGroupMessageText messageText => common.ParseChain(messageText).Build(),
             _ => throw new Exception()
         };
-        
+
         var result = await context.SendMessage(chain);
         int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence ?? 0);
-        
+
         return new OneBotResult(new OneBotMessageResponse(hash), (int)result.Result, "ok");
     }
 }

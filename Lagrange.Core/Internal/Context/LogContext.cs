@@ -13,22 +13,22 @@ internal class LogContext : ContextBase
 
     public LogContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, EventInvoker invoker)
         : base(collection, keystore, appInfo, device) => _invoker = invoker;
-    
+
     public void LogDebug(string tag, string message) =>
         _invoker.PostEvent(new BotLogEvent(tag, LogLevel.Debug, message));
-    
-    public void LogVerbose(string tag, string message) => 
+
+    public void LogVerbose(string tag, string message) =>
         _invoker.PostEvent(new BotLogEvent(tag, LogLevel.Verbose, message));
-    
+
     public void LogInfo(string tag, string message) =>
         _invoker.PostEvent(new BotLogEvent(tag, LogLevel.Information, message));
-    
+
     public void LogWarning(string tag, string message) =>
         _invoker.PostEvent(new BotLogEvent(tag, LogLevel.Warning, message));
-    
+
     public void LogFatal(string tag, string message) =>
         _invoker.PostEvent(new BotLogEvent(tag, LogLevel.Fatal, message));
-    
+
     public void Log(string tag, LogLevel level, string message) =>
         _invoker.PostEvent(new BotLogEvent(tag, level, message));
 }

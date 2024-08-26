@@ -92,7 +92,7 @@ internal abstract partial class ClientListener : IClientListener
                 linkedCts = CancellationTokenSource.CreateLinkedTokenSource(session.Token, userCts.Token);
                 token = linkedCts.Token;
             }
-            
+
             try
             {
                 return await session.Socket.SendAsync(buffer, SocketFlags.None, token) == buffer.Length;
@@ -136,7 +136,7 @@ internal abstract partial class ClientListener : IClientListener
                     buffer = newBuffer;
                 }
                 await socket.ReceiveFullyAsync(buffer.AsMemory(headerSize, packetLength - headerSize), token);
-                
+
                 try
                 {
                     OnRecvPacket(buffer.AsSpan(0, packetLength));

@@ -35,7 +35,7 @@ internal class MarkReadedService : BaseService<MarkReadedEvent>
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out MarkReadedEvent output, out List<ProtocolEvent>? extraEvents)
     {
         output = MarkReadedEvent.Result(0);

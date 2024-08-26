@@ -9,16 +9,16 @@ namespace Lagrange.Core.Utility.Sign;
 internal class MacSigner : SignProvider
 {
     private readonly HttpClient _client = new();
-    
+
     private const string MacOsUrl = "http://127.0.0.1:7458/api/sign";
-    
+
     public override byte[]? Sign(string cmd, uint seq, byte[] body, out byte[]? ver, out string? token)
     {
         ver = null;
         token = null;
         if (!WhiteListCommand.Contains(cmd)) return null;
         if (!Available || string.IsNullOrEmpty(MacOsUrl)) return new byte[35]; // Dummy signature
-        
+
         var payload = new JsonObject
         {
             { "cmd", cmd },
@@ -40,7 +40,7 @@ internal class MacSigner : SignProvider
         {
             Available = false;
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(MacSigner)}] Failed to get signature, using dummy signature");
-            
+
             return new byte[35]; // Dummy signature
         }
     }

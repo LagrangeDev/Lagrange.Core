@@ -10,7 +10,7 @@ internal static class ServicePacker
     public static BinaryPacket BuildProtocol13(byte[] packet, BotKeystore keystore, string command, uint sequence)
     {
         var frame = new BinaryPacket();
-        
+
         using var stream = new MemoryStream();
         var uid = new NTPacketUid { Uid = keystore.Uid };
         Serializer.Serialize(stream, uid);
@@ -30,14 +30,14 @@ internal static class ServicePacker
 
         return frame;
     }
-    
+
     /// <summary>
     /// Build Universal Packet, every service should derive from this, protocol 12 only
     /// </summary>
     public static BinaryPacket BuildProtocol12(BinaryPacket packet, BotKeystore keystore)
     {
         var frame = new BinaryPacket();
-        
+
         frame.Barrier(w => w
             .WriteUint(12) // protocolVersion
             .WriteByte((byte)(keystore.Session.D2.Length == 0 ? 2 : 1)) // flag
@@ -45,7 +45,7 @@ internal static class ServicePacker
             .WriteByte(0) // unknown
             .WriteString(keystore.Uin.ToString(), Prefix.Uint32 | Prefix.WithPrefix) // 帅
             .WriteBytes(keystore.TeaImpl.Encrypt(packet.ToArray(), keystore.Session.D2Key).AsSpan()), Prefix.Uint32 | Prefix.WithPrefix);
-        
+
         return frame;
     }
 
@@ -62,7 +62,7 @@ internal static class ServicePacker
 
         if (protocol != 12 && protocol != 13) throw new Exception($"Unrecognized protocol: {protocol}");
         if (uin != keystore.Uin.ToString() && protocol == 12) throw new Exception($"Uin mismatch: {uin} != {keystore.Uin}");
-        
+
         var encrypted = packet.ReadBytes((int)packet.Remaining);
         var decrypted = authFlag switch
         {
@@ -71,7 +71,7 @@ internal static class ServicePacker
             2 => keystore.TeaImpl.Decrypt(encrypted, new byte[16]),
             _ => throw new Exception($"Unrecognized auth flag: {authFlag}")
         };
-        
+
         return new BinaryPacket(decrypted);
     }
 }

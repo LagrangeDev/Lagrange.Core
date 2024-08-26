@@ -9,11 +9,11 @@ namespace Lagrange.Core.Message.Entity;
 public class XmlEntity : IMessageEntity
 {
     public string Xml { get; set; }
-    
+
     public XmlEntity() => Xml = "";
-    
+
     public XmlEntity(string xml) => Xml = xml;
-    
+
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
         return new Elem[]
@@ -27,8 +27,8 @@ public class XmlEntity : IMessageEntity
                 }
             }
         };
-    }   
-    
+    }
+
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
         if (elems.RichMsg is { ServiceId: 35, Template1: not null } richMsg)
@@ -39,6 +39,6 @@ public class XmlEntity : IMessageEntity
 
         return null;
     }
-    
+
     public string ToPreviewString() => $"[Xml]: {Xml}";
 }

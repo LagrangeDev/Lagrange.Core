@@ -4,7 +4,7 @@ namespace Lagrange.Core.Internal.Service;
 internal class EventSubscribeAttribute : Attribute
 {
     public Type EventType { get; }
-    
+
     public EventSubscribeAttribute(Type eventType)
     {
         EventType = eventType;

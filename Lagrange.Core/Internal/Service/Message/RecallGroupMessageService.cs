@@ -24,13 +24,13 @@ internal class RecallGroupMessageService : BaseService<RecallGroupMessageEvent>
             },
             Field4 = new GroupRecallMsgField4 { Field1 = 0 }
         };
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out RecallGroupMessageEvent output, out List<ProtocolEvent>? extraEvents)
     {
         output = RecallGroupMessageEvent.Result(0);

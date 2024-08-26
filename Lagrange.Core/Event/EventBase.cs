@@ -14,7 +14,7 @@ public abstract class EventBase : EventArgs
         EventTime = DateTime.Now;
         EventMessage = "[Empty Event Message]";
     }
-    
+
     public override string ToString()
     {
         return $"[{EventTime:HH:mm:ss}] {EventMessage}";

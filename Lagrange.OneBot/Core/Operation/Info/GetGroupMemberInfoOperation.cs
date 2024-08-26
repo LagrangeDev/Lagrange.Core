@@ -17,14 +17,14 @@ public class GetGroupMemberInfoOperation : IOperation
         {
             var result = (await context.FetchMembers(message.GroupId, message.NoCache)).FirstOrDefault(x => x.Uin == message.UserId);
 
-            return result == null 
-                ? new OneBotResult(null, -1, "failed") 
-                : new OneBotResult(new OneBotGroupMember(message.GroupId, 
+            return result == null
+                ? new OneBotResult(null, -1, "failed")
+                : new OneBotResult(new OneBotGroupMember(message.GroupId,
                     result.Uin,
-                    result.Permission.ToString().ToLower(), 
+                    result.Permission.ToString().ToLower(),
                     result.GroupLevel.ToString(), result.MemberCard, result.MemberName, result.SpecialTitle,
-                    (uint)new DateTimeOffset(result.JoinTime).ToUnixTimeSeconds(), 
-                    (uint)new DateTimeOffset(result.LastMsgTime).ToUnixTimeSeconds()), 
+                    (uint)new DateTimeOffset(result.JoinTime).ToUnixTimeSeconds(),
+                    (uint)new DateTimeOffset(result.LastMsgTime).ToUnixTimeSeconds()),
                     0, "ok");
         }
 

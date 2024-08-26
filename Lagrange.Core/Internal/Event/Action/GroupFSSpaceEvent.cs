@@ -3,9 +3,9 @@ namespace Lagrange.Core.Internal.Event.Action;
 internal class GroupFSSpaceEvent : GroupFSViewEvent
 {
     public ulong TotalSpace { get; set; }
-    
+
     public ulong UsedSpace { get; set; }
-    
+
     private GroupFSSpaceEvent(uint groupUin) : base(groupUin) { }
 
     private GroupFSSpaceEvent(int resultCode, ulong totalSpace, ulong usedSpace) : base(resultCode)

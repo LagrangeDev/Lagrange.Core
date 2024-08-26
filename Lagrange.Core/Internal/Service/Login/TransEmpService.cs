@@ -12,12 +12,12 @@ namespace Lagrange.Core.Internal.Service.Login;
 [Service("wtlogin.trans_emp")]
 internal class TransEmpService : BaseService<TransEmpEvent>
 {
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out TransEmpEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = BitConverter.GetBytes(input.Length, false).Concat(input.ToArray()).ToArray(); // 这写的啥
         var packet = TransEmp.DeserializeBody(keystore, new BinaryPacket(payload), out ushort command);
-        
+
         if (command == 0x31)
         {
             var tlvs = TransEmp31.Deserialize(packet, keystore, out var signature);
@@ -50,14 +50,14 @@ internal class TransEmpService : BaseService<TransEmpEvent>
         extraEvents = null;
         return true;
     }
-    
+
     protected override bool Build(TransEmpEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         output = input.EventState == TransEmpEvent.State.FetchQrCode
             ? new TransEmp31(keystore, appInfo, device).ConstructPacket().ToArray()
             : new TransEmp12(keystore, appInfo, device).ConstructPacket().ToArray();
-        
+
         extraPackets = null;
         return true;
     }

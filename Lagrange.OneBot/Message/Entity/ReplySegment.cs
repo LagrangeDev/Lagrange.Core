@@ -10,16 +10,16 @@ public partial class ReplySegment(uint messageId)
 {
     public ReplySegment() : this(0) { }
 
-    [JsonPropertyName("id")] [CQProperty] public string MessageId { get; set; } = messageId.ToString();
+    [JsonPropertyName("id")][CQProperty] public string MessageId { get; set; } = messageId.ToString();
 }
 
 [SegmentSubscriber(typeof(ForwardEntity), "reply")]
 public partial class ReplySegment : SegmentBase
 {
     internal MessageChain? TargetChain { get; set; }
-    
+
     internal uint Sequence { get; private set; }
-    
+
     public override void Build(MessageBuilder builder, SegmentBase segment)
     {
         if (segment is ReplySegment reply && Database is not null)
@@ -29,7 +29,7 @@ public partial class ReplySegment : SegmentBase
             var build = MessagePacker.Build(reply.TargetChain, "");
             var virtualElem = build.Body?.RichText?.Elems;
             if (virtualElem != null) reply.TargetChain.Elements.AddRange(virtualElem);
-            
+
             builder.Forward(reply.TargetChain);
         }
     }
@@ -37,9 +37,9 @@ public partial class ReplySegment : SegmentBase
     public override SegmentBase FromEntity(MessageChain chain, IMessageEntity entity)
     {
         if (entity is not ForwardEntity forward || Database is null) throw new ArgumentException("The entity is not a forward entity.");
-        
+
         var collection = Database.GetCollection<MessageRecord>();
-        
+
         int hash = MessageRecord.CalcMessageHash(forward.MessageId, forward.Sequence);
         var query = collection.FindById(hash);
         return query == null

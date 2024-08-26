@@ -8,11 +8,11 @@ internal class RequestFriendSearchEvent : ProtocolEvent
     {
         TargetUin = targetUin;
     }
-    
+
     private RequestFriendSearchEvent(int resultCode) : base(resultCode)
     {
     }
-    
+
     public static RequestFriendSearchEvent Create(uint targetUin) => new(targetUin);
 
     public static RequestFriendSearchEvent Result(int resultCode) => new(resultCode);

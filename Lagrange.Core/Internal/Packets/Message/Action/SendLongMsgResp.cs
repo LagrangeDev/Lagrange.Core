@@ -8,7 +8,7 @@ namespace Lagrange.Core.Internal.Packets.Message.Action;
 internal class SendLongMsgResp
 {
     [ProtoMember(2)] public SendLongMsgResult Result { get; set; }
-    
+
     [ProtoMember(15)] public LongMsgSettings Settings { get; set; }
 }
 

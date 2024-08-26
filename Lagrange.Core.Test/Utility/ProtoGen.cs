@@ -11,11 +11,11 @@ internal static class ProtoGen
         var assembly = typeof(Lagrange.Core.Utility.ServiceInjector).Assembly;
         var types = assembly.GetTypes();
         var sb = new StringBuilder();
-        
+
         sb.AppendLine("syntax = \"proto3\";");
         sb.AppendLine();
         sb.AppendLine("package Lagrange.Core;");
-        
+
         foreach (var type in types)
         {
             if (type.Namespace?.StartsWith("Lagrange.Core.Internal.Packets") != true) continue;
@@ -30,19 +30,19 @@ internal static class ProtoGen
             sb.AppendLine("}");
             sb.AppendLine();
         }
-        
+
         string proto = sb.ToString();
-        
+
         File.WriteAllText("packets.proto", proto);
     }
-    
+
     private static string ParseType(Type type)
     {
         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
         {
             return $"repeated {ParseType(type.GetGenericArguments()[0])}";
         }
-        
+
         return type.ToString() switch
         {
             "System.UInt64" => "varint",

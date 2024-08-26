@@ -11,9 +11,9 @@ namespace Lagrange.Core.Message.Entity;
 public class LightAppEntity : IMessageEntity
 {
     public string AppName { get; set; } = string.Empty;
-    
+
     public string Payload { get; set; } = string.Empty;
-    
+
     public LightAppEntity() { }
 
     public LightAppEntity(string payload)
@@ -22,7 +22,7 @@ public class LightAppEntity : IMessageEntity
         string? app = JsonNode.Parse(payload)?["app"]?.ToString();
         if (app != null) AppName = app;
     }
-    
+
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
         using var payload = new BinaryPacket()
@@ -59,7 +59,7 @@ public class LightAppEntity : IMessageEntity
                 };
             }
         }
-        
+
         return null;
     }
 

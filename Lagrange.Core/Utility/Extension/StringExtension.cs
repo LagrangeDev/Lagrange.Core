@@ -10,7 +10,7 @@ internal static class StringExtension
 
         return Convert.FromHexString(hex);
     }
-    
+
     public static byte[] UnHex(this ReadOnlySpan<char> hex)
     {
         if (hex.Length % 2 != 0) throw new ArgumentException("Invalid hex string");

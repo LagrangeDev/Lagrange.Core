@@ -24,13 +24,13 @@ internal class RequestFriendSearchService : BaseService<RequestFriendSearchEvent
                 Setting = "{\"search_by_uid\":true, \"scenario\":\"related_people_and_groups_panel\"}"
             }
         });
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
     }
-    
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out RequestFriendSearchEvent output, out List<ProtocolEvent>? extraEvents)
     {
         output = RequestFriendSearchEvent.Result(0);

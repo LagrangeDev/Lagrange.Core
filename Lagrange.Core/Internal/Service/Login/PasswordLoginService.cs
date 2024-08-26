@@ -34,7 +34,7 @@ internal class PasswordLoginService : BaseService<PasswordLoginEvent>
         var plainBytes = BinarySerializer.Serialize(plainBody);
         var plainKey = keystore.PasswordMd5.UnHex().Concat(new byte[4]).Concat(BitConverter.GetBytes(keystore.Uin, false)).ToArray().Md5().UnHex();
         var encryptedPlain = keystore.TeaImpl.Encrypt(plainBytes.ToArray(), plainKey); // TODO: Investigate key
-        
+
         output = SsoNTLoginCommon.BuildNTLoginPacket(keystore, appInfo, device, encryptedPlain);
         extraPackets = null;
         return true;
@@ -45,20 +45,20 @@ internal class PasswordLoginService : BaseService<PasswordLoginEvent>
     {
         if (keystore.Session.ExchangeKey == null) throw new InvalidOperationException("ExchangeKey is null");
         var encrypted = Serializer.Deserialize<SsoNTLoginEncryptedData>(input);
-        
+
         if (encrypted.GcmCalc != null)
         {
             var decrypted = AesGcmImpl.Decrypt(encrypted.GcmCalc, keystore.Session.ExchangeKey);
             var response = Serializer.Deserialize<SsoNTLoginBase<SsoNTLoginResponse>>(decrypted.AsSpan());
             var body = response.Body;
-            
+
             if (response.Header?.Error != null || body?.Credentials == null)
             {
                 keystore.Session.UnusualSign = body?.Unusual?.Sig;
                 keystore.Session.UnusualCookies = response.Header?.Cookie?.Cookie;
                 keystore.Session.CaptchaUrl = body?.Captcha?.Url;
                 keystore.Session.NewDeviceVerifyUrl = response.Header?.Error?.NewDeviceVerifyUrl;
-                
+
                 string? tag = response.Header?.Error?.Tag;
                 string? message = response.Header?.Error?.Message;
                 output = PasswordLoginEvent.Result((int)(response.Header?.Error?.ErrorCode ?? 1), tag, message);

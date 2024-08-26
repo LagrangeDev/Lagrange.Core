@@ -23,14 +23,14 @@ internal class LinuxSigner : SignProvider
             if (reconnect) _timer?.Change(-1, 5000);
         });
     }
-    
+
     public override byte[]? Sign(string cmd, uint seq, byte[] body, out byte[]? ver, out string? token)
     {
         ver = null;
         token = null;
         if (!WhiteListCommand.Contains(cmd)) return null;
         if (!Available || string.IsNullOrEmpty(Url)) return new byte[35]; // Dummy signature
-        
+
         var payload = new JsonObject
         {
             { "cmd", cmd },
@@ -52,7 +52,7 @@ internal class LinuxSigner : SignProvider
         {
             Available = false;
             _timer.Change(0, 5000);
-            
+
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(LinuxSigner)}] Failed to get signature, using dummy signature");
             return new byte[20]; // Dummy signature
         }

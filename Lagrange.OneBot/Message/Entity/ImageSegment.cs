@@ -9,14 +9,14 @@ public partial class ImageSegment(string url, string filename, string summary = 
 {
     public ImageSegment() : this("", "") { }
 
-    [JsonPropertyName("file")] [CQProperty] public string File { get; set; } = url;
-    
+    [JsonPropertyName("file")][CQProperty] public string File { get; set; } = url;
+
     [JsonPropertyName("filename")] public string Filename { get; set; } = filename;
-    
-    [JsonPropertyName("url")] public string Url { get; set; }  = url;
+
+    [JsonPropertyName("url")] public string Url { get; set; } = url;
 
     [JsonPropertyName("summary")] public string Summary { get; set; } = summary;
-    
+
     [JsonPropertyName("subType")] public int SubType { get; set; } = subType;
 }
 

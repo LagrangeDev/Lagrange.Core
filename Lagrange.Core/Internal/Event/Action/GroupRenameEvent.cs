@@ -13,8 +13,8 @@ internal class GroupRenameEvent : ProtocolEvent
     }
 
     private GroupRenameEvent(int resultCode) : base(resultCode) { }
-    
+
     public static GroupRenameEvent Create(uint groupUin, string targetName) => new(groupUin, targetName);
-    
+
     public static GroupRenameEvent Result(int resultCode) => new(resultCode);
 }

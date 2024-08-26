@@ -8,10 +8,10 @@ internal class RequestFriendSettingEvent : ProtocolEvent
     {
         TargetUin = targetUin;
     }
-    
+
     private RequestFriendSettingEvent(int resultCode) : base(resultCode) { }
-    
+
     public static RequestFriendSettingEvent Create(uint targetUin) => new(targetUin);
-    
+
     public static RequestFriendSettingEvent Result(int resultCode) => new(resultCode);
 }

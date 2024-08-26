@@ -14,26 +14,26 @@ namespace Lagrange.Core.Internal.Context;
 internal class BusinessContext : ContextBase
 {
     private const string Tag = nameof(BusinessContext);
-    
+
     private readonly Dictionary<Type, List<LogicBase>> _businessLogics;
-    
+
     #region Business Logics
-    
+
     internal MessagingLogic MessagingLogic { get; private set; }
-    
+
     internal WtExchangeLogic WtExchangeLogic { get; private set; }
-    
+
     internal OperationLogic OperationLogic { get; private set; }
-    
+
     internal CachingLogic CachingLogic { get; private set; }
 
     #endregion
 
-    public BusinessContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device) 
+    public BusinessContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device)
         : base(collection, keystore, appInfo, device)
     {
         _businessLogics = new Dictionary<Type, List<LogicBase>>();
-        
+
         RegisterLogics();
     }
 
@@ -44,7 +44,7 @@ internal class BusinessContext : ContextBase
         {
             var constructor = logic.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
             var instance = (LogicBase)constructor[0].Invoke(new object[] { Collection });
-            
+
             foreach (var @event in logic.GetCustomAttributes<EventSubscribeAttribute>())
             {
                 if (!_businessLogics.TryGetValue(@event.EventType, out var list))
@@ -95,7 +95,7 @@ internal class BusinessContext : ContextBase
     {
         await HandleOutgoingEvent(@event);
         var result = new List<ProtocolEvent>();
-        
+
         try
         {
             var packets = Collection.Service.ResolvePacketByEvent(@event);
@@ -115,7 +115,7 @@ internal class BusinessContext : ContextBase
             Collection.Log.LogWarning(Tag, $"Error when processing the event: {@event}");
             Collection.Log.LogWarning(Tag, e.ToString());
         }
-        
+
         return result;
     }
 
@@ -141,10 +141,10 @@ internal class BusinessContext : ContextBase
                 if (e.StackTrace != null) Collection.Log.LogFatal(Tag, e.StackTrace);
             }
         }
-        
+
         return true;
     }
-    
+
     public async Task<bool> HandleOutgoingEvent(ProtocolEvent @event)
     {
         _businessLogics.TryGetValue(typeof(ProtocolEvent), out var baseLogics);
@@ -167,10 +167,10 @@ internal class BusinessContext : ContextBase
                 if (e.StackTrace != null) Collection.Log.LogFatal(Tag, e.StackTrace);
             }
         }
-        
+
         return true;
     }
-    
+
     /// <summary>
     /// Handle the incoming packet with new sequence number.
     /// </summary>

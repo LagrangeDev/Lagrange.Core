@@ -23,7 +23,7 @@ internal class GroupRemarkService : BaseService<GroupRemarkEvent>
                 TargetRemark = input.TargetRemark
             }
         });
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
@@ -33,7 +33,7 @@ internal class GroupRemarkService : BaseService<GroupRemarkEvent>
         out GroupRemarkEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
-        
+
         output = GroupRemarkEvent.Result((int)payload.ErrorCode);
         extraEvents = null;
         return true;

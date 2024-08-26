@@ -11,15 +11,15 @@ internal class TlvPacket : BinaryPacket
 {
     [BinaryProperty] public ushort TlvCommand { get; }
     [BinaryProperty] public ushort TlvBodyLength { get; }
-    
+
     [BinaryProperty] public TlvBody TlvBody { get; }
 
     public TlvPacket(ushort tlvCommand, TlvBody tlvBody, (TeaImpl tea, byte[] key)? encrypt = null)
     {
         TlvCommand = tlvCommand;
-        TlvBodyLength = (ushort) tlvBody.Length;
+        TlvBodyLength = (ushort)tlvBody.Length;
         TlvBody = tlvBody;
-        
+
         Serialize(tlvBody, encrypt);
     }
 
@@ -37,7 +37,7 @@ internal class TlvPacket : BinaryPacket
         {
             packet = BinarySerializer.Serialize(tlvBody); // Write V(VALUE)
         }
-        
+
         WriteUshort(TlvCommand); // Write T(TAG)
         Barrier(w =>
         {

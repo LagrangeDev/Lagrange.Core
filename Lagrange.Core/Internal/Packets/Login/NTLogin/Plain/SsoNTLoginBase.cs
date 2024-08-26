@@ -13,6 +13,6 @@ namespace Lagrange.Core.Internal.Packets.Login.NTLogin.Plain;
 internal class SsoNTLoginBase<T> where T : class
 {
     [ProtoMember(1)] public SsoNTLoginHeader? Header { get; set; }
-    
+
     [ProtoMember(2)] public T? Body { get; set; }
 }

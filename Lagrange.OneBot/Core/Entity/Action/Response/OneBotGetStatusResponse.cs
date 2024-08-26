@@ -16,6 +16,6 @@ public class OneBotGetStatusResponse
     [JsonPropertyName("online")] public bool Online { get; set; } = true;
 
     [JsonPropertyName("good")] public bool Good { get; set; } = true;
-    
+
     [JsonPropertyName("memory")] public long Memory { get; set; }
 }

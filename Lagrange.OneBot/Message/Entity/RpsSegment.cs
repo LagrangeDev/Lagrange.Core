@@ -6,7 +6,7 @@ namespace Lagrange.OneBot.Message.Entity;
 [Serializable]
 public partial class RpsSegment
 {
-    
+
 }
 
 [SegmentSubscriber(typeof(FaceEntity), "rps")]

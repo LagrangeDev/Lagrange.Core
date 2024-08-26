@@ -3,11 +3,11 @@ namespace Lagrange.Core.Internal.Event.Notify;
 internal class FriendSysRequestEvent : ProtocolEvent
 {
     public uint SourceUin { get; }
-    
+
     public string SourceUid { get; }
-    
+
     public string Message { get; }
-    
+
     public string Source { get; }
 
     private FriendSysRequestEvent(uint sourceUin, string sourceUid, string message, string source) : base(0)

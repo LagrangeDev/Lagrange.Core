@@ -19,13 +19,13 @@ internal class VideoGroupUploadService : BaseService<VideoGroupUploadEvent>
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         if (input.Entity.VideoStream is null || input.Entity.ThumbnailStream is null) throw new Exception();
-        
+
         string md5 = input.Entity.VideoStream.Value.Md5(true);
         string sha1 = input.Entity.VideoStream.Value.Sha1(true);
-        
+
         string thumbMd5 = input.Entity.ThumbnailStream.Value.Md5(true);
         string thumbSha1 = input.Entity.ThumbnailStream.Value.Sha1(true);
-        
+
         var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq
         {
             ReqHead = new MultiMediaReqHead
@@ -124,7 +124,7 @@ internal class VideoGroupUploadService : BaseService<VideoGroupUploadEvent>
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var upload = packet.Body.Upload;
         var compat = Serializer.Deserialize<VideoFile>(packet.Body.Upload.CompatQMsg.AsSpan());
-        
+
         output = VideoGroupUploadEvent.Result((int)packet.ErrorCode, upload.MsgInfo, upload.UKey, upload.IPv4s, upload.SubFileInfos, compat);
         extraEvents = null;
         return true;

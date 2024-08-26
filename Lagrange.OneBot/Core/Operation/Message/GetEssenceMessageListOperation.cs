@@ -45,9 +45,9 @@ public class GetEssenceMessageListOperation(TicketService ticket) : IOperation
                         Content = ConvertToSegment(msg.MsgContent)
                     });
                 }
-                
+
                 if (@object.Data.IsEnd) break;
-                
+
                 page++;
             }
 
@@ -106,11 +106,11 @@ file class MsgList
     [JsonPropertyName("group_code")] public string GroupCode { get; set; }
 
     [JsonPropertyName("msg_seq")] public uint MsgSeq { get; set; }
-        
+
     [JsonPropertyName("msg_random")] public uint MsgRandom { get; set; }
 
     [JsonPropertyName("sender_uin")] public string SenderUin { get; set; }
-        
+
     [JsonPropertyName("sender_nick")] public string SenderNick { get; set; }
 
     [JsonPropertyName("sender_time")] public uint SenderTime { get; set; }
@@ -120,8 +120,8 @@ file class MsgList
     [JsonPropertyName("add_digest_nick")] public string AddDigestNick { get; set; }
 
     [JsonPropertyName("add_digest_time")] public uint AddDigestTime { get; set; }
-        
+
     [JsonPropertyName("msg_content")] public JsonObject[] MsgContent { get; set; }
-        
+
     [JsonPropertyName("can_be_removed")] public bool CanBeRemoved { get; set; }
 }

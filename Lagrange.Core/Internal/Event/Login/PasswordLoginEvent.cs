@@ -3,7 +3,7 @@
 internal class PasswordLoginEvent : ProtocolEvent
 {
     public string? Tag { get; set; }
-    
+
     public string? Message { get; set; }
 
     private PasswordLoginEvent() : base(true) { }

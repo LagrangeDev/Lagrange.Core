@@ -14,8 +14,8 @@ internal class KeyExchangeEvent : ProtocolEvent
     {
         return new KeyExchangeEvent(0);
     }
-    
-    
+
+
     public static KeyExchangeEvent Result()
     {
         return new KeyExchangeEvent();

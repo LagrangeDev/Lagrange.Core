@@ -12,14 +12,14 @@ internal class ContextCollection : IDisposable
     public BusinessContext Business { get; }
     public LogContext Log { get; }
     public HighwayContext Highway { get; }
-    
+
     public BotKeystore Keystore { get; }
     public BotAppInfo AppInfo { get; }
     public BotDeviceInfo Device { get; }
-    
+
     public TaskScheduler Scheduler { get; }
     public EventInvoker Invoker { get; }
-    
+
     public ContextCollection(BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, BotConfig config,
         EventInvoker invoker, TaskScheduler scheduler)
     {

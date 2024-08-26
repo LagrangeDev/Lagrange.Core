@@ -7,13 +7,13 @@ namespace Lagrange.Core.Internal.Event.Action;
 internal class GroupFSListEvent : GroupFSViewEvent
 {
     public string TargetDirectory { get; set; }
-    
+
     public uint StartIndex { get; set; }
-    
+
     public uint FileCount { get; set; }
-    
+
     public bool IsEnd { get; set; }
-    
+
     public List<IBotFSEntry> FileEntries { get; set; }
 
     private GroupFSListEvent(uint groupUin, string targetDirectory, uint startIndex, uint fileCount) : base(groupUin)
@@ -30,9 +30,9 @@ internal class GroupFSListEvent : GroupFSViewEvent
         IsEnd = isEnd;
     }
 
-    public static GroupFSListEvent Create(uint groupUin, string targetDirectory, uint startIndex, uint fileCount) 
+    public static GroupFSListEvent Create(uint groupUin, string targetDirectory, uint startIndex, uint fileCount)
         => new(groupUin, targetDirectory, startIndex, fileCount);
 
-    public static GroupFSListEvent Result(int resultCode, List<IBotFSEntry> fileEntries, bool isEnd) 
+    public static GroupFSListEvent Result(int resultCode, List<IBotFSEntry> fileEntries, bool isEnd)
         => new(resultCode, fileEntries, isEnd);
 }

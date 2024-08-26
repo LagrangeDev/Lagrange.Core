@@ -4,9 +4,9 @@ namespace Lagrange.Core.Utility.Binary.Tlv.Attributes;
 internal class TlvAttribute : Attribute
 {
     public readonly ushort TlvCommand;
-    
+
     public readonly bool IsResponse;
-    
+
     public TlvAttribute(ushort tlvCommand)
     {
         TlvCommand = tlvCommand;

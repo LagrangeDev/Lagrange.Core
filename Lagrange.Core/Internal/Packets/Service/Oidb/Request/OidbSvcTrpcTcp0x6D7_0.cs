@@ -19,8 +19,8 @@ internal class OidbSvcTrpcTcp0x6D7_0
 internal class OidbSvcTrpcTcp0x6D7_0Create
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
-    
+
     [ProtoMember(3)] public string RootDirectory { get; set; }
-    
+
     [ProtoMember(4)] public string FolderName { get; set; }
 }

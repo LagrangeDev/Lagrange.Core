@@ -3,13 +3,13 @@ namespace Lagrange.Core.Internal.Event.Notify;
 internal class GroupSysDecreaseEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
-    
+
     public string MemberUid { get; }
-    
+
     public string? OperatorUid { get; }
-    
+
     public uint Type { get; }
-    
+
     private GroupSysDecreaseEvent(uint groupUin, string memberUid, string? operatorUid, uint type) : base(0)
     {
         GroupUin = groupUin;

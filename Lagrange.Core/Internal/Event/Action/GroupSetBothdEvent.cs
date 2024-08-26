@@ -3,7 +3,7 @@ namespace Lagrange.Core.Internal.Event.Action;
 internal class GroupSetBothdEvent : ProtocolEvent
 {
     public uint BotId { get; set; }
-    
+
     public uint GroupUin { get; set; }
 
     public string? Data_1 { get; set; }
@@ -20,8 +20,8 @@ internal class GroupSetBothdEvent : ProtocolEvent
     }
 
     private GroupSetBothdEvent(int resultCode) : base(resultCode) { }
-    
-    public static GroupSetBothdEvent Create(uint botId, uint groupuin, string? data_1, string? data_2) => new(botId, groupuin,data_1,data_2);
+
+    public static GroupSetBothdEvent Create(uint botId, uint groupuin, string? data_1, string? data_2) => new(botId, groupuin, data_1, data_2);
 
     public static GroupSetBothdEvent Result(int resultCode) => new(resultCode);
 }

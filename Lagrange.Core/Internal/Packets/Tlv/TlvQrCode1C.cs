@@ -8,6 +8,6 @@ namespace Lagrange.Core.Internal.Packets.Tlv;
 internal class TlvQrCode1C : TlvBody
 {
     [BinaryProperty] public uint ExpireSec { get; set; }
-    
+
     [BinaryProperty] public ushort ExpireMin { get; set; }
 }

@@ -6,6 +6,6 @@ namespace Lagrange.Core.Internal.Packets.Message.Routing;
 internal class GrpTmp
 {
     [ProtoMember(1)] public uint? GroupUin { get; set; }
-    
+
     [ProtoMember(2)] public uint? ToUin { get; set; }
 }

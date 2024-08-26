@@ -15,24 +15,24 @@ internal static class ZCompression
         stream.WriteByte(0xDA); // Zlib header
 
         stream.Write(deflate.AsSpan());
-        
+
         var checksum = Adler32(data);
         stream.Write(checksum.AsSpan());
-        
+
         return stream.ToArray();
     }
-    
+
     public static byte[] ZCompress(string data, byte[]? header = null) => ZCompress(Encoding.UTF8.GetBytes(data), header);
 
     public static byte[] ZDecompress(Span<byte> data, bool validate = true)
     {
         var checksum = data[^4..];
-        
+
         var inflate = Common.Inflate(data[2..^4]);
         if (validate) return checksum.SequenceEqual(Adler32(inflate)) ? inflate : throw new Exception("Checksum mismatch");
         return inflate;
     }
-        
+
     private static byte[] Adler32(byte[] data)
     {
         uint a = 1, b = 0;

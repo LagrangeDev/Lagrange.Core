@@ -11,6 +11,6 @@ internal class Tlv142 : TlvBody
     public Tlv142(BotAppInfo appInfo) => PackageName = appInfo.PackageName;
 
     [BinaryProperty] public ushort Version { get; set; } = 0;
-    
+
     [BinaryProperty(Prefix.Uint16 | Prefix.LengthOnly)] public string PackageName { get; set; }
 }

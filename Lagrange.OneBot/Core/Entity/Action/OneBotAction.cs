@@ -7,8 +7,8 @@ namespace Lagrange.OneBot.Core.Entity.Action;
 public class OneBotAction
 {
     [JsonPropertyName("action")] public string Action { get; set; } = "";
-    
+
     [JsonPropertyName("params")] public JsonNode? Params { get; set; }
 
-    [JsonPropertyName("echo")] public object? Echo { get; set; } 
+    [JsonPropertyName("echo")] public object? Echo { get; set; }
 }

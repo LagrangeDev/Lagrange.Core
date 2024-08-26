@@ -12,8 +12,8 @@ internal class FetchRKeyEvent : ProtocolEvent
     {
         RKeys = rKeys;
     }
-    
+
     public static FetchRKeyEvent Create() => new();
-    
+
     public static FetchRKeyEvent Result(int resultCode, List<string> rKeys) => new(resultCode, rKeys);
 }

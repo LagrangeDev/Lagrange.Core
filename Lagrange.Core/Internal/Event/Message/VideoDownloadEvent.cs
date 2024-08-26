@@ -5,17 +5,17 @@ namespace Lagrange.Core.Internal.Event.Message;
 internal class VideoDownloadEvent : ProtocolEvent
 {
     public string AudioUrl { get; }
-    
+
     public string Uuid { get; }
-    
+
     public string SelfUid { get; }
-    
+
     public string FileName { get; }
-    
+
     public string FileMd5 { get; }
-    
+
     public string? FileSha1 { get; }
-    
+
     public bool IsGroup { get; }
 
     private VideoDownloadEvent(string uuid, string selfUid, string fileName, string fileMd5, string? fileSha1, bool isGroup) : base(true)
@@ -33,7 +33,7 @@ internal class VideoDownloadEvent : ProtocolEvent
         AudioUrl = audioUrl;
     }
 
-    public static VideoDownloadEvent Create(string uuid, string selfUid, string fileName, string fileMd5, string? fileSha1 = null, bool isGroup = false) 
+    public static VideoDownloadEvent Create(string uuid, string selfUid, string fileName, string fileMd5, string? fileSha1 = null, bool isGroup = false)
         => new(uuid, selfUid, fileName, fileMd5, fileSha1, isGroup);
 
     public static VideoDownloadEvent Result(int resultCode, string url) => new(resultCode, url);

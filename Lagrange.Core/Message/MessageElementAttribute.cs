@@ -4,6 +4,6 @@ namespace Lagrange.Core.Message;
 internal class MessageElementAttribute : Attribute
 {
     public Type Element { get; }
-    
+
     public MessageElementAttribute(Type element) => Element = element;
 }

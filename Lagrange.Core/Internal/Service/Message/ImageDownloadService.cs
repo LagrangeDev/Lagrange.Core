@@ -50,20 +50,20 @@ internal class ImageDownloadService : BaseService<ImageDownloadEvent>
                 }
             }
         }, 0x11c5, 200, false, true);
-        
+
         output = packet.Serialize();
         extraPackets = null;
-        
+
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out ImageDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var body = payload.Body.Download;
         string url = $"https://{body.Info.Domain}{body.Info.UrlPath}{body.RKeyParam}";
-        
+
         output = ImageDownloadEvent.Result((int)payload.ErrorCode, url);
         extraEvents = null;
         return true;

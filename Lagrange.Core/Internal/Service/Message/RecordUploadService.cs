@@ -18,7 +18,7 @@ internal class RecordUploadService : BaseService<RecordUploadEvent>
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         if (input.Entity.AudioStream is null) throw new Exception();
-        
+
         string md5 = input.Entity.AudioStream.Value.Md5(true);
         string sha1 = input.Entity.AudioStream.Value.Sha1(true);
 
@@ -90,7 +90,7 @@ internal class RecordUploadService : BaseService<RecordUploadEvent>
                 NoNeedCompatMsg = false
             }
         }, 0x126d, 100, false, true);
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
@@ -102,7 +102,7 @@ internal class RecordUploadService : BaseService<RecordUploadEvent>
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var upload = packet.Body.Upload;
         var compat = Serializer.Deserialize<RichText>(upload.CompatQMsg.AsSpan());
-        
+
         output = RecordUploadEvent.Result((int)packet.ErrorCode, upload.MsgInfo, upload.UKey, upload.IPv4s, upload.SubFileInfos, compat);
         extraEvents = null;
         return true;

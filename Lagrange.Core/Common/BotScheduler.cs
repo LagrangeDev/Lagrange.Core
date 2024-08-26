@@ -12,13 +12,13 @@ namespace Lagrange.Core.Common;
 public class Scheduler
 {
     public const int Infinity = int.MaxValue;
-    
+
     private BotContext Bot { get; }
-    
+
     private Utility.TaskScheduler Instance { get; }
-    
+
     public string Name { get; }
-    
+
     public Action<BotContext> Action { get; }
 
     internal Scheduler(BotContext bot, string name, Action<BotContext> action)
@@ -28,7 +28,7 @@ public class Scheduler
         Action = action;
         Instance = bot.Scheduler;
     }
-    
+
     ~Scheduler() => Cancel();
 
     /// <summary>

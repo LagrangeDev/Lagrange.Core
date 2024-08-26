@@ -6,7 +6,7 @@ namespace Lagrange.Core.Internal.Service;
 
 internal class BaseService<TEvent> : IService where TEvent : ProtocolEvent
 {
-    protected virtual bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected virtual bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out TEvent output, out List<ProtocolEvent>? extraEvents)
     {
         extraEvents = null;
@@ -30,5 +30,5 @@ internal class BaseService<TEvent> : IService where TEvent : ProtocolEvent
 
     bool IService.Build(ProtocolEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out Span<byte> output, out List<Memory<byte>>? extraPackets) =>
-        Build((TEvent) input, keystore, appInfo, device, out output, out extraPackets);
+        Build((TEvent)input, keystore, appInfo, device, out output, out extraPackets);
 }

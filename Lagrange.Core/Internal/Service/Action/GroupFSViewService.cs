@@ -45,7 +45,7 @@ internal class GroupFSViewService : BaseService<GroupFSViewEvent>
                 new OidbSvcTrpcTcp0x6D8
                 {
                     Space = new OidbSvcTrpcTcp0x6D8Space { GroupUin = space.GroupUin, AppId = 7 }
-                },0x6D8, 3, false, true),
+                }, 0x6D8, 3, false, true),
             _ => throw new Exception()
         };
 
@@ -68,7 +68,7 @@ internal class GroupFSViewService : BaseService<GroupFSViewEvent>
             {
                 var f = x.FileInfo;
                 var s = x.FolderInfo;
-                
+
                 IBotFSEntry entry = x.Type switch
                 {
                     1 => new BotFileEntry(f.FileId, f.FileName, f.ParentDirectory, f.FileSize,
@@ -99,7 +99,7 @@ internal class GroupFSViewService : BaseService<GroupFSViewEvent>
             output = GroupFSSpaceEvent.Result((int)packet.ErrorCode, space.TotalSpace, space.UsedSpace);
             return true;
         }
-        
+
         throw new Exception($"Invalid Packet is given to {nameof(GroupFSViewService)}");
     }
 }

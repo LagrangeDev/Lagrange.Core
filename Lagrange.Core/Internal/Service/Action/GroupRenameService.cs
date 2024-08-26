@@ -30,7 +30,7 @@ internal class GroupRenameService : BaseService<GroupRenameEvent>
         out GroupRenameEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
-        
+
         output = GroupRenameEvent.Result((int)payload.ErrorCode);
         extraEvents = null;
         return true;

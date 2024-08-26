@@ -8,8 +8,8 @@ public class GroupJoinRequestEvent : EventBase
         GroupUin = groupUin;
         EventMessage = $"[{nameof(GroupJoinRequestEvent)}] {TargetUin} at {GroupUin}";
     }
-    
+
     public uint TargetUin { get; }
-    
+
     public uint GroupUin { get; }
 }

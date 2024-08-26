@@ -25,7 +25,7 @@ internal class KeyExchangeService : BaseService<KeyExchangeEvent>
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out KeyExchangeEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var response = Serializer.Deserialize<SsoKeyExchangeResponse>(input);
@@ -37,7 +37,7 @@ internal class KeyExchangeService : BaseService<KeyExchangeEvent>
         keystore.Session.ExchangeKey = decrypted.GcmKey;
         keystore.Session.KeySign = decrypted.Sign;
         output = KeyExchangeEvent.Result();
-        
+
         extraEvents = null;
         return true;
     }

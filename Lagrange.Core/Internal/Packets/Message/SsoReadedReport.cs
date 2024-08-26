@@ -9,7 +9,7 @@ namespace Lagrange.Core.Internal.Packets.Message;
 internal class SsoReadedReport
 {
     [ProtoMember(1)] public SsoReadedReportGroup? Group { get; set; }
-    
+
     [ProtoMember(2)] public SsoReadedReportC2C? C2C { get; set; }
 }
 
@@ -17,9 +17,9 @@ internal class SsoReadedReport
 internal class SsoReadedReportC2C
 {
     [ProtoMember(2)] public string? TargetUid { get; set; }
-    
+
     [ProtoMember(3)] public uint Time { get; set; }
-    
+
     [ProtoMember(4)] public uint StartSequence { get; set; }
 }
 
@@ -27,6 +27,6 @@ internal class SsoReadedReportC2C
 internal class SsoReadedReportGroup
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
-    
+
     [ProtoMember(2)] public uint StartSequence { get; set; }
 }

@@ -3,7 +3,7 @@ namespace Lagrange.Core.Internal.Event.Message;
 internal class GroupSendFileEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
-    
+
     public string FileKey { get; } = string.Empty;
 
     private GroupSendFileEvent(uint groupUin, string fileKey) : base(true)

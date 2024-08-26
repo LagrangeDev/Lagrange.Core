@@ -27,7 +27,7 @@ internal class TlvPacker
         {
             var attribute = tlvAttributes[i];
             (attribute.IsResponse ? TlvResps : Tlvs)[attribute.TlvCommand] = tlvs[i];
-            
+
             var encrypt = tlvs[i].GetCustomAttribute<TlvEncryptAttribute>();
             if (encrypt != null) TlvEncrypt[tlvs[i]] = encrypt;
         }
@@ -37,7 +37,7 @@ internal class TlvPacker
         {
             var attribute = tlvQrCodeAttributes[i];
             (attribute.IsResponse ? TlvQrCodeResps : TlvQrCodes)[attribute.TlvCommand] = tlvQrCodes[i];
-            
+
             var encrypt = tlvQrCodes[i].GetCustomAttribute<TlvEncryptAttribute>();
             if (encrypt != null) TlvEncrypt[tlvQrCodes[i]] = encrypt;
         }
@@ -46,12 +46,12 @@ internal class TlvPacker
     public TlvPacker(BotAppInfo appInfo, BotKeystore keystore, BotDeviceInfo deviceInfo)
     {
         _injector = new ServiceInjector();
-        
+
         _injector.AddService(appInfo);
         _injector.AddService(keystore);
         _injector.AddService(deviceInfo);
     }
-    
+
     public TlvPacket Pack(ushort cmd)
     {
         var tlvBody = (TlvBody)_injector.Inject(Tlvs[cmd]);
@@ -81,7 +81,7 @@ internal class TlvPacker
         foreach (var tlv in cmd) packet.WritePacket(PackQrCode(tlv));
         return packet;
     }
-    
+
     public static TlvPacket Pack(TlvBody tlv, ushort cmd) => new(cmd, tlv);
 
     public static TlvBody? ReadTlvBody(ushort cmd, BinaryPacket packet)
@@ -94,7 +94,7 @@ internal class TlvPacker
                 return null;
             }
         }
-        
+
         if (type.GetCustomAttribute<ProtoContractAttribute>() != null)
         {
             using var stream = new MemoryStream(packet.ToArray());
@@ -110,7 +110,7 @@ internal class TlvPacker
         {
             if (!TlvQrCodes.TryGetValue(cmd, out type)) return null;
         }
-        
+
         if (type.GetCustomAttribute<ProtoContractAttribute>() != null)
         {
             using var stream = new MemoryStream(packet.ToArray());
@@ -126,7 +126,7 @@ internal class TlvPacker
         var tlvs = new Dictionary<ushort, TlvBody>(tlvCount);
 
         for (int i = 0; i < tlvCount; i++)
-        {            
+        {
             ushort cmd = payload.ReadUshort();
             ushort length = payload.ReadUshort();
 

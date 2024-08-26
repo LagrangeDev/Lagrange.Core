@@ -9,6 +9,6 @@ namespace Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 internal class TransElem
 {
     [ProtoMember(1)] public int ElemType { get; set; }
-    
+
     [ProtoMember(2)] public byte[] ElemValue { get; set; }
 }

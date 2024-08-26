@@ -6,12 +6,12 @@ internal class InfoSyncEvent : ProtocolEvent
 
     private InfoSyncEvent() : base(true)
     {
-        Random = (uint) new Random().Next();
+        Random = (uint)new Random().Next();
     }
-    
+
     private InfoSyncEvent(int resultCode) : base(resultCode) { }
-    
+
     public static InfoSyncEvent Create() => new();
-    
+
     public static InfoSyncEvent Result(int resultCode) => new(resultCode);
 }

@@ -6,18 +6,18 @@ namespace Lagrange.Core.Utility.Network;
 internal static class Http
 {
     private static readonly HttpClient Client = new();
-    
+
     public static async Task<string> GetAsync(string url, Dictionary<string, string>? param = null)
     {
         var uriBuilder = new UriBuilder(url);
-        
+
         var query = HttpUtility.ParseQueryString(uriBuilder.Query);
         if (param != null)
         {
             foreach (var (key, value) in param) query[key] = value;
-        }        
+        }
         uriBuilder.Query = query.ToString();
-        
+
         var response = await Client.GetAsync(uriBuilder.Uri);
         return await response.Content.ReadAsStringAsync();
     }
@@ -34,7 +34,7 @@ internal static class Http
         var response = await Client.PostAsync(url, content);
         return await response.Content.ReadAsStringAsync();
     }
-    
+
     public static async Task<byte[]> PostAsync(string url, byte[] payload, string content)
     {
         var contentData = new ByteArrayContent(payload);

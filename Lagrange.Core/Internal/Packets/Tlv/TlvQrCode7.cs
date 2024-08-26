@@ -6,5 +6,5 @@ namespace Lagrange.Core.Internal.Packets.Tlv;
 [TlvQrCode(0x007)]
 internal class Tlv7 : TlvBody
 {
-    
+
 }

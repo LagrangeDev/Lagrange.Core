@@ -9,7 +9,7 @@ public partial class LongMsgSegment(string name)
 {
     public LongMsgSegment() : this("") { }
 
-    [JsonPropertyName("id")] [CQProperty] public string Name { get; set; } = name;
+    [JsonPropertyName("id")][CQProperty] public string Name { get; set; } = name;
 }
 
 [SegmentSubscriber(typeof(LongMsgSegment), "longmsg")]

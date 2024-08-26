@@ -8,7 +8,7 @@ internal static class ReflectionExt
     {
         var list = new List<Type>();
         attributes = new List<T>();
-        
+
         foreach (var type in assembly.GetTypes())
         {
             var attribute = type.GetCustomAttribute<T>();
@@ -21,12 +21,12 @@ internal static class ReflectionExt
 
         return list;
     }
-    
+
     public static List<Type> GetTypeWithMultipleAttributes<T>(this Assembly assembly, out List<T[]> attributes) where T : Attribute
     {
         var list = new List<Type>();
         attributes = new List<T[]>();
-        
+
         foreach (var type in assembly.GetTypes())
         {
             var attribute = type.GetCustomAttributes<T>().ToArray();
@@ -40,15 +40,15 @@ internal static class ReflectionExt
         return list;
     }
 
-    public static List<Type> GetDerivedTypes<T>(this Assembly assembly) where T : class => 
+    public static List<Type> GetDerivedTypes<T>(this Assembly assembly) where T : class =>
         assembly.GetTypes().Where(type => type.IsSubclassOf(typeof(T))).ToList();
-    
-    public static List<Type> GetImplementations<T>(this Assembly assembly) => 
+
+    public static List<Type> GetImplementations<T>(this Assembly assembly) =>
         assembly.GetTypes().Where(type => type.GetInterfaces().Contains(typeof(T))).ToList();
-    
-    public static MemberInfo[] GetMemberInfoByAttribute<T>(this Type type) where T : Attribute => 
+
+    public static MemberInfo[] GetMemberInfoByAttribute<T>(this Type type) where T : Attribute =>
         type.GetMembers().Where(x => x.GetCustomAttribute<T>() != null).ToArray();
-    
-    public static PropertyInfo[] GetPropertyInfoByAttribute<T>(this Type type) where T : Attribute => 
+
+    public static PropertyInfo[] GetPropertyInfoByAttribute<T>(this Type type) where T : Attribute =>
         type.GetProperties().Where(x => x.GetCustomAttribute<T>() != null).ToArray();
 }

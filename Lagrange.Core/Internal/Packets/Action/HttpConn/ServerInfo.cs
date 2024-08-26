@@ -8,6 +8,6 @@ namespace Lagrange.Core.Internal.Packets.Action.HttpConn;
 internal class ServerInfo
 {
     [ProtoMember(1)] public uint ServiceType { get; set; }
-    
+
     [ProtoMember(2)] public List<ServerAddr> ServerAddrs { get; set; }
 }

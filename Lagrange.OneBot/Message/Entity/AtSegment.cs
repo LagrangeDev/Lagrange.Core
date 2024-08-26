@@ -8,12 +8,12 @@ namespace Lagrange.OneBot.Message.Entity;
 public partial class AtSegment(uint at, string? name)
 {
     public AtSegment() : this(0, null) { }
-    
+
     public AtSegment(uint at) : this(at, null) { }
-    
-    [JsonPropertyName("qq")] [CQProperty] public string At { get; set; } = at.ToString();
-    
-    [JsonPropertyName("name")] [CQProperty] public string? Name { get; set; } = name;
+
+    [JsonPropertyName("qq")][CQProperty] public string At { get; set; } = at.ToString();
+
+    [JsonPropertyName("name")][CQProperty] public string? Name { get; set; } = name;
 }
 
 [SegmentSubscriber(typeof(MentionEntity), "at")]

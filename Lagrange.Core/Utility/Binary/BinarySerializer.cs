@@ -35,7 +35,7 @@ internal static class BinarySerializer
         { typeof(ulong), body => body.ReadUlong() },
         { typeof(bool), body => body.ReadBool() },
     };
-    
+
     private static readonly Dictionary<Type, Func<BinaryPacket, Prefix, object>> EnumDeserializeActions = new()
     {
         { typeof(string), (body, prefix) => body.ReadString(prefix) },
@@ -46,11 +46,11 @@ internal static class BinarySerializer
     {
         var type = obj.GetType();
         var body = new BinaryPacket();
-        
+
         foreach (var property in type.GetPropertiesFromCache())
         {
             if (property.GetCustomAttribute<BinaryPropertyAttribute>() == null) continue;
-            
+
             var value = property.GetValueByExpr(obj) ?? throw new InvalidOperationException($"Value is null for {property}");
             if (property.PropertyType == typeof(byte[]) || property.PropertyType == typeof(string))
             {
@@ -64,10 +64,10 @@ internal static class BinarySerializer
                 func(body, value);
             }
         }
-        
+
         return body;
     }
-    
+
     public static T Deserialize<T>(this BinaryPacket body)
     {
         var type = typeof(T);
@@ -91,10 +91,10 @@ internal static class BinarySerializer
             }
             property.SetValueByExpr(obj, value);
         }
-        
+
         return obj;
     }
-    
+
     public static object Deserialize(this BinaryPacket body, Type type)
     {
         var obj = type.CreateInstance();
@@ -103,7 +103,7 @@ internal static class BinarySerializer
         {
             if (property.GetCustomAttribute<BinaryPropertyAttribute>() == null) continue;
 
-            object value; 
+            object value;
             if (property.PropertyType == typeof(byte[]) || property.PropertyType == typeof(string))
             {
                 var func = EnumDeserializeActions[property.PropertyType];
@@ -117,7 +117,7 @@ internal static class BinarySerializer
             }
             property.SetValueByExpr(obj, value);
         }
-        
+
         return obj;
     }
 }

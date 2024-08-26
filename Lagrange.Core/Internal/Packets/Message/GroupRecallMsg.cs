@@ -10,11 +10,11 @@ namespace Lagrange.Core.Internal.Packets.Message;
 internal class GroupRecallMsg
 {
     [ProtoMember(1)] public uint Type { get; set; } // 1
-    
+
     [ProtoMember(2)] public uint GroupUin { get; set; }
-    
+
     [ProtoMember(3)] public GroupRecallMsgField3 Field3 { get; set; }
-    
+
     [ProtoMember(4)] public GroupRecallMsgField4 Field4 { get; set; }
 }
 
@@ -22,9 +22,9 @@ internal class GroupRecallMsg
 internal class GroupRecallMsgField3
 {
     [ProtoMember(1)] public uint Sequence { get; set; }
-    
+
     [ProtoMember(2)] public uint Random { get; set; }
-    
+
     [ProtoMember(3)] public uint Field3 { get; set; } // 0
 }
 

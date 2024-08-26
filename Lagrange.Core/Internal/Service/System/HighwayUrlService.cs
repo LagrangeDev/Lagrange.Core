@@ -32,7 +32,7 @@ internal class HighwayUrlService : BaseService<HighwayUrlEvent>
                 Ver = "1.0.1"
             }
         };
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
@@ -42,20 +42,20 @@ internal class HighwayUrlService : BaseService<HighwayUrlEvent>
         out HighwayUrlEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<HttpConn0x6ff_501Response>(input);
-        
+
         var servers = new Dictionary<uint, List<Uri>>();
         foreach (var serverInfo in packet.HttpConn.ServerInfos)
         {
             uint type = serverInfo.ServiceType;
             servers[type] = new List<Uri>();
-            
+
             foreach (var serverAddr in serverInfo.ServerAddrs)
             {
                 var ip = BitConverter.GetBytes(serverAddr.Ip);
                 servers[type].Add(new Uri($"http://{ip[0]}.{ip[1]}.{ip[2]}.{ip[3]}:{serverAddr.Port}/cgi-bin/httpconn?htcmd=0x6FF0087&uin={keystore.Uin}"));
             }
         }
-        
+
         output = HighwayUrlEvent.Result(0, packet.HttpConn.SigSession, servers);
         extraEvents = null;
         return true;

@@ -8,5 +8,5 @@ namespace Lagrange.Core.Internal.Packets.Tlv;
 [TlvQrCode(0x0CE)]
 internal class TlvQrCodeCE : TlvBody
 {
-    
+
 }

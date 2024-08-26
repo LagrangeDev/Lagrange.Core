@@ -8,13 +8,13 @@ internal class FetchClientKeyEvent : ProtocolEvent
     {
         ClientKey = "";
     }
-    
+
     private FetchClientKeyEvent(int resultCode, string clientKey) : base(resultCode)
     {
         ClientKey = clientKey;
     }
 
     public static FetchClientKeyEvent Create() => new();
-    
+
     public static FetchClientKeyEvent Result(int resultCode, string clientKey) => new(resultCode, clientKey);
 }

@@ -29,7 +29,7 @@ internal class GroupMuteGlobalService : BaseService<GroupMuteGlobalEvent>
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, packet);
         output = stream.ToArray();
-        
+
         extraPackets = null;
         return true;
     }
@@ -38,7 +38,7 @@ internal class GroupMuteGlobalService : BaseService<GroupMuteGlobalEvent>
         out GroupMuteGlobalEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x89A_0Response>>(input);
-        
+
         output = GroupMuteGlobalEvent.Result((int)(packet.ErrorCode));
         extraEvents = null;
         return true;

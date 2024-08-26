@@ -3,13 +3,13 @@ namespace Lagrange.Core.Internal.Event.Notify;
 internal class GroupSysIncreaseEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
-    
+
     public string MemberUid { get; }
-    
+
     public string? InvitorUid { get; }
-    
+
     public uint Type { get; }
-    
+
     private GroupSysIncreaseEvent(uint groupUin, string memberUid, string? invitorUid, uint type) : base(0)
     {
         GroupUin = groupUin;

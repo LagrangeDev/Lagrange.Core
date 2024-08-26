@@ -6,11 +6,11 @@ namespace Lagrange.Core.Internal.Packets.Login.WtLogin.Entity;
 internal abstract class TransEmp : WtLoginBase
 {
     private readonly ushort _qrCodeCommand;
-    
+
     private const string PacketCommand = "wtlogin.trans_emp";
     private const ushort WtLoginCommand = 2066;
 
-    protected TransEmp(ushort qrCmd, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device) 
+    protected TransEmp(ushort qrCmd, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device)
         : base(PacketCommand, WtLoginCommand, keystore, appInfo, device)
     {
         _qrCodeCommand = qrCmd;
@@ -20,7 +20,7 @@ internal abstract class TransEmp : WtLoginBase
     {
         var tlv = ConstructTlv();
 
-        var newPacket =  new BinaryPacket() // length of WriteUshort(43 + tlv.Length + 1) refers to this section
+        var newPacket = new BinaryPacket() // length of WriteUshort(43 + tlv.Length + 1) refers to this section
             .WriteByte(2)
             .WriteUshort((ushort)(43 + tlv.Length + 1)) // _head_len = 43 + data.size +1
             .WriteUshort(_qrCodeCommand)
@@ -50,7 +50,7 @@ internal abstract class TransEmp : WtLoginBase
     public static BinaryPacket DeserializeBody(BotKeystore keystore, BinaryPacket packet, out ushort command)
     {
         packet = DeserializePacket(keystore, packet);
-        
+
         uint packetLength = packet.ReadUint();
         packet.Skip(4); // misc unknown data
         command = packet.ReadUshort();

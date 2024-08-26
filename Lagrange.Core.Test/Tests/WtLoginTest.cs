@@ -12,8 +12,8 @@ public class WtLoginTest
     {
         var deviceInfo = GetDeviceInfo();
         var keyStore = LoadKeystore() ?? new BotKeystore();
-        
-        var bot = BotFactory.Create(new BotConfig 
+
+        var bot = BotFactory.Create(new BotConfig
         {
             UseIPv6Network = false,
             GetOptimumServer = true,
@@ -26,7 +26,7 @@ public class WtLoginTest
             Utility.Console.ChangeColorByTitle(@event.Level);
             Console.WriteLine(@event.ToString());
         };
-        
+
         bot.Invoker.OnBotOnlineEvent += (context, @event) =>
         {
             Console.WriteLine(@event.ToString());
@@ -52,15 +52,15 @@ public class WtLoginTest
             File.WriteAllText("Test/DeviceInfo.json", JsonSerializer.Serialize(info));
             return info;
         }
-        
+
         var deviceInfo = BotDeviceInfo.GenerateInfo();
         File.WriteAllText("Test/DeviceInfo.json", JsonSerializer.Serialize(deviceInfo));
         return deviceInfo;
     }
-    
-    public static void SaveKeystore(BotKeystore keystore) => 
+
+    public static void SaveKeystore(BotKeystore keystore) =>
         File.WriteAllText("Test/Keystore.json", JsonSerializer.Serialize(keystore));
-    
+
     public static BotKeystore? LoadKeystore()
     {
         try

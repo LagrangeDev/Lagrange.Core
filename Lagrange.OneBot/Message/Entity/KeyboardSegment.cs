@@ -7,8 +7,8 @@ namespace Lagrange.OneBot.Message.Entity;
 [Serializable]
 public partial class KeyboardSegment(KeyboardData content)
 {
-    public KeyboardSegment(): this(new KeyboardData()) { }
-    
+    public KeyboardSegment() : this(new KeyboardData()) { }
+
     [JsonPropertyName("content")] public KeyboardData Content { get; set; } = content;
 }
 

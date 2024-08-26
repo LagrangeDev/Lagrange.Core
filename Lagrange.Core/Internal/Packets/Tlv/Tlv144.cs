@@ -17,14 +17,14 @@ internal class Tlv144 : TlvBody
         Tlv128 = new TlvPacket(0x128, new Tlv128(appInfo, deviceInfo)).ToArray();
         Tlv124 = new TlvPacket(0x124, new Tlv124()).ToArray();
     }
-    
+
     [BinaryProperty] public ushort TlvCount { get; set; }
-    
+
     [BinaryProperty] public byte[] Tlv16E { get; set; }
-    
+
     [BinaryProperty] public byte[] Tlv147 { get; set; }
-    
+
     [BinaryProperty] public byte[] Tlv128 { get; set; }
-    
+
     [BinaryProperty] public byte[] Tlv124 { get; set; }
 }

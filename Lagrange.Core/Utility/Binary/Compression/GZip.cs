@@ -13,7 +13,7 @@ internal static class GZip
         gzipStream.Close();
         return outputStream.ToArray();
     }
-    
+
     public static byte[] Deflate(byte[] input)
     {
         using var inputStream = new MemoryStream(input);

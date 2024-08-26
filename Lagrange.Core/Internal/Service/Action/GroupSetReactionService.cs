@@ -34,7 +34,7 @@ internal class GroupSetReactionService : BaseService<GroupSetReactionEvent>
         out GroupSetReactionEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
-        
+
         output = GroupSetReactionEvent.Result((int)payload.ErrorCode);
         extraEvents = null;
         return true;

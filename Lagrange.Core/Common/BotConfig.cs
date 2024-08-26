@@ -17,12 +17,12 @@ public class BotConfig
     /// Auto reconnect to server when disconnected
     /// </summary>
     public bool AutoReconnect { get; set; } = true;
-    
+
     /// <summary>
     /// Use the IPv6 to connect to server, only if your network support IPv6
     /// </summary>
     public bool UseIPv6Network { get; set; } = false;
-    
+
     /// <summary>
     /// Get optimum server from Tencent MSF server, set to false to use hardcode server
     /// </summary>
@@ -37,7 +37,7 @@ public class BotConfig
     /// The maximum size of the highway block in byte, max 1MB (1024 * 1024 byte)
     /// </summary>
     public uint HighwayChunkSize { get; set; } = 1024 * 1024;
-    
+
     /// <summary>
     /// Highway Uploading Concurrency, if the image failed to send, set this to 1
     /// </summary>

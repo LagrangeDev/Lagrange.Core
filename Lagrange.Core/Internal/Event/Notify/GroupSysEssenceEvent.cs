@@ -24,6 +24,6 @@ internal class GroupSysEssenceEvent : ProtocolEvent
         OperatorUin = operatorUin;
     }
 
-    public static GroupSysEssenceEvent Result(uint groupUin, uint sequence,uint random, uint setFlag, uint fromUin, uint operatorUin)
+    public static GroupSysEssenceEvent Result(uint groupUin, uint sequence, uint random, uint setFlag, uint fromUin, uint operatorUin)
         => new(groupUin, sequence, random, setFlag, fromUin, operatorUin);
 }

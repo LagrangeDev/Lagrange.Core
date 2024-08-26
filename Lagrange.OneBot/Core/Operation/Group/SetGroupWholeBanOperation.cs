@@ -19,7 +19,7 @@ public class SetGroupWholeBanOperation : IOperation
             bool _ = await context.MuteGroupGlobal(message.GroupId, message.Enable);
             return new OneBotResult(null, 0, "ok");
         }
-        
+
         throw new Exception();
     }
 }
