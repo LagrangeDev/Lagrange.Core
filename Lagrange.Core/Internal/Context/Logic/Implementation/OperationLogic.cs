@@ -182,6 +182,15 @@ internal class OperationLogic : LogicBase
         return new(retCode, retMsg);
     }
 
+    public async Task<(int, string)> GroupFSRenameFolder(uint groupUin, string folderId, string newFolderName)
+    {
+        var groupFSDeleteFolderEvent = GroupFSRenameFolderEvent.Create(groupUin, folderId, newFolderName);
+        var events = await Collection.Business.SendEvent(groupFSDeleteFolderEvent);
+        var retCode = events.Count > 0 ? ((GroupFSRenameFolderEvent)events[0]).ResultCode : -1;
+        var retMsg = events.Count > 0 ? ((GroupFSRenameFolderEvent)events[0]).RetMsg : "";
+        return new(retCode, retMsg);
+    }
+
     public Task<bool> GroupFSUpload(uint groupUin, FileEntity fileEntity, string targetDirectory)
     {
         try

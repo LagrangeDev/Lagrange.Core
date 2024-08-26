@@ -132,3 +132,18 @@ public class DeleteGroupFileFolderOperation : IOperation
         throw new Exception();
     }
 }
+
+[Operation("rename_group_file_folder")]
+public class RenameGroupFileFolderOperation : IOperation
+{
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
+    {
+        if (payload.Deserialize<OneBotRenameFolder>(SerializerOptions.DefaultOptions) is { } folder)
+        {
+            var res = await context.GroupFSRenameFolder(folder.GroupId, folder.FolderId, folder.NewFolderName);
+            return new OneBotResult(new JsonObject { { "msg", res.Item2 } }, res.Item1, res.Item1 == 0 ? "ok" : "failed");
+        }
+
+        throw new Exception();
+    }
+}
