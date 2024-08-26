@@ -10,22 +10,29 @@ internal class GroupFSListEvent : GroupFSViewEvent
     
     public uint StartIndex { get; set; }
     
+    public uint FileCount { get; set; }
+    
+    public bool IsEnd { get; set; }
+    
     public List<IBotFSEntry> FileEntries { get; set; }
 
-    private GroupFSListEvent(uint groupUin, string targetDirectory, uint startIndex) : base(groupUin)
+    private GroupFSListEvent(uint groupUin, string targetDirectory, uint startIndex, uint fileCount) : base(groupUin)
     {
         TargetDirectory = targetDirectory;
         StartIndex = startIndex;
+        FileCount = fileCount;
+        IsEnd = false;
     }
 
-    private GroupFSListEvent(int resultCode, List<IBotFSEntry> fileEntries) : base(resultCode)
+    private GroupFSListEvent(int resultCode, List<IBotFSEntry> fileEntries, bool isEnd) : base(resultCode)
     {
         FileEntries = fileEntries;
+        IsEnd = isEnd;
     }
 
-    public static GroupFSListEvent Create(uint groupUin, string targetDirectory, uint startIndex) 
-        => new(groupUin, targetDirectory, startIndex);
+    public static GroupFSListEvent Create(uint groupUin, string targetDirectory, uint startIndex, uint fileCount) 
+        => new(groupUin, targetDirectory, startIndex, fileCount);
 
-    public static GroupFSListEvent Result(int resultCode, List<IBotFSEntry> fileEntries) 
-        => new(resultCode, fileEntries);
+    public static GroupFSListEvent Result(int resultCode, List<IBotFSEntry> fileEntries, bool isEnd) 
+        => new(resultCode, fileEntries, isEnd);
 }
