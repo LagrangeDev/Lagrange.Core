@@ -290,8 +290,7 @@ internal static class MessagePacker
                 message.ResponseHead.Forward?.FriendName ?? string.Empty,
                 string.Empty,
                 string.Empty,
-                string.Empty,
-                0
+                string.Empty
             );
         }
 
