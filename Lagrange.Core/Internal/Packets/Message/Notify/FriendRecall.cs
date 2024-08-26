@@ -45,5 +45,5 @@ internal class FriendRecallInfo
 [ProtoContract]
 internal class TipInfo
 {
-    [ProtoMember(2)] public string Tip { get; set; }
+    [ProtoMember(2)] public string? Tip { get; set; }
 }
