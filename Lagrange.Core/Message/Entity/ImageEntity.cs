@@ -40,7 +40,7 @@ public class ImageEntity : IMessageEntity
 
     internal string? Summary { get; set; }
     
-    internal int SubType { get; set; }
+    public int SubType { get; set; }
 
     public ImageEntity() { }
 
