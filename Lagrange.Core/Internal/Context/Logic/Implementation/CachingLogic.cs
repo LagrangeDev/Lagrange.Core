@@ -21,7 +21,6 @@ internal class CachingLogic : LogicBase
     private readonly List<BotGroup> _cachedGroupEntities;
 
     private readonly List<BotFriend> _cachedFriends;
-    private readonly Dictionary<uint, string> _cachedFriendGroups;
     private readonly Dictionary<uint, List<BotGroupMember>> _cachedGroupMembers;
 
     private readonly ConcurrentDictionary<uint, BotUserInfo> _cacheUsers;
@@ -33,7 +32,6 @@ internal class CachingLogic : LogicBase
         _cachedGroupEntities = new List<BotGroup>();
 
         _cachedFriends = new List<BotFriend>();
-        _cachedFriendGroups = new Dictionary<uint, string>();
         _cachedGroupMembers = new Dictionary<uint, List<BotGroupMember>>();
 
         _cacheUsers = new();
@@ -103,12 +101,6 @@ internal class CachingLogic : LogicBase
         return _cachedFriends;
     }
 
-    public async Task<Dictionary<uint, string>> GetCachedFriendGroups(bool refreshCache)
-    {
-        if (_cachedFriendGroups.Count == 0 || refreshCache) await ResolveFriendsUidAndFriendGroups();
-        return _cachedFriendGroups;
-    }
-
     public async Task<BotUserInfo?> GetCachedUsers(uint uin, bool refreshCache)
     {
         if (!_cacheUsers.ContainsKey(uin) || refreshCache) await ResolveUser(uin);
@@ -143,6 +135,10 @@ internal class CachingLogic : LogicBase
             }
 
             var result = (FetchFriendsAndFriendGroupsEvent)results[0];
+            foreach (var friend in result.Friends)
+            {
+                friend.Group = new(friend.Group.GroupId, friendGroups[friend.Group.GroupId]);
+            }
             friends.AddRange(result.Friends);
             foreach ((uint id, string name) in result.FriendGroups) friendGroups[id] = name;
 
@@ -153,9 +149,6 @@ internal class CachingLogic : LogicBase
 
         _cachedFriends.Clear();
         _cachedFriends.AddRange(friends);
-
-        _cachedFriendGroups.Clear();
-        foreach ((uint id, string name) in friendGroups) _cachedFriendGroups[id] = name;
     }
 
     private async Task ResolveMembersUid(uint groupUin)

@@ -26,9 +26,6 @@ internal class OperationLogic : LogicBase
     public Task<List<BotFriend>> FetchFriends(bool refreshCache = false) =>
         Collection.Business.CachingLogic.GetCachedFriends(refreshCache);
 
-    public Task<Dictionary<uint, string>> FetchFriendGroups(bool refreshCache = false) =>
-        Collection.Business.CachingLogic.GetCachedFriendGroups(refreshCache);
-
     public Task<List<BotGroupMember>> FetchMembers(uint groupUin, bool refreshCache = false) =>
         Collection.Business.CachingLogic.GetCachedMembers(groupUin, refreshCache);
 
