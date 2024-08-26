@@ -13,10 +13,10 @@ public class BotFriend
         Remarks = string.Empty;
         PersonalSign = string.Empty;
         Qid = string.Empty;
-        Group = default;
+        FriendGroupId = 0;
     }
-    
-    internal BotFriend(uint uin,string uid, string nickname, string remarks, string personalSign, string qid, BotFriendGroup group = default)
+
+    internal BotFriend(uint uin, string uid, string nickname, string remarks, string personalSign, string qid, uint friendGroupId)
     {
         Uin = uin;
         Uid = uid;
@@ -24,22 +24,22 @@ public class BotFriend
         Remarks = remarks;
         PersonalSign = personalSign;
         Qid = qid;
-        Group = group;
+        FriendGroupId = friendGroupId;
     }
-    
+
     public uint Uin { get; set; }
-    
+
     internal string Uid { get; set; }
-    
+
     public string Nickname { get; set; }
-    
+
     public string Remarks { get; set; }
-    
+
     public string PersonalSign { get; set; }
-    
+
     public string Qid { get; set; }
-    
-    public BotFriendGroup Group { get; set; }
+
+    public uint FriendGroupId { get; set; }
 
     public string Avatar => $"https://q1.qlogo.cn/g?b=qq&nk={Uin}&s=640";
 }

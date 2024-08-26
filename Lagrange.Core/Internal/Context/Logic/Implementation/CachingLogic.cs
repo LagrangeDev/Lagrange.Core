@@ -21,6 +21,7 @@ internal class CachingLogic : LogicBase
     private readonly List<BotGroup> _cachedGroupEntities;
 
     private readonly List<BotFriend> _cachedFriends;
+    private readonly Dictionary<uint, string> _cachedFriendGroups;
     private readonly Dictionary<uint, List<BotGroupMember>> _cachedGroupMembers;
 
     private readonly ConcurrentDictionary<uint, BotUserInfo> _cacheUsers;
@@ -32,6 +33,7 @@ internal class CachingLogic : LogicBase
         _cachedGroupEntities = new List<BotGroup>();
 
         _cachedFriends = new List<BotFriend>();
+        _cachedFriendGroups = new Dictionary<uint, string>();
         _cachedGroupMembers = new Dictionary<uint, List<BotGroupMember>>();
 
         _cacheUsers = new();
@@ -67,7 +69,7 @@ internal class CachingLogic : LogicBase
 
     public async Task<string?> ResolveUid(uint? groupUin, uint friendUin)
     {
-        if (_uinToUid.Count == 0) await ResolveFriendsUid();
+        if (_uinToUid.Count == 0) await ResolveFriendsUidAndFriendGroups();
         if (groupUin == null) return _uinToUid.GetValueOrDefault(friendUin);
 
         await CacheUid(groupUin.Value);
@@ -77,7 +79,7 @@ internal class CachingLogic : LogicBase
 
     public async Task<uint?> ResolveUin(uint? groupUin, string friendUid, bool force = false)
     {
-        if (_uinToUid.Count == 0) await ResolveFriendsUid();
+        if (_uinToUid.Count == 0) await ResolveFriendsUidAndFriendGroups();
         if (groupUin == null) return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
 
         await CacheUid(groupUin.Value, force);
@@ -97,8 +99,14 @@ internal class CachingLogic : LogicBase
 
     public async Task<List<BotFriend>> GetCachedFriends(bool refreshCache)
     {
-        if (_cachedFriends.Count == 0 || refreshCache) await ResolveFriendsUid();
+        if (_cachedFriends.Count == 0 || refreshCache) await ResolveFriendsUidAndFriendGroups();
         return _cachedFriends;
+    }
+
+    public async Task<Dictionary<uint, string>> GetCachedFriendGroups(bool refreshCache)
+    {
+        if (_cachedFriendGroups.Count == 0 || refreshCache) await ResolveFriendsUidAndFriendGroups();
+        return _cachedFriendGroups;
     }
 
     public async Task<BotUserInfo?> GetCachedUsers(uint uin, bool refreshCache)
@@ -118,32 +126,36 @@ internal class CachingLogic : LogicBase
         }
     }
 
-    private async Task ResolveFriendsUid()
+    private async Task ResolveFriendsUidAndFriendGroups()
     {
-        var fetchFriendsEvent = FetchFriendsEvent.Create();
-        var events = await Collection.Business.SendEvent(fetchFriendsEvent);
-
-        if (events.Count != 0)
+        uint? next = null;
+        var friends = new List<BotFriend>();
+        var friendGroups = new Dictionary<uint, string>();
+        do
         {
-            var @event = (FetchFriendsEvent)events[0];
-            uint? nextUin = @event.NextUin;
+            var @event = FetchFriendsAndFriendGroupsEvent.Create(next);
+            var results = await Collection.Business.SendEvent(@event);
 
-            while (nextUin != null)
+            if (results.Count == 0)
             {
-                var next = FetchFriendsEvent.Create(nextUin);
-                var results = await Collection.Business.SendEvent(next);
-                @event.Friends.AddRange(((FetchFriendsEvent)results[0]).Friends);
-                nextUin = ((FetchFriendsEvent)results[0]).NextUin;
+                Collection.Log.LogWarning(Tag, "Failed to resolve friends uid and cache.");
+                return;
             }
 
-            foreach (var friend in @event.Friends) _uinToUid.TryAdd(friend.Uin, friend.Uid);
-            _cachedFriends.Clear();
-            _cachedFriends.AddRange(@event.Friends);
-        }
-        else
-        {
-            Collection.Log.LogWarning(Tag, "Failed to resolve friends uid and cache.");
-        }
+            var result = (FetchFriendsAndFriendGroupsEvent)results[0];
+            friends.AddRange(result.Friends);
+            foreach ((uint id, string name) in result.FriendGroups) friendGroups[id] = name;
+
+            next = result.NextUin;
+        } while (!next.HasValue);
+
+        foreach (var friend in friends) _uinToUid.TryAdd(friend.Uin, friend.Uid);
+
+        _cachedFriends.Clear();
+        _cachedFriends.AddRange(friends);
+
+        _cachedFriendGroups.Clear();
+        foreach ((uint id, string name) in friendGroups) _cachedFriendGroups[id] = name;
     }
 
     private async Task ResolveMembersUid(uint groupUin)

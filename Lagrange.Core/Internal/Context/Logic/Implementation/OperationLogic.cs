@@ -26,6 +26,9 @@ internal class OperationLogic : LogicBase
     public Task<List<BotFriend>> FetchFriends(bool refreshCache = false) =>
         Collection.Business.CachingLogic.GetCachedFriends(refreshCache);
 
+    public Task<Dictionary<uint, string>> FetchFriendGroups(bool refreshCache = false) =>
+        Collection.Business.CachingLogic.GetCachedFriendGroups(refreshCache);
+
     public Task<List<BotGroupMember>> FetchMembers(uint groupUin, bool refreshCache = false) =>
         Collection.Business.CachingLogic.GetCachedMembers(groupUin, refreshCache);
 
@@ -290,7 +293,7 @@ internal class OperationLogic : LogicBase
 
     public async Task<List<dynamic>?> FetchFriendRequests()
     {
-        var fetchRequestsEvent = FetchFriendRequestsEvent.Create();
+        var fetchRequestsEvent = FetchFriendsAndFriendGroupsRequestsEvent.Create();
         var events = await Collection.Business.SendEvent(fetchRequestsEvent);
         if (events.Count == 0) return null;
 

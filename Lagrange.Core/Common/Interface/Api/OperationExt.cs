@@ -16,6 +16,15 @@ public static class OperationExt
         => bot.ContextCollection.Business.OperationLogic.FetchFriends(refreshCache);
 
     /// <summary>
+    /// Fetch the friend group list of account from server or cache
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="refreshCache">force the cache to be refreshed</param>
+    /// <returns></returns>
+    public static Task<Dictionary<uint, string>> FetchFriendGroups(this BotContext bot, bool refreshCache = false)
+        => bot.ContextCollection.Business.OperationLogic.FetchFriendGroups(refreshCache);
+
+    /// <summary>
     /// Fetch the member list of the group from server or cache
     /// </summary>
     /// <param name="bot">target BotContext</param>
