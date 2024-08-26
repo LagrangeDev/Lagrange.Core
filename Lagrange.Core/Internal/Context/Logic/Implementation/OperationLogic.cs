@@ -136,11 +136,20 @@ internal class OperationLogic : LogicBase
         return ((GroupFSCountEvent)events[0]).FileCount;
     }
 
-    public async Task<List<IBotFSEntry>> FetchGroupFSList(uint groupUin, string targetDirectory, uint startIndex)
+    public async Task<List<IBotFSEntry>> FetchGroupFSList(uint groupUin, string targetDirectory)
     {
-        var groupFSListEvent = GroupFSListEvent.Create(groupUin, targetDirectory, startIndex);
-        var events = await Collection.Business.SendEvent(groupFSListEvent);
-        return ((GroupFSListEvent)events[0]).FileEntries;
+        uint startIndex = 0;
+        var entries = new List<IBotFSEntry>();
+        while (true)
+        {
+            var groupFSListEvent = GroupFSListEvent.Create(groupUin, targetDirectory, startIndex, 20);
+            var events = await Collection.Business.SendEvent(groupFSListEvent);
+            if (events.Count == 0) break;
+            entries.AddRange(((GroupFSListEvent)events[0]).FileEntries);
+            if (((GroupFSListEvent)events[0]).IsEnd) break;
+            startIndex += 20;
+        }
+        return entries;
     }
 
     public async Task<string> FetchGroupFSDownload(uint groupUin, string fileId)
