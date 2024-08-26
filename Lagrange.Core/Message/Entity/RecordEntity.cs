@@ -15,7 +15,7 @@ public class RecordEntity : IMessageEntity
 
     public string FilePath { get; set; } = string.Empty;
 
-    public string AudioMd5 { get; set; } = string.Empty;
+    public byte[] AudioMd5 { get; set; } = Array.Empty<byte>();
 
     public string AudioName { get; set; } = string.Empty;
 
@@ -59,7 +59,7 @@ public class RecordEntity : IMessageEntity
         AudioSize = file.Length;
     }
 
-    internal RecordEntity(string audioUuid, string audioName, string audioMd5)
+    internal RecordEntity(string audioUuid, string audioName, byte[] audioMd5)
     {
         AudioUuid = audioUuid;
         AudioName = audioName;
@@ -91,7 +91,7 @@ public class RecordEntity : IMessageEntity
             var extra = Serializer.Deserialize<MsgInfo>(common.PbElem.AsSpan());
             var index = extra.MsgInfoBody[0].Index;
 
-            return new RecordEntity(index.FileUuid, index.Info.FileName, index.Info.FileHash)
+            return new RecordEntity(index.FileUuid, index.Info.FileName, index.Info.FileHash.UnHex())
             {
                 AudioLength = (int)index.Info.Time,
                 FileSha1 = index.Info.FileSha1,
