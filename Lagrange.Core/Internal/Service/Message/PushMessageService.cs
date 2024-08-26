@@ -162,7 +162,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                     meta.Sequence, 
                     meta.Time, 
                     meta.Random, 
-                    recall.Recall.TipInfo.Tip
+                    recall?.Recall.TipInfo?.Tip ?? ""
                 );
                 extraEvents.Add(groupRecallEvent);
                 break;

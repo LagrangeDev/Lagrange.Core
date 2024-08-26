@@ -17,7 +17,7 @@ internal class GroupRecall
 
     [ProtoMember(7)] public int OpType { get; set; }
 
-    [ProtoMember(9)] public TipInfo TipInfo { get; set; }
+    [ProtoMember(9)] public TipInfo? TipInfo { get; set; }
 }
 
 [ProtoContract]
