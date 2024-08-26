@@ -20,6 +20,8 @@ public class MultiMsgEntity : IMessageEntity
 
     public List<MessageChain> Chains { get; }
 
+    public string? DetailStr { get; set; }
+
     internal MultiMsgEntity() => Chains = new List<MessageChain>();
 
     public MultiMsgEntity(string resId)
@@ -28,10 +30,11 @@ public class MultiMsgEntity : IMessageEntity
         Chains = new List<MessageChain>();
     }
 
-    public MultiMsgEntity(uint? groupUin, List<MessageChain> chains)
+    public MultiMsgEntity(uint? groupUin, List<MessageChain> chains, string? detail = null)
     {
         GroupUin = groupUin;
         Chains = chains;
+        DetailStr = detail;
     }
 
     IEnumerable<Elem> IMessageEntity.PackElement()
@@ -73,19 +76,26 @@ public class MultiMsgEntity : IMessageEntity
             View = "contact"
         };
 
-        if (!Chains.Select(x => x.GetEntity<TextEntity>()).Any())
+        if (!string.IsNullOrEmpty(DetailStr))
         {
-            json.Meta.Detail.News.Add(new News { Text = "[This message is send from Lagrange.Core]" });
+            json.Meta.Detail.News.Add(new News { Text = DetailStr });
         }
         else
         {
-            for (int i = 0; i < count; i++)
+            if (!Chains.Select(x => x.GetEntity<TextEntity>()).Any())
             {
-                var chain = Chains[i];
-                var member = chain.GroupMemberInfo;
-                var friend = chain.FriendInfo;
-                string text = $"{member?.MemberCard ?? member?.MemberName ?? friend?.Nickname}: {chain.ToPreviewText()}";
-                json.Meta.Detail.News.Add(new News { Text = text });
+                json.Meta.Detail.News.Add(new News { Text = "[This message is send from Lagrange.Core]" });
+            }
+            else
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    var chain = Chains[i];
+                    var member = chain.GroupMemberInfo;
+                    var friend = chain.FriendInfo;
+                    string text = $"{member?.MemberCard ?? member?.MemberName ?? friend?.Nickname}: {chain.ToPreviewText()}";
+                    json.Meta.Detail.News.Add(new News { Text = text });
+                }
             }
         }
 
