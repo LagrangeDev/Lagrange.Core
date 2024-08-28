@@ -136,11 +136,20 @@ internal class OperationLogic : LogicBase
         return ((GroupFSCountEvent)events[0]).FileCount;
     }
 
-    public async Task<List<IBotFSEntry>> FetchGroupFSList(uint groupUin, string targetDirectory, uint startIndex)
+    public async Task<List<IBotFSEntry>> FetchGroupFSList(uint groupUin, string targetDirectory)
     {
-        var groupFSListEvent = GroupFSListEvent.Create(groupUin, targetDirectory, startIndex);
-        var events = await Collection.Business.SendEvent(groupFSListEvent);
-        return ((GroupFSListEvent)events[0]).FileEntries;
+        uint startIndex = 0;
+        var entries = new List<IBotFSEntry>();
+        while (true)
+        {
+            var groupFSListEvent = GroupFSListEvent.Create(groupUin, targetDirectory, startIndex, 20);
+            var events = await Collection.Business.SendEvent(groupFSListEvent);
+            if (events.Count == 0) break;
+            entries.AddRange(((GroupFSListEvent)events[0]).FileEntries);
+            if (((GroupFSListEvent)events[0]).IsEnd) break;
+            startIndex += 20;
+        }
+        return entries;
     }
 
     public async Task<string> FetchGroupFSDownload(uint groupUin, string fileId)
@@ -164,11 +173,31 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupFSDeleteEvent)events[0]).ResultCode == 0;
     }
 
-    public async Task<bool> GroupFSCreateFolder(uint groupUin, string name)
+    public async Task<(int, string)> GroupFSCreateFolder(uint groupUin, string name)
     {
         var groupFSCreateFolderEvent = GroupFSCreateFolderEvent.Create(groupUin, name);
         var events = await Collection.Business.SendEvent(groupFSCreateFolderEvent);
-        return events.Count != 0 && ((GroupFSCreateFolderEvent)events[0]).ResultCode == 0;
+        var retCode = events.Count > 0 ? ((GroupFSCreateFolderEvent)events[0]).ResultCode : -1;
+        var retMsg = events.Count > 0 ? ((GroupFSCreateFolderEvent)events[0]).RetMsg : "";
+        return new(retCode, retMsg);
+    }
+    
+    public async Task<(int, string)> GroupFSDeleteFolder(uint groupUin, string folderId)
+    {
+        var groupFSDeleteFolderEvent = GroupFSDeleteFolderEvent.Create(groupUin, folderId);
+        var events = await Collection.Business.SendEvent(groupFSDeleteFolderEvent);
+        var retCode = events.Count > 0 ? ((GroupFSDeleteFolderEvent)events[0]).ResultCode : -1;
+        var retMsg = events.Count > 0 ? ((GroupFSDeleteFolderEvent)events[0]).RetMsg : "";
+        return new(retCode, retMsg);
+    }
+
+    public async Task<(int, string)> GroupFSRenameFolder(uint groupUin, string folderId, string newFolderName)
+    {
+        var groupFSDeleteFolderEvent = GroupFSRenameFolderEvent.Create(groupUin, folderId, newFolderName);
+        var events = await Collection.Business.SendEvent(groupFSDeleteFolderEvent);
+        var retCode = events.Count > 0 ? ((GroupFSRenameFolderEvent)events[0]).ResultCode : -1;
+        var retMsg = events.Count > 0 ? ((GroupFSRenameFolderEvent)events[0]).RetMsg : "";
+        return new(retCode, retMsg);
     }
 
     public Task<bool> GroupFSUpload(uint groupUin, FileEntity fileEntity, string targetDirectory)
@@ -452,5 +481,12 @@ internal class OperationLogic : LogicBase
         var fetchMarketFaceKeyEvent = FetchMarketFaceKeyEvent.Create(faceIds);
         var results = await Collection.Business.SendEvent(fetchMarketFaceKeyEvent);
         return results.Count != 0 ? ((FetchMarketFaceKeyEvent)results[0]).Keys : null;
+    }
+
+    public async Task<BotGroupClockInResult> ClockInGroup(uint groupUin)
+    {
+        var groupClockInEvent = GroupClockInEvent.Create(groupUin);
+        var results = await Collection.Business.SendEvent(groupClockInEvent);
+        return ((GroupClockInEvent)results[0]).ResultInfo ?? new BotGroupClockInResult(false);
     }
 }

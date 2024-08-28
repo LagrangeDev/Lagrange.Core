@@ -40,7 +40,7 @@ public class ImageEntity : IMessageEntity
 
     internal string? Summary { get; set; }
     
-    internal int SubType { get; set; }
+    public int SubType { get; set; }
 
     public ImageEntity() { }
 
@@ -88,7 +88,7 @@ public class ImageEntity : IMessageEntity
 
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
-        if (elems.CommonElem is { BusinessType: 20 or 10 } common)
+        if (elems.CommonElem is { ServiceType: 48, BusinessType: 20 or 10 } common)
         {
             var extra = Serializer.Deserialize<MsgInfo>(common.PbElem.AsSpan());
             var index = extra.MsgInfoBody[0].Index;

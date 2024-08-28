@@ -9,6 +9,11 @@ internal abstract class Program
 {
     public static void Main(string[] args)
     {
+        string version = Assembly.GetAssembly(typeof(Program))?
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+            .InformationalVersion ?? "Unknown Lagrange.OneBot Version";
+        Console.WriteLine($"Lagrange.OneBot Version: {version}\n");
+
         Console.OutputEncoding = Encoding.UTF8;
         Console.InputEncoding = Encoding.UTF8;
 
