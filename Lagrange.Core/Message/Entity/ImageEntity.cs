@@ -92,12 +92,15 @@ public class ImageEntity : IMessageEntity
         {
             var extra = Serializer.Deserialize<MsgInfo>(common.PbElem.AsSpan());
             var index = extra.MsgInfoBody[0].Index;
-
+            var rkey_ori = Serializer.Deserialize<ForwardPicExtraInfo>(extra.ExtBizInfo.Pic.BytesPbReserveTroop.AsSpan()).PicUrl;
+            var r_index = rkey_ori.IndexOf("&rkey=");
+            
             return new ImageEntity
             {
                 PictureSize = new Vector2(index.Info.Width, index.Info.Height),
                 FilePath = index.Info.FileName,
                 ImageSize = index.Info.FileSize,
+                ImageUrl = $"https://{extra.MsgInfoBody[0].Picture.Domain}{extra.MsgInfoBody[0].Picture.UrlPath}{rkey_ori.Substring(r_index)}",
                 MsgInfo = extra,
                 SubType = (int)extra.ExtBizInfo.Pic.BizType,
             };
