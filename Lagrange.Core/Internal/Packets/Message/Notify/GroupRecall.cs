@@ -17,7 +17,7 @@ internal class GroupRecall
 
     [ProtoMember(7)] public int OpType { get; set; }
 
-    [ProtoMember(9)] public TipInfo? TipInfo { get; set; }
+    [ProtoMember(9)] public GroupRecallTipInfo? TipInfo { get; set; }
 }
 
 [ProtoContract]
@@ -37,7 +37,7 @@ internal class RecallMessage
 }
 
 [ProtoContract]
-internal class TipInfo
+internal class GroupRecallTipInfo
 {
     [ProtoMember(2)] public string Tip { get; set; }
 }
