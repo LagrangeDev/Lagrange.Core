@@ -39,11 +39,11 @@ internal class FriendRecallInfo
 
     [ProtoMember(9)] public uint DivSeq { get; set; }
 
-    [ProtoMember(13)] public TipInfo TipInfo { get; set; }
+    [ProtoMember(13)] public FriendRecallTipInfo TipInfo { get; set; }
 }
 
 [ProtoContract]
-internal class TipInfo
+internal class FriendRecallTipInfo
 {
     [ProtoMember(2)] public string? Tip { get; set; }
 }
