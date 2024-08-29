@@ -26,7 +26,7 @@ internal class GroupFSUploadService : BaseService<GroupFSUploadEvent>
                 AppId = 7,
                 BusId = 102,
                 Entrance = 6,
-                TargetDirectory = "/",
+                TargetDirectory = input.TargetDirectory,
                 FileName = input.Entity.FileName,
                 LocalDirectory = $"/{input.Entity.FileName}",
                 FileSize = input.Entity.FileSize,

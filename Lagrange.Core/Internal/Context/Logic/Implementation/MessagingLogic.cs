@@ -166,7 +166,7 @@ internal class MessagingLogic : LogicBase
                 uint authorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.AuthorUid) ?? 0;
                 uint operatorUin = 0;
                 if (recall.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.OperatorUid) ?? 0;
-                var recallArgs = new GroupRecallEvent(recall.GroupUin, authorUin, operatorUin, recall.Sequence, recall.Time, recall.Random);
+                var recallArgs = new GroupRecallEvent(recall.GroupUin, authorUin, operatorUin, recall.Sequence, recall.Time, recall.Random, recall.Tip);
                 Collection.Invoker.PostEvent(recallArgs);
                 break;
             }
@@ -195,7 +195,7 @@ internal class MessagingLogic : LogicBase
             case FriendSysRecallEvent recall:
             {
                 uint fromUin = await Collection.Business.CachingLogic.ResolveUin(null, recall.FromUid) ?? 0;
-                var recallArgs = new FriendRecallEvent(fromUin, recall.Sequence, recall.Time, recall.Random);
+                var recallArgs = new FriendRecallEvent(fromUin, recall.Sequence, recall.Time, recall.Random, recall.Tip);
                 Collection.Invoker.PostEvent(recallArgs);
                 break;
             }
