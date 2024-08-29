@@ -137,7 +137,8 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 GroupId = @event.GroupUin,
                 UserId = @event.AuthorUin,
                 MessageId = MessageRecord.CalcMessageHash(@event.Random, @event.Sequence),
-                OperatorId = @event.OperatorUin
+                OperatorId = @event.OperatorUin,
+                Tip = @event.Tip
             });
         };
 
