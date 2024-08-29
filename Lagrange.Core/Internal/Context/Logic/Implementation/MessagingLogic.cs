@@ -35,6 +35,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(FriendSysRequestEvent))]
 [EventSubscribe(typeof(FriendSysPokeEvent))]
 [EventSubscribe(typeof(LoginNotifyEvent))]
+[EventSubscribe(typeof(MultiMsgDownloadEvent))]
 [BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
 internal class MessagingLogic : LogicBase
 {
@@ -208,6 +209,19 @@ internal class MessagingLogic : LogicBase
             {
                 var deviceArgs = new DeviceLoginEvent(login.IsLogin, login.AppId, login.Tag, login.Message);
                 Collection.Invoker.PostEvent(deviceArgs);
+                break;
+            }
+            case MultiMsgDownloadEvent multi:
+            {
+                if (multi.Chains != null)
+                {
+                    foreach (var chain in multi.Chains)
+                    {
+                        if (chain.Count == 0) return;
+                        await ResolveIncomingChain(chain);
+                        // await ResolveChainMetadata(chain);
+                    }
+                }
                 break;
             }
         }
