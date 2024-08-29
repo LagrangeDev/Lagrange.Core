@@ -148,6 +148,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             {
                 UserId = @event.FriendUin,
                 MessageId = MessageRecord.CalcMessageHash(@event.Random, @event.Sequence),
+                Tip = @event.Tip
             });
         };
 

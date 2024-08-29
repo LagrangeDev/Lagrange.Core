@@ -242,7 +242,13 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             case Event0x210SubType.FriendRecallNotice when msg.Message.Body?.MsgContent is { } content:
             {
                 var recall = Serializer.Deserialize<FriendRecall>(content.AsSpan());
-                var recallEvent = FriendSysRecallEvent.Result(recall.Info.FromUid, recall.Info.Sequence, recall.Info.Time, recall.Info.Random);
+                var recallEvent = FriendSysRecallEvent.Result(
+                    recall.Info.FromUid, 
+                    recall.Info.Sequence, 
+                    recall.Info.Time, 
+                    recall.Info.Random, 
+                    recall.Info.TipInfo.Tip ?? ""
+                );
                 extraEvents.Add(recallEvent);
                 break;
             }

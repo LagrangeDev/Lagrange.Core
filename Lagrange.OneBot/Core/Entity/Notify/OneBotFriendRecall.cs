@@ -8,4 +8,6 @@ public class OneBotFriendRecall(uint selfId) : OneBotNotify(selfId, "friend_reca
     [JsonPropertyName("user_id")] public uint UserId { get; set; }
     
     [JsonPropertyName("message_id")] public int MessageId { get; set; }
+
+    [JsonPropertyName("tip")] public string Tip { get; set; } = string.Empty;
 }

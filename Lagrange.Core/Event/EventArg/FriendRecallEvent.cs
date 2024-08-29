@@ -10,13 +10,16 @@ public class FriendRecallEvent : EventBase
     
     public uint Random { get; }
 
-    public FriendRecallEvent(uint friendUin, uint sequence, uint time, uint random)
+    public string Tip { get; }
+
+    public FriendRecallEvent(uint friendUin, uint sequence, uint time, uint random, string tip)
     {
         FriendUin = friendUin;
         Sequence = sequence;
         Time = time;
         Random = random;
-        
-        EventMessage = $"{nameof(FriendRecallEvent)}: {FriendUin} | ({Sequence} | {Time} | {Random})";
+        Tip = tip;
+
+        EventMessage = $"{nameof(FriendRecallEvent)}: {FriendUin} | ({Sequence} | {Time} | {Random} | {Tip})";
     }
 }
