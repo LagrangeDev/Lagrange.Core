@@ -219,7 +219,6 @@ internal class MessagingLogic : LogicBase
                     {
                         if (chain.Count == 0) return;
                         await ResolveIncomingChain(chain);
-                        // await ResolveChainMetadata(chain);
                     }
                 }
                 break;
