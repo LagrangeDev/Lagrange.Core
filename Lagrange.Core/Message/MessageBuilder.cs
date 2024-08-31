@@ -173,6 +173,7 @@ public sealed class MessageBuilder
     /// Add a dedicated poke entity to message chain
     /// </summary>
     /// <param name="type">Poke ID, default value is the preset of NTQQ</param>
+    [Obsolete("This method is obsolete and will be removed in the future. Please use FriendShake instead.")]
     public MessageBuilder Poke(uint type = 1)
     {
         var pokeEntity = new PokeEntity(type, 0);
@@ -186,6 +187,7 @@ public sealed class MessageBuilder
     /// </summary>
     /// <param name="type">Poke ID, default value is the preset of NTQQ</param>
     /// <param name="strength">Poke strength</param>
+    [Obsolete("This method is obsolete and will be removed in the future. Please use FriendShake instead.")]
     public MessageBuilder Poke(uint type = 1, uint strength = 0)
     {
         var pokeEntity = new PokeEntity(type, strength);
@@ -261,8 +263,13 @@ public sealed class MessageBuilder
 
         return this;
     }
-
-    public MessageBuilder FriendShake(FriendShakeFaceType type, ushort strength)
+    
+    /// <summary>
+    /// Add a dedicated window shake entity to message chain
+    /// </summary>
+    /// <param name="type">face type</param>
+    /// <param name="strength">How big the face will be displayed ([0,3] is valid)</param>
+    public MessageBuilder FriendShake(FriendShakeFaceType type, ushort strength = 0)
     {
         var friendShakeEntity = new FriendShakeEntity((ushort)type, strength);
         _chain.Add(friendShakeEntity);
@@ -270,6 +277,11 @@ public sealed class MessageBuilder
         return this;
     }
     
+    /// <summary>
+    /// Add a dedicated special window shake entity to message chain
+    /// </summary>
+    /// <param name="type">face type</param>
+    /// <param name="count">count of face</param>
     public MessageBuilder FriendSpecialShake(FriendSpecialShakeFaceType type, uint count)
     {
         var friendSpecialShakeEntity = new FriendSpecialShakeEntity((ushort)type, count, type.ToName());

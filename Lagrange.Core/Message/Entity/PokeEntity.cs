@@ -5,6 +5,7 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Message.Entity;
 
+[Obsolete("This class is obsolete and will be removed in the future. Please use the new class FriendShakeEntity instead.")]
 [MessageElement(typeof(CommonElem))]
 public class PokeEntity : IMessageEntity
 {

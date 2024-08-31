@@ -46,7 +46,7 @@ public class FriendShakeEntity : IMessageEntity
     }
 
     string IMessageEntity.ToPreviewString()
-        => $"[Shake]{((FriendShakeFaceType)FaceId).TryGetName()}({FaceId})";
+        => $"[FriendShake | Type: {((FriendShakeFaceType)FaceId).TryGetName()}({FaceId}) | Strength: {Strength}]";
 
     string IMessageEntity.ToPreviewText()
         => $"[{((FriendShakeFaceType)FaceId).TryGetName()}]";
