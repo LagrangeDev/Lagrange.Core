@@ -103,7 +103,6 @@ public class MoveGroupFileOperation : IOperation
     }
 }
 
-
 [Operation("delete_group_file")]
 public class DeleteGroupFileOperation : IOperation
 {
