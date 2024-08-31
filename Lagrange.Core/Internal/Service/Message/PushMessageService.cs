@@ -155,7 +155,15 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
                 var recall = Serializer.Deserialize<NotifyMessageBody>(proto);
                 var meta = recall.Recall.RecallMessages[0];
-                var groupRecallEvent = GroupSysRecallEvent.Result(recall.GroupUin, meta.AuthorUid, recall.Recall.OperatorUid, meta.Sequence, meta.Time, meta.Random);
+                var groupRecallEvent = GroupSysRecallEvent.Result(
+                    recall.GroupUin, 
+                    meta.AuthorUid, 
+                    recall.Recall.OperatorUid, 
+                    meta.Sequence, 
+                    meta.Time, 
+                    meta.Random, 
+                    recall?.Recall.TipInfo?.Tip ?? ""
+                );
                 extraEvents.Add(groupRecallEvent);
                 break;
             }
@@ -204,7 +212,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                         actionStr = string.Empty;
                     }
                 }
-                
+
                 if (greyTip.GeneralGrayTip.BusiType == 12)  // poke
                 {
                     var groupPokeEvent = GroupSysPokeEvent.Result(groupUin, uint.Parse(templates["uin_str1"]), uint.Parse(templates["uin_str2"]), actionStr, templates["suffix_str"], templates["action_img_url"]);
@@ -242,7 +250,13 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             case Event0x210SubType.FriendRecallNotice when msg.Message.Body?.MsgContent is { } content:
             {
                 var recall = Serializer.Deserialize<FriendRecall>(content.AsSpan());
-                var recallEvent = FriendSysRecallEvent.Result(recall.Info.FromUid, recall.Info.Sequence, recall.Info.Time, recall.Info.Random);
+                var recallEvent = FriendSysRecallEvent.Result(
+                    recall.Info.FromUid, 
+                    recall.Info.Sequence, 
+                    recall.Info.Time, 
+                    recall.Info.Random, 
+                    recall.Info.TipInfo.Tip ?? ""
+                );
                 extraEvents.Add(recallEvent);
                 break;
             }

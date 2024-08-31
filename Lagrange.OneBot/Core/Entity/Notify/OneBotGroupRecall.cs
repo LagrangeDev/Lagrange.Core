@@ -12,4 +12,6 @@ public class OneBotGroupRecall(uint selfId) : OneBotNotify(selfId, "group_recall
     [JsonPropertyName("message_id")] public int MessageId { get; set; }
     
     [JsonPropertyName("operator_id")] public uint OperatorId { get; set; }
+
+    [JsonPropertyName("tip")] public string Tip { get; set; } = string.Empty;
 }

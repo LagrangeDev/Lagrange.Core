@@ -61,7 +61,7 @@ internal class GroupFSViewService : BaseService<GroupFSViewEvent>
 
         extraEvents = null;
 
-        if (packet.Body.List != null)
+        if (packet.Body.List is { RetCode: 0 })
         {
             var items = packet.Body.List.Items ?? new List<OidbSvcTrpcTcp0x6D8_1ResponseItem>();
             var fileEntries = items.Select(x =>
@@ -83,7 +83,7 @@ internal class GroupFSViewService : BaseService<GroupFSViewEvent>
 
                 return entry;
             }).ToList();
-            output = GroupFSListEvent.Result((int)packet.ErrorCode, fileEntries);
+            output = GroupFSListEvent.Result((int)packet.ErrorCode, fileEntries, packet.Body.List.IsEnd);
             return true;
         }
 
