@@ -3,9 +3,9 @@
 namespace Lagrange.Core.Internal.Packets.Message.Element.Implementation.Extra;
 
 [ProtoContract]
-internal class FriendSpecialShakeExtra
+internal class SpecialPokeExtra
 {
-    [ProtoMember(1)] public ushort FaceId { get; set; }
+    [ProtoMember(1)] public uint Type { get; set; }
 
     [ProtoMember(2)] public uint Count { get; set; }
 

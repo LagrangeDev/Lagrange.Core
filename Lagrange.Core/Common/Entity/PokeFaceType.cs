@@ -1,6 +1,6 @@
 ﻿namespace Lagrange.Core.Common.Entity;
 
-public enum FriendShakeFaceType
+public enum PokeFaceType
 {
     Poke = 1,
     Heart = 2,
@@ -10,7 +10,7 @@ public enum FriendShakeFaceType
     Kamehameha = 6
 }
 
-public enum FriendSpecialShakeFaceType
+public enum SpecialPokeFaceType
 {
     Like = 1,
     Hear = 2,
@@ -26,13 +26,13 @@ public enum FriendSpecialShakeFaceType
     Cash = 12,
 }
 
-public static class FriendShakeFaceTypeExt
+public static class PokeFaceTypeExt
 {
-    private static string[] nameMapping = new string[]
+    private static readonly string[] nameMapping =
     {
         string.Empty, "戳一戳", "比心", "点赞", "心碎", "666", "放大招"
     };
-    private static string[] specialNameMapping = new string[]
+    private static readonly string[] specialNameMapping =
     {
         string.Empty, "点赞", "爱心", "哈哈", "猪头", "炸弹", "便便", "亲亲", "药丸", "榴莲", "略略略", "平底锅", "钞票"
     };
@@ -42,7 +42,7 @@ public static class FriendShakeFaceTypeExt
     /// A <see cref="ArgumentOutOfRangeException"/> will be thrown if the type is not valid.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the type is not valid.</exception>
-    public static string ToName(this FriendShakeFaceType type)
+    public static string ToName(this PokeFaceType type)
     {
         int v = (int)type;
         if (v <= 0 || v >= nameMapping.Length)
@@ -57,7 +57,7 @@ public static class FriendShakeFaceTypeExt
     /// </summary>
     /// <param name="type">The shake face type.</param>
     /// <returns>The name of the shake face type, or null if the type is not valid.</returns>
-    public static string? TryGetName(this FriendShakeFaceType type)
+    public static string? TryGetName(this PokeFaceType type)
     {
         int v = (int)type;
         if (v <= 0 || v >= nameMapping.Length)
@@ -70,7 +70,7 @@ public static class FriendShakeFaceTypeExt
     /// A <see cref="ArgumentOutOfRangeException"/> will be thrown if the type is not valid.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the type is not valid.</exception>
-    public static string ToName(this FriendSpecialShakeFaceType type)
+    public static string ToName(this SpecialPokeFaceType type)
     {
         int v = (int)type;
         if (v <= 0 || v >= specialNameMapping.Length)
@@ -84,7 +84,7 @@ public static class FriendShakeFaceTypeExt
     /// </summary>
     /// <param name="type">The shake face type.</param>
     /// <returns>The name of the shake face type, or null if the type is not valid.</returns>
-    public static string? TryGetName(this FriendSpecialShakeFaceType type)
+    public static string? TryGetName(this SpecialPokeFaceType type)
     {
         int v = (int)type;
         if (v <= 0 || v >= specialNameMapping.Length)

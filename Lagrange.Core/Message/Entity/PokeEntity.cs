@@ -5,7 +5,6 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Message.Entity;
 
-[Obsolete("This class is obsolete and will be removed in the future. Please use the new class FriendShakeEntity instead.")]
 [MessageElement(typeof(CommonElem))]
 public class PokeEntity : IMessageEntity
 {
@@ -23,37 +22,35 @@ public class PokeEntity : IMessageEntity
 
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
-        var stream = new MemoryStream();
-        Serializer.Serialize(stream, new PokeExtra
+        byte[] shakePbElem;
+        using (var ms = new MemoryStream())
         {
-            Type = Type,
-            Strength = Strength,
-            Field8 = 0
-        });
-
-        return new Elem[]
-        {
-            new()
+            Serializer.Serialize(ms, new PokeExtra()
             {
-                CommonElem = new CommonElem
-                {
-                    ServiceType = 2,
-                    BusinessType = 1,
-                    PbElem = stream.ToArray()
-                }
+                Type = Type,
+                Strength = Strength
+            });
+            shakePbElem = ms.ToArray();
+        }
+
+        yield return new Elem()
+        {
+            CommonElem = new CommonElem
+            {
+                ServiceType = 2,
+                PbElem = shakePbElem,
+                BusinessType = Type
             }
         };
     }
 
     IMessageEntity? IMessageEntity.UnpackElement(Elem elem)
     {
-        if (elem is { CommonElem: { ServiceType: 2, BusinessType: 1 } common })
-        {
-            var poke = Serializer.Deserialize<PokeExtra>(common.PbElem.AsSpan());
-            return new PokeEntity(poke.Type, poke.Strength);
-        }
+        if (elem.CommonElem is not { ServiceType: 2 })
+            return null;
 
-        return null;
+        var poke = Serializer.Deserialize<PokeExtra>(elem.CommonElem.PbElem.AsSpan());
+        return new PokeEntity(poke.Type, poke.Strength);
     }
 
     public string ToPreviewString() => $"[{nameof(PokeEntity)} | Type: {Type} | Strength: {Strength}]";

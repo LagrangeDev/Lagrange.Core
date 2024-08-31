@@ -490,18 +490,18 @@ internal class OperationLogic : LogicBase
         return ((GroupClockInEvent)results[0]).ResultInfo ?? new BotGroupClockInResult(false);
     }
 
-    public Task<MessageResult> FriendSpecialShake(uint friendUin, FriendSpecialShakeFaceType type, uint count)
+    public Task<MessageResult> FriendSpecialShake(uint friendUin, SpecialPokeFaceType type, uint count)
     {
         var chain = MessageBuilder.Friend(friendUin)
-            .FriendSpecialShake(type, count)
+            .SpecialPoke(type, count)
             .Build();
         return SendMessage(chain);
     }
 
-    public Task<MessageResult> FriendShake(uint friendUin, FriendShakeFaceType type, ushort strength)
+    public Task<MessageResult> FriendShake(uint friendUin, PokeFaceType type, uint strength)
     {
         var chain = MessageBuilder.Friend(friendUin)
-            .FriendShake(type, strength)
+            .Poke(type, strength)
             .Build();
         return SendMessage(chain);
     }

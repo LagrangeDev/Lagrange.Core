@@ -6,17 +6,17 @@ using ProtoBuf;
 namespace Lagrange.Core.Message.Entity;
 
 [MessageElement(typeof(CommonElem))]
-public class FriendSpecialShakeEntity : IMessageEntity
+public class SpecialPokeEntity : IMessageEntity
 {
-    public ushort FaceId { get; set; }
+    public uint FaceId { get; set; }
 
     public uint Count { get; set; }
 
     public string FaceName { get; set; }
 
-    public FriendSpecialShakeEntity() : this(0, 0, string.Empty) { }
+    public SpecialPokeEntity() : this(0, 0, string.Empty) { }
 
-    public FriendSpecialShakeEntity(ushort faceId, uint count, string faceName)
+    public SpecialPokeEntity(uint faceId, uint count, string faceName)
     {
         FaceId = faceId;
         Count = count;
@@ -28,9 +28,9 @@ public class FriendSpecialShakeEntity : IMessageEntity
         byte[] shakePbElem;
         using (var ms = new MemoryStream())
         {
-            Serializer.Serialize(ms, new FriendSpecialShakeExtra()
+            Serializer.Serialize(ms, new SpecialPokeExtra()
             {
-                FaceId = FaceId,
+                Type = FaceId,
                 Count = Count,
                 FaceName = FaceName
             });
@@ -49,7 +49,7 @@ public class FriendSpecialShakeEntity : IMessageEntity
     }
 
     string IMessageEntity.ToPreviewString()
-        => $"[SpecialShake]{FaceName}({FaceId})x{Count}";
+        => $"[SpecialShake | Name: {FaceName}({FaceId}) | Count: {Count}]";
 
     string IMessageEntity.ToPreviewText()
         => $"[{FaceName}]x{Count}";
@@ -59,7 +59,7 @@ public class FriendSpecialShakeEntity : IMessageEntity
         if (elem.CommonElem is not { ServiceType: 23 })
             return null;
 
-        var specialShakeExtra = Serializer.Deserialize<FriendSpecialShakeExtra>(elem.CommonElem.PbElem.AsSpan());
-        return new FriendSpecialShakeEntity(specialShakeExtra.FaceId, specialShakeExtra.Count, specialShakeExtra.FaceName);
+        var specialPokeExtra = Serializer.Deserialize<SpecialPokeExtra>(elem.CommonElem.PbElem.AsSpan());
+        return new SpecialPokeEntity(specialPokeExtra.Type, specialPokeExtra.Count, specialPokeExtra.FaceName);
     }
 }
