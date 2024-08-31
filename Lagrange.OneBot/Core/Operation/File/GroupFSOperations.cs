@@ -88,6 +88,22 @@ public class GetGroupRootFilesOperation : IOperation
     }
 }
 
+[Operation("move_group_file")]
+public class MoveGroupFileOperation : IOperation
+{
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
+    {
+        if (payload.Deserialize<OneBotMoveFile>(SerializerOptions.DefaultOptions) is { } file)
+        {
+            var res = await context.GroupFSMove(file.GroupId, file.FileId, file.ParentDirectory, file.TargetDirectory);
+            return new OneBotResult(new JsonObject { { "msg", res.Item2 } }, res.Item1, res.Item1 == 0 ? "ok" : "failed");
+        }
+
+        throw new Exception();
+    }
+}
+
+
 [Operation("delete_group_file")]
 public class DeleteGroupFileOperation : IOperation
 {
@@ -95,8 +111,8 @@ public class DeleteGroupFileOperation : IOperation
     {
         if (payload.Deserialize<OneBotDeleteFile>(SerializerOptions.DefaultOptions) is { } file)
         {
-            await context.GroupFSDelete(file.GroupId, file.FileId);
-            return new OneBotResult(null, 0, "ok");
+            var res = await context.GroupFSDelete(file.GroupId, file.FileId);
+            return new OneBotResult(new JsonObject { { "msg", res.Item2 } }, res.Item1, res.Item1 == 0 ? "ok" : "failed");
         }
 
         throw new Exception();
