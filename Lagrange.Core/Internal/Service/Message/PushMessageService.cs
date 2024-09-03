@@ -203,12 +203,9 @@ internal class PushMessageService : BaseService<PushMessageEvent>
 
                 var templates = greyTip.GeneralGrayTip.MsgTemplParam.ToDictionary(x => x.Name, x => x.Value);
 
-                if (!templates.TryGetValue("action_str", out var actionStr) || actionStr == null)
+                if (!templates.TryGetValue("action_str", out var actionStr) && !templates.TryGetValue("alt_str1", out actionStr))
                 {
-                    if (!templates.TryGetValue("alt_str1", out actionStr) || actionStr == null)
-                    {
-                        actionStr = string.Empty;
-                    }
+                    actionStr = string.Empty;
                 }
 
                 if (greyTip.GeneralGrayTip.BusiType == 12)  // poke
