@@ -6,9 +6,9 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Response;
 #pragma warning disable CS8618
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0x10C0_1_2Response
+internal class OidbSvcTrpcTcp0x10C0Response
 {
-    [ProtoMember(1)] public List<OidbSvcTrpcTcp0x10C0_1_2ResponseRequests>? Requests { get; set; }
+    [ProtoMember(1)] public List<OidbSvcTrpcTcp0x10C0ResponseRequests>? Requests { get; set; }
     
     [ProtoMember(2)] public ulong Field2 { get; set; }
     
@@ -22,7 +22,7 @@ internal class OidbSvcTrpcTcp0x10C0_1_2Response
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0x10C0_1_2ResponseRequests
+internal class OidbSvcTrpcTcp0x10C0ResponseRequests
 {
     [ProtoMember(1)] public ulong Sequence { get; set; }
     
@@ -30,13 +30,13 @@ internal class OidbSvcTrpcTcp0x10C0_1_2ResponseRequests
     
     [ProtoMember(3)] public uint State { get; set; } // 2 for Join, 1 for waiting for action
     
-    [ProtoMember(4)] public OidbSvcTrpcTcp0x10C0_1_2ResponseGroup Group { get; set; }
+    [ProtoMember(4)] public OidbSvcTrpcTcp0x10C0ResponseGroup Group { get; set; }
     
-    [ProtoMember(5)] public OidbSvcTrpcTcp0x10C0_1_2ResponseUser Target { get; set; }
+    [ProtoMember(5)] public OidbSvcTrpcTcp0x10C0ResponseUser Target { get; set; }
     
-    [ProtoMember(6)] public OidbSvcTrpcTcp0x10C0_1_2ResponseUser? Invitor { get; set; }
+    [ProtoMember(6)] public OidbSvcTrpcTcp0x10C0ResponseUser? Invitor { get; set; }
     
-    [ProtoMember(7)] public OidbSvcTrpcTcp0x10C0_1_2ResponseUser? Operator { get; set; }
+    [ProtoMember(7)] public OidbSvcTrpcTcp0x10C0ResponseUser? Operator { get; set; }
     
     [ProtoMember(9)] public string Field9 { get; set; }
     
@@ -44,7 +44,7 @@ internal class OidbSvcTrpcTcp0x10C0_1_2ResponseRequests
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0x10C0_1_2ResponseGroup
+internal class OidbSvcTrpcTcp0x10C0ResponseGroup
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
     
@@ -52,7 +52,7 @@ internal class OidbSvcTrpcTcp0x10C0_1_2ResponseGroup
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0x10C0_1_2ResponseUser
+internal class OidbSvcTrpcTcp0x10C0ResponseUser
 {
     [ProtoMember(1)] public string Uid { get; set; }
     
