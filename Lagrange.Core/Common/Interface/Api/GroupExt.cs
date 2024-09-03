@@ -95,16 +95,16 @@ public static class GroupExt
     public static Task<uint> FetchGroupFSCount(this BotContext bot, uint groupUin)
         => bot.ContextCollection.Business.OperationLogic.FetchGroupFSCount(groupUin);
 
-    public static Task<List<IBotFSEntry>> FetchGroupFSList(this BotContext bot, uint groupUin, string targetDirectory = "/", uint startIndex = 0)
-        => bot.ContextCollection.Business.OperationLogic.FetchGroupFSList(groupUin, targetDirectory, startIndex);
+    public static Task<List<IBotFSEntry>> FetchGroupFSList(this BotContext bot, uint groupUin, string targetDirectory = "/")
+        => bot.ContextCollection.Business.OperationLogic.FetchGroupFSList(groupUin, targetDirectory);
 
     public static Task<string> FetchGroupFSDownload(this BotContext bot, uint groupUin, string fileId)
         => bot.ContextCollection.Business.OperationLogic.FetchGroupFSDownload(groupUin, fileId);
 
-    public static Task<bool> GroupFSMove(this BotContext bot, uint groupUin, string fileId, string parentDirectory, string targetDirectory)
+    public static Task<(int, string)> GroupFSMove(this BotContext bot, uint groupUin, string fileId, string parentDirectory, string targetDirectory)
         => bot.ContextCollection.Business.OperationLogic.GroupFSMove(groupUin, fileId, parentDirectory, targetDirectory);
     
-    public static Task<bool> GroupFSDelete(this BotContext bot, uint groupUin, string fileId)
+    public static Task<(int, string)> GroupFSDelete(this BotContext bot, uint groupUin, string fileId)
         => bot.ContextCollection.Business.OperationLogic.GroupFSDelete(groupUin, fileId);
     
     public static Task<(int, string)> GroupFSCreateFolder(this BotContext bot, uint groupUin, string name)
@@ -112,6 +112,9 @@ public static class GroupExt
     
     public static Task<(int, string)> GroupFSDeleteFolder(this BotContext bot, uint groupUin, string folderId)
         => bot.ContextCollection.Business.OperationLogic.GroupFSDeleteFolder(groupUin, folderId);
+    
+    public static Task<(int, string)> GroupFSRenameFolder(this BotContext bot, uint groupUin, string folderId, string newFolderName)
+        => bot.ContextCollection.Business.OperationLogic.GroupFSRenameFolder(groupUin, folderId, newFolderName);
     
     public static Task<bool> GroupFSUpload(this BotContext bot, uint groupUin, FileEntity fileEntity, string targetDirectory = "/")
         => bot.ContextCollection.Business.OperationLogic.GroupFSUpload(groupUin, fileEntity, targetDirectory);

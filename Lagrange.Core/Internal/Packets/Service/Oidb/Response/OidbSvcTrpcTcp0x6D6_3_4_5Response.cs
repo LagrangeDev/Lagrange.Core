@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Packets.Service.Oidb.Response;
 
@@ -6,9 +6,9 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Response;
 // ReSharper disable InconsistentNaming
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0x6D7_1Response
+internal class OidbSvcTrpcTcp0x6D6_3_4_5Response
 {
-    [ProtoMember(1)] public Int32 Retcode { get; set; }
+    [ProtoMember(1)] public int RetCode { get; set; }
     
     [ProtoMember(2)] public string RetMsg { get; set; }
     

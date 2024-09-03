@@ -1,4 +1,3 @@
-using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Packets.Service.Oidb.Response;

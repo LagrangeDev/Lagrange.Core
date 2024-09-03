@@ -35,6 +35,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(FriendSysRequestEvent))]
 [EventSubscribe(typeof(FriendSysPokeEvent))]
 [EventSubscribe(typeof(LoginNotifyEvent))]
+[EventSubscribe(typeof(MultiMsgDownloadEvent))]
 [BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
 internal class MessagingLogic : LogicBase
 {
@@ -165,7 +166,7 @@ internal class MessagingLogic : LogicBase
                 uint authorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.AuthorUid) ?? 0;
                 uint operatorUin = 0;
                 if (recall.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.OperatorUid) ?? 0;
-                var recallArgs = new GroupRecallEvent(recall.GroupUin, authorUin, operatorUin, recall.Sequence, recall.Time, recall.Random);
+                var recallArgs = new GroupRecallEvent(recall.GroupUin, authorUin, operatorUin, recall.Sequence, recall.Time, recall.Random, recall.Tip);
                 Collection.Invoker.PostEvent(recallArgs);
                 break;
             }
@@ -194,7 +195,7 @@ internal class MessagingLogic : LogicBase
             case FriendSysRecallEvent recall:
             {
                 uint fromUin = await Collection.Business.CachingLogic.ResolveUin(null, recall.FromUid) ?? 0;
-                var recallArgs = new FriendRecallEvent(fromUin, recall.Sequence, recall.Time, recall.Random);
+                var recallArgs = new FriendRecallEvent(fromUin, recall.Sequence, recall.Time, recall.Random, recall.Tip);
                 Collection.Invoker.PostEvent(recallArgs);
                 break;
             }
@@ -208,6 +209,18 @@ internal class MessagingLogic : LogicBase
             {
                 var deviceArgs = new DeviceLoginEvent(login.IsLogin, login.AppId, login.Tag, login.Message);
                 Collection.Invoker.PostEvent(deviceArgs);
+                break;
+            }
+            case MultiMsgDownloadEvent multi:
+            {
+                if (multi.Chains != null)
+                {
+                    foreach (var chain in multi.Chains)
+                    {
+                        if (chain.Count == 0) return;
+                        await ResolveIncomingChain(chain);
+                    }
+                }
                 break;
             }
         }

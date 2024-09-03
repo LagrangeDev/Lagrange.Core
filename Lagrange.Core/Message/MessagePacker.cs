@@ -3,7 +3,6 @@ using System.Reflection;
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Utility.Extension;
-using Lagrange.Core.Utility.Generator;
 using Lagrange.Core.Internal.Packets.Message.C2C;
 using Lagrange.Core.Internal.Packets.Message.Component;
 using Lagrange.Core.Internal.Packets.Message.Component.Extra;
@@ -144,12 +143,12 @@ internal static class MessagePacker
 
         switch (message.Body?.RichText?.Ptt)
         {
-            case { } groupPtt when chain.IsGroup && groupPtt.FileId != 0:  //  for legacy ptt
-                chain.Add(new RecordEntity(groupPtt.GroupFileKey, groupPtt.FileName));
+            case { } groupPtt when chain.IsGroup && groupPtt.FileId != 0:  // for legacy ptt
+                chain.Add(new RecordEntity(groupPtt.GroupFileKey, groupPtt.FileName, groupPtt.FileMd5));
                 break;
             case { } privatePtt when !chain.IsGroup:
                 if (chain.OfType<RecordEntity>().FirstOrDefault(x => x.AudioName == privatePtt.FileName) == null)
-                    chain.Add(new RecordEntity(privatePtt.FileUuid, privatePtt.FileName));
+                    chain.Add(new RecordEntity(privatePtt.FileUuid, privatePtt.FileName, privatePtt.FileMd5));
                 break;
         }
 

@@ -1,7 +1,4 @@
 using System.Buffers.Binary;
-using System.Runtime.InteropServices;
-using Lagrange.Core.Utility.Binary;
-using BitConverter = System.BitConverter;
 
 namespace Lagrange.OneBot.Utility;
 

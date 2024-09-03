@@ -88,6 +88,21 @@ public class GetGroupRootFilesOperation : IOperation
     }
 }
 
+[Operation("move_group_file")]
+public class MoveGroupFileOperation : IOperation
+{
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
+    {
+        if (payload.Deserialize<OneBotMoveFile>(SerializerOptions.DefaultOptions) is { } file)
+        {
+            var res = await context.GroupFSMove(file.GroupId, file.FileId, file.ParentDirectory, file.TargetDirectory);
+            return new OneBotResult(new JsonObject { { "msg", res.Item2 } }, res.Item1, res.Item1 == 0 ? "ok" : "failed");
+        }
+
+        throw new Exception();
+    }
+}
+
 [Operation("delete_group_file")]
 public class DeleteGroupFileOperation : IOperation
 {
@@ -95,8 +110,8 @@ public class DeleteGroupFileOperation : IOperation
     {
         if (payload.Deserialize<OneBotDeleteFile>(SerializerOptions.DefaultOptions) is { } file)
         {
-            await context.GroupFSDelete(file.GroupId, file.FileId);
-            return new OneBotResult(null, 0, "ok");
+            var res = await context.GroupFSDelete(file.GroupId, file.FileId);
+            return new OneBotResult(new JsonObject { { "msg", res.Item2 } }, res.Item1, res.Item1 == 0 ? "ok" : "failed");
         }
 
         throw new Exception();
@@ -126,6 +141,21 @@ public class DeleteGroupFileFolderOperation : IOperation
         if (payload.Deserialize<OneBotDeleteFolder>(SerializerOptions.DefaultOptions) is { } folder)
         {
             var res = await context.GroupFSDeleteFolder(folder.GroupId, folder.FolderId);
+            return new OneBotResult(new JsonObject { { "msg", res.Item2 } }, res.Item1, res.Item1 == 0 ? "ok" : "failed");
+        }
+
+        throw new Exception();
+    }
+}
+
+[Operation("rename_group_file_folder")]
+public class RenameGroupFileFolderOperation : IOperation
+{
+    public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
+    {
+        if (payload.Deserialize<OneBotRenameFolder>(SerializerOptions.DefaultOptions) is { } folder)
+        {
+            var res = await context.GroupFSRenameFolder(folder.GroupId, folder.FolderId, folder.NewFolderName);
             return new OneBotResult(new JsonObject { { "msg", res.Item2 } }, res.Item1, res.Item1 == 0 ? "ok" : "failed");
         }
 
