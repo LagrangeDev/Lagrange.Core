@@ -2,7 +2,6 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Lagrange.Core;
 using Lagrange.Core.Internal.Packets;
-using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Action.Response;

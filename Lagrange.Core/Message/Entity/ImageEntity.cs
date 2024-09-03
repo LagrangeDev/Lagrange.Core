@@ -1,8 +1,6 @@
 using System.Numerics;
-using Lagrange.Core.Internal.Packets.Message.Component.Extra;
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
-using Lagrange.Core.Internal.Packets.Message.Element.Implementation.Extra;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;

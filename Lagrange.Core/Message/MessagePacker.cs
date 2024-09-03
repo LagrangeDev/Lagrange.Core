@@ -3,7 +3,6 @@ using System.Reflection;
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Utility.Extension;
-using Lagrange.Core.Utility.Generator;
 using Lagrange.Core.Internal.Packets.Message.C2C;
 using Lagrange.Core.Internal.Packets.Message.Component;
 using Lagrange.Core.Internal.Packets.Message.Component.Extra;
