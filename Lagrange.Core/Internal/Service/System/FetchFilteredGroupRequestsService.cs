@@ -10,13 +10,13 @@ using ProtoBuf;
 namespace Lagrange.Core.Internal.Service.System;
 
 [EventSubscribe(typeof(FetchGroupRequestsEvent))]
-[Service("OidbSvcTrpcTcp.0x10c0_1")]
-internal class FetchGroupRequestsService : BaseService<FetchGroupRequestsEvent>
+[Service("OidbSvcTrpcTcp.0x10c0_2")]
+internal class FetchFilteredGroupRequestsService : BaseService<FetchGroupRequestsEvent>
 {
     protected override bool Build(FetchGroupRequestsEvent input, BotKeystore keystore, BotAppInfo appInfo,
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
-        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x10C0_1>(new OidbSvcTrpcTcp0x10C0_1
+        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x10C0_2>(new OidbSvcTrpcTcp0x10C0_2
         {
             Count = 20,
             Field2 = 0

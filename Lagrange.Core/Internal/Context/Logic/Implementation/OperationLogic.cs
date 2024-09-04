@@ -255,7 +255,7 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(fetchRequestsEvent);
         if (events.Count == 0) return null;
 
-        var resolved = ((FetchGroupRequestsEvent)events[0]).Events;
+        var resolved = events.Cast<FetchGroupRequestsEvent>().SelectMany(e => e.Events).ToList();
         var results = new List<BotGroupRequest>();
 
         foreach (var result in resolved)
