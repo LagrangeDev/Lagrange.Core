@@ -1,7 +1,6 @@
 ﻿using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Message;
 using System.Text.Json.Serialization;
-using Lagrange.Core.Utility.Network;
 using Lagrange.OneBot.Utility;
 
 namespace Lagrange.OneBot.Message.Entity;

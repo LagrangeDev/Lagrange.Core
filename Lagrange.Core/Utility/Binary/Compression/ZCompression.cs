@@ -1,4 +1,3 @@
-using System.IO.Compression;
 using System.Text;
 
 namespace Lagrange.Core.Utility.Binary.Compression;
