@@ -104,10 +104,10 @@ public static class GroupExt
     public static Task<string> FetchGroupFSDownload(this BotContext bot, uint groupUin, string fileId)
         => bot.ContextCollection.Business.OperationLogic.FetchGroupFSDownload(groupUin, fileId);
 
-    public static Task<bool> GroupFSMove(this BotContext bot, uint groupUin, string fileId, string parentDirectory, string targetDirectory)
+    public static Task<(int, string)> GroupFSMove(this BotContext bot, uint groupUin, string fileId, string parentDirectory, string targetDirectory)
         => bot.ContextCollection.Business.OperationLogic.GroupFSMove(groupUin, fileId, parentDirectory, targetDirectory);
-
-    public static Task<bool> GroupFSDelete(this BotContext bot, uint groupUin, string fileId)
+    
+    public static Task<(int, string)> GroupFSDelete(this BotContext bot, uint groupUin, string fileId)
         => bot.ContextCollection.Business.OperationLogic.GroupFSDelete(groupUin, fileId);
 
     public static Task<(int, string)> GroupFSCreateFolder(this BotContext bot, uint groupUin, string name)

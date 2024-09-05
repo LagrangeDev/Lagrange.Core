@@ -1,5 +1,4 @@
 using Lagrange.Core.Utility.Binary;
-using static Lagrange.Core.Utility.Binary.BinaryPacket;
 
 namespace Lagrange.Core.Internal.Packets.Login.NTLogin.Plain.Body;
 

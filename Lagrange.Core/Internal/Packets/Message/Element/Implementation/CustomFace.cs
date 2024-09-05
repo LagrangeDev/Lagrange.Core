@@ -1,4 +1,3 @@
-using Lagrange.Core.Internal.Packets.Message.Element.Implementation.Extra;
 using ProtoBuf;
 
 // ReSharper disable InconsistentNaming

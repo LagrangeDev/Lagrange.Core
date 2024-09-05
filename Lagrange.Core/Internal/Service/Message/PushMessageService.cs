@@ -1,11 +1,9 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
-using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.Notify;
 using Lagrange.Core.Internal.Packets.Message;
 using Lagrange.Core.Internal.Packets.Message.Notify;
-using Lagrange.Core.Internal.Service.Action;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Extension;
@@ -155,7 +153,15 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
                 var recall = Serializer.Deserialize<NotifyMessageBody>(proto);
                 var meta = recall.Recall.RecallMessages[0];
-                var groupRecallEvent = GroupSysRecallEvent.Result(recall.GroupUin, meta.AuthorUid, recall.Recall.OperatorUid, meta.Sequence, meta.Time, meta.Random);
+                var groupRecallEvent = GroupSysRecallEvent.Result(
+                    recall.GroupUin, 
+                    meta.AuthorUid, 
+                    recall.Recall.OperatorUid, 
+                    meta.Sequence, 
+                    meta.Time, 
+                    meta.Random, 
+                    recall?.Recall.TipInfo?.Tip ?? ""
+                );
                 extraEvents.Add(groupRecallEvent);
                 break;
             }
@@ -197,14 +203,11 @@ internal class PushMessageService : BaseService<PushMessageEvent>
 
                 var templates = greyTip.GeneralGrayTip.MsgTemplParam.ToDictionary(x => x.Name, x => x.Value);
 
-                if (!templates.TryGetValue("action_str", out var actionStr) || actionStr == null)
+                if (!templates.TryGetValue("action_str", out var actionStr) && !templates.TryGetValue("alt_str1", out actionStr))
                 {
-                    if (!templates.TryGetValue("alt_str1", out actionStr) || actionStr == null)
-                    {
-                        actionStr = string.Empty;
-                    }
+                    actionStr = string.Empty;
                 }
-                
+
                 if (greyTip.GeneralGrayTip.BusiType == 12)  // poke
                 {
                     var groupPokeEvent = GroupSysPokeEvent.Result(groupUin, uint.Parse(templates["uin_str1"]), uint.Parse(templates["uin_str2"]), actionStr, templates["suffix_str"], templates["action_img_url"]);
@@ -242,7 +245,13 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             case Event0x210SubType.FriendRecallNotice when msg.Message.Body?.MsgContent is { } content:
             {
                 var recall = Serializer.Deserialize<FriendRecall>(content.AsSpan());
-                var recallEvent = FriendSysRecallEvent.Result(recall.Info.FromUid, recall.Info.Sequence, recall.Info.Time, recall.Info.Random);
+                var recallEvent = FriendSysRecallEvent.Result(
+                    recall.Info.FromUid, 
+                    recall.Info.Sequence, 
+                    recall.Info.Time, 
+                    recall.Info.Random, 
+                    recall.Info.TipInfo.Tip ?? ""
+                );
                 extraEvents.Add(recallEvent);
                 break;
             }
@@ -256,12 +265,9 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 var greyTip = Serializer.Deserialize<GeneralGrayTipInfo>(content.AsSpan());
                 var templates = greyTip.MsgTemplParam.ToDictionary(x => x.Name, x => x.Value);
 
-                if (!templates.TryGetValue("action_str", out var actionStr) || actionStr == null)
+                if (!templates.TryGetValue("action_str", out var actionStr) && !templates.TryGetValue("alt_str1", out actionStr))
                 {
-                    if (!templates.TryGetValue("alt_str1", out actionStr) || actionStr == null)
-                    {
-                        actionStr = string.Empty;
-                    }
+                    actionStr = string.Empty;
                 }
 
                 if (greyTip.BusiType == 12)  // poke

@@ -1,7 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Lagrange.Core;
-using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core.Entity;
 using Lagrange.OneBot.Core.Entity.Action;

@@ -3,7 +3,6 @@ using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Notify;
-using Lagrange.OneBot.Utility;
 
 namespace Lagrange.OneBot.Core.Operation.Generic;
 

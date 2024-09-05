@@ -166,18 +166,22 @@ internal class OperationLogic : LogicBase
         return $"{((GroupFSDownloadEvent)events[0]).FileUrl}{fileId}";
     }
 
-    public async Task<bool> GroupFSMove(uint groupUin, string fileId, string parentDirectory, string targetDirectory)
+    public async Task<(int, string)> GroupFSMove(uint groupUin, string fileId, string parentDirectory, string targetDirectory)
     {
         var groupFSMoveEvent = GroupFSMoveEvent.Create(groupUin, fileId, parentDirectory, targetDirectory);
         var events = await Collection.Business.SendEvent(groupFSMoveEvent);
-        return events.Count != 0 && ((GroupFSMoveEvent)events[0]).ResultCode == 0;
+        var retCode = events.Count > 0 ? ((GroupFSMoveEvent)events[0]).ResultCode : -1;
+        var retMsg = events.Count > 0 ? ((GroupFSMoveEvent)events[0]).RetMsg : "";
+        return new(retCode, retMsg);
     }
 
-    public async Task<bool> GroupFSDelete(uint groupUin, string fileId)
+    public async Task<(int, string)> GroupFSDelete(uint groupUin, string fileId)
     {
         var groupFSDeleteEvent = GroupFSDeleteEvent.Create(groupUin, fileId);
         var events = await Collection.Business.SendEvent(groupFSDeleteEvent);
-        return events.Count != 0 && ((GroupFSDeleteEvent)events[0]).ResultCode == 0;
+        var retCode = events.Count > 0 ? ((GroupFSDeleteEvent)events[0]).ResultCode : -1;
+        var retMsg = events.Count > 0 ? ((GroupFSDeleteEvent)events[0]).RetMsg : "";
+        return new(retCode, retMsg);
     }
 
     public async Task<(int, string)> GroupFSCreateFolder(uint groupUin, string name)
@@ -258,7 +262,7 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(fetchRequestsEvent);
         if (events.Count == 0) return null;
 
-        var resolved = ((FetchGroupRequestsEvent)events[0]).Events;
+        var resolved = events.Cast<FetchGroupRequestsEvent>().SelectMany(e => e.Events).ToList();
         var results = new List<BotGroupRequest>();
 
         foreach (var result in resolved)

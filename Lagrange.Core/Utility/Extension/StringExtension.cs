@@ -1,5 +1,3 @@
-using System.Globalization;
-
 namespace Lagrange.Core.Utility.Extension;
 
 internal static class StringExtension
