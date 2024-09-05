@@ -41,8 +41,14 @@ public class ImageEntity : IMessageEntity
     internal CustomFace? CompatFace { get; set; }
 
     internal string? Summary { get; set; }
-    
+
     public int SubType { get; set; }
+
+    internal bool IsGroup => GroupUin != null;
+
+    internal uint? GroupUin { get; set; }
+
+    internal string? FriendUid { get; set; }
 
     public ImageEntity() { }
 
@@ -93,7 +99,10 @@ public class ImageEntity : IMessageEntity
         if (elems.CommonElem is { ServiceType: 48, BusinessType: 20 or 10 } common)
         {
             var extra = Serializer.Deserialize<MsgInfo>(common.PbElem.AsSpan());
-            var index = extra.MsgInfoBody[0].Index;
+
+            var msgInfoBody = extra.MsgInfoBody[0];
+
+            var index = msgInfoBody.Index;
 
             return new ImageEntity
             {
@@ -103,6 +112,8 @@ public class ImageEntity : IMessageEntity
                 ImageSize = index.Info.FileSize,
                 MsgInfo = extra,
                 SubType = (int)extra.ExtBizInfo.Pic.BizType,
+                GroupUin = msgInfoBody.HashSum.TroopSource?.GroupUin,
+                FriendUid = msgInfoBody.HashSum.BytesPbReserveC2c?.FriendUid
             };
         }
 
