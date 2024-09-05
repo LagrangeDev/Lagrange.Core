@@ -7,11 +7,11 @@ using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Internal.Service.System;
 
-[EventSubscribe(typeof(FetchFriendRequestsEvent))]
+[EventSubscribe(typeof(FetchFriendsAndFriendGroupsRequestsEvent))]
 [Service("OidbSvcTrpcTcp.0x5cf_11")]
-internal class FetchFriendRequestsService : BaseService<FetchFriendRequestsEvent>
+internal class FetchFriendsAndFriendGroupsRequestsService : BaseService<FetchFriendsAndFriendGroupsRequestsEvent>
 {
-    protected override bool Build(FetchFriendRequestsEvent input, BotKeystore keystore, BotAppInfo appInfo,
+    protected override bool Build(FetchFriendsAndFriendGroupsRequestsEvent input, BotKeystore keystore, BotAppInfo appInfo,
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x5CF_11>(new OidbSvcTrpcTcp0x5CF_11
@@ -33,7 +33,7 @@ internal class FetchFriendRequestsService : BaseService<FetchFriendRequestsEvent
     }
 
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out FetchFriendRequestsEvent output, out List<ProtocolEvent>? extraEvents)
+        out FetchFriendsAndFriendGroupsRequestsEvent output, out List<ProtocolEvent>? extraEvents)
     {
         return base.Parse(input, keystore, appInfo, device, out output, out extraEvents);
     }
