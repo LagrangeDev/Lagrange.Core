@@ -44,7 +44,7 @@ public class ImageEntity : IMessageEntity
 
     public int SubType { get; set; }
 
-    internal bool IsGroup => GroupUin != null;
+    internal bool IsGroup => GroupUin.HasValue;
 
     internal uint? GroupUin { get; set; }
 
