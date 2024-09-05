@@ -91,6 +91,13 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupSetBothdEvent)events[0]).ResultCode == 0;
     }
 
+    public async Task<bool> ImageExpires(string? url)
+    {
+        var muteBotEvent = ImageExpiresEvent.Create(url);
+        var events = await Collection.Business.SendEvent(muteBotEvent);
+        return events.Count != 0 && ((ImageExpiresEvent)events[0]).ResultCode == 0;
+    }
+
     public async Task<bool> RenameGroupMember(uint groupUin, uint targetUin, string targetName)
     {
         string? uid = await Collection.Business.CachingLogic.ResolveUid(groupUin, targetUin);
