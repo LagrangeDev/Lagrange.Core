@@ -148,8 +148,13 @@ public static class OperationExt
     /// <param name="count">number of message to be fetched before timestamp</param>
     public static Task<List<MessageChain>?> GetRoamMessage(this BotContext bot, MessageChain targetChain, uint count)
     {
-        uint timestamp = (uint)(targetChain.Time - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+        uint timestamp = (uint)new DateTimeOffset(targetChain.Time).ToUnixTimeSeconds();
         return bot.ContextCollection.Business.OperationLogic.GetRoamMessage(targetChain.FriendUin, timestamp, count);
+    }
+
+    public static Task<List<MessageChain>?> GetC2cMessage(this BotContext bot, uint friendUin, uint startSequence, uint endSequence)
+    {
+        return bot.ContextCollection.Business.OperationLogic.GetC2cMessage(friendUin, startSequence, endSequence);
     }
 
     /// <summary>

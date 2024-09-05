@@ -14,6 +14,8 @@ public class ForwardEntity : IMessageEntity
 
     public uint Sequence { get; set; }
 
+    public uint ClientSequence { get; set; }
+
     public string? Uid { get; set; }
 
     public uint TargetUin { get; set; }
@@ -33,6 +35,7 @@ public class ForwardEntity : IMessageEntity
     {
         Time = chain.Time;
         Sequence = chain.Sequence;
+        ClientSequence = chain.ClientSequence;
         Uid = chain.Uid;
         Elements = chain.Elements;
         TargetUin = chain.FriendUin;
@@ -41,16 +44,6 @@ public class ForwardEntity : IMessageEntity
 
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
-        var forwardReserve = new SrcMsg.Preserve
-        {
-            MessageId = MessageId,
-            ReceiverUid = SelfUid,
-            SenderUid = Uid,
-            ClientSequence = 0
-        };
-        using var forwardStream = new MemoryStream();
-        Serializer.Serialize(forwardStream, forwardReserve);
-
         var mentionReserve = new MentionExtra
         {
             Type = TargetUin == 0 ? 1 : 2,
@@ -67,11 +60,10 @@ public class ForwardEntity : IMessageEntity
             {
                 SrcMsg = new SrcMsg
                 {
-                    OrigSeqs = new List<uint> { Sequence },
-                    SenderUin = TargetUin,
-                    Time = (int)(Time - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds,
+                    OrigSeqs = new List<uint> { ClientSequence != 0 ? ClientSequence : Sequence },
+                    SenderUin = 0, // Can't get self uin
+                    Time = (int)new DateTimeOffset(Time).ToUnixTimeSeconds(),
                     Elems = Elements,
-                    PbReserve = forwardStream.ToArray(),
                     ToUin = 0
                 }
             },
@@ -94,7 +86,7 @@ public class ForwardEntity : IMessageEntity
             return new ForwardEntity
             {
                 Time = DateTimeOffset.FromUnixTimeSeconds(srcMsg.Time ?? 0).LocalDateTime,
-                Sequence = srcMsg.OrigSeqs?[0] ?? 0,
+                Sequence = reserve.FriendSequence ?? srcMsg.OrigSeqs?[0] ?? 0,
                 TargetUin = (uint)srcMsg.SenderUin,
                 MessageId = reserve.MessageId
             };

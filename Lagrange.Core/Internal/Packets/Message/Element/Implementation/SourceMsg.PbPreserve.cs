@@ -8,11 +8,11 @@ internal partial class SrcMsg
     internal class Preserve
     {
         [ProtoMember(3)] public ulong MessageId { get; set; }
-        
+
         [ProtoMember(6)] public string? SenderUid { get; set; }
-        
+
         [ProtoMember(7)] public string? ReceiverUid { get; set; }
-        
-        [ProtoMember(8)] public uint? ClientSequence { get; set; }
+
+        [ProtoMember(8)] public uint? FriendSequence { get; set; }
     }
 }

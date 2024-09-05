@@ -1,7 +1,6 @@
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation.Extra;
-using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 using BitConverter = Lagrange.Core.Utility.Binary.BitConverter;
 
