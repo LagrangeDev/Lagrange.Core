@@ -145,7 +145,7 @@ internal class CachingLogic : LogicBase
             friends.AddRange(result.Friends);
 
             next = result.NextUin;
-        } while (!next.HasValue);
+        } while (next.HasValue);
 
         foreach (var friend in friends) _uinToUid.TryAdd(friend.Uin, friend.Uid);
 
