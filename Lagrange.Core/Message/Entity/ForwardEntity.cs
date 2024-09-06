@@ -44,6 +44,13 @@ public class ForwardEntity : IMessageEntity
 
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
+        var forwardReserve = new SrcMsg.Preserve
+        {
+            MessageId = MessageId,
+        };
+        using var forwardStream = new MemoryStream();
+        Serializer.Serialize(forwardStream, forwardReserve);
+
         var mentionReserve = new MentionExtra
         {
             Type = TargetUin == 0 ? 1 : 2,
@@ -64,6 +71,7 @@ public class ForwardEntity : IMessageEntity
                     SenderUin = 0, // Can't get self uin
                     Time = (int)new DateTimeOffset(Time).ToUnixTimeSeconds(),
                     Elems = Elements,
+                    PbReserve = forwardStream.ToArray(),
                     ToUin = 0
                 }
             },
