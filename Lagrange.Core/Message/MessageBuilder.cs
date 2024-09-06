@@ -1,3 +1,4 @@
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Message.Entity;
 
 namespace Lagrange.Core.Message;
@@ -189,6 +190,32 @@ public sealed class MessageBuilder
     {
         var pokeEntity = new PokeEntity(type, strength);
         _chain.Add(pokeEntity);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Add a dedicated poke(window shake) entity to message chain
+    /// </summary>
+    /// <param name="type">face type</param>
+    /// <param name="strength">How big the face will be displayed ([0,3] is valid)</param>
+    public MessageBuilder Poke(PokeFaceType type, uint strength = 0)
+    {
+        var friendShakeEntity = new PokeEntity((uint)type, strength);
+        _chain.Add(friendShakeEntity);
+
+        return this;
+    }
+    
+    /// <summary>
+    /// Add a dedicated special window shake entity to message chain
+    /// </summary>
+    /// <param name="type">face type</param>
+    /// <param name="count">count of face</param>
+    public MessageBuilder SpecialPoke(SpecialPokeFaceType type, uint count = 1)
+    {
+        var friendSpecialShakeEntity = new SpecialPokeEntity((uint)type, count, type.ToName());
+        _chain.Add(friendSpecialShakeEntity);
 
         return this;
     }

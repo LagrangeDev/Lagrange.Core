@@ -502,4 +502,20 @@ internal class OperationLogic : LogicBase
         var results = await Collection.Business.SendEvent(groupClockInEvent);
         return ((GroupClockInEvent)results[0]).ResultInfo ?? new BotGroupClockInResult(false);
     }
+
+    public Task<MessageResult> FriendSpecialShake(uint friendUin, SpecialPokeFaceType type, uint count)
+    {
+        var chain = MessageBuilder.Friend(friendUin)
+            .SpecialPoke(type, count)
+            .Build();
+        return SendMessage(chain);
+    }
+
+    public Task<MessageResult> FriendShake(uint friendUin, PokeFaceType type, uint strength)
+    {
+        var chain = MessageBuilder.Friend(friendUin)
+            .Poke(type, strength)
+            .Build();
+        return SendMessage(chain);
+    }
 }
