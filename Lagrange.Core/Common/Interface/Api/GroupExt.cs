@@ -66,8 +66,11 @@ public static class GroupExt
     public static Task<bool> InviteGroup(this BotContext bot, uint groupUin, Dictionary<uint, uint?> invitedUins)
         => bot.ContextCollection.Business.OperationLogic.InviteGroup(groupUin, invitedUins);
     
-    public static Task<bool> SetGroupRequest(this BotContext bot, BotGroupRequest request, bool accept = true)
-        => bot.ContextCollection.Business.OperationLogic.SetGroupRequest(request.GroupUin, request.Sequence, (uint)request.EventType, accept);
+    public static Task<bool> SetGroupRequest(this BotContext bot, BotGroupRequest request, bool accept = true, string reason = "")
+        => bot.ContextCollection.Business.OperationLogic.SetGroupRequest(request.GroupUin, request.Sequence, (uint)request.EventType, accept, reason);
+    
+    public static Task<bool> SetGroupFilteredRequest(this BotContext bot, BotGroupRequest request, bool accept = true, string reason = "")
+        => bot.ContextCollection.Business.OperationLogic.SetGroupFilteredRequest(request.GroupUin, request.Sequence, (uint)request.EventType, accept, reason);
     
     public static Task<bool> SetFriendRequest(this BotContext bot, FriendRequestEvent request, bool accept = true)
         => bot.ContextCollection.Business.OperationLogic.SetFriendRequest(request.SourceUid, accept);

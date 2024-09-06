@@ -8,16 +8,15 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 /// Accept group request
 /// </summary>
 [ProtoContract]
-[OidbSvcTrpcTcp(0x10c8, 1)]
-internal class OidbSvcTrpcTcp0x10C8_1
+internal class OidbSvcTrpcTcp0x10C8
 {
     [ProtoMember(1)] public uint Accept { get; set; } // 2 for reject, 1 for accept, 3 for ignore
 
-    [ProtoMember(2)] public OidbSvcTrpcTcp0x10C8_1Body? Body { get; set; }
+    [ProtoMember(2)] public OidbSvcTrpcTcp0x10C8Body? Body { get; set; }
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0x10C8_1Body
+internal class OidbSvcTrpcTcp0x10C8Body
 {
     [ProtoMember(1)] public ulong Sequence { get; set; } // 1
     

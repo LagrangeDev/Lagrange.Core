@@ -65,7 +65,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             var requests = await bot.FetchGroupRequests();
             if (requests?.FirstOrDefault(x => @event.GroupUin == x.GroupUin && @event.TargetUin == x.TargetMemberUin) is { } request)
             {
-                string flag = $"{request.Sequence}-{request.GroupUin}-{(uint)request.EventType}";
+                string flag = $"{request.Sequence}-{request.GroupUin}-{(uint)request.EventType}-{Convert.ToInt32(request.IsFiltered)}";
                 await service.SendJsonAsync(new OneBotGroupRequest(bot.BotUin, @event.TargetUin, @event.GroupUin, "add", request.Comment, flag));
             }
         };
