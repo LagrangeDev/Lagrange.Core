@@ -37,13 +37,16 @@ public class SpecialPokeEntity : IMessageEntity
             shakePbElem = ms.ToArray();
         }
 
-        yield return new Elem()
+        return new Elem[]
         {
-            CommonElem = new()
+            new()
             {
-                ServiceType = 23,
-                PbElem = shakePbElem,
-                BusinessType = FaceId
+                CommonElem = new()
+                {
+                    ServiceType = 23,
+                    PbElem = shakePbElem,
+                    BusinessType = FaceId
+                }
             }
         };
     }

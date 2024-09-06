@@ -33,13 +33,16 @@ public class PokeEntity : IMessageEntity
             shakePbElem = ms.ToArray();
         }
 
-        yield return new Elem()
+        return new Elem[]
         {
-            CommonElem = new CommonElem
+            new()
             {
-                ServiceType = 2,
-                PbElem = shakePbElem,
-                BusinessType = Type
+                CommonElem = new CommonElem
+                {
+                    ServiceType = 2,
+                    PbElem = shakePbElem,
+                    BusinessType = Type
+                }
             }
         };
     }
