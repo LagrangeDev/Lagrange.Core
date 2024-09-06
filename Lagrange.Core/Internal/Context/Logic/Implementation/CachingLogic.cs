@@ -135,12 +135,14 @@ internal class CachingLogic : LogicBase
             }
 
             var result = (FetchFriendsAndFriendGroupsEvent)results[0];
+
+            foreach ((uint id, string name) in result.FriendGroups) friendGroups[id] = name;
+
             foreach (var friend in result.Friends)
             {
                 friend.Group = new(friend.Group.GroupId, friendGroups[friend.Group.GroupId]);
             }
             friends.AddRange(result.Friends);
-            foreach ((uint id, string name) in result.FriendGroups) friendGroups[id] = name;
 
             next = result.NextUin;
         } while (!next.HasValue);
