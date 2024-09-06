@@ -12,6 +12,8 @@ public sealed class MessageBuilder
 
     private MessageBuilder(MessageChain chain) => _chain = chain;
 
+    public bool IsGroup => _chain.IsGroup;
+
     public static MessageBuilder Friend(uint friendUin) => new(new MessageChain(friendUin, "", "")); // automatically set selfUid and friendUid by MessagingLogic
 
     public static MessageBuilder Group(uint groupUin) => new(new MessageChain(groupUin));
