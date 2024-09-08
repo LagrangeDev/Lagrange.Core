@@ -59,7 +59,7 @@ public class MentionEntity : IMessageEntity
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
-        if (elems.Text is { Str: not null, Attr6Buf: { } attr, PbReserve: not null })
+        if (elems.Text is { Str: not null, Attr6Buf: { Length: >= 11 } attr })
         {
             return new MentionEntity
             {
@@ -68,7 +68,7 @@ public class MentionEntity : IMessageEntity
                 Uid = ""
             };
         }
-        
+
         return null;
     }
 
