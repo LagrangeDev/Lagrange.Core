@@ -69,7 +69,17 @@ public static class OperationExt
     /// <returns>Successfully recalled or not</returns>
     public static Task<bool> RecallGroupMessage(this BotContext bot, MessageChain chain)
         => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(chain);
-
+    
+    /// <summary>
+    /// Recall the group message from Bot itself by <see cref="MessageResult"/>
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="friendUin">The uin for target friend of the message</param>
+    /// <param name="result">The return value for <see cref="SendMessage"/></param>
+    /// <returns>Successfully recalled or not</returns>
+    public static Task<bool> RecallFriendMessage(this BotContext bot, uint friendUin, MessageResult result)
+        => bot.ContextCollection.Business.OperationLogic.RecallFriendMessage(friendUin, result);
+    
     /// <summary>
     /// Fetch Notifications and requests such as friend requests and Group Join Requests
     /// </summary>

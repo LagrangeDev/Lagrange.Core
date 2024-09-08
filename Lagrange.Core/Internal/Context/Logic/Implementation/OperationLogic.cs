@@ -255,7 +255,17 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(recallMessageEvent);
         return events.Count != 0 && ((RecallGroupMessageEvent)events[0]).ResultCode == 0;
     }
+    
+    public async Task<bool> RecallFriendMessage(uint friendUin, MessageResult result)
+    {
+        if (result.Sequence == null) return false;
+        if (await Collection.Business.CachingLogic.ResolveUid(null, friendUin) is not { } uid) return false;
 
+        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, result.ClientSequence, result.Sequence ?? 0, (uint)(result.MessageId & uint.MaxValue), result.Timestamp); 
+        var events = await Collection.Business.SendEvent(recallMessageEvent);
+        return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
+    }
+    
     public async Task<List<BotGroupRequest>?> FetchGroupRequests()
     {
         var fetchRequestsEvent = FetchGroupRequestsEvent.Create();
