@@ -34,10 +34,15 @@ internal class OperationLogic : LogicBase
 
     public async Task<MessageResult> SendMessage(MessageChain chain)
     {
+        uint clientSeq = chain.ClientSequence;
+        
         var sendMessageEvent = SendMessageEvent.Create(chain);
         var events = await Collection.Business.SendEvent(sendMessageEvent);
-        if (events.Count == 0) return new() { Result = 9057 };
-        return ((SendMessageEvent)events[0]).MsgResult;
+        if (events.Count == 0) return new MessageResult { Result = 9057 };
+        
+        var result = ((SendMessageEvent)events[0]).MsgResult;
+        result.ClientSequence = clientSeq;
+        return result;
     }
 
     public async Task<bool> MuteGroupMember(uint groupUin, uint targetUin, uint duration)

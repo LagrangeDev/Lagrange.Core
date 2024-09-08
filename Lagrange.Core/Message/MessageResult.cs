@@ -7,4 +7,6 @@ public class MessageResult
     public uint Result { get; set; }
     
     public uint Timestamp { get; set; }
+    
+    public uint ClientSequence { get; set; }
 }
