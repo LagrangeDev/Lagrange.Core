@@ -35,6 +35,7 @@ internal class OperationLogic : LogicBase
     public async Task<MessageResult> SendMessage(MessageChain chain)
     {
         uint clientSeq = chain.ClientSequence;
+        ulong messageId = chain.MessageId;
         
         var sendMessageEvent = SendMessageEvent.Create(chain);
         var events = await Collection.Business.SendEvent(sendMessageEvent);
@@ -42,6 +43,7 @@ internal class OperationLogic : LogicBase
         
         var result = ((SendMessageEvent)events[0]).MsgResult;
         result.ClientSequence = clientSeq;
+        result.MessageId = messageId;
         return result;
     }
 
