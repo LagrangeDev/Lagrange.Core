@@ -59,16 +59,33 @@ public class MentionEntity : IMessageEntity
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
-        if (elems.Text is { Str: not null, Attr6Buf: { } attr, PbReserve: not null })
+        if (elems.Text is { Str: not null, Attr6Buf: { } attr } && attr.Length >= 11)
         {
-            return new MentionEntity
+            var uin = BitConverter.ToUInt32(attr.AsSpan()[7..11], false);
+
+            // 如果 PbReserve 不为空，执行特殊处理；否则处理默认逻辑
+            if (elems.Text.PbReserve is not null)  // 狗日的TX，Markdown消息长文本时不提供PbReserve
             {
-                Name = elems.Text.Str,
-                Uin = BitConverter.ToUInt32(attr.AsSpan()[7..11], false),
-                Uid = ""
-            };
+                // PbReserve 存在时的处理
+                return new MentionEntity
+                {
+                    Name = elems.Text.Str,
+                    Uin = uin,
+                    Uid = ""
+                };
+            }
+            else
+            {
+                // PbReserve 为空时的处理
+                return new MentionEntity
+                {
+                    Name = elems.Text.Str,
+                    Uin = uin,
+                    Uid = ""
+                };
+            }
         }
-        
+
         return null;
     }
 
