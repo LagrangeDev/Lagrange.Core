@@ -14,9 +14,9 @@ internal class Message
     
     [ProtoMember(3)] public MessageBody? Body { get; set; }
     
-    [ProtoMember(4)] public uint? Seq { get; set; }
+    [ProtoMember(4)] public uint? ClientSequence { get; set; }
     
-    [ProtoMember(5)] public uint? Rand { get; set; }
+    [ProtoMember(5)] public uint? Random { get; set; }
     
     [ProtoMember(6)] public byte[]? SyncCookie { get; set; }
     

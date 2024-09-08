@@ -22,9 +22,9 @@ public sealed class MessageChain : List<IMessageEntity>
 
     public BotGroupMember? GroupMemberInfo { get; internal set; }
 
-    public uint Sequence { get; internal set; }
+    public uint Sequence { get; } // for C2C message, it's the sequence of the message, for group message, it's the sequence of the group message
 
-    public uint ClientSequence { get; internal set; }
+    public uint ClientSequence { get; } // only for C2C message
 
     #region Internal Properties
 
@@ -58,6 +58,7 @@ public sealed class MessageChain : List<IMessageEntity>
     {
         GroupUin = groupUin;
         Sequence = 0; // unuseful at there
+        ClientSequence = 0;
         MessageId = (0x10000000ul << 32) | (uint)Random.Shared.Next(100000000, int.MaxValue);
         Uid = null;
         IsGroup = true;
@@ -68,6 +69,7 @@ public sealed class MessageChain : List<IMessageEntity>
     {
         GroupUin = groupUin;
         FriendUin = friendUin;
+        ClientSequence = (uint)Random.Shared.Next(100000000, int.MaxValue);
         Sequence = sequence;
         Uid = null;
         MessageId = messageId;
