@@ -14,7 +14,8 @@ public class BotGroupRequest
         uint state,
         ulong sequence,
         uint type,
-        string? comment)
+        string? comment,
+        bool isFiltered)
     {
         GroupUin = groupUin;
         InvitorMemberUin = invitorMemberUin;
@@ -27,6 +28,7 @@ public class BotGroupRequest
         Sequence = sequence;
         EventType = (Type)type;
         Comment = comment;
+        IsFiltered = isFiltered;
     }
 
     public uint GroupUin { get; set; }
@@ -50,6 +52,8 @@ public class BotGroupRequest
     internal ulong Sequence { get; set; } // for internal use of Approving Requests
     
     public string? Comment { get; }
+    
+    public bool IsFiltered { get; set; }
 
     public enum State
     {

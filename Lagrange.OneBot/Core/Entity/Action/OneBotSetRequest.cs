@@ -8,4 +8,6 @@ public class OneBotSetRequest
     [JsonPropertyName("flag")] public string Flag { get; set; } = string.Empty;
 
     [JsonPropertyName("approve")] public bool Approve { get; set; } = true;
+    
+    [JsonPropertyName("reason")] public string Reason { get; set; } = string.Empty;
 }

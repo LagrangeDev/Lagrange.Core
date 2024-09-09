@@ -303,7 +303,8 @@ internal class OperationLogic : LogicBase
                 result.State,
                 result.Sequence,
                 result.EventType,
-                result.Comment
+                result.Comment,
+                result.IsFiltered
             ));
         }
 
@@ -399,9 +400,16 @@ internal class OperationLogic : LogicBase
         return events.Count == 0 ? null : ((FetchClientKeyEvent)events[0]).ClientKey;
     }
 
-    public async Task<bool> SetGroupRequest(uint groupUin, ulong sequence, uint type, bool accept)
+    public async Task<bool> SetGroupRequest(uint groupUin, ulong sequence, uint type, bool accept, string reason)
     {
-        var inviteEvent = SetGroupRequestEvent.Create(accept, groupUin, sequence, type);
+        var inviteEvent = SetGroupRequestEvent.Create(accept, groupUin, sequence, type, reason);
+        var results = await Collection.Business.SendEvent(inviteEvent);
+        return results.Count != 0 && results[0].ResultCode == 0;
+    }
+    
+    public async Task<bool> SetGroupFilteredRequest(uint groupUin, ulong sequence, uint type, bool accept, string reason)
+    {
+        var inviteEvent = SetGroupFilteredRequestEvent.Create(accept, groupUin, sequence, type, reason);
         var results = await Collection.Business.SendEvent(inviteEvent);
         return results.Count != 0 && results[0].ResultCode == 0;
     }

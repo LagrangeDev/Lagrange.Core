@@ -17,8 +17,13 @@ public class SetGroupAddRequestOperation : IOperation
             ulong sequence = ulong.Parse(split[0]);
             uint groupUin = uint.Parse(split[1]);
             uint eventType = uint.Parse(split[2]);
-
-            bool result = await context.ContextCollection.Business.OperationLogic.SetGroupRequest(groupUin, sequence, eventType, request.Approve);
+            bool isFiltered = Convert.ToBoolean(uint.Parse(split.Length > 3 ? split[3] : "0"));
+            
+            bool result = isFiltered
+                ? await context.ContextCollection.Business.OperationLogic.SetGroupFilteredRequest(groupUin, sequence,
+                    eventType, request.Approve, request.Reason)
+                : await context.ContextCollection.Business.OperationLogic.SetGroupRequest(groupUin, sequence, eventType,
+                    request.Approve, request.Reason);
             return new OneBotResult(null, result ? 0 : 1, "ok");
         }
 
