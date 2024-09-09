@@ -531,7 +531,7 @@ internal class OperationLogic : LogicBase
         return results.Count != 0 ? ((FetchMarketFaceKeyEvent)results[0]).Keys : null;
     }
 
-    public async Task<BotGroupClockInResult> ClockInGroup(uint groupUin)
+    public async Task<BotGroupClockInResult> GroupClockIn(uint groupUin)
     {
         var groupClockInEvent = GroupClockInEvent.Create(groupUin);
         var results = await Collection.Business.SendEvent(groupClockInEvent);
