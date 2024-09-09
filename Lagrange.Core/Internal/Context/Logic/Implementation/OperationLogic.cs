@@ -266,6 +266,16 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
     }
     
+    public async Task<bool> RecallFriendMessage(MessageChain chain)
+    {
+        if (await Collection.Business.CachingLogic.ResolveUid(null, chain.FriendUin) is not { } uid) return false;
+
+        uint timestamp = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, chain.ClientSequence, chain.Sequence, (uint)(chain.MessageId & uint.MaxValue), timestamp);
+        var events = await Collection.Business.SendEvent(recallMessageEvent);
+        return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
+    }
+    
     public async Task<List<BotGroupRequest>?> FetchGroupRequests()
     {
         var fetchRequestsEvent = FetchGroupRequestsEvent.Create();
