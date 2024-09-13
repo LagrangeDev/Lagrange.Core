@@ -255,7 +255,14 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(recallMessageEvent);
         return events.Count != 0 && ((RecallGroupMessageEvent)events[0]).ResultCode == 0;
     }
-    
+
+    public async Task<bool> RecallGroupMessage(uint groupUin, uint sequence)
+    {
+        var recallMessageEvent = RecallGroupMessageEvent.Create(groupUin, sequence);
+        var events = await Collection.Business.SendEvent(recallMessageEvent);
+        return events.Count != 0 && ((RecallGroupMessageEvent)events[0]).ResultCode == 0;
+    }
+
     public async Task<bool> RecallFriendMessage(uint friendUin, MessageResult result)
     {
         if (result.Sequence == null) return false;
