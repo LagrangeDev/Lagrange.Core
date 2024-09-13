@@ -208,12 +208,12 @@ internal static class MessagePacker
     {
         ResponseHead = new ResponseHead
         {
-            FromUid = chain.Uid,
+            FromUin = chain.IsGroup ? chain.FriendUin : 0,
             ToUid = chain.IsGroup ? null : selfUid,
             Grp = !chain.IsGroup ? null : new ResponseGrp // for consistency of code so inverted condition
             {
                 GroupUin = chain.GroupUin ?? 0,
-                MemberName = chain.GroupMemberInfo?.MemberCard ?? ""
+                MemberName = chain.FriendInfo?.Nickname ?? ""
             },
             Forward = chain.IsGroup ? null : new ResponseForward
             {
@@ -236,8 +236,8 @@ internal static class MessagePacker
                 Field1 = 0,
                 Field2 = 0,
                 Field3 = chain.IsGroup ? 0u : 2u,
-                UnknownBase64 = string.Empty,
-                Avatar = string.Empty
+                UnknownBase64 = $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg",
+                Avatar = $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg"
             }
         },
         Body = new MessageBody { RichText = new RichText { Elems = new List<Elem>() } }
