@@ -69,7 +69,17 @@ public static class OperationExt
     /// <returns>Successfully recalled or not</returns>
     public static Task<bool> RecallGroupMessage(this BotContext bot, MessageChain chain)
         => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(chain);
-    
+
+    /// <summary>
+    /// Recall the group message by sequence
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="groupUin">The uin for target group of the message</param>
+    /// <param name="sequence">The sequence for target message</param>
+    /// <returns>Successfully recalled or not</returns>
+    public static Task<bool> RecallGroupMessage(this BotContext bot, uint groupUin, uint sequence)
+        => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(groupUin, sequence);
+
     /// <summary>
     /// Recall the group message from Bot itself by <see cref="MessageResult"/>
     /// </summary>
