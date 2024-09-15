@@ -27,6 +27,8 @@ public class MessageRecord
 
     public int MessageHash { get; set; }
 
+    public uint TargetUin { get; set; }
+
     static MessageRecord()
     {
         Vector2Mapper.RegisterType(); // I HATE THIS
@@ -36,7 +38,7 @@ public class MessageRecord
     {
         var chain = record.GroupUin != 0
             ? new MessageChain(record.GroupUin, record.FriendUin, record.Sequence, record.MessageId)
-            : new MessageChain(record.FriendUin, string.Empty, string.Empty, 0, record.Sequence, record.ClientSequence, record.MessageId);
+            : new MessageChain(record.FriendUin, string.Empty, string.Empty, record.TargetUin, record.Sequence, record.ClientSequence, record.MessageId);
 
         chain.Time = record.Time;
         chain.FriendInfo = record.FriendInfo;
@@ -57,7 +59,8 @@ public class MessageRecord
         FriendInfo = chain.FriendInfo,
         GroupMemberInfo = chain.GroupMemberInfo,
         Entities = chain,
-        MessageHash = CalcMessageHash(chain.MessageId, chain.Sequence)
+        MessageHash = CalcMessageHash(chain.MessageId, chain.Sequence),
+        TargetUin = chain.TargetUin
     };
 
     public static int CalcMessageHash(ulong msgId, uint seq)

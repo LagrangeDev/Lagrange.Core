@@ -275,9 +275,9 @@ internal class OperationLogic : LogicBase
     
     public async Task<bool> RecallFriendMessage(MessageChain chain)
     {
-        if (await Collection.Business.CachingLogic.ResolveUid(null, chain.FriendUin) is not { } uid) return false;
+        if (await Collection.Business.CachingLogic.ResolveUid(null, chain.TargetUin) is not { } uid) return false;
 
-        uint timestamp = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        uint timestamp = (uint)new DateTimeOffset(chain.Time).ToUnixTimeSeconds();
         var recallMessageEvent = RecallFriendMessageEvent.Create(uid, chain.ClientSequence, chain.Sequence, (uint)(chain.MessageId & uint.MaxValue), timestamp);
         var events = await Collection.Business.SendEvent(recallMessageEvent);
         return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
