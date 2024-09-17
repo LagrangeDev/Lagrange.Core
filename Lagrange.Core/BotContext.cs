@@ -30,7 +30,7 @@ public class BotContext : IDisposable
         Scheduler = new Utility.TaskScheduler();
 
         Config = config;
-        AppInfo = config.Protocol;
+        AppInfo = BotAppInfo.ProtocolToAppInfo[config.Protocol];
         _deviceInfo = deviceInfo;
         _keystore = keystore;
 

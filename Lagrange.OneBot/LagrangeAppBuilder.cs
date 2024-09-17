@@ -42,9 +42,10 @@ public sealed class LagrangeAppBuilder
         string keystorePath = Configuration["ConfigPath:Keystore"] ?? "keystore.json";
         string deviceInfoPath = Configuration["ConfigPath:DeviceInfo"] ?? "device.json";
 
+        bool isSuccess = Enum.TryParse<Protocols>(Configuration["Account:Protocol"], out var protocol);
         var config = new BotConfig
         {
-            Protocol = Configuration.GetSection("Account:Protocol").Get<BotAppInfo>(options => { options.BindNonPublicProperties = true; }) ?? throw new Exception("Account Protocol is null"),
+            Protocol = isSuccess ? protocol : Protocols.Linux,
             AutoReconnect = bool.Parse(Configuration["Account:AutoReconnect"] ?? "true"),
             UseIPv6Network = bool.Parse(Configuration["Account:UseIPv6Network"] ?? "false"),
             GetOptimumServer = bool.Parse(Configuration["Account:GetOptimumServer"] ?? "true"),

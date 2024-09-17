@@ -11,7 +11,7 @@ public class BotConfig
     /// <summary>
     /// The protocol for the client, default is Linux
     /// </summary>
-    public BotAppInfo Protocol { get; set; } = BotAppInfo.Linux;
+    public Protocols Protocol { get; set; } = Protocols.Linux;
 
     /// <summary>
     /// Auto reconnect to server when disconnected

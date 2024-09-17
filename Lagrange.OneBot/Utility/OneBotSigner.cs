@@ -44,11 +44,11 @@ public class OneBotSigner : SignProvider
 
         if (string.IsNullOrEmpty(_signServer)) logger.LogWarning("Signature Service is not available, login may be failed");
 
-        platform = bot.Config.Protocol.Os switch
+        platform = bot.Config.Protocol switch
         {
-            "Windows" => "Windows",
-            "Mac" => "MacOs",
-            "Linux" => "Linux",
+            Lagrange.Core.Common.Protocols.Windows => "Windows",
+            Lagrange.Core.Common.Protocols.MacOs => "MacOs",
+            Lagrange.Core.Common.Protocols.Linux => "Linux",
             _ => "Unknown"
         };
         version = bot.AppInfo.CurrentVersion;
