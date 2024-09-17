@@ -37,7 +37,7 @@ public class BotAppInfo
     
     public ushort NTLoginType { get; private set; }
 
-    private static readonly BotAppInfo Linux = new()
+    public static readonly BotAppInfo Linux = new()
     {
         Os = "Linux",
         Kernel = "Linux",
@@ -58,7 +58,7 @@ public class BotAppInfo
         NTLoginType = 1
     };
     
-    private static readonly BotAppInfo MacOs = new()
+    public static readonly BotAppInfo MacOs = new()
     {
         Os = "Mac",
         Kernel = "Darwin",
@@ -79,7 +79,7 @@ public class BotAppInfo
         NTLoginType = 5
     };
     
-    private static readonly BotAppInfo Windows = new()
+    public static readonly BotAppInfo Windows = new()
     {
         Os = "Windows",
         Kernel = "Windows_NT",
@@ -98,12 +98,5 @@ public class BotAppInfo
         MainSigMap = 169742560,
         SubSigMap = 0,
         NTLoginType = 5
-    };
-    
-    public static readonly Dictionary<Protocols, BotAppInfo> ProtocolToAppInfo = new()
-    {
-        { Protocols.Windows, Windows },
-        { Protocols.Linux, Linux },
-        { Protocols.MacOs, MacOs },
     };
 }
