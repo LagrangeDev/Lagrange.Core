@@ -22,13 +22,16 @@ public class PokeEntity : IMessageEntity
 
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
-        var stream = new MemoryStream();
-        Serializer.Serialize(stream, new PokeExtra
+        byte[] shakePbElem;
+        using (var ms = new MemoryStream())
         {
-            Type = Type,
-            Strength = Strength,
-            Field8 = 0
-        });
+            Serializer.Serialize(ms, new PokeExtra()
+            {
+                Type = Type,
+                Strength = Strength
+            });
+            shakePbElem = ms.ToArray();
+        }
 
         return new Elem[]
         {
@@ -37,8 +40,8 @@ public class PokeEntity : IMessageEntity
                 CommonElem = new CommonElem
                 {
                     ServiceType = 2,
-                    BusinessType = 1,
-                    PbElem = stream.ToArray()
+                    PbElem = shakePbElem,
+                    BusinessType = Type
                 }
             }
         };
@@ -46,13 +49,11 @@ public class PokeEntity : IMessageEntity
 
     IMessageEntity? IMessageEntity.UnpackElement(Elem elem)
     {
-        if (elem is { CommonElem: { ServiceType: 2, BusinessType: 1 } common })
-        {
-            var poke = Serializer.Deserialize<PokeExtra>(common.PbElem.AsSpan());
-            return new PokeEntity(poke.Type, poke.Strength);
-        }
+        if (elem.CommonElem is not { ServiceType: 2 })
+            return null;
 
-        return null;
+        var poke = Serializer.Deserialize<PokeExtra>(elem.CommonElem.PbElem.AsSpan());
+        return new PokeEntity(poke.Type, poke.Strength);
     }
 
     public string ToPreviewString() => $"[{nameof(PokeEntity)} | Type: {Type} | Strength: {Strength}]";

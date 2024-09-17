@@ -21,6 +21,7 @@ public class DeleteMessageOperation(LiteDatabase database) : IOperation
             var chain = (MessageChain)record;
 
             if (chain.IsGroup && await context.RecallGroupMessage(chain)) return new OneBotResult(null, 0, "ok");
+            if (!chain.IsGroup && await context.RecallFriendMessage(chain)) return new OneBotResult(null, 0, "ok");
         }
 
         throw new Exception();

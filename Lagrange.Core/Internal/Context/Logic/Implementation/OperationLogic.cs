@@ -34,10 +34,17 @@ internal class OperationLogic : LogicBase
 
     public async Task<MessageResult> SendMessage(MessageChain chain)
     {
+        uint clientSeq = chain.ClientSequence;
+        ulong messageId = chain.MessageId;
+        
         var sendMessageEvent = SendMessageEvent.Create(chain);
         var events = await Collection.Business.SendEvent(sendMessageEvent);
-        if (events.Count == 0) return new() { Result = 9057 };
-        return ((SendMessageEvent)events[0]).MsgResult;
+        if (events.Count == 0) return new MessageResult { Result = 9057 };
+        
+        var result = ((SendMessageEvent)events[0]).MsgResult;
+        result.ClientSequence = clientSeq;
+        result.MessageId = messageId;
+        return result;
     }
 
     public async Task<bool> MuteGroupMember(uint groupUin, uint targetUin, uint duration)
@@ -170,45 +177,45 @@ internal class OperationLogic : LogicBase
     {
         var groupFSMoveEvent = GroupFSMoveEvent.Create(groupUin, fileId, parentDirectory, targetDirectory);
         var events = await Collection.Business.SendEvent(groupFSMoveEvent);
-        var retCode = events.Count > 0 ? ((GroupFSMoveEvent)events[0]).ResultCode : -1;
-        var retMsg = events.Count > 0 ? ((GroupFSMoveEvent)events[0]).RetMsg : "";
-        return new(retCode, retMsg);
+        int retCode = events.Count > 0 ? ((GroupFSMoveEvent)events[0]).ResultCode : -1;
+        string retMsg = events.Count > 0 ? ((GroupFSMoveEvent)events[0]).RetMsg : string.Empty;
+        return (retCode, retMsg);
     }
 
     public async Task<(int, string)> GroupFSDelete(uint groupUin, string fileId)
     {
         var groupFSDeleteEvent = GroupFSDeleteEvent.Create(groupUin, fileId);
         var events = await Collection.Business.SendEvent(groupFSDeleteEvent);
-        var retCode = events.Count > 0 ? ((GroupFSDeleteEvent)events[0]).ResultCode : -1;
-        var retMsg = events.Count > 0 ? ((GroupFSDeleteEvent)events[0]).RetMsg : "";
-        return new(retCode, retMsg);
+        int retCode = events.Count > 0 ? ((GroupFSDeleteEvent)events[0]).ResultCode : -1;
+        string retMsg = events.Count > 0 ? ((GroupFSDeleteEvent)events[0]).RetMsg : string.Empty;
+        return (retCode, retMsg);
     }
 
     public async Task<(int, string)> GroupFSCreateFolder(uint groupUin, string name)
     {
         var groupFSCreateFolderEvent = GroupFSCreateFolderEvent.Create(groupUin, name);
         var events = await Collection.Business.SendEvent(groupFSCreateFolderEvent);
-        var retCode = events.Count > 0 ? ((GroupFSCreateFolderEvent)events[0]).ResultCode : -1;
-        var retMsg = events.Count > 0 ? ((GroupFSCreateFolderEvent)events[0]).RetMsg : "";
-        return new(retCode, retMsg);
+        int retCode = events.Count > 0 ? ((GroupFSCreateFolderEvent)events[0]).ResultCode : -1;
+        string retMsg = events.Count > 0 ? ((GroupFSCreateFolderEvent)events[0]).RetMsg : string.Empty;
+        return (retCode, retMsg);
     }
-    
+
     public async Task<(int, string)> GroupFSDeleteFolder(uint groupUin, string folderId)
     {
         var groupFSDeleteFolderEvent = GroupFSDeleteFolderEvent.Create(groupUin, folderId);
         var events = await Collection.Business.SendEvent(groupFSDeleteFolderEvent);
-        var retCode = events.Count > 0 ? ((GroupFSDeleteFolderEvent)events[0]).ResultCode : -1;
-        var retMsg = events.Count > 0 ? ((GroupFSDeleteFolderEvent)events[0]).RetMsg : "";
-        return new(retCode, retMsg);
+        int retCode = events.Count > 0 ? ((GroupFSDeleteFolderEvent)events[0]).ResultCode : -1;
+        string retMsg = events.Count > 0 ? ((GroupFSDeleteFolderEvent)events[0]).RetMsg : string.Empty;
+        return (retCode, retMsg);
     }
 
     public async Task<(int, string)> GroupFSRenameFolder(uint groupUin, string folderId, string newFolderName)
     {
         var groupFSDeleteFolderEvent = GroupFSRenameFolderEvent.Create(groupUin, folderId, newFolderName);
         var events = await Collection.Business.SendEvent(groupFSDeleteFolderEvent);
-        var retCode = events.Count > 0 ? ((GroupFSRenameFolderEvent)events[0]).ResultCode : -1;
-        var retMsg = events.Count > 0 ? ((GroupFSRenameFolderEvent)events[0]).RetMsg : "";
-        return new(retCode, retMsg);
+        int retCode = events.Count > 0 ? ((GroupFSRenameFolderEvent)events[0]).ResultCode : -1;
+        string retMsg = events.Count > 0 ? ((GroupFSRenameFolderEvent)events[0]).RetMsg : "";
+        return (retCode, retMsg);
     }
 
     public Task<bool> GroupFSUpload(uint groupUin, FileEntity fileEntity, string targetDirectory)
@@ -256,6 +263,33 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((RecallGroupMessageEvent)events[0]).ResultCode == 0;
     }
 
+    public async Task<bool> RecallGroupMessage(uint groupUin, uint sequence)
+    {
+        var recallMessageEvent = RecallGroupMessageEvent.Create(groupUin, sequence);
+        var events = await Collection.Business.SendEvent(recallMessageEvent);
+        return events.Count != 0 && ((RecallGroupMessageEvent)events[0]).ResultCode == 0;
+    }
+
+    public async Task<bool> RecallFriendMessage(uint friendUin, MessageResult result)
+    {
+        if (result.Sequence == null) return false;
+        if (await Collection.Business.CachingLogic.ResolveUid(null, friendUin) is not { } uid) return false;
+
+        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, result.ClientSequence, result.Sequence ?? 0, (uint)(result.MessageId & uint.MaxValue), result.Timestamp); 
+        var events = await Collection.Business.SendEvent(recallMessageEvent);
+        return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
+    }
+    
+    public async Task<bool> RecallFriendMessage(MessageChain chain)
+    {
+        if (await Collection.Business.CachingLogic.ResolveUid(null, chain.TargetUin) is not { } uid) return false;
+
+        uint timestamp = (uint)new DateTimeOffset(chain.Time).ToUnixTimeSeconds();
+        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, chain.ClientSequence, chain.Sequence, (uint)(chain.MessageId & uint.MaxValue), timestamp);
+        var events = await Collection.Business.SendEvent(recallMessageEvent);
+        return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
+    }
+    
     public async Task<List<BotGroupRequest>?> FetchGroupRequests()
     {
         var fetchRequestsEvent = FetchGroupRequestsEvent.Create();
@@ -283,7 +317,8 @@ internal class OperationLogic : LogicBase
                 result.State,
                 result.Sequence,
                 result.EventType,
-                result.Comment
+                result.Comment,
+                result.IsFiltered
             ));
         }
 
@@ -301,7 +336,7 @@ internal class OperationLogic : LogicBase
 
     public async Task<List<dynamic>?> FetchFriendRequests()
     {
-        var fetchRequestsEvent = FetchFriendRequestsEvent.Create();
+        var fetchRequestsEvent = FetchFriendsAndFriendGroupsRequestsEvent.Create();
         var events = await Collection.Business.SendEvent(fetchRequestsEvent);
         if (events.Count == 0) return null;
 
@@ -379,9 +414,16 @@ internal class OperationLogic : LogicBase
         return events.Count == 0 ? null : ((FetchClientKeyEvent)events[0]).ClientKey;
     }
 
-    public async Task<bool> SetGroupRequest(uint groupUin, ulong sequence, uint type, bool accept)
+    public async Task<bool> SetGroupRequest(uint groupUin, ulong sequence, uint type, bool accept, string reason)
     {
-        var inviteEvent = SetGroupRequestEvent.Create(accept, groupUin, sequence, type);
+        var inviteEvent = SetGroupRequestEvent.Create(accept, groupUin, sequence, type, reason);
+        var results = await Collection.Business.SendEvent(inviteEvent);
+        return results.Count != 0 && results[0].ResultCode == 0;
+    }
+    
+    public async Task<bool> SetGroupFilteredRequest(uint groupUin, ulong sequence, uint type, bool accept, string reason)
+    {
+        var inviteEvent = SetGroupFilteredRequestEvent.Create(accept, groupUin, sequence, type, reason);
         var results = await Collection.Business.SendEvent(inviteEvent);
         return results.Count != 0 && results[0].ResultCode == 0;
     }
@@ -407,6 +449,15 @@ internal class OperationLogic : LogicBase
         var roamEvent = GetRoamMessageEvent.Create(uid, time, count);
         var results = await Collection.Business.SendEvent(roamEvent);
         return results.Count != 0 ? ((GetRoamMessageEvent)results[0]).Chains : null;
+    }
+
+    public async Task<List<MessageChain>?> GetC2cMessage(uint friendUin, uint startSequence, uint endSequence)
+    {
+        if (await Collection.Business.CachingLogic.ResolveUid(null, friendUin) is not { } uid) return null;
+
+        var c2cEvent = GetC2cMessageEvent.Create(uid, startSequence, endSequence);
+        var results = await Collection.Business.SendEvent(c2cEvent);
+        return results.Count != 0 ? ((GetC2cMessageEvent)results[0]).Chains : null;
     }
 
     public async Task<List<string>?> FetchCustomFace()
@@ -494,10 +545,26 @@ internal class OperationLogic : LogicBase
         return results.Count != 0 ? ((FetchMarketFaceKeyEvent)results[0]).Keys : null;
     }
 
-    public async Task<BotGroupClockInResult> ClockInGroup(uint groupUin)
+    public async Task<BotGroupClockInResult> GroupClockIn(uint groupUin)
     {
         var groupClockInEvent = GroupClockInEvent.Create(groupUin);
         var results = await Collection.Business.SendEvent(groupClockInEvent);
         return ((GroupClockInEvent)results[0]).ResultInfo ?? new BotGroupClockInResult(false);
+    }
+
+    public Task<MessageResult> FriendSpecialShake(uint friendUin, SpecialPokeFaceType type, uint count)
+    {
+        var chain = MessageBuilder.Friend(friendUin)
+            .SpecialPoke(type, count)
+            .Build();
+        return SendMessage(chain);
+    }
+
+    public Task<MessageResult> FriendShake(uint friendUin, PokeFaceType type, uint strength)
+    {
+        var chain = MessageBuilder.Friend(friendUin)
+            .Poke(type, strength)
+            .Build();
+        return SendMessage(chain);
     }
 }

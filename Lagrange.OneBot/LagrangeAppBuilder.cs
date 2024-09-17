@@ -137,5 +137,11 @@ public sealed class LagrangeAppBuilder
         return this;
     }
 
+    public LagrangeAppBuilder ConfigureLogging(Action<ILoggingBuilder> configureLogging)
+    {
+        Services.AddLogging(configureLogging);
+        return this;
+    }
+
     public LagrangeApp Build() => new(_hostAppBuilder.Build());
 }

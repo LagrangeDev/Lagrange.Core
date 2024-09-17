@@ -28,6 +28,7 @@ internal class FetchGroupRequestsEvent : ProtocolEvent
         ulong Sequence,
         uint State,
         uint EventType,
-        string? Comment
+        string? Comment,
+        bool IsFiltered
     );
 }

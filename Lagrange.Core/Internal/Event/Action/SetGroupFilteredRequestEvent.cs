@@ -1,6 +1,6 @@
 namespace Lagrange.Core.Internal.Event.Action;
 
-internal class SetGroupRequestEvent : ProtocolEvent
+internal class SetGroupFilteredRequestEvent : ProtocolEvent
 {
     public ulong Sequence { get; set; }
 
@@ -12,7 +12,7 @@ internal class SetGroupRequestEvent : ProtocolEvent
     
     public string Reason { get; set; } = string.Empty;
 
-    private SetGroupRequestEvent(bool accept, uint groupUin, ulong sequence, uint type, string? reason) : base(true)
+    private SetGroupFilteredRequestEvent(bool accept, uint groupUin, ulong sequence, uint type, string? reason) : base(true)
     {
         Accept = accept;
         GroupUin = groupUin;
@@ -21,10 +21,10 @@ internal class SetGroupRequestEvent : ProtocolEvent
         Reason = reason ?? "";
     }
     
-    private SetGroupRequestEvent(int resultCode) : base(resultCode) { }
-    
-    public static SetGroupRequestEvent Create(bool accept, uint groupUin, ulong sequence, uint type, string? reason) 
+    private SetGroupFilteredRequestEvent(int resultCode) : base(resultCode) { }
+
+    public static SetGroupFilteredRequestEvent Create(bool accept, uint groupUin, ulong sequence, uint type, string? reason) 
         => new(accept, groupUin, sequence, type, reason);
     
-    public static SetGroupRequestEvent Result(int resultCode) => new(resultCode);
+    public static SetGroupFilteredRequestEvent Result(int resultCode) => new(resultCode);
 }

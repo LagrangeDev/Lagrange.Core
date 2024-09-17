@@ -2,9 +2,13 @@ namespace Lagrange.Core.Message;
 
 public class MessageResult
 {
-    public uint? Sequence { get; set; }
+    public ulong MessageId { get; internal set; } 
     
-    public uint Result { get; set; }
+    public uint? Sequence { get; internal set; }
     
-    public uint Timestamp { get; set; }
+    public uint Result { get; internal set; }
+    
+    public uint Timestamp { get; internal set; }
+    
+    public uint ClientSequence { get; internal set; }
 }

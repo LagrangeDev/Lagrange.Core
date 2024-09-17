@@ -199,8 +199,8 @@ internal static class MessagePacker
             DivSeq = 0
         },
         Body = new MessageBody { RichText = new RichText { Elems = new List<Elem>() } },
-        Seq = (uint)Random.Shared.Next(1000000, 9999999), // 草泥马开摆！
-        Rand = (uint)(chain.MessageId & uint.MaxValue),
+        ClientSequence = chain.ClientSequence,
+        Random = (uint)(chain.MessageId & uint.MaxValue),
         Ctrl = chain.IsGroup ? null : new MessageControl { MsgFlag = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds() }
     };
 
@@ -208,12 +208,13 @@ internal static class MessagePacker
     {
         ResponseHead = new ResponseHead
         {
-            FromUid = chain.Uid,
+            FromUin = chain.IsGroup ? chain.FriendUin : 0,
             ToUid = chain.IsGroup ? null : selfUid,
             Grp = !chain.IsGroup ? null : new ResponseGrp // for consistency of code so inverted condition
             {
                 GroupUin = chain.GroupUin ?? 0,
-                MemberName = chain.GroupMemberInfo?.MemberCard ?? ""
+                MemberName = chain.FriendInfo?.Nickname ?? "",
+                Unknown5 = 2
             },
             Forward = chain.IsGroup ? null : new ResponseForward
             {
@@ -236,8 +237,8 @@ internal static class MessagePacker
                 Field1 = 0,
                 Field2 = 0,
                 Field3 = chain.IsGroup ? 0u : 2u,
-                UnknownBase64 = string.Empty,
-                Avatar = string.Empty
+                UnknownBase64 = $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg",
+                Avatar = $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg"
             }
         },
         Body = new MessageBody { RichText = new RichText { Elems = new List<Elem>() } }
@@ -251,6 +252,7 @@ internal static class MessagePacker
                 message.ResponseHead.ToUid ?? string.Empty,
                 message.ResponseHead.FromUid ?? string.Empty,
                 message.ResponseHead.ToUin,
+                message.ContentHead.FriendSequence ?? 0,
                 message.ContentHead.Sequence ?? 0,
                 message.ContentHead.NewId ?? 0,
                 message.ContentHead.Type == 141 ? MessageChain.MessageType.Temp : MessageChain.MessageType.Friend)
@@ -283,7 +285,14 @@ internal static class MessagePacker
         }
         else
         {
-            @base.FriendInfo = new BotFriend(0, message.ResponseHead.FromUid ?? string.Empty, message.ResponseHead.Forward?.FriendName ?? string.Empty, string.Empty, string.Empty, string.Empty);
+            @base.FriendInfo = new BotFriend(
+                0,
+                message.ResponseHead.FromUid ?? string.Empty,
+                message.ResponseHead.Forward?.FriendName ?? string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty
+            );
         }
 
         return @base;

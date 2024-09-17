@@ -337,9 +337,9 @@ internal class MessagingLogic : LogicBase
                 }
                 case ImageEntity image when !image.ImageUrl.Contains("&rkey=") && image.MsgInfo is not null:
                 {
-                    var @event = chain.IsGroup
-                        ? ImageGroupDownloadEvent.Create(chain.GroupUin ?? 0, image.MsgInfo)
-                        : ImageDownloadEvent.Create(chain.Uid ?? string.Empty, image.MsgInfo);
+                    var @event = image.IsGroup
+                        ? ImageGroupDownloadEvent.Create(image.GroupUin ?? 0, image.MsgInfo)
+                        : ImageDownloadEvent.Create(image.FriendUid ?? string.Empty, image.MsgInfo);
 
                     var results = await Collection.Business.SendEvent(@event);
                     if (results.Count != 0)
@@ -357,6 +357,13 @@ internal class MessagingLogic : LogicBase
     {
         foreach (var entity in chain) switch (entity)
             {
+                case ForwardEntity forward when forward.TargetUin != 0:
+                {
+                    var cache = Collection.Business.CachingLogic;
+                    forward.Uid = await cache.ResolveUid(chain.GroupUin, forward.TargetUin) ?? throw new Exception($"Failed to resolve Uid for Uin {forward.TargetUin}");
+
+                    break;
+                }
                 case MentionEntity mention when mention.Uin != 0:
                 {
                     var cache = Collection.Business.CachingLogic;

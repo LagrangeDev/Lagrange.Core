@@ -72,6 +72,35 @@ public static class OperationExt
         => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(chain);
 
     /// <summary>
+    /// Recall the group message by sequence
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="groupUin">The uin for target group of the message</param>
+    /// <param name="sequence">The sequence for target message</param>
+    /// <returns>Successfully recalled or not</returns>
+    public static Task<bool> RecallGroupMessage(this BotContext bot, uint groupUin, uint sequence)
+        => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(groupUin, sequence);
+
+    /// <summary>
+    /// Recall the group message from Bot itself by <see cref="MessageResult"/>
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="friendUin">The uin for target friend of the message</param>
+    /// <param name="result">The return value for <see cref="SendMessage"/></param>
+    /// <returns>Successfully recalled or not</returns>
+    public static Task<bool> RecallFriendMessage(this BotContext bot, uint friendUin, MessageResult result)
+        => bot.ContextCollection.Business.OperationLogic.RecallFriendMessage(friendUin, result);
+    
+    /// <summary>
+    /// Recall the group message by <see cref="MessageChain"/>
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="chain">target MessageChain, must be Friend</param>
+    /// <returns>Successfully recalled or not</returns>
+    public static Task<bool> RecallFriendMessage(this BotContext bot, MessageChain chain)
+        => bot.ContextCollection.Business.OperationLogic.RecallFriendMessage(chain);
+    
+    /// <summary>
     /// Fetch Notifications and requests such as friend requests and Group Join Requests
     /// </summary>
     /// <param name="bot">target BotContext</param>
@@ -149,8 +178,13 @@ public static class OperationExt
     /// <param name="count">number of message to be fetched before timestamp</param>
     public static Task<List<MessageChain>?> GetRoamMessage(this BotContext bot, MessageChain targetChain, uint count)
     {
-        uint timestamp = (uint)(targetChain.Time - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+        uint timestamp = (uint)new DateTimeOffset(targetChain.Time).ToUnixTimeSeconds();
         return bot.ContextCollection.Business.OperationLogic.GetRoamMessage(targetChain.FriendUin, timestamp, count);
+    }
+
+    public static Task<List<MessageChain>?> GetC2cMessage(this BotContext bot, uint friendUin, uint startSequence, uint endSequence)
+    {
+        return bot.ContextCollection.Business.OperationLogic.GetC2cMessage(friendUin, startSequence, endSequence);
     }
 
     /// <summary>
@@ -159,8 +193,8 @@ public static class OperationExt
     /// <param name="bot">target BotContext</param>
     /// <param name="groupUin">target groupUin</param>
     /// <returns></returns>
-    public static Task<BotGroupClockInResult> ClockInGroup(this BotContext bot, uint groupUin)
-        => bot.ContextCollection.Business.OperationLogic.ClockInGroup(groupUin);
+    public static Task<BotGroupClockInResult> GroupClockIn(this BotContext bot, uint groupUin)
+        => bot.ContextCollection.Business.OperationLogic.GroupClockIn(groupUin);
 
     public static Task<BotUserInfo?> FetchUserInfo(this BotContext bot, uint uin, bool refreshCache = false)
         => bot.ContextCollection.Business.OperationLogic.FetchUserInfo(uin, refreshCache);
@@ -182,6 +216,24 @@ public static class OperationExt
 
     public static Task<bool> FriendPoke(this BotContext bot, uint friendUin)
         => bot.ContextCollection.Business.OperationLogic.FriendPoke(friendUin);
+
+    /// <summary>
+    /// Send a special window shake to friend
+    /// </summary>
+    /// <param name="friendUin">target friend uin</param>
+    /// <param name="type">face type</param>
+    /// <param name="count">count of face</param>
+    public static Task<MessageResult> FriendSpecialShake(this BotContext bot, uint friendUin, SpecialPokeFaceType type, uint count)
+        => bot.ContextCollection.Business.OperationLogic.FriendSpecialShake(friendUin, type, count);
+
+    /// <summary>
+    /// Send a window shake to friend
+    /// </summary>
+    /// <param name="friendUin">target friend uin</param>
+    /// <param name="type">face type</param>
+    /// <param name="strength">How big the face will be displayed ([0,3] is valid)</param>
+    public static Task<MessageResult> FriendShake(this BotContext bot, uint friendUin, PokeFaceType type, ushort strength)
+        => bot.ContextCollection.Business.OperationLogic.FriendShake(friendUin, type, strength);
 
     public static Task<List<string>?> FetchMarketFaceKey(this BotContext bot, List<string> faceIds)
         => bot.ContextCollection.Business.OperationLogic.FetchMarketFaceKey(faceIds);

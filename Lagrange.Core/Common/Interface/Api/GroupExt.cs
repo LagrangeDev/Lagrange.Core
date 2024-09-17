@@ -68,10 +68,13 @@ public static class GroupExt
 
     public static Task<bool> InviteGroup(this BotContext bot, uint groupUin, Dictionary<uint, uint?> invitedUins)
         => bot.ContextCollection.Business.OperationLogic.InviteGroup(groupUin, invitedUins);
-
-    public static Task<bool> SetGroupRequest(this BotContext bot, BotGroupRequest request, bool accept = true)
-        => bot.ContextCollection.Business.OperationLogic.SetGroupRequest(request.GroupUin, request.Sequence, (uint)request.EventType, accept);
-
+    
+    public static Task<bool> SetGroupRequest(this BotContext bot, BotGroupRequest request, bool accept = true, string reason = "")
+        => bot.ContextCollection.Business.OperationLogic.SetGroupRequest(request.GroupUin, request.Sequence, (uint)request.EventType, accept, reason);
+    
+    public static Task<bool> SetGroupFilteredRequest(this BotContext bot, BotGroupRequest request, bool accept = true, string reason = "")
+        => bot.ContextCollection.Business.OperationLogic.SetGroupFilteredRequest(request.GroupUin, request.Sequence, (uint)request.EventType, accept, reason);
+    
     public static Task<bool> SetFriendRequest(this BotContext bot, FriendRequestEvent request, bool accept = true)
         => bot.ContextCollection.Business.OperationLogic.SetFriendRequest(request.SourceUid, accept);
 
@@ -104,19 +107,19 @@ public static class GroupExt
     public static Task<string> FetchGroupFSDownload(this BotContext bot, uint groupUin, string fileId)
         => bot.ContextCollection.Business.OperationLogic.FetchGroupFSDownload(groupUin, fileId);
 
-    public static Task<(int, string)> GroupFSMove(this BotContext bot, uint groupUin, string fileId, string parentDirectory, string targetDirectory)
+    public static Task<(int RetCode, string RetMsg)> GroupFSMove(this BotContext bot, uint groupUin, string fileId, string parentDirectory, string targetDirectory)
         => bot.ContextCollection.Business.OperationLogic.GroupFSMove(groupUin, fileId, parentDirectory, targetDirectory);
     
-    public static Task<(int, string)> GroupFSDelete(this BotContext bot, uint groupUin, string fileId)
+    public static Task<(int RetCode, string RetMsg)> GroupFSDelete(this BotContext bot, uint groupUin, string fileId)
         => bot.ContextCollection.Business.OperationLogic.GroupFSDelete(groupUin, fileId);
-
-    public static Task<(int, string)> GroupFSCreateFolder(this BotContext bot, uint groupUin, string name)
+    
+    public static Task<(int RetCode, string RetMsg)> GroupFSCreateFolder(this BotContext bot, uint groupUin, string name)
         => bot.ContextCollection.Business.OperationLogic.GroupFSCreateFolder(groupUin, name);
-
-    public static Task<(int, string)> GroupFSDeleteFolder(this BotContext bot, uint groupUin, string folderId)
+    
+    public static Task<(int RetCode, string RetMsg)> GroupFSDeleteFolder(this BotContext bot, uint groupUin, string folderId)
         => bot.ContextCollection.Business.OperationLogic.GroupFSDeleteFolder(groupUin, folderId);
-
-    public static Task<(int, string)> GroupFSRenameFolder(this BotContext bot, uint groupUin, string folderId, string newFolderName)
+    
+    public static Task<(int RetCode, string RetMsg)> GroupFSRenameFolder(this BotContext bot, uint groupUin, string folderId, string newFolderName)
         => bot.ContextCollection.Business.OperationLogic.GroupFSRenameFolder(groupUin, folderId, newFolderName);
 
     public static Task<bool> GroupFSUpload(this BotContext bot, uint groupUin, FileEntity fileEntity, string targetDirectory = "/")
