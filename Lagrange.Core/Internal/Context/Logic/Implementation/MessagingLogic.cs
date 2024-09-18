@@ -217,7 +217,7 @@ internal class MessagingLogic : LogicBase
                 {
                     foreach (var chain in multi.Chains)
                     {
-                        if (chain.Count == 0) return;
+                        if (chain.Count == 0) continue;
                         await ResolveIncomingChain(chain);
                     }
                 }
