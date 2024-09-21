@@ -96,8 +96,9 @@ public class MultiMsgEntity : IMessageEntity
                     var chain = Chains[i];
                     var member = chain.GroupMemberInfo;
                     var friend = chain.FriendInfo;
-                    // Follow the current TX display
-                    string text = $"{member?.MemberName ?? member?.MemberCard ?? friend?.Nickname}: {chain.ToPreviewText()}";
+                    // Follow the current TX display, first user name
+                    var displayName = !string.IsNullOrWhiteSpace(friend?.Nickname) ? friend.Nickname : member?.MemberName ?? member?.MemberCard ?? "QQ\u7528\u6237";
+                    string text = $"{displayName}: {chain.ToPreviewText()}";
                     json.Meta.Detail.News.Add(new News { Text = text });
                 }
             }
