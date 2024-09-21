@@ -386,7 +386,9 @@ internal class MessagingLogic : LogicBase
                 }
                 case MultiMsgEntity { ResId: null } multiMsg:
                 {
-                    var multiMsgEvent = MultiMsgUploadEvent.Create(multiMsg.GroupUin, multiMsg.Chains);
+                    if (chain.GroupUin != null) foreach (var c in multiMsg.Chains) c.GroupUin = chain.GroupUin;
+
+                    var multiMsgEvent = MultiMsgUploadEvent.Create(chain.GroupUin, multiMsg.Chains);
                     var results = await Collection.Business.SendEvent(multiMsgEvent);
                     if (results.Count != 0)
                     {

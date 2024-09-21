@@ -8,7 +8,7 @@ public sealed class MessageChain : List<IMessageEntity>
 {
     public MessageType Type { get; set; }
 
-    public uint? GroupUin { get; }
+    public uint? GroupUin { get; internal set; }
 
     public uint FriendUin { get; }
 
@@ -32,7 +32,7 @@ public sealed class MessageChain : List<IMessageEntity>
 
     internal string? Uid { get; set; }
 
-    internal bool IsGroup { get; set; }
+    internal bool IsGroup { get => GroupUin != null; }
 
     internal List<Elem> Elements { get; set; }
 
@@ -49,7 +49,6 @@ public sealed class MessageChain : List<IMessageEntity>
         SelfUid = selfUid;
         Uid = friendUid;
         MessageId = messageId ?? (0x10000000ul << 32) | (uint)Random.Shared.Next(100000000, int.MaxValue);
-        IsGroup = false;
         Elements = new List<Elem>();
         Type = type;
     }
@@ -61,7 +60,6 @@ public sealed class MessageChain : List<IMessageEntity>
         ClientSequence = 0;
         MessageId = (0x10000000ul << 32) | (uint)Random.Shared.Next(100000000, int.MaxValue);
         Uid = null;
-        IsGroup = true;
         Elements = new List<Elem>();
     }
 
@@ -73,7 +71,6 @@ public sealed class MessageChain : List<IMessageEntity>
         Sequence = sequence;
         Uid = null;
         MessageId = messageId;
-        IsGroup = true;
         Elements = new List<Elem>();
     }
 

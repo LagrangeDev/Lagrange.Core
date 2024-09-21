@@ -21,7 +21,7 @@ public class SendPrivateForwardOperation(MessageCommon common, LiteDatabase data
         {
             var chains = common.BuildForwardChains(context, forward);
 
-            var multi = new MultiMsgEntity(null, [.. chains]);
+            var multi = new MultiMsgEntity([.. chains]);
             var chain = MessageBuilder.Friend(forward.UserId).Add(multi).Build();
 
             var result = await context.SendMessage(chain);
