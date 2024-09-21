@@ -213,7 +213,7 @@ internal static class MessagePacker
             Grp = !chain.IsGroup ? null : new ResponseGrp // for consistency of code so inverted condition
             {
                 GroupUin = chain.GroupUin ?? 0,
-                MemberName = chain.FriendInfo?.Nickname ?? "",
+                MemberName = !string.IsNullOrWhiteSpace(chain.FriendInfo?.Nickname) ? chain.FriendInfo.Nickname : chain.GroupMemberInfo?.MemberName ?? chain.GroupMemberInfo?.MemberCard ?? "",
                 Unknown5 = 2
             },
             Forward = chain.IsGroup ? null : new ResponseForward
