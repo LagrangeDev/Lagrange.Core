@@ -208,7 +208,7 @@ internal static class MessagePacker
     {
         ResponseHead = new ResponseHead
         {
-            FromUin = chain.IsGroup ? chain.FriendUin : 0,
+            FromUin = chain.FriendUin,
             ToUid = chain.IsGroup ? null : selfUid,
             Grp = !chain.IsGroup ? null : new ResponseGrp // for consistency of code so inverted condition
             {
