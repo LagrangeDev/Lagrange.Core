@@ -5,6 +5,12 @@ namespace Lagrange.OneBot.Core.Entity.Message;
 [Serializable]
 public class OneBotEssenceMessage
 {
+    [JsonPropertyName("group_id")] public uint GroupId { get; set; }
+}
+
+[Serializable]
+public class OneBotEssenceMessageSegment
+{
     [JsonPropertyName("sender_id")] public uint SenderId { get; set; }
 
     [JsonPropertyName("sender_nick")] public string SenderNick { get; set; } = string.Empty;
