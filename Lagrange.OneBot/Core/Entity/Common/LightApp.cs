@@ -10,9 +10,9 @@ public class LightApp
 
     [JsonPropertyName("config")] public Config Config { get; set; }
 
-    [JsonPropertyName("desc")] public string Desc { get; set; }
+    [JsonPropertyName("desc")] public string? Desc { get; set; }
 
-    [JsonPropertyName("from")] public long From { get; set; }
+    [JsonPropertyName("from")] public long? From { get; set; }
 
     [JsonPropertyName("meta")] public Meta Meta { get; set; }
     
@@ -24,13 +24,13 @@ public class LightApp
 
     [JsonPropertyName("view")] public string View { get; set; }
     
-    [JsonPropertyName("bizsrc")] public string BizSrc { get; set; }
+    [JsonPropertyName("bizsrc")] public string? BizSrc { get; set; }
 }
 
 [Serializable]
 public class Config
 {
-    [JsonPropertyName("autosize")] public bool Autosize { get; set; }
+    [JsonPropertyName("autosize")] public bool? Autosize { get; set; }
     
     [JsonPropertyName("ctime")] public long Ctime { get; set; }
     
@@ -38,31 +38,31 @@ public class Config
 
     [JsonPropertyName("type")] public string Type { get; set; }
     
-    [JsonPropertyName("forward")] public int Forward { get; set; }
+    [JsonPropertyName("forward")] public int? Forward { get; set; }
     
-    [JsonPropertyName("height")] public int Height { get; set; }
+    [JsonPropertyName("height")] public int? Height { get; set; }
     
-    [JsonPropertyName("width")] public int Width { get; set; }
+    [JsonPropertyName("width")] public int? Width { get; set; }
     
-    [JsonPropertyName("showsender")] public int ShowSender { get; set; }
+    [JsonPropertyName("showsender")] public int? ShowSender { get; set; }
 }
 
 [Serializable]
 public class Meta
 {
-    [JsonPropertyName("Location.Search")] public LocationSearch LocationSearch { get; set; }
+    [JsonPropertyName("Location.Search")] public LocationSearch? LocationSearch { get; set; }
     
-    [JsonPropertyName("pic")] public Pic Pic { get; set; }
+    [JsonPropertyName("pic")] public Pic? Pic { get; set; }
     
-    [JsonPropertyName("music")] public Music Music { get; set; }
+    [JsonPropertyName("music")] public Music? Music { get; set; }
 }
 
 [Serializable]
 public class Extra
 {
-    [JsonPropertyName("app_type")] public int AppType { get; set; }
+    [JsonPropertyName("app_type")] public int? AppType { get; set; }
 
-    [JsonPropertyName("appid")] public int AppId { get; set; }
+    [JsonPropertyName("appid")] public int? AppId { get; set; }
 
-    [JsonPropertyName("uin")] public uint Uin { get; set; }
+    [JsonPropertyName("uin")] public uint? Uin { get; set; }
 }

@@ -27,18 +27,11 @@ public class LightAppEntity : IMessageEntity
     {
         using var payload = new BinaryPacket()
             .WriteByte(0x01)
-            .WriteBytes(ZCompression.ZCompress(Encoding.UTF8.GetBytes(Payload)));
+            .WriteBytes(ZCompression.ZCompress(Payload));
 
         return new Elem[]
         {
-            new()
-            {
-                LightAppElem = new LightAppElem
-                {
-                    Data = payload.ToArray(),
-                    MsgResid = null
-                }
-            }
+            new() { LightAppElem = new LightAppElem { Data = payload.ToArray() } },
         };
     }
 

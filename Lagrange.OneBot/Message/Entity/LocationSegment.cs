@@ -12,9 +12,9 @@ public partial class LocationSegment(float latitude, float longitude)
 {
     public LocationSegment() : this(0f, 0f) { }
 
-    [JsonPropertyName("lat")] [CQProperty] public string Latitude { get; set; } = latitude.ToString("F5");
+    [JsonPropertyName("lat")][CQProperty] public string Latitude { get; set; } = latitude.ToString("F5");
 
-    [JsonPropertyName("lon")] [CQProperty] public string Longitude { get; set; } = longitude.ToString("F5");
+    [JsonPropertyName("lon")][CQProperty] public string Longitude { get; set; } = longitude.ToString("F5");
 
     [JsonPropertyName("title")] public string Title { get; set; } = string.Empty;
 
@@ -25,7 +25,7 @@ public partial class LocationSegment(float latitude, float longitude)
 public partial class LocationSegment : SegmentBase
 {
     private static readonly JsonSerializerOptions Options = new() { Converters = { new AutosizeConverter() } };
-    
+
     public override void Build(MessageBuilder builder, SegmentBase segment)
     {
         if (segment is not LocationSegment location) return;
@@ -59,7 +59,7 @@ public partial class LocationSegment : SegmentBase
             Ver = "1.1.2.21",
             View = "LocationShare"
         };
-        
+
         builder.LightApp(JsonSerializer.Serialize(json));
     }
 
@@ -67,17 +67,17 @@ public partial class LocationSegment : SegmentBase
     {
         if (entity is not LightAppEntity lightApp) throw new ArgumentException("Invalid entity type.");
 
-        if (JsonSerializer.Deserialize<LightApp>(lightApp.Payload, Options) is { App: "com.tencent.map" } app)
+        if (JsonSerializer.Deserialize<LightApp>(lightApp.Payload, Options) is { App: "com.tencent.map", Meta.LocationSearch: { } } app)
         {
             return new LocationSegment
             {
                 Latitude = app.Meta.LocationSearch.Lat,
-                Longitude =app.Meta.LocationSearch.Lng,
+                Longitude = app.Meta.LocationSearch.Lng,
                 Content = app.Meta.LocationSearch.Address,
                 Title = app.Meta.LocationSearch.Name,
             };
         }
-        
+
         return null;
     }
 }
