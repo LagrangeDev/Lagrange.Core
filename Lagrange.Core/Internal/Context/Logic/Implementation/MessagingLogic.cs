@@ -54,6 +54,8 @@ internal class MessagingLogic : LogicBase
                 await ResolveChainMetadata(push.Chain);
 
                 var chain = push.Chain;
+                MessageFilter.Filter(chain);
+                
                 Collection.Log.LogVerbose(Tag, chain.ToPreviewString());
 
                 EventBase args = push.Chain.Type switch
