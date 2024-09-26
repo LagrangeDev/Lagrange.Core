@@ -356,59 +356,59 @@ internal class MessagingLogic : LogicBase
     private async Task ResolveOutgoingChain(MessageChain chain)
     {
         foreach (var entity in chain) switch (entity)
+        {
+            case ForwardEntity forward when forward.TargetUin != 0:
             {
-                case ForwardEntity forward when forward.TargetUin != 0:
-                {
-                    var cache = Collection.Business.CachingLogic;
-                    forward.Uid = await cache.ResolveUid(chain.GroupUin, forward.TargetUin) ?? throw new Exception($"Failed to resolve Uid for Uin {forward.TargetUin}");
+                var cache = Collection.Business.CachingLogic;
+                forward.Uid = await cache.ResolveUid(chain.GroupUin, forward.TargetUin) ?? throw new Exception($"Failed to resolve Uid for Uin {forward.TargetUin}");
 
-                    break;
-                }
-                case MentionEntity mention when mention.Uin != 0:
-                {
-                    var cache = Collection.Business.CachingLogic;
-                    mention.Uid = await cache.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
-
-                    if (chain is { IsGroup: true, GroupUin: not null } && mention.Name is null)
-                    {
-                        var members = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
-                        var member = members.FirstOrDefault(x => x.Uin == mention.Uin);
-                        if (member != null) mention.Name = $"@{member.MemberCard ?? member.MemberName}";
-                    }
-                    else if (chain is { IsGroup: false } && mention.Name is null)
-                    {
-                        var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
-                        string? friend = friends.FirstOrDefault(x => x.Uin == mention.Uin)?.Nickname;
-                        if (friend != null) mention.Name = $"@{friend}";
-                    }
-
-                    break;
-                }
-                case MultiMsgEntity { ResId: null } multiMsg:
-                {
-                    if (chain.GroupUin != null) foreach (var c in multiMsg.Chains) c.GroupUin = chain.GroupUin;
-
-                    var multiMsgEvent = MultiMsgUploadEvent.Create(chain.GroupUin, multiMsg.Chains);
-                    var results = await Collection.Business.SendEvent(multiMsgEvent);
-                    if (results.Count != 0)
-                    {
-                        var result = (MultiMsgUploadEvent)results[0];
-                        multiMsg.ResId = result.ResId;
-                    }
-                    break;
-                }
-                case MultiMsgEntity { ResId: not null, Chains.Count: 0 } multiMsg:
-                {
-                    var @event = MultiMsgDownloadEvent.Create(chain.Uid ?? "", multiMsg.ResId);
-                    var results = await Collection.Business.SendEvent(@event);
-                    if (results.Count != 0)
-                    {
-                        var result = (MultiMsgDownloadEvent)results[0];
-                        multiMsg.Chains.AddRange((IEnumerable<MessageChain>?)result.Chains ?? Array.Empty<MessageChain>());
-                    }
-                    break;
-                }
+                break;
             }
+            case MentionEntity mention when mention.Uin != 0:
+            {
+                var cache = Collection.Business.CachingLogic;
+                mention.Uid = await cache.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
+
+                if (chain is { IsGroup: true, GroupUin: not null } && mention.Name is null)
+                {
+                    var members = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
+                    var member = members.FirstOrDefault(x => x.Uin == mention.Uin);
+                    if (member != null) mention.Name = $"@{member.MemberCard ?? member.MemberName}";
+                }
+                else if (chain is { IsGroup: false } && mention.Name is null)
+                {
+                    var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
+                    string? friend = friends.FirstOrDefault(x => x.Uin == mention.Uin)?.Nickname;
+                    if (friend != null) mention.Name = $"@{friend}";
+                }
+
+                break;
+            }
+            case MultiMsgEntity { ResId: null } multiMsg:
+            {
+                if (chain.GroupUin != null) foreach (var c in multiMsg.Chains) c.GroupUin = chain.GroupUin;
+
+                var multiMsgEvent = MultiMsgUploadEvent.Create(chain.GroupUin, multiMsg.Chains);
+                var results = await Collection.Business.SendEvent(multiMsgEvent);
+                if (results.Count != 0)
+                {
+                    var result = (MultiMsgUploadEvent)results[0];
+                    multiMsg.ResId = result.ResId;
+                }
+                break;
+            }
+            case MultiMsgEntity { ResId: not null, Chains.Count: 0 } multiMsg:
+            {
+                var @event = MultiMsgDownloadEvent.Create(chain.Uid ?? "", multiMsg.ResId);
+                var results = await Collection.Business.SendEvent(@event);
+                if (results.Count != 0)
+                {
+                    var result = (MultiMsgDownloadEvent)results[0];
+                    multiMsg.Chains.AddRange((IEnumerable<MessageChain>?)result.Chains ?? Array.Empty<MessageChain>());
+                }
+                break;
+            }
+        }
     }
 
     /// <summary>
