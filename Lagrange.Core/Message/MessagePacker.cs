@@ -151,7 +151,7 @@ internal static class MessagePacker
                     chain.Add(new RecordEntity(privatePtt.FileUuid, privatePtt.FileName, privatePtt.FileMd5));
                 break;
         }
-        
+
         MessageFilter.Filter(chain);
 
         return chain;
@@ -210,7 +210,7 @@ internal static class MessagePacker
     {
         ResponseHead = new ResponseHead
         {
-            FromUin = chain.FriendUin,
+            FromUin = 0,
             ToUid = chain.IsGroup ? null : selfUid,
             Grp = !chain.IsGroup ? null : new ResponseGrp // for consistency of code so inverted condition
             {
@@ -239,8 +239,8 @@ internal static class MessagePacker
                 Field1 = 0,
                 Field2 = 0,
                 Field3 = chain.IsGroup ? 0u : 2u,
-                UnknownBase64 = $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg",
-                Avatar = $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg"
+                UnknownBase64 = chain.FriendInfo?.Avatar ?? $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg",
+                Avatar = chain.FriendInfo?.Avatar ?? $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg"
             }
         },
         Body = new MessageBody { RichText = new RichText { Elems = new List<Elem>() } }
