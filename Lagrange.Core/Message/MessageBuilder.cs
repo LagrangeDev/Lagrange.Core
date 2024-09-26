@@ -23,6 +23,17 @@ public sealed class MessageBuilder
             new(new MessageChain(groupUin, memberUin, (uint)Random.Shared.Next(1000000, 9999999)));
 
     /// <summary>
+    /// Set the sending time for this message
+    /// Used for time display in forwarding
+    /// </summary>
+    /// <param name="time">The sending time of this message</param>
+    public MessageBuilder Time(DateTime time) {
+        _chain.Time = time;
+        
+        return this;
+    }
+
+    /// <summary>
     /// Add a text entity to the message chain
     /// </summary>
     /// <param name="text">The text to be added</param>

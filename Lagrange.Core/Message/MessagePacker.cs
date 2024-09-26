@@ -151,7 +151,7 @@ internal static class MessagePacker
                     chain.Add(new RecordEntity(privatePtt.FileUuid, privatePtt.FileName, privatePtt.FileMd5));
                 break;
         }
-        
+
         MessageFilter.Filter(chain);
 
         return chain;
@@ -230,7 +230,7 @@ internal static class MessagePacker
             DivSeq = chain.IsGroup ? null : 4,
             MsgId = (uint)(chain.MessageId & 0xFFFFFFFF),
             Sequence = (uint?)Random.Shared.Next(1000000, 9999999),
-            Timestamp = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            Timestamp = (chain.Time == default ? DateTimeOffset.Now : new(chain.Time)).ToUnixTimeSeconds(),
             Field7 = 1,
             Field8 = 0,
             Field9 = 0,
