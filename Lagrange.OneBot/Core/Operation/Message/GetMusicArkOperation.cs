@@ -63,11 +63,11 @@ public class GetMusicArkOperation(TicketService ticket) : IOperation
                     AppId = 0,
                     Ctime = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                     Desc = musicArk.Desc,
-                    JumpUrl = musicArk.JumpUrl,
-                    MusicUrl = musicArk.MusicUrl,
-                    Preview = musicArk.Preview,
+                    JumpUrl = musicArk.JumpUrl, // 在 ntqqpc 可正常使用 手机 噗叽 pia 了
+                    MusicUrl = musicArk.MusicUrl, // 在 手机 可正常使用 ntqqpc 噗叽 pia 了
+                    Preview = musicArk.Preview, // 需白
                     SourceMsgId = "0",
-                    SourceIcon = musicArk.SourceIcon,
+                    SourceIcon = musicArk.SourceIcon, // 需白
                     SourceUrl = "",
                     Tag = musicArk.Tag,
                     Title = musicArk.Title,
