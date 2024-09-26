@@ -124,25 +124,37 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         var pkgType = (Event0x2DCSubType)(msg.Message.ContentHead.SubType ?? 0);
         switch (pkgType)
         {
-            case Event0x2DCSubType.GroupReactionNotice when msg.Message.Body?.MsgContent is { } content:
+            case Event0x2DCSubType.SubType16 when msg.Message.Body?.MsgContent is { } content:
             {
                 using var packet = new BinaryPacket(content);
                 _ = packet.ReadUint();  // group uin
                 _ = packet.ReadByte();  // unknown byte
                 var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly); // proto length error
-
-                var reaction = Serializer.Deserialize<GroupReaction>(proto);
-
-                var group = reaction.GroupUid;
-                var uid = reaction.Data.Data.Data.Data.OperatorUid;
-                var type = reaction.Data.Data.Data.Data.Type;
-                var sequence = reaction.Data.Data.Data.Target.Sequence;
-                var code = reaction.Data.Data.Data.Data.Code;
-                var count = reaction.Data.Data.Data.Data.Count;
-
-                var groupRecallEvent = GroupSysReactionEvent.Result(group, sequence, uid, type == 1, code, count);
-                extraEvents.Add(groupRecallEvent);
-
+                var msgBody = Serializer.Deserialize<NotifyMessageBody>(proto);
+                switch ((Event0x2DCSubType16Field13)(msgBody.Field13 ?? 0))
+                {
+                    case Event0x2DCSubType16Field13.GroupMemberSpecialTitleNotice:
+                    {
+                        break;
+                    }
+                    case Event0x2DCSubType16Field13.GroupNameChangeNotice:
+                    {
+                        // 33CAE9171000450801109B85D0B70618FFFFFFFF0F2097D2AB9E032A0D08011209E686A8E7BEA46F766F680CA802D1DF18AA0118755F6C30323965684E706E4E6A6151725A55687776357551
+                        break;
+                    }
+                    case Event0x2DCSubType16Field13.GroupReactionNotice:
+                    {
+                        uint group = msgBody.GroupUin;
+                        string uid = msgBody.Reaction.Data.Data.Data.OperatorUid;
+                        uint type = msgBody.Reaction.Data.Data.Data.Type;
+                        uint sequence = msgBody.Reaction.Data.Data.Target.Sequence;
+                        string code = msgBody.Reaction.Data.Data.Data.Code;
+                        uint count = msgBody.Reaction.Data.Data.Data.Count;
+                        var groupRecallEvent = GroupSysReactionEvent.Result(group, sequence, uid, type == 1, code, count);
+                        extraEvents.Add(groupRecallEvent);
+                        break;
+                    }
+                }
                 break;
             }
             case Event0x2DCSubType.GroupRecallNotice when msg.Message.Body?.MsgContent is { } content:
@@ -308,10 +320,17 @@ internal class PushMessageService : BaseService<PushMessageEvent>
     private enum Event0x2DCSubType
     {
         GroupMuteNotice = 12,
-        GroupReactionNotice = 16,
+        SubType16 = 16,
         GroupRecallNotice = 17,
         GroupEssenceNotice = 21,
         GroupGreyTipNotice = 20,
+    }
+
+    private enum Event0x2DCSubType16Field13
+    {
+        GroupMemberSpecialTitleNotice = 6,
+        GroupNameChangeNotice = 12,
+        GroupReactionNotice = 35,
     }
 
     private enum Event0x210SubType
