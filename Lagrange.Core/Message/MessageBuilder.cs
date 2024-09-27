@@ -24,12 +24,51 @@ public sealed class MessageBuilder
 
     /// <summary>
     /// Set the sending time for this message
-    /// Used for time display in forwarding
+    /// Used for time display in mulitmsg
     /// </summary>
     /// <param name="time">The sending time of this message</param>
-    public MessageBuilder Time(DateTime time) {
+    public MessageBuilder Time(DateTime time)
+    {
         _chain.Time = time;
-        
+
+        return this;
+    }
+
+    /// <summary>
+    /// Set the friend name for this message
+    /// Used for name display in mulitmsg
+    /// </summary>
+    /// <param name="time">The sending time of this message</param>
+    public MessageBuilder FriendName(string name)
+    {
+        (_chain.FriendInfo ??= new BotFriend(
+            _chain.FriendUin,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty
+        )).Nickname = name;
+
+        return this;
+    }
+
+    /// <summary>
+    /// Set the friend avator for this message
+    /// Used for avatar display in mulitmsg
+    /// </summary>
+    /// <param name="time">The sending time of this message</param>
+    public MessageBuilder FriendAvatar(string avatar)
+    {
+        (_chain.FriendInfo ??= new BotFriend(
+            _chain.FriendUin,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty
+        )).Avatar = avatar;
+
         return this;
     }
 
