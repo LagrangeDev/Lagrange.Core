@@ -31,6 +31,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(GroupSysEssenceEvent))]
 [EventSubscribe(typeof(GroupSysPokeEvent))]
 [EventSubscribe(typeof(GroupSysReactionEvent))]
+[EventSubscribe(typeof(GroupSysNameChangeEvent))]
 [EventSubscribe(typeof(FriendSysRecallEvent))]
 [EventSubscribe(typeof(FriendSysRequestEvent))]
 [EventSubscribe(typeof(FriendSysPokeEvent))]
@@ -135,6 +136,12 @@ internal class MessagingLogic : LogicBase
             {
                 uint operatorUin = await Collection.Business.CachingLogic.ResolveUin(reaction.TargetGroupUin, reaction.OperatorUid) ?? 0;
                 var pokeArgs = new GroupReactionEvent(reaction.TargetGroupUin, reaction.TargetSequence, operatorUin, reaction.IsAdd, reaction.Code, reaction.Count);
+                Collection.Invoker.PostEvent(pokeArgs);
+                break;
+            }
+            case GroupSysNameChangeEvent nameChange:
+            {
+                var pokeArgs = new GroupNameChangeEvent(nameChange.GroupUin, nameChange.Name);
                 Collection.Invoker.PostEvent(pokeArgs);
                 break;
             }
@@ -356,59 +363,59 @@ internal class MessagingLogic : LogicBase
     private async Task ResolveOutgoingChain(MessageChain chain)
     {
         foreach (var entity in chain) switch (entity)
-        {
-            case ForwardEntity forward when forward.TargetUin != 0:
             {
-                var cache = Collection.Business.CachingLogic;
-                forward.Uid = await cache.ResolveUid(chain.GroupUin, forward.TargetUin) ?? throw new Exception($"Failed to resolve Uid for Uin {forward.TargetUin}");
-
-                break;
-            }
-            case MentionEntity mention when mention.Uin != 0:
-            {
-                var cache = Collection.Business.CachingLogic;
-                mention.Uid = await cache.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
-
-                if (chain is { IsGroup: true, GroupUin: not null } && mention.Name is null)
+                case ForwardEntity forward when forward.TargetUin != 0:
                 {
-                    var members = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
-                    var member = members.FirstOrDefault(x => x.Uin == mention.Uin);
-                    if (member != null) mention.Name = $"@{member.MemberCard ?? member.MemberName}";
-                }
-                else if (chain is { IsGroup: false } && mention.Name is null)
-                {
-                    var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
-                    string? friend = friends.FirstOrDefault(x => x.Uin == mention.Uin)?.Nickname;
-                    if (friend != null) mention.Name = $"@{friend}";
-                }
+                    var cache = Collection.Business.CachingLogic;
+                    forward.Uid = await cache.ResolveUid(chain.GroupUin, forward.TargetUin) ?? throw new Exception($"Failed to resolve Uid for Uin {forward.TargetUin}");
 
-                break;
-            }
-            case MultiMsgEntity { ResId: null } multiMsg:
-            {
-                if (chain.GroupUin != null) foreach (var c in multiMsg.Chains) c.GroupUin = chain.GroupUin;
+                    break;
+                }
+                case MentionEntity mention when mention.Uin != 0:
+                {
+                    var cache = Collection.Business.CachingLogic;
+                    mention.Uid = await cache.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
 
-                var multiMsgEvent = MultiMsgUploadEvent.Create(chain.GroupUin, multiMsg.Chains);
-                var results = await Collection.Business.SendEvent(multiMsgEvent);
-                if (results.Count != 0)
-                {
-                    var result = (MultiMsgUploadEvent)results[0];
-                    multiMsg.ResId = result.ResId;
+                    if (chain is { IsGroup: true, GroupUin: not null } && mention.Name is null)
+                    {
+                        var members = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
+                        var member = members.FirstOrDefault(x => x.Uin == mention.Uin);
+                        if (member != null) mention.Name = $"@{member.MemberCard ?? member.MemberName}";
+                    }
+                    else if (chain is { IsGroup: false } && mention.Name is null)
+                    {
+                        var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
+                        string? friend = friends.FirstOrDefault(x => x.Uin == mention.Uin)?.Nickname;
+                        if (friend != null) mention.Name = $"@{friend}";
+                    }
+
+                    break;
                 }
-                break;
-            }
-            case MultiMsgEntity { ResId: not null, Chains.Count: 0 } multiMsg:
-            {
-                var @event = MultiMsgDownloadEvent.Create(chain.Uid ?? "", multiMsg.ResId);
-                var results = await Collection.Business.SendEvent(@event);
-                if (results.Count != 0)
+                case MultiMsgEntity { ResId: null } multiMsg:
                 {
-                    var result = (MultiMsgDownloadEvent)results[0];
-                    multiMsg.Chains.AddRange((IEnumerable<MessageChain>?)result.Chains ?? Array.Empty<MessageChain>());
+                    if (chain.GroupUin != null) foreach (var c in multiMsg.Chains) c.GroupUin = chain.GroupUin;
+
+                    var multiMsgEvent = MultiMsgUploadEvent.Create(chain.GroupUin, multiMsg.Chains);
+                    var results = await Collection.Business.SendEvent(multiMsgEvent);
+                    if (results.Count != 0)
+                    {
+                        var result = (MultiMsgUploadEvent)results[0];
+                        multiMsg.ResId = result.ResId;
+                    }
+                    break;
                 }
-                break;
+                case MultiMsgEntity { ResId: not null, Chains.Count: 0 } multiMsg:
+                {
+                    var @event = MultiMsgDownloadEvent.Create(chain.Uid ?? "", multiMsg.ResId);
+                    var results = await Collection.Business.SendEvent(@event);
+                    if (results.Count != 0)
+                    {
+                        var result = (MultiMsgDownloadEvent)results[0];
+                        multiMsg.Chains.AddRange((IEnumerable<MessageChain>?)result.Chains ?? Array.Empty<MessageChain>());
+                    }
+                    break;
+                }
             }
-        }
     }
 
     /// <summary>
