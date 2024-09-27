@@ -14,18 +14,11 @@ internal static class MessageFilter
 
     static MessageFilter()
     {
-        FilterRules.Add(x =>
+        FilterRules.Add(chain =>
         {
-            var forwards = x.OfType<ForwardEntity>().ToArray();
-            var mentions = x.OfType<MentionEntity>().ToArray();
+            var forwardIndex = chain.FindIndex(entity => entity is ForwardEntity);
 
-            foreach (var forward in forwards)
-            {
-                foreach (var mention in mentions)
-                {
-                    if (forward.TargetUin == mention.Uin) return new List<int>() { x.IndexOf(mention) };
-                }
-            }
+            if (chain[forwardIndex + 1] is MentionEntity mention) return new List<int>() { forwardIndex + 1 };
 
             return new List<int>();
         });
@@ -44,7 +37,7 @@ internal static class MessageFilter
                     result.Add(x.IndexOf(imageOld));
                     continue;
                 }
-                
+
                 var uri = new Uri(imageOld.ImageUrl);
                 if (uri.Host == "gchat.qpic.cn")
                 {

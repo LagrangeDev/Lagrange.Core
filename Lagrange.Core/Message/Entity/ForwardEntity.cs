@@ -68,7 +68,7 @@ public class ForwardEntity : IMessageEntity
                 SrcMsg = new SrcMsg
                 {
                     OrigSeqs = new List<uint> { ClientSequence != 0 ? ClientSequence : Sequence },
-                    SenderUin = 0, // Can't get self uin
+                    SenderUin = TargetUin, // Can't get self uin
                     Time = (int)new DateTimeOffset(Time).ToUnixTimeSeconds(),
                     Elems = Elements,
                     PbReserve = forwardStream.ToArray(),
@@ -79,7 +79,7 @@ public class ForwardEntity : IMessageEntity
             {
                 Text = new Text
                 {
-                    Str = null,
+                    Str = "Officially, custom names are no longer allowed, but Lagrange still requires this field to resolve the displayed name",
                     PbReserve = mentionStream.ToArray()
                 }
             }
