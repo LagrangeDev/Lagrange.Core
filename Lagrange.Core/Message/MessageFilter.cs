@@ -39,6 +39,12 @@ internal static class MessageFilter
             for (int i = 0; i < images.Length; i++)
             {
                 var imageOld = images[i];
+                if (!Uri.IsWellFormedUriString(imageOld.ImageUrl, UriKind.RelativeOrAbsolute))
+                {
+                    result.Add(x.IndexOf(imageOld));
+                    continue;
+                }
+                
                 var uri = new Uri(imageOld.ImageUrl);
                 if (uri.Host == "gchat.qpic.cn")
                 {

@@ -52,10 +52,9 @@ internal class MessagingLogic : LogicBase
                 if (push.Chain.Count == 0) return;
                 await ResolveIncomingChain(push.Chain);
                 await ResolveChainMetadata(push.Chain);
+                MessageFilter.Filter(push.Chain);
 
                 var chain = push.Chain;
-                MessageFilter.Filter(chain);
-                
                 Collection.Log.LogVerbose(Tag, chain.ToPreviewString());
 
                 EventBase args = push.Chain.Type switch
@@ -76,6 +75,7 @@ internal class MessagingLogic : LogicBase
                     if (chain.Count == 0) return;
                     await ResolveIncomingChain(chain);
                     await ResolveChainMetadata(chain);
+                    MessageFilter.Filter(chain);
                 }
                 break;
             }
@@ -86,6 +86,7 @@ internal class MessagingLogic : LogicBase
                     if (chain.Count == 0) return;
                     await ResolveIncomingChain(chain);
                     await ResolveChainMetadata(chain);
+                    MessageFilter.Filter(chain);
                 }
                 break;
             }
@@ -221,6 +222,7 @@ internal class MessagingLogic : LogicBase
                     {
                         if (chain.Count == 0) continue;
                         await ResolveIncomingChain(chain);
+                        MessageFilter.Filter(chain);
                     }
                 }
                 break;
