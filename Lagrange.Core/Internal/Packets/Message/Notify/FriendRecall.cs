@@ -25,7 +25,7 @@ internal class FriendRecallInfo
 
     [ProtoMember(2)] public string ToUid { get; set; }
 
-    [ProtoMember(3)] public uint Sequence { get; set; }
+    [ProtoMember(3)] public uint ClientSequence { get; set; }
 
     [ProtoMember(4)] public ulong NewId { get; set; }
 

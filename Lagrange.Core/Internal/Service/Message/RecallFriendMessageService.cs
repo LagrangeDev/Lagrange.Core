@@ -21,7 +21,7 @@ internal class RecallFriendMessageService : BaseService<RecallFriendMessageEvent
             {
                 ClientSequence = input.ClientSeq,
                 Random = input.Random,
-                MessageId = (ulong)0x10000000 << 32 | input.Random,
+                MessageId = 0x1000000UL << 32 | input.Random,
                 Timestamp = input.Timestamp,
                 Field5 = 0,
                 MessageSequence = input.MessageSeq
@@ -33,7 +33,7 @@ internal class RecallFriendMessageService : BaseService<RecallFriendMessageEvent
             },
             Field6 = false
         };
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
