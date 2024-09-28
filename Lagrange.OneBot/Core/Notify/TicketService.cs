@@ -31,7 +31,7 @@ public class TicketService
 
     public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage message, string? domain = null)
     {
-        message.Headers.Add("Cookie", await GetCookies(domain ?? message.RequestUri?.Host ?? ""));
+        if (!message.Headers.Contains("Cookie")) message.Headers.Add("Cookie", await GetCookies(domain ?? message.RequestUri?.Host ?? ""));
         return await _client.SendAsync(message);
     }
 

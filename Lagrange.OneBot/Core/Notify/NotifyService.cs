@@ -222,5 +222,15 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 @event.Count
             ));
         };
+
+        bot.Invoker.OnGroupNameChangeEvent += async (bot, @event) =>
+        {
+            logger.LogInformation("{}", @event);
+            await service.SendJsonAsync(new OneBotGroupNameChange(
+                bot.BotUin,
+                @event.GroupUin,
+                @event.Name
+            ));
+        };
     }
 }

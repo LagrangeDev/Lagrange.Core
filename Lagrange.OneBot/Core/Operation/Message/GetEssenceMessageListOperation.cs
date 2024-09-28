@@ -5,6 +5,7 @@ using Lagrange.Core;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Message;
 using Lagrange.OneBot.Core.Notify;
+using Lagrange.OneBot.Core.Operation.Converters;
 using Lagrange.OneBot.Database;
 using Lagrange.OneBot.Message.Entity;
 
@@ -17,15 +18,15 @@ public class GetEssenceMessageListOperation(TicketService ticket) : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload?["group_id"]?.GetValue<uint>() is { } groupUin)
+        if (payload.Deserialize<OneBotEssenceMessage>(SerializerOptions.DefaultOptions) is { } essenceMsg)
         {
             int bkn = await ticket.GetCsrfToken();
             int page = 0;
-            var essence = new List<OneBotEssenceMessage>();
+            var essence = new List<OneBotEssenceMessageSegment>();
 
             while (true)
             {
-                string url = $"https://qun.qq.com/cgi-bin/group_digest/digest_list?random=7800&X-CROSS-ORIGIN=fetch&group_code={groupUin}&page_start={page}&page_limit=20&bkn={bkn}";
+                string url = $"https://qun.qq.com/cgi-bin/group_digest/digest_list?random=7800&X-CROSS-ORIGIN=fetch&group_code={essenceMsg.GroupId}&page_start={page}&page_limit=20&bkn={bkn}";
                 var response = await ticket.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
                 string raw = await response.Content.ReadAsStringAsync();
                 var @object = JsonSerializer.Deserialize<RequestBody>(raw);
@@ -33,7 +34,7 @@ public class GetEssenceMessageListOperation(TicketService ticket) : IOperation
 
                 foreach (var msg in @object.Data.MsgList)
                 {
-                    essence.Add(new OneBotEssenceMessage
+                    essence.Add(new OneBotEssenceMessageSegment
                     {
                         SenderId = uint.Parse(msg.SenderUin),
                         SenderNick = msg.SenderNick,

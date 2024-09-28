@@ -152,6 +152,8 @@ internal static class MessagePacker
                 break;
         }
 
+        MessageFilter.Filter(chain);
+
         return chain;
     }
 
@@ -208,12 +210,12 @@ internal static class MessagePacker
     {
         ResponseHead = new ResponseHead
         {
-            FromUin = chain.IsGroup ? chain.FriendUin : 0,
+            FromUin = chain.FriendUin,
             ToUid = chain.IsGroup ? null : selfUid,
             Grp = !chain.IsGroup ? null : new ResponseGrp // for consistency of code so inverted condition
             {
                 GroupUin = chain.GroupUin ?? 0,
-                MemberName = chain.FriendInfo?.Nickname ?? "",
+                MemberName = !string.IsNullOrWhiteSpace(chain.FriendInfo?.Nickname) ? chain.FriendInfo.Nickname : chain.GroupMemberInfo?.MemberName ?? chain.GroupMemberInfo?.MemberCard ?? "",
                 Unknown5 = 2
             },
             Forward = chain.IsGroup ? null : new ResponseForward
@@ -228,7 +230,7 @@ internal static class MessagePacker
             DivSeq = chain.IsGroup ? null : 4,
             MsgId = (uint)(chain.MessageId & 0xFFFFFFFF),
             Sequence = (uint?)Random.Shared.Next(1000000, 9999999),
-            Timestamp = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            Timestamp = (chain.Time == default ? DateTimeOffset.Now : new(chain.Time)).ToUnixTimeSeconds(),
             Field7 = 1,
             Field8 = 0,
             Field9 = 0,

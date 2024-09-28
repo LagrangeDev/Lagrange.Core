@@ -18,8 +18,20 @@ public sealed class MessageBuilder
 
     public static MessageBuilder Group(uint groupUin) => new(new MessageChain(groupUin));
 
+    [Obsolete("Use `MessageBuilder.Friend(uint)`")]
     public static MessageBuilder FakeGroup(uint groupUin, uint memberUin) =>
             new(new MessageChain(groupUin, memberUin, (uint)Random.Shared.Next(1000000, 9999999)));
+
+    /// <summary>
+    /// Set the sending time for this message
+    /// Used for time display in forwarding
+    /// </summary>
+    /// <param name="time">The sending time of this message</param>
+    public MessageBuilder Time(DateTime time) {
+        _chain.Time = time;
+        
+        return this;
+    }
 
     /// <summary>
     /// Add a text entity to the message chain
@@ -76,17 +88,29 @@ public sealed class MessageBuilder
     /// </summary>
     /// <param name="groupUin">The group to be sent, if null, the message will be sent as private message</param>
     /// <param name="msg">The messages to be sent</param>
+    [Obsolete("No more need for group uin")]
     public MessageBuilder MultiMsg(uint? groupUin = null, params MessageBuilder[] msg)
     {
-        var multiMsgEntity = new MultiMsgEntity(groupUin, msg.Select(x => x.Build()).ToList());
+        return MultiMsg(msg);
+    }
+
+    public MessageBuilder MultiMsg(params MessageBuilder[] msg)
+    {
+        var multiMsgEntity = new MultiMsgEntity(msg.Select(x => x.Build()).ToList());
         _chain.Add(multiMsgEntity);
 
         return this;
     }
 
+    [Obsolete("No more need for group uin")]
     public MessageBuilder MultiMsg(uint? groupUin = null, params MessageChain[] chains)
     {
-        var multiMsgEntity = new MultiMsgEntity(groupUin, chains.ToList());
+        return MultiMsg(chains);
+    }
+
+    public MessageBuilder MultiMsg(params MessageChain[] chains)
+    {
+        var multiMsgEntity = new MultiMsgEntity(chains.ToList());
         _chain.Add(multiMsgEntity);
 
         return this;
@@ -208,7 +232,7 @@ public sealed class MessageBuilder
 
         return this;
     }
-    
+
     /// <summary>
     /// Add a dedicated special window shake entity to message chain
     /// </summary>

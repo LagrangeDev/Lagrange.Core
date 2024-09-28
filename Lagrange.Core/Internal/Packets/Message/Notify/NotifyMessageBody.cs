@@ -14,11 +14,23 @@ internal class NotifyMessageBody
     
     [ProtoMember(4)] public uint GroupUin { get; set; }
     
+    [ProtoMember(5)] public byte[]? EventParam { get; set; }
+    
     [ProtoMember(11)] public GroupRecall Recall { get; set; }
+    
+    [ProtoMember(13)] public uint? Field13 { get; set; }
+    
+    [ProtoMember(21)] public string OperatorUid { get; set; }
     
     [ProtoMember(26)] public GeneralGrayTipInfo GeneralGrayTip { get; set; }
 
     [ProtoMember(33)] public EssenceMessage EssenceMessage;
+    
+    [ProtoMember(37)] public uint MsgSequence { get; set; }
+    
+    [ProtoMember(39)] public uint Field39 { get; set; }
+    
+    [ProtoMember(44)] public GroupReactionData0 Reaction { get; set; }
 }
 
 [ProtoContract]
