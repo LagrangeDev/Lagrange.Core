@@ -36,11 +36,11 @@ internal class OperationLogic : LogicBase
     {
         uint clientSeq = chain.ClientSequence;
         ulong messageId = chain.MessageId;
-        
+
         var sendMessageEvent = SendMessageEvent.Create(chain);
         var events = await Collection.Business.SendEvent(sendMessageEvent);
         if (events.Count == 0) return new MessageResult { Result = 9057 };
-        
+
         var result = ((SendMessageEvent)events[0]).MsgResult;
         result.ClientSequence = clientSeq;
         result.MessageId = messageId;
@@ -64,12 +64,12 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupMuteGlobalEvent)events[0]).ResultCode == 0;
     }
 
-    public async Task<bool> KickGroupMember(uint groupUin, uint targetUin, bool rejectAddRequest)
+    public async Task<bool> KickGroupMember(uint groupUin, uint targetUin, bool rejectAddRequest, string reason)
     {
         string? uid = await Collection.Business.CachingLogic.ResolveUid(groupUin, targetUin);
         if (uid == null) return false;
 
-        var muteGroupMemberEvent = GroupKickMemberEvent.Create(groupUin, uid, rejectAddRequest);
+        var muteGroupMemberEvent = GroupKickMemberEvent.Create(groupUin, uid, rejectAddRequest, reason);
         var events = await Collection.Business.SendEvent(muteGroupMemberEvent);
         return events.Count != 0 && ((GroupKickMemberEvent)events[0]).ResultCode == 0;
     }
@@ -268,11 +268,11 @@ internal class OperationLogic : LogicBase
         if (result.Sequence == null) return false;
         if (await Collection.Business.CachingLogic.ResolveUid(null, friendUin) is not { } uid) return false;
 
-        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, result.ClientSequence, result.Sequence ?? 0, (uint)(result.MessageId & uint.MaxValue), result.Timestamp); 
+        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, result.ClientSequence, result.Sequence ?? 0, (uint)(result.MessageId & uint.MaxValue), result.Timestamp);
         var events = await Collection.Business.SendEvent(recallMessageEvent);
         return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
     }
-    
+
     public async Task<bool> RecallFriendMessage(MessageChain chain)
     {
         if (await Collection.Business.CachingLogic.ResolveUid(null, chain.TargetUin) is not { } uid) return false;
@@ -282,7 +282,7 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(recallMessageEvent);
         return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
     }
-    
+
     public async Task<List<BotGroupRequest>?> FetchGroupRequests()
     {
         var fetchRequestsEvent = FetchGroupRequestsEvent.Create();
@@ -413,7 +413,7 @@ internal class OperationLogic : LogicBase
         var results = await Collection.Business.SendEvent(inviteEvent);
         return results.Count != 0 && results[0].ResultCode == 0;
     }
-    
+
     public async Task<bool> SetGroupFilteredRequest(uint groupUin, ulong sequence, uint type, bool accept, string reason)
     {
         var inviteEvent = SetGroupFilteredRequestEvent.Create(accept, groupUin, sequence, type, reason);

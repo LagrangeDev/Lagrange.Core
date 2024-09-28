@@ -17,7 +17,7 @@ public static class GroupExt
     /// <returns>Successfully muted or not</returns>
     public static Task<bool> MuteGroupMember(this BotContext bot, uint groupUin, uint targetUin, uint duration)
         => bot.ContextCollection.Business.OperationLogic.MuteGroupMember(groupUin, targetUin, duration);
-    
+
     /// <summary>
     /// Mute the group
     /// </summary>
@@ -27,7 +27,7 @@ public static class GroupExt
     /// <returns>Successfully muted or not</returns>
     public static Task<bool> MuteGroupGlobal(this BotContext bot, uint groupUin, bool isMute)
         => bot.ContextCollection.Business.OperationLogic.MuteGroupGlobal(groupUin, isMute);
-    
+
     /// <summary>
     /// 
     /// </summary>
@@ -37,8 +37,11 @@ public static class GroupExt
     /// <param name="rejectAddRequest">whether the kicked member can request</param>
     /// <returns>Successfully kicked or not</returns>
     public static Task<bool> KickGroupMember(this BotContext bot, uint groupUin, uint targetUin, bool rejectAddRequest)
-        => bot.ContextCollection.Business.OperationLogic.KickGroupMember(groupUin, targetUin, rejectAddRequest);
-    
+        => bot.ContextCollection.Business.OperationLogic.KickGroupMember(groupUin, targetUin, rejectAddRequest, "");
+
+    public static Task<bool> KickGroupMember(this BotContext bot, uint groupUin, uint targetUin, bool rejectAddRequest, string reason)
+        => bot.ContextCollection.Business.OperationLogic.KickGroupMember(groupUin, targetUin, rejectAddRequest, reason);
+
     public static Task<bool> SetGroupAdmin(this BotContext bot, uint groupUin, uint targetUin, bool isAdmin)
         => bot.ContextCollection.Business.OperationLogic.SetGroupAdmin(groupUin, targetUin, isAdmin);
 
@@ -50,28 +53,28 @@ public static class GroupExt
         => bot.SetGroupBotHD(targetUin, groupUin, null, null);
     public static Task<bool> SetGroupBotHD(this BotContext bot, uint targetUin, uint groupUin, string? data_1, string? data_2)
         => bot.ContextCollection.Business.OperationLogic.SetGroupBotHD(targetUin, groupUin, data_1, data_2);
-    
+
     public static Task<bool> RenameGroupMember(this BotContext bot, uint groupUin, uint targetUin, string targetName)
         => bot.ContextCollection.Business.OperationLogic.RenameGroupMember(groupUin, targetUin, targetName);
-    
+
     public static Task<bool> RenameGroup(this BotContext bot, uint groupUin, string targetName)
         => bot.ContextCollection.Business.OperationLogic.RenameGroup(groupUin, targetName);
-    
+
     public static Task<bool> RemarkGroup(this BotContext bot, uint groupUin, string targetRemark)
         => bot.ContextCollection.Business.OperationLogic.RemarkGroup(groupUin, targetRemark);
-    
+
     public static Task<bool> LeaveGroup(this BotContext bot, uint groupUin)
         => bot.ContextCollection.Business.OperationLogic.LeaveGroup(groupUin);
 
     public static Task<bool> InviteGroup(this BotContext bot, uint groupUin, Dictionary<uint, uint?> invitedUins)
         => bot.ContextCollection.Business.OperationLogic.InviteGroup(groupUin, invitedUins);
-    
+
     public static Task<bool> SetGroupRequest(this BotContext bot, BotGroupRequest request, bool accept = true, string reason = "")
         => bot.ContextCollection.Business.OperationLogic.SetGroupRequest(request.GroupUin, request.Sequence, (uint)request.EventType, accept, reason);
-    
+
     public static Task<bool> SetGroupFilteredRequest(this BotContext bot, BotGroupRequest request, bool accept = true, string reason = "")
         => bot.ContextCollection.Business.OperationLogic.SetGroupFilteredRequest(request.GroupUin, request.Sequence, (uint)request.EventType, accept, reason);
-    
+
     public static Task<bool> SetFriendRequest(this BotContext bot, FriendRequestEvent request, bool accept = true)
         => bot.ContextCollection.Business.OperationLogic.SetFriendRequest(request.SourceUid, accept);
 
@@ -80,13 +83,13 @@ public static class GroupExt
 
     public static Task<bool> SetEssenceMessage(this BotContext bot, MessageChain chain)
         => bot.ContextCollection.Business.OperationLogic.SetEssenceMessage(chain.GroupUin ?? 0, chain.Sequence, (uint)(chain.MessageId & 0xFFFFFFFF));
-    
+
     public static Task<bool> RemoveEssenceMessage(this BotContext bot, MessageChain chain)
         => bot.ContextCollection.Business.OperationLogic.RemoveEssenceMessage(chain.GroupUin ?? 0, chain.Sequence, (uint)(chain.MessageId & 0xFFFFFFFF));
 
     public static Task<bool> GroupSetSpecialTitle(this BotContext bot, uint groupUin, uint targetUin, string title)
         => bot.ContextCollection.Business.OperationLogic.GroupSetSpecialTitle(groupUin, targetUin, title);
-    
+
     public static Task<bool> GroupSetMessageReaction(this BotContext bot, uint groupUin, uint sequence, string code)
         => bot.ContextCollection.Business.OperationLogic.SetMessageReaction(groupUin, sequence, code);
 
@@ -94,7 +97,7 @@ public static class GroupExt
 
     public static Task<ulong> FetchGroupFSSpace(this BotContext bot, uint groupUin)
         => bot.ContextCollection.Business.OperationLogic.FetchGroupFSSpace(groupUin);
-    
+
     public static Task<uint> FetchGroupFSCount(this BotContext bot, uint groupUin)
         => bot.ContextCollection.Business.OperationLogic.FetchGroupFSCount(groupUin);
 
@@ -106,19 +109,19 @@ public static class GroupExt
 
     public static Task<(int RetCode, string RetMsg)> GroupFSMove(this BotContext bot, uint groupUin, string fileId, string parentDirectory, string targetDirectory)
         => bot.ContextCollection.Business.OperationLogic.GroupFSMove(groupUin, fileId, parentDirectory, targetDirectory);
-    
+
     public static Task<(int RetCode, string RetMsg)> GroupFSDelete(this BotContext bot, uint groupUin, string fileId)
         => bot.ContextCollection.Business.OperationLogic.GroupFSDelete(groupUin, fileId);
-    
+
     public static Task<(int RetCode, string RetMsg)> GroupFSCreateFolder(this BotContext bot, uint groupUin, string name)
         => bot.ContextCollection.Business.OperationLogic.GroupFSCreateFolder(groupUin, name);
-    
+
     public static Task<(int RetCode, string RetMsg)> GroupFSDeleteFolder(this BotContext bot, uint groupUin, string folderId)
         => bot.ContextCollection.Business.OperationLogic.GroupFSDeleteFolder(groupUin, folderId);
-    
+
     public static Task<(int RetCode, string RetMsg)> GroupFSRenameFolder(this BotContext bot, uint groupUin, string folderId, string newFolderName)
         => bot.ContextCollection.Business.OperationLogic.GroupFSRenameFolder(groupUin, folderId, newFolderName);
-    
+
     public static Task<bool> GroupFSUpload(this BotContext bot, uint groupUin, FileEntity fileEntity, string targetDirectory = "/")
         => bot.ContextCollection.Business.OperationLogic.GroupFSUpload(groupUin, fileEntity, targetDirectory);
 
