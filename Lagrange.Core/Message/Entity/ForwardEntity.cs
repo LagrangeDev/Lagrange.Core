@@ -79,7 +79,7 @@ public class ForwardEntity : IMessageEntity
             {
                 Text = new Text
                 {
-                    Str = "Officially, custom names are no longer allowed, but Lagrange still requires this field to resolve the displayed name",
+                    Str = "not null",
                     PbReserve = mentionStream.ToArray()
                 }
             }
