@@ -261,7 +261,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 var recall = Serializer.Deserialize<FriendRecall>(content.AsSpan());
                 var recallEvent = FriendSysRecallEvent.Result(
                     recall.Info.FromUid,
-                    recall.Info.Sequence,
+                    recall.Info.ClientSequence,
                     recall.Info.Time,
                     recall.Info.Random,
                     recall.Info.TipInfo.Tip ?? ""
