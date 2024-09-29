@@ -40,7 +40,7 @@ internal static class MessageFilter
                 {
                     for (int j = 0; j < images.Length; j++)
                     {
-                        if (imageOld.FilePath == images[i].FilePath)
+                        if (imageOld.FilePath == images[i].FilePath && uri.Host != new Uri(images[i].ImageUrl).Host)
                         {
                             return (x.IndexOf(imageOld), false);
                         }
