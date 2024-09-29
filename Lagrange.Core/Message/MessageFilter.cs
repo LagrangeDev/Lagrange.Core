@@ -56,9 +56,11 @@ internal static class MessageFilter
     {
         foreach (var rule in FilterRules)
         {
-            for ((int index, bool isCompleted) = rule(chain); index != -1; (index, isCompleted) = rule(chain))
+            while (true)
             {
-                chain.RemoveAt(index);
+                (int index, bool isCompleted) = rule(chain);
+
+                if (index != -1) chain.RemoveAt(index);
 
                 if (isCompleted) break;
             }
