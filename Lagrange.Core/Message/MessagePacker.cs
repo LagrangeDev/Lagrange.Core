@@ -151,9 +151,6 @@ internal static class MessagePacker
                     chain.Add(new RecordEntity(privatePtt.FileUuid, privatePtt.FileName, privatePtt.FileMd5));
                 break;
         }
-
-        MessageFilter.Filter(chain);
-
         return chain;
     }
 
