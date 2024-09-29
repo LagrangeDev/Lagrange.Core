@@ -10,7 +10,7 @@ internal static class MessageFilter
     /// <summary>
     /// The filter rules, result of the predicate is the index of the message entity that should be removed, -1 means the message entity should be kept.
     /// </summary>
-    private static readonly List<Func<MessageChain, List<int>>> FilterRules = new();
+    private static readonly List<Func<MessageChain, int>> FilterRules = new();
 
     static MessageFilter()
     {
@@ -18,15 +18,13 @@ internal static class MessageFilter
         {
             var forwardIndex = chain.FindIndex(entity => entity is ForwardEntity);
 
-            if (chain[forwardIndex + 1] is MentionEntity mention) return new List<int>() { forwardIndex + 1 };
+            if (chain[forwardIndex + 1] is MentionEntity mention) return forwardIndex + 1;
 
-            return new List<int>();
+            return -1;
         });
 
         FilterRules.Add(x =>
         {
-            var result = new List<int>();
-
             var images = x.OfType<ImageEntity>().ToArray();
 
             for (int i = 0; i < images.Length; i++)
@@ -34,8 +32,7 @@ internal static class MessageFilter
                 var imageOld = images[i];
                 if (!Uri.IsWellFormedUriString(imageOld.ImageUrl, UriKind.RelativeOrAbsolute))
                 {
-                    result.Add(x.IndexOf(imageOld));
-                    continue;
+                    return x.IndexOf(imageOld);
                 }
 
                 var uri = new Uri(imageOld.ImageUrl);
@@ -45,14 +42,13 @@ internal static class MessageFilter
                     {
                         if (imageOld.FilePath == images[i].FilePath)
                         {
-                            result.Add(x.IndexOf(imageOld));
-                            break;
+                            return x.IndexOf(imageOld);
                         }
                     }
                 }
             }
 
-            return result;
+            return -1;
         });
     }
 
@@ -60,10 +56,9 @@ internal static class MessageFilter
     {
         foreach (var rule in FilterRules)
         {
-            List<int> indexs = rule(chain);
-            foreach (var index in indexs)
+            for (int i = rule(chain); i != -1; i = rule(chain))
             {
-                chain.RemoveAt(index);
+                chain.RemoveAt(i);
             }
         }
     }
