@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Lagrange.Core;
+using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Action.Response;
@@ -17,11 +18,14 @@ public class GetForwardMsgOperation(MessageService service) : IOperation
     {
         if (payload.Deserialize<OneBotGetForwardMsg>(SerializerOptions.DefaultOptions) is { } forwardMsg)
         {
-            var nodes = new List<OneBotSegment>();
+            var (code, chains) = await context.GetMessagesByResId(forwardMsg.Id);
 
-            var @event = MultiMsgDownloadEvent.Create(context.ContextCollection.Keystore.Uid ?? "", forwardMsg.Id);
-            var results = await context.ContextCollection.Business.SendEvent(@event);
-            foreach (var chain in ((MultiMsgDownloadEvent)results[0]).Chains ?? throw new Exception())
+            if (code != 0) return new OneBotResult(null, code, "failed");
+
+            var nodes = new List<OneBotSegment>();
+            if (chains == null) return new OneBotResult(new OneBotGetForwardMsgResponse(nodes), 0, "ok");
+
+            foreach (var chain in chains)
             {
                 var parsed = service.Convert(chain);
                 var nickname = string.IsNullOrEmpty(chain.FriendInfo?.Nickname)

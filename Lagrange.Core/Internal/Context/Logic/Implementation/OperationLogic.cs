@@ -453,6 +453,17 @@ internal class OperationLogic : LogicBase
         return results.Count != 0 ? ((GetC2cMessageEvent)results[0]).Chains : null;
     }
 
+    public async Task<(int code, List<MessageChain>? chains)> GetMessagesByResId(string resId)
+    {
+        var @event = MultiMsgDownloadEvent.Create(Collection.Keystore.Uid ?? "", resId);
+        var results = await Collection.Business.SendEvent(@event);
+
+        if (results.Count == 0) return (-9999, null);
+        var result = (MultiMsgDownloadEvent)results[0];
+
+        return (result.ResultCode, result.Chains);
+    }
+
     public async Task<List<string>?> FetchCustomFace()
     {
         var fetchCustomFaceEvent = FetchCustomFaceEvent.Create();
