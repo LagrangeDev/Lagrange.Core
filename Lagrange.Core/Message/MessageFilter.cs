@@ -10,7 +10,7 @@ internal static class MessageFilter
     /// <summary>
     /// The filter rules, result of the predicate is the index of the message entity that should be removed, -1 means the message entity should be kept.
     /// </summary>
-    private static readonly List<Func<MessageChain, int>> FilterRules = new();
+    private static readonly List<Func<MessageChain, (int index, bool isCompleted)>> FilterRules = new();
 
     static MessageFilter()
     {
@@ -18,9 +18,9 @@ internal static class MessageFilter
         {
             var forwardIndex = chain.FindIndex(entity => entity is ForwardEntity);
 
-            if (chain[forwardIndex + 1] is MentionEntity mention) return forwardIndex + 1;
+            if (chain[forwardIndex + 1] is MentionEntity mention) return (forwardIndex + 1, true);
 
-            return -1;
+            return (-1, true);
         });
 
         FilterRules.Add(x =>
@@ -32,7 +32,7 @@ internal static class MessageFilter
                 var imageOld = images[i];
                 if (!Uri.IsWellFormedUriString(imageOld.ImageUrl, UriKind.RelativeOrAbsolute))
                 {
-                    return x.IndexOf(imageOld);
+                    return (x.IndexOf(imageOld), false);
                 }
 
                 var uri = new Uri(imageOld.ImageUrl);
@@ -42,13 +42,13 @@ internal static class MessageFilter
                     {
                         if (imageOld.FilePath == images[i].FilePath)
                         {
-                            return x.IndexOf(imageOld);
+                            return (x.IndexOf(imageOld), false);
                         }
                     }
                 }
             }
 
-            return -1;
+            return (-1, true);
         });
     }
 
@@ -56,9 +56,9 @@ internal static class MessageFilter
     {
         foreach (var rule in FilterRules)
         {
-            for (int i = rule(chain); i != -1; i = rule(chain))
+            for ((int index, bool isCompleted) = rule(chain); isCompleted; (index, isCompleted) = rule(chain))
             {
-                chain.RemoveAt(i);
+                chain.RemoveAt(index);
             }
         }
     }
