@@ -373,6 +373,13 @@ internal class MessagingLogic : LogicBase
         {
             switch (entity)
             {
+                case ForwardEntity forward when forward.TargetUin != 0:
+                {
+                    var cache = Collection.Business.CachingLogic;
+                    forward.Uid = await cache.ResolveUid(chain.GroupUin, forward.TargetUin) ?? throw new Exception($"Failed to resolve Uid for Uin {forward.TargetUin}");
+
+                    break;
+                }
                 case MentionEntity mention when mention.Uin != 0:
                 {
                     var cache = Collection.Business.CachingLogic;

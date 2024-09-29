@@ -39,7 +39,7 @@ public class MentionEntity : IMessageEntity
             Type = Uin == 0 ? 1 : 2,
             Uin = 0,
             Field5 = 0,
-            Uid = Uid,
+            Uid = Uid, // Must be a legal value
         };
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, reserve);

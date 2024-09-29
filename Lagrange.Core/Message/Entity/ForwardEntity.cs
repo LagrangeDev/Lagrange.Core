@@ -53,10 +53,10 @@ public class ForwardEntity : IMessageEntity
 
         var mentionReserve = new MentionExtra
         {
-            Type = 2,
+            Type = TargetUin == 0 ? 1 : 2,
             Uin = 0,
             Field5 = 0,
-            Uid = "", // Prevents sending failures when uin is a certain value
+            Uid = Uid,
         };
         using var mentionStream = new MemoryStream();
         Serializer.Serialize(mentionStream, mentionReserve);
