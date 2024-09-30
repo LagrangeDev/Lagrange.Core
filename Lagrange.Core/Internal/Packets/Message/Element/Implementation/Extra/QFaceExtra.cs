@@ -8,15 +8,15 @@ namespace Lagrange.Core.Internal.Packets.Message.Element.Implementation.Extra;
 [ProtoContract]
 internal class QFaceExtra
 {
-    [ProtoMember(1)] public string? Field1 { get; set; }
+    [ProtoMember(1)] public string? AniStickerPackId { get; set; }
     
     [ProtoMember(2)] public string? AniStickerId { get; set; }
     
-    [ProtoMember(3)] public int? FaceId { get; set; }
+    [ProtoMember(3)] public int? FaceId { get; set; } // 318
     
-    [ProtoMember(4)] public int? AniStickerPackId { get; set; }
+    [ProtoMember(4)] public int? Field4 { get; set; }
     
-    [ProtoMember(5)] public int? Field5 { get; set; }  // maybe AniStickerType
+    [ProtoMember(5)] public int? AniStickerType { get; set; }
     
     [ProtoMember(6)] public string? Field6 { get; set; }
     
