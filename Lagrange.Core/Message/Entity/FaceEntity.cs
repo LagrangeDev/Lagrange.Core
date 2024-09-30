@@ -27,9 +27,9 @@ public class FaceEntity : IMessageEntity
             var qFace = new QFaceExtra
             {
                 Field1 = "1",
-                Field2 = "8",
+                AniStickerId = "8",
                 FaceId = FaceId,
-                Field4 = 1,
+                AniStickerPackId = 1,
                 Field5 = 1,
                 Field6 = "",
                 Preview = "",
