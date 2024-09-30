@@ -18,7 +18,7 @@ internal static class MessageFilter
         {
             var forwardIndex = chain.FindIndex(entity => entity is ForwardEntity);
 
-            if (chain[forwardIndex + 1] is MentionEntity mention) return (forwardIndex + 1, true);
+            if (forwardIndex != -1 && chain[forwardIndex + 1] is MentionEntity mention) return (forwardIndex + 1, true);
 
             return (-1, true);
         });
