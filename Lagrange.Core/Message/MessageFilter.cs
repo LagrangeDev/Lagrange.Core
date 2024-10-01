@@ -16,11 +16,20 @@ internal static class MessageFilter
     {
         FilterRules.Add(chain =>
         {
-            var forwardIndex = chain.FindIndex(entity => entity is ForwardEntity {ClientSequence: 0});
+            var forwardIndex = chain.FindIndex(entity => entity is ForwardEntity { ClientSequence: 0 });
 
-            if (forwardIndex != -1 && chain.Count > forwardIndex + 2 &&
-                chain[forwardIndex + 1] is MentionEntity { Name: not null } &&
+            if (forwardIndex == -1)
+            {
+                return (-1, true);
+            }
+
+            if (chain.Count > forwardIndex + 2 && chain[forwardIndex + 1] is MentionEntity { Name: not null } &&
                 chain[forwardIndex + 2] is TextEntity { Text: " " })
+            {
+                return (forwardIndex + 1, true);
+            }
+
+            if (chain[forwardIndex + 1] is MentionEntity { Name: "not null" })
             {
                 return (forwardIndex + 1, true);
             }
