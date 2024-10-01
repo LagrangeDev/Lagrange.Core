@@ -1,4 +1,4 @@
-namespace Lagrange.Core.Message;
+namespace Lagrange.Core.Message.Filter;
 
 internal interface IMessageFilterRule
 {

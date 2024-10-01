@@ -1,9 +1,9 @@
 
 using Lagrange.Core.Message.Entity;
 
-namespace Lagrange.Core.Message.FilterRule;
+namespace Lagrange.Core.Message.Filter.Rule;
 
-internal class ForwardRule : IMessageFilterRule
+internal class ForwardTrailingAtAndTextFilterRule : IMessageFilterRule
 {
     public IEnumerable<int> Handle(MessageChain chain)
     {
