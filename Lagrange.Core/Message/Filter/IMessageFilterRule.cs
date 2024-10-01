@@ -2,5 +2,5 @@ namespace Lagrange.Core.Message.Filter;
 
 internal interface IMessageFilterRule
 {
-    IEnumerable<int> Handle(MessageChain chain);
+    IEnumerable<int> Apply(MessageChain chain);
 }

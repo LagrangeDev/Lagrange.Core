@@ -5,7 +5,7 @@ namespace Lagrange.Core.Message.Filter.Rule;
 
 internal class ForwardTrailingAtAndTextFilterRule : IMessageFilterRule
 {
-    public IEnumerable<int> Handle(MessageChain chain)
+    public IEnumerable<int> Apply(MessageChain chain)
     {
         if (chain.Type != MessageChain.MessageType.Group) return Array.Empty<int>();
 

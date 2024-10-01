@@ -5,7 +5,7 @@ namespace Lagrange.Core.Message.Filter.Rule;
 
 internal class OldAndInvalidImageFilterRule : IMessageFilterRule
 {
-    public IEnumerable<int> Handle(MessageChain chain)
+    public IEnumerable<int> Apply(MessageChain chain)
     {
         var images = chain.OfType<ImageEntity>().ToArray();
 

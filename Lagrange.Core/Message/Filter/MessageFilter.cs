@@ -25,7 +25,7 @@ internal static class MessageFilter
     {
         foreach (var rule in _rules)
         {
-            foreach (var index in rule.Handle(chain).OrderByDescending(key => key))
+            foreach (var index in rule.Apply(chain).OrderByDescending(key => key))
             {
                 chain.RemoveAt(index);
             }
