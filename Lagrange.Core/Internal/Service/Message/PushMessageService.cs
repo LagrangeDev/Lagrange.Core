@@ -112,7 +112,6 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             }
             default:
             {
-                Console.WriteLine($"Unknown message type: {packetType}: {input.Hex()}");
                 break;
             }
         }
@@ -231,7 +230,6 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             }
             default:
             {
-                Console.WriteLine($"Unknown Event0x2DC message type: {pkgType}: {payload.Hex()}");
                 break;
             }
         }
@@ -293,7 +291,6 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             }
             default:
             {
-                Console.WriteLine($"Unknown Event0x210 message type: {pkgType}: {payload.Hex()}");
                 break;
             }
         }
