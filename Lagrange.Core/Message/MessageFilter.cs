@@ -1,4 +1,6 @@
+using System.Collections;
 using Lagrange.Core.Message.Entity;
+using Lagrange.Core.Message.FilterRule;
 
 namespace Lagrange.Core.Message;
 
@@ -10,59 +12,21 @@ internal static class MessageFilter
     /// <summary>
     /// The filter rules, result of the predicate is the index of the message entity that should be removed, -1 means the message entity should be kept.
     /// </summary>
-    private static readonly List<Func<MessageChain, (int index, bool isCompleted)>> FilterRules = new();
+    private static readonly List<IMessageFilterRule> _rules = new();
 
     static MessageFilter()
     {
-        FilterRules.Add(chain =>
-        {
-            var forwardIndex = chain.FindIndex(entity => entity is ForwardEntity);
-
-            if (forwardIndex != -1 && chain[forwardIndex + 1] is MentionEntity mention) return (forwardIndex + 1, true);
-
-            return (-1, true);
-        });
-
-        FilterRules.Add(x =>
-        {
-            var images = x.OfType<ImageEntity>().ToArray();
-
-            for (int i = 0; i < images.Length; i++)
-            {
-                var imageOld = images[i];
-                if (!Uri.IsWellFormedUriString(imageOld.ImageUrl, UriKind.RelativeOrAbsolute))
-                {
-                    return (x.IndexOf(imageOld), false);
-                }
-
-                var uri = new Uri(imageOld.ImageUrl);
-                if (uri.Host == "gchat.qpic.cn")
-                {
-                    for (int j = 0; j < images.Length; j++)
-                    {
-                        if (imageOld.FilePath == images[i].FilePath && uri.Host != new Uri(images[i].ImageUrl).Host)
-                        {
-                            return (x.IndexOf(imageOld), false);
-                        }
-                    }
-                }
-            }
-
-            return (-1, true);
-        });
+        _rules.Add(new ForwardRule());
+        _rules.Add(new ImageRule());
     }
 
     public static void Filter(MessageChain chain)
     {
-        foreach (var rule in FilterRules)
+        foreach (var rule in _rules)
         {
-            while (true)
+            foreach (var index in rule.Handle(chain).OrderByDescending(key => key))
             {
-                (int index, bool isCompleted) = rule(chain);
-
-                if (index != -1) chain.RemoveAt(index);
-
-                if (isCompleted) break;
+                chain.RemoveAt(index);
             }
         }
     }
