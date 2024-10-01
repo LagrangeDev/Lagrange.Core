@@ -10,4 +10,6 @@ public class OneBotSetGroupReaction
     [JsonPropertyName("message_id")] public int MessageId { get; set; }
 
     [JsonPropertyName("code")] public required string Code { get; set; }
+
+    [JsonPropertyName("is_add")] public bool IsAdd { get; set; } = true;
 }
