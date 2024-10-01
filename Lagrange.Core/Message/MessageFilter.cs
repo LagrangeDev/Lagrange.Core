@@ -16,7 +16,7 @@ internal static class MessageFilter
     {
         FilterRules.Add(chain =>
         {
-            var forwardIndex = chain.FindIndex(entity => entity is ForwardEntity);
+            var forwardIndex = chain.FindIndex(entity => entity is ForwardEntity {ClientSequence: 0});
 
             if (forwardIndex != -1 && chain.Count > forwardIndex + 2 &&
                 chain[forwardIndex + 1] is MentionEntity { Name: not null } &&

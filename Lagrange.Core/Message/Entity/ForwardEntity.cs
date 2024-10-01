@@ -97,7 +97,8 @@ public class ForwardEntity : IMessageEntity
                 Time = DateTimeOffset.FromUnixTimeSeconds(srcMsg.Time ?? 0).LocalDateTime,
                 Sequence = reserve.FriendSequence ?? srcMsg.OrigSeqs?[0] ?? 0,
                 TargetUin = (uint)srcMsg.SenderUin,
-                MessageId = reserve.MessageId
+                MessageId = reserve.MessageId,
+                ClientSequence = reserve.FriendSequence.HasValue ? (srcMsg.OrigSeqs?[0] ?? 0) : 0
             };
         }
 
