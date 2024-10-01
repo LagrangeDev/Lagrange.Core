@@ -82,7 +82,8 @@ public class ForwardEntity : IMessageEntity
                     Str = "not null",
                     PbReserve = mentionStream.ToArray()
                 } : null
-            }
+            },
+            new() { Text = ClientSequence == 0 ? new Text { Str = " " } : null }
         };
     }
 
