@@ -5,11 +5,10 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 // Resharper Disable InconsistentNaming
 
 /// <summary>
-/// Group Set Reaction
+/// Group add and reduce Reaction
 /// </summary>
-[OidbSvcTrpcTcp(0x9082, 2)]
 [ProtoContract]
-internal class OidbSvcTrpcTcp0x9082_2
+internal class OidbSvcTrpcTcp0x9082
 {
     [ProtoMember(2)] public uint GroupUin { get; set; }
 

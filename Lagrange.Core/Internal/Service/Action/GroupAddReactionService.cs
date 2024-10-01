@@ -15,7 +15,7 @@ internal class GroupAddReactionService : BaseService<GroupAddReactionEvent>
     protected override bool Build(GroupAddReactionEvent input, BotKeystore keystore, BotAppInfo appInfo,
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
-        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x9082_1>(new OidbSvcTrpcTcp0x9082_1
+        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x9082>(new OidbSvcTrpcTcp0x9082
         {
             GroupUin = input.GroupUin,
             Sequence = input.Sequence,
@@ -23,7 +23,7 @@ internal class GroupAddReactionService : BaseService<GroupAddReactionEvent>
             Field5 = true,
             Field6 = false,
             Field7 = false
-        }, false, true);
+        }, 0x9082, 1, false, true);
 
         output = packet.Serialize();
         extraPackets = null;
