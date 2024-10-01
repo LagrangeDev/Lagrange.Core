@@ -8,14 +8,14 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Action;
 
-[EventSubscribe(typeof(GroupSetReactionEvent))]
-[Service("OidbSvcTrpcTcp.0x9082_1")]
-internal class GroupSetReactionService : BaseService<GroupSetReactionEvent>
+[EventSubscribe(typeof(GroupReduceReactionEvent))]
+[Service("OidbSvcTrpcTcp.0x9082_2")]
+internal class GroupReduceReactionService : BaseService<GroupReduceReactionEvent>
 {
-    protected override bool Build(GroupSetReactionEvent input, BotKeystore keystore, BotAppInfo appInfo,
+    protected override bool Build(GroupReduceReactionEvent input, BotKeystore keystore, BotAppInfo appInfo,
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
-        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x9082_1>(new OidbSvcTrpcTcp0x9082_1
+        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x9082_2>(new OidbSvcTrpcTcp0x9082_2
         {
             GroupUin = input.GroupUin,
             Sequence = input.Sequence,
@@ -31,11 +31,11 @@ internal class GroupSetReactionService : BaseService<GroupSetReactionEvent>
     }
 
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out GroupSetReactionEvent output, out List<ProtocolEvent>? extraEvents)
+        out GroupReduceReactionEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
-        
-        output = GroupSetReactionEvent.Result((int)payload.ErrorCode);
+
+        output = GroupReduceReactionEvent.Result((int)payload.ErrorCode);
         extraEvents = null;
         return true;
     }

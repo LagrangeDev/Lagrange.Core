@@ -528,11 +528,20 @@ internal class OperationLogic : LogicBase
         return await Collection.Business.CachingLogic.GetCachedUsers(uin, refreshCache);
     }
 
-    public async Task<bool> SetMessageReaction(uint groupUin, uint sequence, string code)
+    public async Task<bool> SetMessageReaction(uint groupUin, uint sequence, string code, bool isAdd)
     {
-        var setReactionEvent = GroupSetReactionEvent.Create(groupUin, sequence, code);
-        var results = await Collection.Business.SendEvent(setReactionEvent);
-        return results.Count != 0 && results[0].ResultCode == 0;
+        if (isAdd)
+        {
+            var addReactionEvent = GroupAddReactionEvent.Create(groupUin, sequence, code);
+            var results = await Collection.Business.SendEvent(addReactionEvent);
+            return results.Count != 0 && results[0].ResultCode == 0;
+        }
+        else
+        {
+            var reduceReactionEvent = GroupReduceReactionEvent.Create(groupUin, sequence, code);
+            var results = await Collection.Business.SendEvent(reduceReactionEvent);
+            return results.Count != 0 && results[0].ResultCode == 0;
+        }
     }
 
     public async Task<bool> SetNeedToConfirmSwitch(bool enableNoNeed)

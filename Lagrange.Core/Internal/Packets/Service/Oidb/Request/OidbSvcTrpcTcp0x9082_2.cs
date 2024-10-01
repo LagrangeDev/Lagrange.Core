@@ -7,9 +7,9 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 /// <summary>
 /// Group Set Reaction
 /// </summary>
-[OidbSvcTrpcTcp(0x9082, 1)]
+[OidbSvcTrpcTcp(0x9082, 2)]
 [ProtoContract]
-internal class OidbSvcTrpcTcp0x9082_1
+internal class OidbSvcTrpcTcp0x9082_2
 {
     [ProtoMember(2)] public uint GroupUin { get; set; }
 
