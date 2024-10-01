@@ -77,11 +77,11 @@ public class ForwardEntity : IMessageEntity
             },
             new()
             {
-                Text = new Text
-                {
+                Text = ClientSequence == 0 ? new Text
+                { 
                     Str = "not null",
                     PbReserve = mentionStream.ToArray()
-                }
+                } : null
             }
         };
     }
