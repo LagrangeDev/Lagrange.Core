@@ -16,6 +16,8 @@ public sealed class MessageChain : List<IMessageEntity>
 
     public ulong MessageId { get; }
 
+    public uint SigMap { get; set; }
+
     public DateTime Time { get; internal set; }
 
     public BotFriend? FriendInfo { get; internal set; }
@@ -39,7 +41,7 @@ public sealed class MessageChain : List<IMessageEntity>
     #endregion
 
     internal MessageChain(uint friendUin, string selfUid, string friendUid, uint targetUin = 0, uint sequence = 0, uint clientSequence = 0, ulong? messageId = null,
-        MessageType type = MessageType.Friend)
+        MessageType type = MessageType.Friend, uint sigmap = 0)
     {
         GroupUin = null;
         FriendUin = friendUin;
@@ -51,6 +53,7 @@ public sealed class MessageChain : List<IMessageEntity>
         MessageId = messageId ?? (0x10000000ul << 32) | (uint)Random.Shared.Next(100000000, int.MaxValue);
         Elements = new List<Elem>();
         Type = type;
+        SigMap = sigmap;
     }
 
     internal MessageChain(uint groupUin)
@@ -63,7 +66,7 @@ public sealed class MessageChain : List<IMessageEntity>
         Elements = new List<Elem>();
     }
 
-    internal MessageChain(uint groupUin, uint friendUin, uint sequence, ulong messageId = 0)
+    internal MessageChain(uint groupUin, uint friendUin, uint sequence, ulong messageId = 0,uint sigmap = 0)
     {
         GroupUin = groupUin;
         FriendUin = friendUin;
@@ -72,6 +75,7 @@ public sealed class MessageChain : List<IMessageEntity>
         Uid = null;
         MessageId = messageId;
         Elements = new List<Elem>();
+        SigMap = sigmap;
     }
 
     public bool HasTypeOf<T>() where T : IMessageEntity => this.Any(entity => entity is T);
@@ -85,6 +89,9 @@ public sealed class MessageChain : List<IMessageEntity>
         chainBuilder.Append("[MessageChain");
         if (GroupUin != null) chainBuilder.Append($"({GroupUin})");
         chainBuilder.Append($"({FriendUin})");
+        chainBuilder.Append("] ");
+        chainBuilder.Append("[Appid");
+        chainBuilder.Append($"({SigMap})");
         chainBuilder.Append("] ");
         foreach (var entity in this)
         {

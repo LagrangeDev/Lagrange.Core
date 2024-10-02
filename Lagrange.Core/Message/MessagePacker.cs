@@ -179,7 +179,7 @@ internal static class MessagePacker
             C2C = chain.IsGroup || chain.HasTypeOf<FileEntity>() ? null : new C2C
             {
                 Uid = chain.FriendInfo?.Uid,
-                Uin = chain.FriendUin
+                Uin = chain.FriendUin,
             },
             Grp = !chain.IsGroup ? null : new Grp // for consistency of code so inverted condition
             {
@@ -254,13 +254,17 @@ internal static class MessagePacker
                 message.ContentHead.FriendSequence ?? 0,
                 message.ContentHead.Sequence ?? 0,
                 message.ContentHead.NewId ?? 0,
-                message.ContentHead.Type == 141 ? MessageChain.MessageType.Temp : MessageChain.MessageType.Friend)
+                message.ContentHead.Type == 141 ? MessageChain.MessageType.Temp : MessageChain.MessageType.Friend,
+                message.ResponseHead.SigMap
+                )
 
             : new MessageChain(
                 message.ResponseHead.Grp.GroupUin,
                 message.ResponseHead.FromUin,
                 message.ContentHead.Sequence ?? 0,
-                message.ContentHead.NewId ?? 0);
+                message.ContentHead.NewId ?? 0,
+                message.ResponseHead.SigMap
+                );
 
         if (message.Body?.RichText?.Elems is { } elems) chain.Elements.AddRange(elems);
 

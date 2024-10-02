@@ -113,8 +113,8 @@ public sealed class MessageService
         var segments = Convert(chain);
         int hash = MessageRecord.CalcMessageHash(chain.MessageId, chain.Sequence);
         object request = _stringPost
-            ? new OneBotGroupStringMsg(uin, chain.GroupUin ?? 0, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash)
-            : new OneBotGroupMsg(uin, chain.GroupUin ?? 0, segments, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash);
+            ? new OneBotGroupStringMsg(uin, chain.GroupUin ?? 0, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash, chain.SigMap)
+            : new OneBotGroupMsg(uin, chain.GroupUin ?? 0, segments, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash, chain.SigMap);
         return request;
     }
 

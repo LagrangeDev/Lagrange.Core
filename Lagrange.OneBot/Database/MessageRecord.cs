@@ -29,6 +29,8 @@ public class MessageRecord
 
     public uint TargetUin { get; set; }
 
+    public uint SigMap { get; set; }
+
     static MessageRecord()
     {
         Vector2Mapper.RegisterType(); // I HATE THIS
@@ -60,7 +62,8 @@ public class MessageRecord
         GroupMemberInfo = chain.GroupMemberInfo,
         Entities = chain,
         MessageHash = CalcMessageHash(chain.MessageId, chain.Sequence),
-        TargetUin = chain.TargetUin
+        TargetUin = chain.TargetUin,
+        SigMap = chain.SigMap,
     };
 
     public static int CalcMessageHash(ulong msgId, uint seq)
