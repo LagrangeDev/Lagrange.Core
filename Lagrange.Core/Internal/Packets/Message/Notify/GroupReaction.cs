@@ -5,14 +5,6 @@ using ProtoBuf;
 namespace Lagrange.Core.Internal.Packets.Message.Notify;
 
 [ProtoContract]
-internal class GroupReaction
-{
-    [ProtoMember(4)] public uint GroupUid { get; set; }
-
-    [ProtoMember(44)] public GroupReactionData0 Data { get; set; }
-}
-
-[ProtoContract]
 internal class GroupReactionData0
 {
     // What the fuck was tx thinking?

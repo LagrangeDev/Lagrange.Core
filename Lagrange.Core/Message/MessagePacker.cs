@@ -151,7 +151,6 @@ internal static class MessagePacker
                     chain.Add(new RecordEntity(privatePtt.FileUuid, privatePtt.FileName, privatePtt.FileMd5));
                 break;
         }
-
         return chain;
     }
 
@@ -208,12 +207,12 @@ internal static class MessagePacker
     {
         ResponseHead = new ResponseHead
         {
-            FromUin = chain.IsGroup ? chain.FriendUin : 0,
+            FromUin = chain.FriendUin,
             ToUid = chain.IsGroup ? null : selfUid,
             Grp = !chain.IsGroup ? null : new ResponseGrp // for consistency of code so inverted condition
             {
                 GroupUin = chain.GroupUin ?? 0,
-                MemberName = chain.FriendInfo?.Nickname ?? "",
+                MemberName = !string.IsNullOrWhiteSpace(chain.FriendInfo?.Nickname) ? chain.FriendInfo.Nickname : chain.GroupMemberInfo?.MemberName ?? chain.GroupMemberInfo?.MemberCard ?? "",
                 Unknown5 = 2
             },
             Forward = chain.IsGroup ? null : new ResponseForward
@@ -228,7 +227,7 @@ internal static class MessagePacker
             DivSeq = chain.IsGroup ? null : 4,
             MsgId = (uint)(chain.MessageId & 0xFFFFFFFF),
             Sequence = (uint?)Random.Shared.Next(1000000, 9999999),
-            Timestamp = (uint)DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            Timestamp = (chain.Time == default ? DateTimeOffset.Now : new(chain.Time)).ToUnixTimeSeconds(),
             Field7 = 1,
             Field8 = 0,
             Field9 = 0,
@@ -237,8 +236,8 @@ internal static class MessagePacker
                 Field1 = 0,
                 Field2 = 0,
                 Field3 = chain.IsGroup ? 0u : 2u,
-                UnknownBase64 = $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg",
-                Avatar = $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg"
+                UnknownBase64 = !string.IsNullOrEmpty(chain.FriendInfo?.Avatar) ? chain.FriendInfo?.Avatar : $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg",
+                Avatar = !string.IsNullOrEmpty(chain.FriendInfo?.Avatar) ? chain.FriendInfo?.Avatar : $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg"
             }
         },
         Body = new MessageBody { RichText = new RichText { Elems = new List<Elem>() } }

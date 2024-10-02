@@ -16,6 +16,7 @@ public class MultiMsgEntity : IMessageEntity
 
     internal string? ResId { get; set; }
 
+    [Obsolete("No more need for group uin")]
     public uint? GroupUin { get; set; }
 
     public List<MessageChain> Chains { get; }
@@ -30,9 +31,11 @@ public class MultiMsgEntity : IMessageEntity
         Chains = new List<MessageChain>();
     }
 
-    public MultiMsgEntity(uint? groupUin, List<MessageChain> chains, string? detail = null)
+    [Obsolete("No more need for group uin")]
+    public MultiMsgEntity(uint? groupUin, List<MessageChain> chains, string? detail = null) : this(chains, detail) { }
+
+    public MultiMsgEntity(List<MessageChain> chains, string? detail = null)
     {
-        GroupUin = groupUin;
         Chains = chains;
         DetailStr = detail;
     }
@@ -93,7 +96,9 @@ public class MultiMsgEntity : IMessageEntity
                     var chain = Chains[i];
                     var member = chain.GroupMemberInfo;
                     var friend = chain.FriendInfo;
-                    string text = $"{member?.MemberCard ?? member?.MemberName ?? friend?.Nickname}: {chain.ToPreviewText()}";
+                    // Follow the current TX display, first user name
+                    var displayName = !string.IsNullOrWhiteSpace(friend?.Nickname) ? friend.Nickname : member?.MemberName ?? member?.MemberCard ?? "QQ\u7528\u6237";
+                    string text = $"{displayName}: {chain.ToPreviewText()}";
                     json.Meta.Detail.News.Add(new News { Text = text });
                 }
             }

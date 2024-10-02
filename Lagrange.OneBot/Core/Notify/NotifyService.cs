@@ -145,10 +145,18 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
         bot.Invoker.OnFriendRecallEvent += async (_, @event) =>
         {
             logger.LogInformation(@event.ToString());
+
+            var collection = database.GetCollection<MessageRecord>();
+            var record = collection.FindOne(Query.And(
+                Query.EQ("FriendUin", new BsonValue(@event.FriendUin)),
+                Query.EQ("ClientSequence", new BsonValue(@event.ClientSequence)),
+                Query.EQ("MessageId", new BsonValue(0x1000000L << 32 | @event.Random))
+            ));
+
             await service.SendJsonAsync(new OneBotFriendRecall(bot.BotUin)
             {
                 UserId = @event.FriendUin,
-                MessageId = MessageRecord.CalcMessageHash(@event.Random, @event.Sequence),
+                MessageId = MessageRecord.CalcMessageHash(@event.Random, record.Sequence),
                 Tip = @event.Tip
             });
         };
@@ -220,6 +228,16 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 @event.IsAdd ? "add" : "remove",
                 @event.Code,
                 @event.Count
+            ));
+        };
+
+        bot.Invoker.OnGroupNameChangeEvent += async (bot, @event) =>
+        {
+            logger.LogInformation("{}", @event);
+            await service.SendJsonAsync(new OneBotGroupNameChange(
+                bot.BotUin,
+                @event.GroupUin,
+                @event.Name
             ));
         };
     }

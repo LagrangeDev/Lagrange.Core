@@ -68,7 +68,7 @@ public class ForwardEntity : IMessageEntity
                 SrcMsg = new SrcMsg
                 {
                     OrigSeqs = new List<uint> { ClientSequence != 0 ? ClientSequence : Sequence },
-                    SenderUin = 0, // Can't get self uin
+                    SenderUin = TargetUin, // Can't get self uin
                     Time = (int)new DateTimeOffset(Time).ToUnixTimeSeconds(),
                     Elems = Elements,
                     PbReserve = forwardStream.ToArray(),
@@ -77,11 +77,11 @@ public class ForwardEntity : IMessageEntity
             },
             new()
             {
-                Text = new Text
-                {
-                    Str = null,
+                Text = ClientSequence == 0 ? new Text
+                { 
+                    Str = "not null",
                     PbReserve = mentionStream.ToArray()
-                }
+                } : null
             }
         };
     }

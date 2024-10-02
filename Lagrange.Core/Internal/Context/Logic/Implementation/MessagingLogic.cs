@@ -31,6 +31,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(GroupSysEssenceEvent))]
 [EventSubscribe(typeof(GroupSysPokeEvent))]
 [EventSubscribe(typeof(GroupSysReactionEvent))]
+[EventSubscribe(typeof(GroupSysNameChangeEvent))]
 [EventSubscribe(typeof(FriendSysRecallEvent))]
 [EventSubscribe(typeof(FriendSysRequestEvent))]
 [EventSubscribe(typeof(FriendSysPokeEvent))]
@@ -52,6 +53,7 @@ internal class MessagingLogic : LogicBase
                 if (push.Chain.Count == 0) return;
                 await ResolveIncomingChain(push.Chain);
                 await ResolveChainMetadata(push.Chain);
+                MessageFilter.Filter(push.Chain);
 
                 var chain = push.Chain;
                 Collection.Log.LogVerbose(Tag, chain.ToPreviewString());
@@ -74,6 +76,7 @@ internal class MessagingLogic : LogicBase
                     if (chain.Count == 0) return;
                     await ResolveIncomingChain(chain);
                     await ResolveChainMetadata(chain);
+                    MessageFilter.Filter(chain);
                 }
                 break;
             }
@@ -84,6 +87,7 @@ internal class MessagingLogic : LogicBase
                     if (chain.Count == 0) return;
                     await ResolveIncomingChain(chain);
                     await ResolveChainMetadata(chain);
+                    MessageFilter.Filter(chain);
                 }
                 break;
             }
@@ -135,6 +139,12 @@ internal class MessagingLogic : LogicBase
             {
                 uint operatorUin = await Collection.Business.CachingLogic.ResolveUin(reaction.TargetGroupUin, reaction.OperatorUid) ?? 0;
                 var pokeArgs = new GroupReactionEvent(reaction.TargetGroupUin, reaction.TargetSequence, operatorUin, reaction.IsAdd, reaction.Code, reaction.Count);
+                Collection.Invoker.PostEvent(pokeArgs);
+                break;
+            }
+            case GroupSysNameChangeEvent nameChange:
+            {
+                var pokeArgs = new GroupNameChangeEvent(nameChange.GroupUin, nameChange.Name);
                 Collection.Invoker.PostEvent(pokeArgs);
                 break;
             }
@@ -195,7 +205,7 @@ internal class MessagingLogic : LogicBase
             case FriendSysRecallEvent recall:
             {
                 uint fromUin = await Collection.Business.CachingLogic.ResolveUin(null, recall.FromUid) ?? 0;
-                var recallArgs = new FriendRecallEvent(fromUin, recall.Sequence, recall.Time, recall.Random, recall.Tip);
+                var recallArgs = new FriendRecallEvent(fromUin, recall.ClientSequence, recall.Time, recall.Random, recall.Tip);
                 Collection.Invoker.PostEvent(recallArgs);
                 break;
             }
@@ -217,8 +227,9 @@ internal class MessagingLogic : LogicBase
                 {
                     foreach (var chain in multi.Chains)
                     {
-                        if (chain.Count == 0) return;
+                        if (chain.Count == 0) continue;
                         await ResolveIncomingChain(chain);
+                        MessageFilter.Filter(chain);
                     }
                 }
                 break;
@@ -252,7 +263,9 @@ internal class MessagingLogic : LogicBase
 
     private async Task ResolveIncomingChain(MessageChain chain)
     {
-        foreach (var entity in chain) switch (entity)
+        foreach (var entity in chain)
+        {
+            switch (entity)
             {
                 case FileEntity { FileHash: not null, FileUuid: not null } file:  // private
                 {
@@ -351,11 +364,14 @@ internal class MessagingLogic : LogicBase
                     break;
                 }
             }
+        }
     }
 
     private async Task ResolveOutgoingChain(MessageChain chain)
     {
-        foreach (var entity in chain) switch (entity)
+        foreach (var entity in chain)
+        {
+            switch (entity)
             {
                 case ForwardEntity forward when forward.TargetUin != 0:
                 {
@@ -386,7 +402,9 @@ internal class MessagingLogic : LogicBase
                 }
                 case MultiMsgEntity { ResId: null } multiMsg:
                 {
-                    var multiMsgEvent = MultiMsgUploadEvent.Create(multiMsg.GroupUin, multiMsg.Chains);
+                    if (chain.GroupUin != null) foreach (var c in multiMsg.Chains) c.GroupUin = chain.GroupUin;
+
+                    var multiMsgEvent = MultiMsgUploadEvent.Create(chain.GroupUin, multiMsg.Chains);
                     var results = await Collection.Business.SendEvent(multiMsgEvent);
                     if (results.Count != 0)
                     {
@@ -407,6 +425,7 @@ internal class MessagingLogic : LogicBase
                     break;
                 }
             }
+        }
     }
 
     /// <summary>

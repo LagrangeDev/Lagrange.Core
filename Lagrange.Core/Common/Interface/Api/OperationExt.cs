@@ -90,7 +90,7 @@ public static class OperationExt
     /// <returns>Successfully recalled or not</returns>
     public static Task<bool> RecallFriendMessage(this BotContext bot, uint friendUin, MessageResult result)
         => bot.ContextCollection.Business.OperationLogic.RecallFriendMessage(friendUin, result);
-    
+
     /// <summary>
     /// Recall the group message by <see cref="MessageChain"/>
     /// </summary>
@@ -99,7 +99,7 @@ public static class OperationExt
     /// <returns>Successfully recalled or not</returns>
     public static Task<bool> RecallFriendMessage(this BotContext bot, MessageChain chain)
         => bot.ContextCollection.Business.OperationLogic.RecallFriendMessage(chain);
-    
+
     /// <summary>
     /// Fetch Notifications and requests such as friend requests and Group Join Requests
     /// </summary>
@@ -185,6 +185,11 @@ public static class OperationExt
     public static Task<List<MessageChain>?> GetC2cMessage(this BotContext bot, uint friendUin, uint startSequence, uint endSequence)
     {
         return bot.ContextCollection.Business.OperationLogic.GetC2cMessage(friendUin, startSequence, endSequence);
+    }
+
+    public static Task<(int code, List<MessageChain>? chains)> GetMessagesByResId(this BotContext bot, string resId)
+    {
+        return bot.ContextCollection.Business.OperationLogic.GetMessagesByResId(resId);
     }
 
     /// <summary>

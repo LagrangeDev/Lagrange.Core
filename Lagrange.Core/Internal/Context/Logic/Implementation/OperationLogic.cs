@@ -36,11 +36,11 @@ internal class OperationLogic : LogicBase
     {
         uint clientSeq = chain.ClientSequence;
         ulong messageId = chain.MessageId;
-        
+
         var sendMessageEvent = SendMessageEvent.Create(chain);
         var events = await Collection.Business.SendEvent(sendMessageEvent);
         if (events.Count == 0) return new MessageResult { Result = 9057 };
-        
+
         var result = ((SendMessageEvent)events[0]).MsgResult;
         result.ClientSequence = clientSeq;
         result.MessageId = messageId;
@@ -64,12 +64,12 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupMuteGlobalEvent)events[0]).ResultCode == 0;
     }
 
-    public async Task<bool> KickGroupMember(uint groupUin, uint targetUin, bool rejectAddRequest)
+    public async Task<bool> KickGroupMember(uint groupUin, uint targetUin, bool rejectAddRequest, string reason)
     {
         string? uid = await Collection.Business.CachingLogic.ResolveUid(groupUin, targetUin);
         if (uid == null) return false;
 
-        var muteGroupMemberEvent = GroupKickMemberEvent.Create(groupUin, uid, rejectAddRequest);
+        var muteGroupMemberEvent = GroupKickMemberEvent.Create(groupUin, uid, rejectAddRequest, reason);
         var events = await Collection.Business.SendEvent(muteGroupMemberEvent);
         return events.Count != 0 && ((GroupKickMemberEvent)events[0]).ResultCode == 0;
     }
@@ -275,11 +275,11 @@ internal class OperationLogic : LogicBase
         if (result.Sequence == null) return false;
         if (await Collection.Business.CachingLogic.ResolveUid(null, friendUin) is not { } uid) return false;
 
-        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, result.ClientSequence, result.Sequence ?? 0, (uint)(result.MessageId & uint.MaxValue), result.Timestamp); 
+        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, result.ClientSequence, result.Sequence ?? 0, (uint)(result.MessageId & uint.MaxValue), result.Timestamp);
         var events = await Collection.Business.SendEvent(recallMessageEvent);
         return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
     }
-    
+
     public async Task<bool> RecallFriendMessage(MessageChain chain)
     {
         if (await Collection.Business.CachingLogic.ResolveUid(null, chain.TargetUin) is not { } uid) return false;
@@ -289,7 +289,7 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(recallMessageEvent);
         return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
     }
-    
+
     public async Task<List<BotGroupRequest>?> FetchGroupRequests()
     {
         var fetchRequestsEvent = FetchGroupRequestsEvent.Create();
@@ -420,7 +420,7 @@ internal class OperationLogic : LogicBase
         var results = await Collection.Business.SendEvent(inviteEvent);
         return results.Count != 0 && results[0].ResultCode == 0;
     }
-    
+
     public async Task<bool> SetGroupFilteredRequest(uint groupUin, ulong sequence, uint type, bool accept, string reason)
     {
         var inviteEvent = SetGroupFilteredRequestEvent.Create(accept, groupUin, sequence, type, reason);
@@ -458,6 +458,17 @@ internal class OperationLogic : LogicBase
         var c2cEvent = GetC2cMessageEvent.Create(uid, startSequence, endSequence);
         var results = await Collection.Business.SendEvent(c2cEvent);
         return results.Count != 0 ? ((GetC2cMessageEvent)results[0]).Chains : null;
+    }
+
+    public async Task<(int code, List<MessageChain>? chains)> GetMessagesByResId(string resId)
+    {
+        var @event = MultiMsgDownloadEvent.Create(Collection.Keystore.Uid ?? "", resId);
+        var results = await Collection.Business.SendEvent(@event);
+
+        if (results.Count == 0) return (-9999, null);
+        var result = (MultiMsgDownloadEvent)results[0];
+
+        return (result.ResultCode, result.Chains);
     }
 
     public async Task<List<string>?> FetchCustomFace()
@@ -524,11 +535,20 @@ internal class OperationLogic : LogicBase
         return await Collection.Business.CachingLogic.GetCachedUsers(uin, refreshCache);
     }
 
-    public async Task<bool> SetMessageReaction(uint groupUin, uint sequence, string code)
+    public async Task<bool> SetMessageReaction(uint groupUin, uint sequence, string code, bool isAdd)
     {
-        var setReactionEvent = GroupSetReactionEvent.Create(groupUin, sequence, code);
-        var results = await Collection.Business.SendEvent(setReactionEvent);
-        return results.Count != 0 && results[0].ResultCode == 0;
+        if (isAdd)
+        {
+            var addReactionEvent = GroupAddReactionEvent.Create(groupUin, sequence, code);
+            var results = await Collection.Business.SendEvent(addReactionEvent);
+            return results.Count != 0 && results[0].ResultCode == 0;
+        }
+        else
+        {
+            var reduceReactionEvent = GroupReduceReactionEvent.Create(groupUin, sequence, code);
+            var results = await Collection.Business.SendEvent(reduceReactionEvent);
+            return results.Count != 0 && results[0].ResultCode == 0;
+        }
     }
 
     public async Task<bool> SetNeedToConfirmSwitch(bool enableNoNeed)

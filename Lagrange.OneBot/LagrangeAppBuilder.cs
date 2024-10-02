@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Utility.Sign;
@@ -120,12 +121,37 @@ public sealed class LagrangeAppBuilder
             {
                 CheckpointSize = 50
             };
-            logger.LogInformation("Indexing in the database...");
-            logger.LogInformation("The first indexing of the old database will load the entire database into memory.");
-            logger.LogInformation("If this is the first time creating an index for the old database, please restart the application");
-            var collection = db.GetCollection<MessageRecord>();
-            collection.EnsureIndex(record => record.MessageId);
-            collection.EnsureIndex(record => record.Sequence);
+
+            string[] expressions = ["$.Sequence", "$.MessageId", "$.FriendUin", "$.GroupUin"];
+
+            bool hasFirstIndex = false;
+            var indexes = db.GetCollection("$indexes");
+            foreach (var expression in expressions)
+            {
+                if (indexes.Exists(Query.EQ("expression", expression))) continue;
+
+                logger.LogWarning("In the database index");
+                logger.LogWarning("Depending on the size of the database will consume some time and memory");
+                logger.LogWarning("Please restart the program after indexing is complete");
+
+                hasFirstIndex = true;
+                break;
+            }
+
+            var records = db.GetCollection<MessageRecord>();
+            foreach (var expression in expressions)
+            {
+                records.EnsureIndex(BsonExpression.Create(expression));
+            }
+
+            if (hasFirstIndex)
+            {
+                db.Dispose(); // Ensure that the database is written correctly
+                logger.LogWarning("Indexing complete, please restart the program");
+                Console.ReadKey(true);
+                Environment.Exit(0);
+            }
+
             return db;
         });
         Services.AddSingleton<SignProvider, OneBotSigner>();

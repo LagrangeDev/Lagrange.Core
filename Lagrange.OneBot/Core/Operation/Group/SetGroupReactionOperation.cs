@@ -19,7 +19,7 @@ public class SetGroupReactionOperation(LiteDatabase database) : IOperation
         {
             var message = (MessageChain)database.GetCollection<MessageRecord>().FindById(data.MessageId);
 
-            bool result = await context.GroupSetMessageReaction(data.GroupId, message.Sequence, data.Code);
+            bool result = await context.GroupSetMessageReaction(data.GroupId, message.Sequence, data.Code, data.IsAdd);
             return new OneBotResult(null, result ? 0 : 1, result ? "ok" : "failed");
         }
 
