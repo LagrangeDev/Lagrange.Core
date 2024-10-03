@@ -4,6 +4,7 @@ using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Message.Entity;
 using Lagrange.OneBot.Core.Entity.Action;
+using Lagrange.OneBot.Core.Operation.Converters;
 using Lagrange.OneBot.Message.Entity;
 
 namespace Lagrange.OneBot.Core.Operation.Group;
@@ -13,7 +14,7 @@ public class SetGroupPortraitOperation : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload.Deserialize<OneBotSetGroupPortrait>() is { } portrait)
+        if (payload.Deserialize<OneBotSetGroupPortrait>(SerializerOptions.DefaultOptions) is { } portrait)
         {
             var image = CommonResolver.ResolveStream(portrait.File);
             if (image == null) throw new Exception();
