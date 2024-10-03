@@ -4,8 +4,10 @@ using Lagrange.Core.Internal.Context.Uploader;
 using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.System;
+using Lagrange.Core.Internal.Packets.Service.Highway;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
+using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 
@@ -579,5 +581,37 @@ internal class OperationLogic : LogicBase
             .Poke(type, strength)
             .Build();
         return SendMessage(chain);
+    }
+
+    public async Task<bool> SetAvatar(ImageEntity avatar)
+    {
+        if (avatar.ImageStream == null) return false;
+        
+        var highwayUrlEvent = HighwayUrlEvent.Create();
+        var highwayUrlResults = await Collection.Business.SendEvent(highwayUrlEvent);
+        if (highwayUrlResults.Count == 0) return false;
+        
+        var ticket = ((HighwayUrlEvent)highwayUrlResults[0]).SigSession;
+        return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, avatar.ImageMd5, Array.Empty<byte>());
+    }
+    
+    public async Task<bool> GroupSetAvatar(uint groupUin, ImageEntity avatar)
+    {
+        if (avatar.ImageStream == null) return false;
+        
+        var highwayUrlEvent = HighwayUrlEvent.Create();
+        var highwayUrlResults = await Collection.Business.SendEvent(highwayUrlEvent);
+        if (highwayUrlResults.Count == 0) return false;
+        
+        var ticket = ((HighwayUrlEvent)highwayUrlResults[0]).SigSession;
+        var extra = new GroupAvatarExtra
+        {
+            Type = 101,
+            GroupUin = groupUin,
+            Field3 = new GroupAvatarExtraField3 { Field1 = 1 },
+            Field5 = 3,
+            Field6 = 1
+        }.Serialize().ToArray();
+        return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, avatar.ImageMd5, extra);
     }
 }
