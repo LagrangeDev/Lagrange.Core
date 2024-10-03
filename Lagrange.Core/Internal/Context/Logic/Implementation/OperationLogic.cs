@@ -592,7 +592,8 @@ internal class OperationLogic : LogicBase
         if (highwayUrlResults.Count == 0) return false;
         
         var ticket = ((HighwayUrlEvent)highwayUrlResults[0]).SigSession;
-        return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, avatar.ImageMd5, Array.Empty<byte>());
+        var md5 = avatar.ImageStream.Value.Md5().UnHex();
+        return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, md5, Array.Empty<byte>());
     }
     
     public async Task<bool> GroupSetAvatar(uint groupUin, ImageEntity avatar)
@@ -604,6 +605,7 @@ internal class OperationLogic : LogicBase
         if (highwayUrlResults.Count == 0) return false;
         
         var ticket = ((HighwayUrlEvent)highwayUrlResults[0]).SigSession;
+        var md5 = avatar.ImageStream.Value.Md5().UnHex();
         var extra = new GroupAvatarExtra
         {
             Type = 101,
@@ -612,6 +614,6 @@ internal class OperationLogic : LogicBase
             Field5 = 3,
             Field6 = 1
         }.Serialize().ToArray();
-        return await Collection.Highway.UploadSrcByStreamAsync(3000, avatar.ImageStream.Value, ticket, avatar.ImageMd5, extra);
+        return await Collection.Highway.UploadSrcByStreamAsync(3000, avatar.ImageStream.Value, ticket, md5, extra);
     }
 }
