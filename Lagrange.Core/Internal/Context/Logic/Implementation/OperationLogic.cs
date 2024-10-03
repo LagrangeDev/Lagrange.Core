@@ -612,6 +612,6 @@ internal class OperationLogic : LogicBase
             Field5 = 3,
             Field6 = 1
         }.Serialize().ToArray();
-        return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, avatar.ImageMd5, extra);
+        return await Collection.Highway.UploadSrcByStreamAsync(3000, avatar.ImageStream.Value, ticket, avatar.ImageMd5, extra);
     }
 }
