@@ -74,6 +74,7 @@ public class ImageEntity : IMessageEntity
 
         var elems = new Elem[]
         {
+            new(),
             new()
             {
                 CommonElem = new CommonElem
