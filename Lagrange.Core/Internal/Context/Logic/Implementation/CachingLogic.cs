@@ -34,7 +34,7 @@ internal class CachingLogic : LogicBase
         _cachedFriends = new List<BotFriend>();
         _cachedGroupMembers = new Dictionary<uint, List<BotGroupMember>>();
 
-        _cacheUsers = new();
+        _cacheUsers = new ConcurrentDictionary<uint, BotUserInfo>();
     }
 
     public override Task Incoming(ProtocolEvent e)

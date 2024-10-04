@@ -250,4 +250,12 @@ public static class OperationExt
         return ((FetchRKeyEvent)events[0]).RKeys;
     }
 
+    /// <summary>
+    /// Set the avatar of the bot itself
+    /// </summary>
+    /// <param name="bot">target <see cref="BotContext"/></param>
+    /// <param name="avatar">The avatar object, <see cref="ImageEntity"/></param>
+    public static Task<bool> SetAvatar(this BotContext bot, ImageEntity avatar)
+        => bot.ContextCollection.Business.OperationLogic.SetAvatar(avatar);
 }
+

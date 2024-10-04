@@ -74,7 +74,6 @@ public class ImageEntity : IMessageEntity
 
         var elems = new Elem[]
         {
-            new(),
             new()
             {
                 CommonElem = new CommonElem
@@ -97,9 +96,7 @@ public class ImageEntity : IMessageEntity
         if (elems.CommonElem is { ServiceType: 48, BusinessType: 20 or 10 } common)
         {
             var extra = Serializer.Deserialize<MsgInfo>(common.PbElem.AsSpan());
-
             var msgInfoBody = extra.MsgInfoBody[0];
-
             var index = msgInfoBody.Index;
 
             return new ImageEntity
@@ -156,7 +153,6 @@ public class ImageEntity : IMessageEntity
                     Summary = face.PbReserve?.Summary,
                     SubType = face.PbReserve?.SubType ?? GetImageTypeFromFaceOldData(face)
                 };
-
             }
 
             return new ImageEntity
@@ -175,11 +171,8 @@ public class ImageEntity : IMessageEntity
 
     private static int GetImageTypeFromFaceOldData(CustomFace face)
     {
-        if (face.OldData == null || face.OldData.Length < 5)
-        {
-            return 0;
-        }
-        // maybe legacy PCQQ(TIM)
+        if (face.OldData is not { Length: >= 5 }) return 0;  // maybe legacy PCQQ(TIM)
+
         return face.OldData[4].ToString("X2") switch
         {
             "36" => 1,
