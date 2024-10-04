@@ -74,6 +74,7 @@ public class ImageEntity : IMessageEntity
 
         var elems = new Elem[]
         {
+            new(),
             new()
             {
                 CommonElem = new CommonElem
@@ -148,6 +149,7 @@ public class ImageEntity : IMessageEntity
                 {
                     PictureSize = new Vector2(face.Width, face.Height),
                     FilePath = face.FilePath,
+                    ImageMd5 = face.Md5,
                     ImageSize = face.Size,
                     ImageUrl = $"{BaseUrl}{face.OrigUrl}",
                     Summary = face.PbReserve?.Summary,
@@ -159,6 +161,7 @@ public class ImageEntity : IMessageEntity
             {
                 PictureSize = new Vector2(face.Width, face.Height),
                 FilePath = face.FilePath,
+                ImageMd5 = face.Md5,
                 ImageSize = face.Size,
                 ImageUrl = $"{LegacyBaseUrl}{face.OrigUrl}",
                 Summary = face.PbReserve?.Summary,
