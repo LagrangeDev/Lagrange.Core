@@ -27,9 +27,9 @@ public sealed class MessageBuilder
     /// Used for time display in mulitmsg
     /// </summary>
     /// <param name="time">The sending time of this message</param>
-    public MessageBuilder Time(DateTime time)
+    public MessageBuilder Time(DateTime? time)
     {
-        _chain.Time = time;
+        _chain.Time = time ?? default;
 
         return this;
     }
@@ -39,7 +39,7 @@ public sealed class MessageBuilder
     /// Used for name display in mulitmsg
     /// </summary>
     /// <param name="time">The sending time of this message</param>
-    public MessageBuilder FriendName(string name)
+    public MessageBuilder FriendName(string? name)
     {
         (_chain.FriendInfo ??= new BotFriend(
             _chain.FriendUin,
@@ -48,7 +48,7 @@ public sealed class MessageBuilder
             string.Empty,
             string.Empty,
             string.Empty
-        )).Nickname = name;
+        )).Nickname = name ?? "";
 
         return this;
     }
@@ -58,7 +58,7 @@ public sealed class MessageBuilder
     /// Used for avatar display in mulitmsg
     /// </summary>
     /// <param name="time">The sending time of this message</param>
-    public MessageBuilder FriendAvatar(string avatar)
+    public MessageBuilder FriendAvatar(string? avatar)
     {
         (_chain.FriendInfo ??= new BotFriend(
             _chain.FriendUin,
@@ -67,7 +67,7 @@ public sealed class MessageBuilder
             string.Empty,
             string.Empty,
             string.Empty
-        )).Avatar = avatar;
+        )).Avatar = avatar ?? "";
 
         return this;
     }

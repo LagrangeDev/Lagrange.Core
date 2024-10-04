@@ -1,4 +1,6 @@
 using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Lagrange.Core.Utility.Crypto.Provider.Sha;
 
@@ -39,15 +41,14 @@ public class Sha1Stream
         _count[0] = 0;
         _count[1] = 0;
     }
-
-    private void Transform(byte[] data)  // Transform function
+    
+    private unsafe void Transform(byte* data)  // Transform function
     {
-        if (data.Length != 64) throw new ArgumentException("Data must be exactly 64 bytes");
-        
-        var w = new uint[80]; // 1. Break chunk into sixteen 32-bit words
+        uint* w = stackalloc uint[80]; // 1. Break chunk into sixteen 32-bit words
         for (int i = 0; i < 16; i++)
         {
-            w[i] = BinaryPrimitives.ReadUInt32BigEndian(data.AsSpan(i * 4));
+            var span = MemoryMarshal.CreateReadOnlySpan(ref data[i * 4], 4);
+            w[i] = BinaryPrimitives.ReadUInt32BigEndian(span);
         }
         
         for (int i = 16; i < 80; i++) // 2. Extend the sixteen 32-bit words into eighty 32-bit words
@@ -85,7 +86,17 @@ public class Sha1Stream
         _state[4] += e;
     }
     
-    public void Update(byte[] data, int len)  // Update SHA1 context
+    public unsafe void Update(byte[] data, int len)  // Update SHA1 context
+    {
+        fixed (byte* ptr = data) UpdateInternal(ptr, len);
+    }
+    
+    public unsafe void Update(Span<byte> data)  // Update SHA1 context
+    {
+        fixed (byte* ptr = data) UpdateInternal(ptr, data.Length);
+    }
+    
+    private unsafe void UpdateInternal(byte* data, int len)
     {
         int index = (_count[0] >> 3) & 0x3F;
         _count[0] += len << 3;
@@ -99,18 +110,24 @@ public class Sha1Stream
 
         if (len >= partLen)
         {
-            Array.Copy(data, 0, _buffer, index, partLen);
-            Transform(_buffer);
+            fixed (byte* buffer = _buffer)
+            {
+                Unsafe.CopyBlock(buffer + index, data, (uint)partLen);
+                Transform(buffer);
+            }
 
             for (i = partLen; i + Sha1BlockSize <= len; i += Sha1BlockSize)
             {
-                Transform(data[i..(i + Sha1BlockSize)]);
+                Transform(data + i);
             }
 
             index = 0;
         }
 
-        Array.Copy(data, i, _buffer, index, len - i);
+        fixed (byte* buffer = _buffer)
+        {
+            Unsafe.CopyBlock(buffer + index, data + i, (uint)(len - i));
+        }
     }
 
     public void Hash(byte[] digest, bool bigEnding)

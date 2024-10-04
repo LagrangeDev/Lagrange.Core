@@ -90,7 +90,6 @@ internal class TlvPacker
         {
             if (!Tlvs.TryGetValue(cmd, out type))
             {
-                Console.WriteLine(packet.ToArray().Hex());
                 return null;
             }
         }

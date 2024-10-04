@@ -91,7 +91,13 @@ public static class GroupExt
         => bot.ContextCollection.Business.OperationLogic.GroupSetSpecialTitle(groupUin, targetUin, title);
 
     public static Task<bool> GroupSetMessageReaction(this BotContext bot, uint groupUin, uint sequence, string code)
-        => bot.ContextCollection.Business.OperationLogic.SetMessageReaction(groupUin, sequence, code);
+        => bot.ContextCollection.Business.OperationLogic.SetMessageReaction(groupUin, sequence, code, true);
+
+    public static Task<bool> GroupSetMessageReaction(this BotContext bot, uint groupUin, uint sequence, string code, bool isSet)
+        => bot.ContextCollection.Business.OperationLogic.SetMessageReaction(groupUin, sequence, code, isSet);
+    
+    public static Task<bool> GroupSetAvatar(this BotContext bot, uint groupUin, ImageEntity imageEntity)
+        => bot.ContextCollection.Business.OperationLogic.GroupSetAvatar(groupUin, imageEntity);
 
     #region Group File System
 

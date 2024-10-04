@@ -4,8 +4,10 @@ using Lagrange.Core.Internal.Context.Uploader;
 using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.System;
+using Lagrange.Core.Internal.Packets.Service.Highway;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
+using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 
@@ -528,11 +530,20 @@ internal class OperationLogic : LogicBase
         return await Collection.Business.CachingLogic.GetCachedUsers(uin, refreshCache);
     }
 
-    public async Task<bool> SetMessageReaction(uint groupUin, uint sequence, string code)
+    public async Task<bool> SetMessageReaction(uint groupUin, uint sequence, string code, bool isAdd)
     {
-        var setReactionEvent = GroupSetReactionEvent.Create(groupUin, sequence, code);
-        var results = await Collection.Business.SendEvent(setReactionEvent);
-        return results.Count != 0 && results[0].ResultCode == 0;
+        if (isAdd)
+        {
+            var addReactionEvent = GroupAddReactionEvent.Create(groupUin, sequence, code);
+            var results = await Collection.Business.SendEvent(addReactionEvent);
+            return results.Count != 0 && results[0].ResultCode == 0;
+        }
+        else
+        {
+            var reduceReactionEvent = GroupReduceReactionEvent.Create(groupUin, sequence, code);
+            var results = await Collection.Business.SendEvent(reduceReactionEvent);
+            return results.Count != 0 && results[0].ResultCode == 0;
+        }
     }
 
     public async Task<bool> SetNeedToConfirmSwitch(bool enableNoNeed)
@@ -570,5 +581,39 @@ internal class OperationLogic : LogicBase
             .Poke(type, strength)
             .Build();
         return SendMessage(chain);
+    }
+
+    public async Task<bool> SetAvatar(ImageEntity avatar)
+    {
+        if (avatar.ImageStream == null) return false;
+        
+        var highwayUrlEvent = HighwayUrlEvent.Create();
+        var highwayUrlResults = await Collection.Business.SendEvent(highwayUrlEvent);
+        if (highwayUrlResults.Count == 0) return false;
+        
+        var ticket = ((HighwayUrlEvent)highwayUrlResults[0]).SigSession;
+        var md5 = avatar.ImageStream.Value.Md5().UnHex();
+        return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, md5, Array.Empty<byte>());
+    }
+    
+    public async Task<bool> GroupSetAvatar(uint groupUin, ImageEntity avatar)
+    {
+        if (avatar.ImageStream == null) return false;
+        
+        var highwayUrlEvent = HighwayUrlEvent.Create();
+        var highwayUrlResults = await Collection.Business.SendEvent(highwayUrlEvent);
+        if (highwayUrlResults.Count == 0) return false;
+        
+        var ticket = ((HighwayUrlEvent)highwayUrlResults[0]).SigSession;
+        var md5 = avatar.ImageStream.Value.Md5().UnHex();
+        var extra = new GroupAvatarExtra
+        {
+            Type = 101,
+            GroupUin = groupUin,
+            Field3 = new GroupAvatarExtraField3 { Field1 = 1 },
+            Field5 = 3,
+            Field6 = 1
+        }.Serialize().ToArray();
+        return await Collection.Highway.UploadSrcByStreamAsync(3000, avatar.ImageStream.Value, ticket, md5, extra);
     }
 }

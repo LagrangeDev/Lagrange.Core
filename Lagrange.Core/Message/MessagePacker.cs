@@ -236,8 +236,8 @@ internal static class MessagePacker
                 Field1 = 0,
                 Field2 = 0,
                 Field3 = chain.IsGroup ? 0u : 2u,
-                UnknownBase64 = chain.FriendInfo?.Avatar ?? $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg",
-                Avatar = chain.FriendInfo?.Avatar ?? $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg"
+                UnknownBase64 = !string.IsNullOrEmpty(chain.FriendInfo?.Avatar) ? chain.FriendInfo?.Avatar : $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg",
+                Avatar = !string.IsNullOrEmpty(chain.FriendInfo?.Avatar) ? chain.FriendInfo?.Avatar : $"https://q.qlogo.cn/headimg_dl?dst_uin={chain.FriendUin}&spec=640&img_type=jpg"
             }
         },
         Body = new MessageBody { RichText = new RichText { Elems = new List<Elem>() } }
