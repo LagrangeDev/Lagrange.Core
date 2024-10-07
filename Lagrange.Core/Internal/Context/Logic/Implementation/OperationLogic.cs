@@ -339,7 +339,7 @@ internal class OperationLogic : LogicBase
 
     public async Task<List<dynamic>?> FetchFriendRequests(CancellationToken ct)
     {
-        var fetchRequestsEvent = FetchFriendsAndFriendGroupsRequestsEvent.Create();
+        var fetchRequestsEvent = FetchFriendsRequestsEvent.Create();
         var events = await Collection.Business.SendEvent(fetchRequestsEvent, ct);
         if (events.Count == 0) return null;
 
