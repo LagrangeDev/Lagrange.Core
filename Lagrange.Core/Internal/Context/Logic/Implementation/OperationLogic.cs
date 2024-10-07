@@ -331,7 +331,7 @@ internal class OperationLogic : LogicBase
 
     public async Task<List<dynamic>?> FetchFriendRequests()
     {
-        var fetchRequestsEvent = FetchFriendsAndFriendGroupsRequestsEvent.Create();
+        var fetchRequestsEvent = FetchFriendsRequestsEvent.Create();
         var events = await Collection.Business.SendEvent(fetchRequestsEvent);
         if (events.Count == 0) return null;
 
