@@ -633,4 +633,14 @@ internal class OperationLogic : LogicBase
         }.Serialize().ToArray();
         return await Collection.Highway.UploadSrcByStreamAsync(3000, avatar.ImageStream.Value, ticket, md5, extra);
     }
+    
+    public async Task<(uint, uint)> GroupRemainAtAll(uint groupUin)
+    {
+        var groupRemainAtAllEvent = FetchGroupAtAllRemainEvent.Create(groupUin);
+        var results = await Collection.Business.SendEvent(groupRemainAtAllEvent);
+        if (results.Count == 0) return (0, 0);
+        
+        var ret = (FetchGroupAtAllRemainEvent)results[0];
+        return (ret.RemainAtAllCountForUin, ret.RemainAtAllCountForGroup);
+    }
 }
