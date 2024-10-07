@@ -57,7 +57,7 @@ internal class HighwayContext : ContextBase, IDisposable
         _concurrent = config.HighwayConcurrent;
     }
 
-    public async Task UploadResources(MessageChain chain)
+    public async Task UploadResources(MessageChain chain, CancellationToken ct)
     {
         foreach (var entity in chain)
         {
@@ -65,8 +65,8 @@ internal class HighwayContext : ContextBase, IDisposable
             {
                 try
                 {
-                    if (chain.IsGroup) await uploader.UploadGroup(Collection, chain, entity);
-                    else await uploader.UploadPrivate(Collection, chain, entity);
+                    if (chain.IsGroup) await uploader.UploadGroup(Collection, chain, entity, ct);
+                    else await uploader.UploadPrivate(Collection, chain, entity, ct);
                 }
                 catch
                 {
@@ -76,7 +76,7 @@ internal class HighwayContext : ContextBase, IDisposable
         }
     }
 
-    public async Task ManualUploadEntity(IMessageEntity entity)
+    public async Task ManualUploadEntity(IMessageEntity entity, CancellationToken ct)
     {
         if (_uploaders.TryGetValue(entity.GetType(), out var uploader))
         {
@@ -86,7 +86,7 @@ internal class HighwayContext : ContextBase, IDisposable
                 string uid = Collection.Keystore.Uid ?? "";
                 var chain = new MessageChain(uin, uid, uid) { entity };
                 
-                await uploader.UploadPrivate(Collection, chain, entity);
+                await uploader.UploadPrivate(Collection, chain, entity, ct);
             }
             catch
             {
@@ -95,11 +95,11 @@ internal class HighwayContext : ContextBase, IDisposable
         }
     }
 
-    public async Task<bool> UploadSrcByStreamAsync(int commonId, Stream data, byte[] ticket, byte[] md5, byte[]? extendInfo = null)
+    public async Task<bool> UploadSrcByStreamAsync(int commonId, Stream data, byte[] ticket, byte[] md5, CancellationToken cancellation, byte[]? extendInfo = null)
     {
         if (_uri == null)
         {
-            var highwayUrlEvent = await Collection.Business.SendEvent(HighwayUrlEvent.Create());
+            var highwayUrlEvent = await Collection.Business.SendEvent(HighwayUrlEvent.Create(), cancellation);
             var result = (HighwayUrlEvent)highwayUrlEvent[0];
             _uri = result.HighwayUrls[1][0];
         }
@@ -114,7 +114,7 @@ internal class HighwayContext : ContextBase, IDisposable
         while (offset < fileSize)
         {
             var buffer = new byte[Math.Min(_chunkSize, fileSize - offset)];
-            int payload = await data.ReadAsync(buffer.AsMemory());
+            int payload = await data.ReadAsync(buffer.AsMemory(), cancellation);
             uint uin = Collection.Keystore.Uin;
             uint sequence = Interlocked.Increment(ref _sequence);
             var reqBody = new UpBlock(commonId, uin, sequence, (ulong)fileSize, (ulong)offset, ticket, md5, buffer, extendInfo);
@@ -123,7 +123,7 @@ internal class HighwayContext : ContextBase, IDisposable
 
             if (upBlocks.Count >= _concurrent || data.Position == data.Length)
             {
-                var tasks = upBlocks.Select(x => SendUpBlockAsync(x, _uri)).ToArray();
+                var tasks = upBlocks.Select(x => SendUpBlockAsync(x, _uri, cancellation)).ToArray();
                 var results = await Task.WhenAll(tasks);
                 success &= results.All(x => x);
                 
@@ -134,7 +134,7 @@ internal class HighwayContext : ContextBase, IDisposable
         return success;
     }
 
-    private async Task<bool> SendUpBlockAsync(UpBlock upBlock, Uri server)
+    private async Task<bool> SendUpBlockAsync(UpBlock upBlock, Uri server, CancellationToken cancellation)
     {
         var head = new DataHighwayHead
         {
@@ -171,7 +171,7 @@ internal class HighwayContext : ContextBase, IDisposable
         };
 
         bool isEnd = upBlock.Offset + (ulong)upBlock.Block.Length == upBlock.FileSize;
-        var payload = await SendPacketAsync(highwayHead, new BinaryPacket(upBlock.Block),  server, isEnd);
+        var payload = await SendPacketAsync(highwayHead, new BinaryPacket(upBlock.Block), server, cancellation, end: isEnd);
         var (respHead, resp) = ParsePacket(payload);
 
         Collection.Log.LogDebug(Tag, $"Highway Block Result: {respHead.ErrorCode} | {respHead.MsgSegHead?.RetCode} | {respHead.BytesRspExtendInfo?.Hex()} | {resp.ToArray().Hex()}");
@@ -179,7 +179,7 @@ internal class HighwayContext : ContextBase, IDisposable
         return respHead.ErrorCode == 0;
     }
 
-    private Task<BinaryPacket> SendPacketAsync(ReqDataHighwayHead head, BinaryPacket buffer, Uri server, bool end = true)
+    private Task<BinaryPacket> SendPacketAsync(ReqDataHighwayHead head, BinaryPacket buffer, Uri server, CancellationToken cancellation, bool end = true)
     {
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, head);
@@ -192,7 +192,7 @@ internal class HighwayContext : ContextBase, IDisposable
                 .WritePacket(buffer)
                 .WriteByte(0x29); // packet end
         
-        return SendDataAsync(writer.ToArray(), server, end);
+        return SendDataAsync(writer.ToArray(), server, end, cancellation);
     }
 
     private static (RespDataHighwayHead, BinaryPacket) ParsePacket(BinaryPacket packet)
@@ -210,7 +210,7 @@ internal class HighwayContext : ContextBase, IDisposable
         throw new InvalidOperationException("Invalid packet");
     }
     
-    private async Task<BinaryPacket> SendDataAsync(byte[] packet, Uri server, bool end)
+    private async Task<BinaryPacket> SendDataAsync(byte[] packet, Uri server, bool end, CancellationToken cancellation)
     {
         var content = new ByteArrayContent(packet);
         var request = new HttpRequestMessage(HttpMethod.Post, server)
@@ -221,8 +221,8 @@ internal class HighwayContext : ContextBase, IDisposable
                 { "Connection" , end ? "close" : "keep-alive" },
             }
         };
-        var response = await _client.SendAsync(request);
-        var data = await response.Content.ReadAsByteArrayAsync();
+        var response = await _client.SendAsync(request, cancellation);
+        var data = await response.Content.ReadAsByteArrayAsync(cancellation);
         return new BinaryPacket(data);
     }
     

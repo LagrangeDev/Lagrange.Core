@@ -99,7 +99,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
         {
             logger.LogInformation(@event.ToString());
 
-            BotGroupRequest? botGroupRequest = (await bot.ContextCollection.Business.OperationLogic.FetchGroupRequests())
+            BotGroupRequest? botGroupRequest = (await bot.ContextCollection.Business.OperationLogic.FetchGroupRequests(CancellationToken.None))
                 ?.AsParallel()
                 .FirstOrDefault(r =>
                 {

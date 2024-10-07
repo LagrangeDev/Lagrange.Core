@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
 using System.Web;
@@ -41,7 +42,7 @@ internal class WtExchangeLogic : LogicBase
         _reLoginTimer = new Timer(async _ => await ReLogin(), null, Timeout.Infinite, Timeout.Infinite);
     }
 
-    public override async Task Incoming(ProtocolEvent e)
+    public override async Task Incoming(ProtocolEvent e, CancellationToken _)
     {
         switch (e)
         {
@@ -60,12 +61,12 @@ internal class WtExchangeLogic : LogicBase
     /// <para>1. resolve wtlogin.trans_emp CMD0x31 packet</para>
     /// <para>2. Schedule wtlogin.trans_emp CMD0x12 Task</para>
     /// </summary>
-    public async Task<(string, byte[])?> FetchQrCode()
+    public async Task<(string, byte[])?> FetchQrCode(CancellationToken ct)
     {
         Collection.Log.LogInfo(Tag, "Connecting Servers...");
         if (!await Collection.Socket.Connect()) return null;
-        Collection.Scheduler.Interval("Heartbeat.Alive", 10 * 1000, async () => await Collection.Business.PushEvent(AliveEvent.Create()));
-        
+        Collection.Scheduler.Interval("Heartbeat.Alive", 10 * 1000, async () => await Collection.Business.PushEvent(AliveEvent.Create(), CancellationToken.None));
+
         if (Collection.Keystore.Session.D2.Length != 0)
         {
             Collection.Log.LogWarning(Tag, "Invalid Session found, try to clean D2Key, D2 and TGT Token");
@@ -73,7 +74,7 @@ internal class WtExchangeLogic : LogicBase
         }
         
         var transEmp = TransEmpEvent.Create(TransEmpEvent.State.FetchQrCode);
-        var result = await Collection.Business.SendEvent(transEmp);
+        var result = await Collection.Business.SendEvent(transEmp, ct);
 
         if (result.Count != 0)
         {
@@ -88,7 +89,7 @@ internal class WtExchangeLogic : LogicBase
         return null;
     }
 
-    public Task LoginByQrCode()
+    public Task LoginByQrCode(CancellationToken ct)
     {
         Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => await QueryTransEmpState(async @event =>
         {
@@ -100,17 +101,17 @@ internal class WtExchangeLogic : LogicBase
             }
             
             return await DoWtLogin();
-        }));
+        }, ct));
         
         return _transEmpTask.Task;
     }
 
-    public async Task<bool> LoginByPassword()
+    public async Task<bool> LoginByPassword(CancellationToken ct)
     {
         if (!Collection.Socket.Connected) // if socket not connected, try to connect
         {        
             if (!await Collection.Socket.Connect()) return false;
-            Collection.Scheduler.Interval("Heartbeat.Alive", 10 * 1000, async () => await Collection.Business.PushEvent(AliveEvent.Create()));
+            Collection.Scheduler.Interval("Heartbeat.Alive", 10 * 1000, async () => await Collection.Business.PushEvent(AliveEvent.Create(), CancellationToken.None));
         }
 
         if (Collection.Keystore.Session.D2.Length > 0 && Collection.Keystore.Session.Tgt.Length > 0 && 
@@ -133,7 +134,7 @@ internal class WtExchangeLogic : LogicBase
         {
             Collection.Keystore.ClearSession();
 
-            if (!await KeyExchange())
+            if (!await KeyExchange(ct))
             {
                 Collection.Log.LogInfo(Tag, "Key Exchange Failed, please try again later");
                 return false;
@@ -144,7 +145,7 @@ internal class WtExchangeLogic : LogicBase
         {
             Collection.Log.LogInfo(Tag, "Trying to Login by EasyLogin...");
             var easyLoginEvent = EasyLoginEvent.Create();
-            var easyLoginResult = await Collection.Business.SendEvent(easyLoginEvent);
+            var easyLoginResult = await Collection.Business.SendEvent(easyLoginEvent, ct);
 
             if (easyLoginResult.Count != 0)
             {
@@ -159,7 +160,7 @@ internal class WtExchangeLogic : LogicBase
                     {
                         Collection.Log.LogInfo(Tag, "Verification needed");
 
-                        if (!await FetchUnusual())
+                        if (!await FetchUnusual(ct))
                         {
                             Collection.Log.LogInfo(Tag, "Fetch unusual state failed");
                             return false;
@@ -170,11 +171,11 @@ internal class WtExchangeLogic : LogicBase
                             if (e.TempPassword != null)
                             {
                                 Collection.Keystore.Session.TempPassword = e.TempPassword;
-                                return await DoUnusualEasyLogin();
+                                return await DoUnusualEasyLogin(ct);
                             }
 
                             return false;
-                        }));
+                        }, ct));
                         bool result = await _transEmpTask.Task;
                         return result && await BotOnline();
                     }
@@ -183,7 +184,7 @@ internal class WtExchangeLogic : LogicBase
                         Collection.Log.LogWarning(Tag, $"Fast Login Failed with code {easyLoginResult[0].ResultCode}, trying to Login by Password...");
                         
                         Collection.Keystore.Session.TempPassword = null; // clear temp password
-                        return await LoginByPassword(); // try password login
+                        return await LoginByPassword(ct); // try password login
                     }
                 }
             }
@@ -192,7 +193,7 @@ internal class WtExchangeLogic : LogicBase
         {
             Collection.Log.LogInfo(Tag, "Trying to Login by Password...");
             var passwordLoginEvent = PasswordLoginEvent.Create();
-            var passwordLoginResult = await Collection.Business.SendEvent(passwordLoginEvent);
+            var passwordLoginResult = await Collection.Business.SendEvent(passwordLoginEvent, ct);
 
             if (passwordLoginResult.Count != 0)
             {
@@ -225,7 +226,7 @@ internal class WtExchangeLogic : LogicBase
                             var (ticket, randStr) = await _captchaTask.Task;
                             Collection.Keystore.Session.Captcha = new ValueTuple<string, string, string>(ticket, randStr, aid);
 
-                            return await LoginByPassword();
+                            return await LoginByPassword(ct);
                         }
                         
                         Collection.Log.LogInfo(Tag, "Captcha Url is null, please try again later");
@@ -251,8 +252,8 @@ internal class WtExchangeLogic : LogicBase
                         };
 
                         var client = new HttpClient();
-                        var response = await client.PostAsJsonAsync(url, request);
-                        var json = await response.Content.ReadFromJsonAsync<NTNewDeviceQrCodeResponse>();
+                        var response = await client.PostAsJsonAsync(url, request, cancellationToken: ct);
+                        var json = await response.Content.ReadFromJsonAsync<NTNewDeviceQrCodeResponse>(cancellationToken: ct);
                         if (json == null) return false;
                         
                         var newDeviceEvent = new BotNewDeviceVerifyEvent(json.StrUrl, Array.Empty<byte>());
@@ -264,13 +265,18 @@ internal class WtExchangeLogic : LogicBase
                         
                         Collection.Scheduler.Interval(QueryEvent, 2 * 1000, async () => 
                         {
+                            if (ct.IsCancellationRequested)
+                            {
+                                Collection.Scheduler.Cancel(QueryEvent);
+                                return;
+                            }
                             var query = new NTNewDeviceQrCodeQuery
                             {
                                 Uint32Flag = 0,
                                 Token = Convert.ToBase64String(Encoding.UTF8.GetBytes(original))
                             };
-                            var resp = await client.PostAsJsonAsync(url, query);
-                            var responseJson = await resp.Content.ReadFromJsonAsync<NTNewDeviceQrCodeResponse>();
+                            var resp = await client.PostAsJsonAsync(url, query, ct);
+                            var responseJson = await resp.Content.ReadFromJsonAsync<NTNewDeviceQrCodeResponse>(cancellationToken: ct);
                             if (!string.IsNullOrEmpty(responseJson?.StrNtSuccToken))
                             {
                                 Collection.Scheduler.Cancel(QueryEvent);  // cancel the event
@@ -289,7 +295,7 @@ internal class WtExchangeLogic : LogicBase
                         {
                             Collection.Log.LogInfo(Tag, "Trying to Login by NewDeviceLogin...");
                             var newDeviceLogin = NewDeviceLoginEvent.Create();
-                            _ = await Collection.Business.SendEvent(newDeviceLogin);
+                            _ = await Collection.Business.SendEvent(newDeviceLogin, ct);
                             return await BotOnline();
                         }
                         
@@ -311,10 +317,10 @@ internal class WtExchangeLogic : LogicBase
         return false;
     }
 
-    private async Task<bool> KeyExchange()
+    private async Task<bool> KeyExchange(CancellationToken ct)
     {
         var keyExchangeEvent = KeyExchangeEvent.Create();
-        var exchangeResult = await Collection.Business.SendEvent(keyExchangeEvent);
+        var exchangeResult = await Collection.Business.SendEvent(keyExchangeEvent, ct);
         if (exchangeResult.Count != 0)
         {
             Collection.Log.LogInfo(Tag, "Key Exchange successfully!");
@@ -331,7 +337,7 @@ internal class WtExchangeLogic : LogicBase
 
         Collection.Keystore.SecpImpl = new EcdhImpl(EcdhImpl.CryptMethod.Secp192K1);
         var loginEvent = LoginEvent.Create();
-        var result = await Collection.Business.SendEvent(loginEvent);
+        var result = await Collection.Business.SendEvent(loginEvent, CancellationToken.None);
         
         if (result.Count != 0)
         {
@@ -351,8 +357,14 @@ internal class WtExchangeLogic : LogicBase
         return false;
     }
 
-    private async Task QueryTransEmpState(Func<TransEmpEvent, Task<bool>> callback)
+    private async Task QueryTransEmpState(Func<TransEmpEvent, Task<bool>> callback, CancellationToken ct)
     {
+        if (ct.IsCancellationRequested)
+        {
+            Collection.Scheduler.Cancel(QueryEvent);
+            _transEmpTask.SetCanceled(ct);
+            return;
+        }
         if (Collection.Keystore.Session.QrString != null)
         {
             var request = new NTLoginHttpRequest
@@ -363,13 +375,13 @@ internal class WtExchangeLogic : LogicBase
             };
             
             var payload = JsonSerializer.SerializeToUtf8Bytes(request);
-            var response = await Http.PostAsync(Interface, payload, "application/json");
+            var response = await Http.PostAsync(Interface, payload, "application/json", ct);
             var info = JsonSerializer.Deserialize<NTLoginHttpResponse>(response);
             if (info != null) Collection.Keystore.Uin = info.Uin;
         }
 
         var transEmp = TransEmpEvent.Create(TransEmpEvent.State.QueryResult);
-        var result = await Collection.Business.SendEvent(transEmp);
+        var result = await Collection.Business.SendEvent(transEmp, ct);
 
         if (result.Count != 0)
         {
@@ -410,14 +422,14 @@ internal class WtExchangeLogic : LogicBase
                     break;
             }
         }
-
     }
 
     public async Task<bool> BotOnline(BotOnlineEvent.OnlineReason reason = BotOnlineEvent.OnlineReason.Login)
     {
+        var ct = CancellationToken.None;
         var registerEvent = StatusRegisterEvent.Create();
-        var registerResponse = await Collection.Business.SendEvent(registerEvent);
-        var heartbeatDelegate = new Action(async () => await Collection.Business.PushEvent(SsoAliveEvent.Create()));
+        var registerResponse = await Collection.Business.SendEvent(registerEvent, ct);
+        var heartbeatDelegate = new Action(async () => await Collection.Business.PushEvent(SsoAliveEvent.Create(), ct));
 
         if (registerResponse.Count != 0)
         {
@@ -432,7 +444,7 @@ internal class WtExchangeLogic : LogicBase
                 var onlineEvent = new BotOnlineEvent(reason);
                 Collection.Invoker.PostEvent(onlineEvent);
 
-                await Collection.Business.PushEvent(InfoSyncEvent.Create());
+                await Collection.Business.PushEvent(InfoSyncEvent.Create(), ct);
 
                 _reLoginTimer.Change(TimeSpan.FromDays(15), TimeSpan.FromDays(15));
                 Collection.Log.LogInfo(Tag, "AutoReLogin Enabled, session would be refreshed in 15 days period");
@@ -444,10 +456,10 @@ internal class WtExchangeLogic : LogicBase
         return false;
     }
 
-    private async Task<bool> FetchUnusual()
+    private async Task<bool> FetchUnusual(CancellationToken ct)
     {
         var transEmp = TransEmpEvent.Create(TransEmpEvent.State.FetchQrCode);
-        var result = await Collection.Business.SendEvent(transEmp);
+        var result = await Collection.Business.SendEvent(transEmp, ct);
 
         if (result.Count != 0)
         {
@@ -458,11 +470,11 @@ internal class WtExchangeLogic : LogicBase
         return false;
     }
 
-    private async Task<bool> DoUnusualEasyLogin()
+    private async Task<bool> DoUnusualEasyLogin(CancellationToken ct)
     {
         Collection.Log.LogInfo(Tag, "Trying to Login by EasyLogin...");
         var unusualEvent = UnusualEasyLoginEvent.Create();
-        var result = await Collection.Business.SendEvent(unusualEvent);
+        var result = await Collection.Business.SendEvent(unusualEvent, ct);
         return result.Count != 0 && ((UnusualEasyLoginEvent)result[0]).Success;
     }
 
@@ -483,10 +495,10 @@ internal class WtExchangeLogic : LogicBase
         Collection.Keystore.ClearSession();
         await Collection.Socket.Connect();
 
-        if (await KeyExchange())
+        if (await KeyExchange(CancellationToken.None))
         {
             var easyLoginEvent = EasyLoginEvent.Create();
-            var easyLoginResult = await Collection.Business.SendEvent(easyLoginEvent);
+            var easyLoginResult = await Collection.Business.SendEvent(easyLoginEvent, CancellationToken.None);
             if (easyLoginResult.Count != 0)
             {
                 var result = (EasyLoginEvent)easyLoginResult[0];

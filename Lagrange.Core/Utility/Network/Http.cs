@@ -42,4 +42,12 @@ internal static class Http
         var response = await Client.PostAsync(url, contentData);
         return await response.Content.ReadAsByteArrayAsync();
     }
+
+    public static async Task<byte[]> PostAsync(string url, byte[] payload, string content, CancellationToken ct)
+    {
+        var contentData = new ByteArrayContent(payload);
+        contentData.Headers.ContentType = new MediaTypeHeaderValue(content);
+        var response = await Client.PostAsync(url, contentData, ct);
+        return await response.Content.ReadAsByteArrayAsync(ct);
+    }
 }

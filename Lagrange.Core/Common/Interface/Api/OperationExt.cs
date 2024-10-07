@@ -13,7 +13,18 @@ public static class OperationExt
     /// <param name="refreshCache">force the cache to be refreshed</param>
     /// <returns></returns>
     public static Task<List<BotFriend>> FetchFriends(this BotContext bot, bool refreshCache = false)
-        => bot.ContextCollection.Business.OperationLogic.FetchFriends(refreshCache);
+        => bot.ContextCollection.Business.OperationLogic.FetchFriends(CancellationToken.None, refreshCache);
+
+
+    /// <summary>
+    /// Fetch the friend list of account from server or cache
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="ct">The cancellation token</param>
+    /// <param name="refreshCache">force the cache to be refreshed</param>
+    /// <returns></returns>
+    public static Task<List<BotFriend>> FetchFriends(this BotContext bot, CancellationToken ct, bool refreshCache = false)
+        => bot.ContextCollection.Business.OperationLogic.FetchFriends(ct, refreshCache);
 
     /// <summary>
     /// Fetch the member list of the group from server or cache
@@ -23,7 +34,18 @@ public static class OperationExt
     /// <param name="refreshCache">force the cache to be refreshed</param>
     /// <returns></returns>
     public static Task<List<BotGroupMember>> FetchMembers(this BotContext bot, uint groupUin, bool refreshCache = false)
-        => bot.ContextCollection.Business.OperationLogic.FetchMembers(groupUin, refreshCache);
+        => bot.ContextCollection.Business.OperationLogic.FetchMembers(groupUin, CancellationToken.None, refreshCache);
+
+    /// <summary>
+    /// Fetch the member list of the group from server or cache
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="groupUin"></param>
+    /// <param name="ct">The cancellation token</param>
+    /// <param name="refreshCache">force the cache to be refreshed</param>
+    /// <returns></returns>
+    public static Task<List<BotGroupMember>> FetchMembers(this BotContext bot, uint groupUin, CancellationToken ct, bool refreshCache = false)
+        => bot.ContextCollection.Business.OperationLogic.FetchMembers(groupUin, ct, refreshCache);
 
     /// <summary>
     /// Fetch the group list of the account from server or cache
@@ -32,7 +54,17 @@ public static class OperationExt
     /// <param name="refreshCache">force the cache to be refreshed</param>
     /// <returns></returns>
     public static Task<List<BotGroup>> FetchGroups(this BotContext bot, bool refreshCache = false)
-        => bot.ContextCollection.Business.OperationLogic.FetchGroups(refreshCache);
+        => bot.ContextCollection.Business.OperationLogic.FetchGroups(refreshCache, CancellationToken.None);
+
+    /// <summary>
+    /// Fetch the group list of the account from server or cache
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="ct">The cancellation token</param>
+    /// <param name="refreshCache">force the cache to be refreshed</param>
+    /// <returns></returns>
+    public static Task<List<BotGroup>> FetchGroups(this BotContext bot, CancellationToken ct, bool refreshCache = false)
+        => bot.ContextCollection.Business.OperationLogic.FetchGroups(refreshCache, ct);
 
     /// <summary>
     /// Fetch the cookies/pskey for accessing other site
@@ -41,7 +73,17 @@ public static class OperationExt
     /// <param name="domains">the domain for the cookie to be valid</param>
     /// <returns>the list of cookies</returns>
     public static Task<List<string>> FetchCookies(this BotContext bot, List<string> domains)
-        => bot.ContextCollection.Business.OperationLogic.GetCookies(domains);
+        => bot.ContextCollection.Business.OperationLogic.GetCookies(domains, CancellationToken.None);
+
+    /// <summary>
+    /// Fetch the cookies/pskey for accessing other site
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="domains">the domain for the cookie to be valid</param>
+    /// <param name="ct">The cancellation token</param>
+    /// <returns>the list of cookies</returns>
+    public static Task<List<string>> FetchCookies(this BotContext bot, List<string> domains, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.GetCookies(domains, ct);
 
     /// <summary>
     /// Send the message
@@ -49,17 +91,37 @@ public static class OperationExt
     /// <param name="bot">target BotContext</param>
     /// <param name="chain">the chain constructed by <see cref="MessageBuilder"/></param>
     public static Task<MessageResult> SendMessage(this BotContext bot, MessageChain chain)
-        => bot.ContextCollection.Business.OperationLogic.SendMessage(chain);
+        => bot.ContextCollection.Business.OperationLogic.SendMessage(chain, CancellationToken.None);
+
+    /// <summary>
+    /// Send the message
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="chain">the chain constructed by <see cref="MessageBuilder"/></param>
+    /// <param name="ct">The cancellation token</param>
+    public static Task<MessageResult> SendMessage(this BotContext bot, MessageChain chain, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.SendMessage(chain, ct);
 
     /// <summary>
     /// Recall the group message from Bot itself by <see cref="MessageResult"/>
     /// </summary>
     /// <param name="bot">target BotContext</param>
     /// <param name="groupUin">The uin for target group of the message</param>
-    /// <param name="result">The return value for <see cref="SendMessage"/></param>
+    /// <param name="result">The return value for <see cref="SendMessage(Lagrange.Core.BotContext,Lagrange.Core.Message.MessageChain)"/></param>
     /// <returns>Successfully recalled or not</returns>
     public static Task<bool> RecallGroupMessage(this BotContext bot, uint groupUin, MessageResult result)
-        => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(groupUin, result);
+        => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(groupUin, result, CancellationToken.None);
+
+    /// <summary>
+    /// Recall the group message from Bot itself by <see cref="MessageResult"/>
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="groupUin">The uin for target group of the message</param>
+    /// <param name="result">The return value for <see cref="SendMessage(Lagrange.Core.BotContext,Lagrange.Core.Message.MessageChain)"/></param>
+    /// <param name="ct">The cancellation token</param>
+    /// <returns>Successfully recalled or not</returns>
+    public static Task<bool> RecallGroupMessage(this BotContext bot, uint groupUin, MessageResult result, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(groupUin, result, ct);
 
     /// <summary>
     /// Recall the group message by <see cref="MessageChain"/>
@@ -68,7 +130,17 @@ public static class OperationExt
     /// <param name="chain">target MessageChain, must be Group</param>
     /// <returns>Successfully recalled or not</returns>
     public static Task<bool> RecallGroupMessage(this BotContext bot, MessageChain chain)
-        => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(chain);
+        => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(chain, CancellationToken.None);
+
+    /// <summary>
+    /// Recall the group message by <see cref="MessageChain"/>
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="chain">target MessageChain, must be Group</param>
+    /// <param name="ct">The cancellation token</param>
+    /// <returns>Successfully recalled or not</returns>
+    public static Task<bool> RecallGroupMessage(this BotContext bot, MessageChain chain, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(chain, ct);
 
     /// <summary>
     /// Recall the group message by sequence
@@ -78,17 +150,39 @@ public static class OperationExt
     /// <param name="sequence">The sequence for target message</param>
     /// <returns>Successfully recalled or not</returns>
     public static Task<bool> RecallGroupMessage(this BotContext bot, uint groupUin, uint sequence)
-        => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(groupUin, sequence);
+        => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(groupUin, sequence, CancellationToken.None);
+
+    /// <summary>
+    /// Recall the group message by sequence
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="groupUin">The uin for target group of the message</param>
+    /// <param name="sequence">The sequence for target message</param>
+    /// <param name="ct">The cancellation token</param>
+    /// <returns>Successfully recalled or not</returns>
+    public static Task<bool> RecallGroupMessage(this BotContext bot, uint groupUin, uint sequence, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.RecallGroupMessage(groupUin, sequence, ct);
 
     /// <summary>
     /// Recall the group message from Bot itself by <see cref="MessageResult"/>
     /// </summary>
     /// <param name="bot">target BotContext</param>
     /// <param name="friendUin">The uin for target friend of the message</param>
-    /// <param name="result">The return value for <see cref="SendMessage"/></param>
+    /// <param name="result">The return value for <see cref="SendMessage(Lagrange.Core.BotContext,Lagrange.Core.Message.MessageChain)"/></param>
     /// <returns>Successfully recalled or not</returns>
     public static Task<bool> RecallFriendMessage(this BotContext bot, uint friendUin, MessageResult result)
-        => bot.ContextCollection.Business.OperationLogic.RecallFriendMessage(friendUin, result);
+        => bot.ContextCollection.Business.OperationLogic.RecallFriendMessage(friendUin, result, CancellationToken.None);
+
+    /// <summary>
+    /// Recall the group message from Bot itself by <see cref="MessageResult"/>
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="friendUin">The uin for target friend of the message</param>
+    /// <param name="result">The return value for <see cref="SendMessage(Lagrange.Core.BotContext,Lagrange.Core.Message.MessageChain)"/></param>
+    /// <param name="ct">The cancellation token</param>
+    /// <returns>Successfully recalled or not</returns>
+    public static Task<bool> RecallFriendMessage(this BotContext bot, uint friendUin, MessageResult result, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.RecallFriendMessage(friendUin, result, ct);
 
     /// <summary>
     /// Recall the group message by <see cref="MessageChain"/>
@@ -97,7 +191,17 @@ public static class OperationExt
     /// <param name="chain">target MessageChain, must be Friend</param>
     /// <returns>Successfully recalled or not</returns>
     public static Task<bool> RecallFriendMessage(this BotContext bot, MessageChain chain)
-        => bot.ContextCollection.Business.OperationLogic.RecallFriendMessage(chain);
+        => bot.ContextCollection.Business.OperationLogic.RecallFriendMessage(chain, CancellationToken.None);
+
+    /// <summary>
+    /// Recall the group message by <see cref="MessageChain"/>
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="chain">target MessageChain, must be Friend</param>
+    /// <param name="ct">The cancellation token</param>
+    /// <returns>Successfully recalled or not</returns>
+    public static Task<bool> RecallFriendMessage(this BotContext bot, MessageChain chain, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.RecallFriendMessage(chain, ct);
 
     /// <summary>
     /// Fetch Notifications and requests such as friend requests and Group Join Requests
@@ -105,7 +209,16 @@ public static class OperationExt
     /// <param name="bot">target BotContext</param>
     /// <returns></returns>
     public static Task<List<BotGroupRequest>?> FetchGroupRequests(this BotContext bot)
-        => bot.ContextCollection.Business.OperationLogic.FetchGroupRequests();
+        => bot.ContextCollection.Business.OperationLogic.FetchGroupRequests(CancellationToken.None);
+
+    /// <summary>
+    /// Fetch Notifications and requests such as friend requests and Group Join Requests
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="ct">The cancellation token</param>
+    /// <returns></returns>
+    public static Task<List<BotGroupRequest>?> FetchGroupRequests(this BotContext bot, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.FetchGroupRequests(ct);
 
     /// <summary>
     /// 
@@ -113,7 +226,16 @@ public static class OperationExt
     /// <param name="bot"></param>
     /// <returns></returns>
     public static Task<List<dynamic>?> FetchFriendRequests(this BotContext bot)
-        => bot.ContextCollection.Business.OperationLogic.FetchFriendRequests();
+        => bot.ContextCollection.Business.OperationLogic.FetchFriendRequests(CancellationToken.None);
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="bot"></param>
+    /// <param name="ct">The cancellation token</param>
+    /// <returns></returns>
+    public static Task<List<dynamic>?> FetchFriendRequests(this BotContext bot, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.FetchFriendRequests(ct);
 
     /// <summary>
     /// set status
@@ -122,7 +244,17 @@ public static class OperationExt
     /// <param name="status">The status code</param>
     /// <returns></returns>
     public static Task<bool> SetStatus(this BotContext bot, uint status)
-        => bot.ContextCollection.Business.OperationLogic.SetStatus(status);
+        => bot.ContextCollection.Business.OperationLogic.SetStatus(status, CancellationToken.None);
+
+    /// <summary>
+    /// set status
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="status">The status code</param>
+    /// <param name="ct">The cancellation token</param>
+    /// <returns></returns>
+    public static Task<bool> SetStatus(this BotContext bot, uint status, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.SetStatus(status, ct);
 
     /// <summary>
     /// set custom status
@@ -132,22 +264,48 @@ public static class OperationExt
     /// <param name="text">text that would shown</param>
     /// <returns></returns>
     public static Task<bool> SetCustomStatus(this BotContext bot, uint faceId, string text)
-        => bot.ContextCollection.Business.OperationLogic.SetCustomStatus(faceId, text);
+        => bot.ContextCollection.Business.OperationLogic.SetCustomStatus(faceId, text, CancellationToken.None);
+
+    /// <summary>
+    /// set custom status
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="faceId">faceId that is same as the <see cref="Lagrange.Core.Message.Entity.FaceEntity"/></param>
+    /// <param name="text">text that would shown</param>
+    /// <param name="ct">The cancellation token</param>
+    /// <returns></returns>
+    public static Task<bool> SetCustomStatus(this BotContext bot, uint faceId, string text, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.SetCustomStatus(faceId, text, ct);
 
     public static Task<bool> GroupTransfer(this BotContext bot, uint groupUin, uint targetUin)
-        => bot.ContextCollection.Business.OperationLogic.GroupTransfer(groupUin, targetUin);
+        => bot.ContextCollection.Business.OperationLogic.GroupTransfer(groupUin, targetUin, CancellationToken.None);
+
+    public static Task<bool> GroupTransfer(this BotContext bot, uint groupUin, uint targetUin, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.GroupTransfer(groupUin, targetUin, ct);
 
     public static Task<bool> RequestFriend(this BotContext bot, uint targetUin, string question = "", string message = "")
-        => bot.ContextCollection.Business.OperationLogic.RequestFriend(targetUin, question, message);
+        => bot.ContextCollection.Business.OperationLogic.RequestFriend(targetUin, question, message, CancellationToken.None);
+
+    public static Task<bool> RequestFriend(this BotContext bot, uint targetUin, CancellationToken ct, string question = "", string message = "")
+        => bot.ContextCollection.Business.OperationLogic.RequestFriend(targetUin, question, message, ct);
 
     public static Task<bool> Like(this BotContext bot, uint targetUin, uint count = 1)
-        => bot.ContextCollection.Business.OperationLogic.Like(targetUin, count);
+        => bot.ContextCollection.Business.OperationLogic.Like(targetUin, count, CancellationToken.None);
+
+    public static Task<bool> Like(this BotContext bot, uint targetUin, CancellationToken ct, uint count = 1)
+        => bot.ContextCollection.Business.OperationLogic.Like(targetUin, count, ct);
 
     /// <summary>
     /// Get the client key for all sites
     /// </summary>
     public static Task<string?> GetClientKey(this BotContext bot)
-        => bot.ContextCollection.Business.OperationLogic.GetClientKey();
+        => bot.ContextCollection.Business.OperationLogic.GetClientKey(CancellationToken.None);
+
+    /// <summary>
+    /// Get the client key for all sites
+    /// </summary>
+    public static Task<string?> GetClientKey(this BotContext bot, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.GetClientKey(ct);
 
     /// <summary>
     /// Get the history message record, max 30 seqs
@@ -157,7 +315,18 @@ public static class OperationExt
     /// <param name="startSequence">Start Sequence of the message</param>
     /// <param name="endSequence">End Sequence of the message</param>
     public static Task<List<MessageChain>?> GetGroupMessage(this BotContext bot, uint groupUin, uint startSequence, uint endSequence)
-        => bot.ContextCollection.Business.OperationLogic.GetGroupMessage(groupUin, startSequence, endSequence);
+        => bot.ContextCollection.Business.OperationLogic.GetGroupMessage(groupUin, startSequence, endSequence, CancellationToken.None);
+
+    /// <summary>
+    /// Get the history message record, max 30 seqs
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="groupUin">target GroupUin</param>
+    /// <param name="startSequence">Start Sequence of the message</param>
+    /// <param name="endSequence">End Sequence of the message</param>
+    /// <param name="ct">The cancellation token</param>
+    public static Task<List<MessageChain>?> GetGroupMessage(this BotContext bot, uint groupUin, uint startSequence, uint endSequence, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.GetGroupMessage(groupUin, startSequence, endSequence, ct);
 
     /// <summary>
     /// Get the history message record for private message
@@ -167,7 +336,18 @@ public static class OperationExt
     /// <param name="timestamp">timestamp of the message chain</param>
     /// <param name="count">number of message to be fetched before timestamp</param>
     public static Task<List<MessageChain>?> GetRoamMessage(this BotContext bot, uint friendUin, uint timestamp, uint count)
-        => bot.ContextCollection.Business.OperationLogic.GetRoamMessage(friendUin, timestamp, count);
+        => bot.ContextCollection.Business.OperationLogic.GetRoamMessage(friendUin, timestamp, count, CancellationToken.None);
+
+    /// <summary>
+    /// Get the history message record for private message
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="friendUin">target FriendUin</param>
+    /// <param name="timestamp">timestamp of the message chain</param>
+    /// <param name="count">number of message to be fetched before timestamp</param>
+    /// <param name="ct">The cancellation token</param>
+    public static Task<List<MessageChain>?> GetRoamMessage(this BotContext bot, uint friendUin, uint timestamp, uint count, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.GetRoamMessage(friendUin, timestamp, count, ct);
 
     /// <summary>
     /// Get the history message record for private message
@@ -178,17 +358,40 @@ public static class OperationExt
     public static Task<List<MessageChain>?> GetRoamMessage(this BotContext bot, MessageChain targetChain, uint count)
     {
         uint timestamp = (uint)new DateTimeOffset(targetChain.Time).ToUnixTimeSeconds();
-        return bot.ContextCollection.Business.OperationLogic.GetRoamMessage(targetChain.FriendUin, timestamp, count);
+        return bot.ContextCollection.Business.OperationLogic.GetRoamMessage(targetChain.FriendUin, timestamp, count, CancellationToken.None);
+    }
+
+    /// <summary>
+    /// Get the history message record for private message
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="targetChain">target chain</param>
+    /// <param name="count">number of message to be fetched before timestamp</param>
+    /// <param name="ct">The cancellation token</param>
+    public static Task<List<MessageChain>?> GetRoamMessage(this BotContext bot, MessageChain targetChain, uint count,  CancellationToken ct)
+    {
+        uint timestamp = (uint)new DateTimeOffset(targetChain.Time).ToUnixTimeSeconds();
+        return bot.ContextCollection.Business.OperationLogic.GetRoamMessage(targetChain.FriendUin, timestamp, count, ct);
     }
 
     public static Task<List<MessageChain>?> GetC2cMessage(this BotContext bot, uint friendUin, uint startSequence, uint endSequence)
     {
-        return bot.ContextCollection.Business.OperationLogic.GetC2cMessage(friendUin, startSequence, endSequence);
+        return bot.ContextCollection.Business.OperationLogic.GetC2cMessage(friendUin, startSequence, endSequence, CancellationToken.None);
+    }
+
+    public static Task<List<MessageChain>?> GetC2cMessage(this BotContext bot, uint friendUin, uint startSequence, uint endSequence, CancellationToken ct)
+    {
+        return bot.ContextCollection.Business.OperationLogic.GetC2cMessage(friendUin, startSequence, endSequence, ct);
     }
 
     public static Task<(int code, List<MessageChain>? chains)> GetMessagesByResId(this BotContext bot, string resId)
     {
-        return bot.ContextCollection.Business.OperationLogic.GetMessagesByResId(resId);
+        return bot.ContextCollection.Business.OperationLogic.GetMessagesByResId(resId, CancellationToken.None);
+    }
+
+    public static Task<(int code, List<MessageChain>? chains)> GetMessagesByResId(this BotContext bot, string resId, CancellationToken ct)
+    {
+        return bot.ContextCollection.Business.OperationLogic.GetMessagesByResId(resId, ct);
     }
 
     /// <summary>
@@ -198,28 +401,59 @@ public static class OperationExt
     /// <param name="groupUin">target groupUin</param>
     /// <returns></returns>
     public static Task<BotGroupClockInResult> GroupClockIn(this BotContext bot, uint groupUin)
-        => bot.ContextCollection.Business.OperationLogic.GroupClockIn(groupUin);
+        => bot.ContextCollection.Business.OperationLogic.GroupClockIn(groupUin, CancellationToken.None);
+
+    /// <summary>
+    /// Do group clock in (群打卡)
+    /// </summary>
+    /// <param name="bot">target BotContext</param>
+    /// <param name="groupUin">target groupUin</param>
+    /// <param name="ct">The cancellation token</param>
+    /// <returns></returns>
+    public static Task<BotGroupClockInResult> GroupClockIn(this BotContext bot, uint groupUin, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.GroupClockIn(groupUin, ct);
 
     public static Task<BotUserInfo?> FetchUserInfo(this BotContext bot, uint uin, bool refreshCache = false)
-        => bot.ContextCollection.Business.OperationLogic.FetchUserInfo(uin, refreshCache);
+        => bot.ContextCollection.Business.OperationLogic.FetchUserInfo(uin, CancellationToken.None, refreshCache);
+
+    public static Task<BotUserInfo?> FetchUserInfo(this BotContext bot, uint uin, CancellationToken ct, bool refreshCache = false)
+        => bot.ContextCollection.Business.OperationLogic.FetchUserInfo(uin, ct, refreshCache);
 
     public static Task<List<string>?> FetchCustomFace(this BotContext bot)
-        => bot.ContextCollection.Business.OperationLogic.FetchCustomFace();
+        => bot.ContextCollection.Business.OperationLogic.FetchCustomFace(CancellationToken.None);
+
+    public static Task<List<string>?> FetchCustomFace(this BotContext bot, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.FetchCustomFace(ct);
 
     public static Task<string?> UploadLongMessage(this BotContext bot, List<MessageChain> chains)
-        => bot.ContextCollection.Business.OperationLogic.UploadLongMessage(chains);
+        => bot.ContextCollection.Business.OperationLogic.UploadLongMessage(chains, CancellationToken.None);
+
+    public static Task<string?> UploadLongMessage(this BotContext bot, List<MessageChain> chains, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.UploadLongMessage(chains, ct);
 
     public static Task<bool> MarkAsRead(this BotContext bot, MessageChain targetChain)
     {
         uint timestamp = (uint)(targetChain.Time - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
-        return bot.ContextCollection.Business.OperationLogic.MarkAsRead(targetChain.GroupUin ?? 0, targetChain.Uid, targetChain.Sequence, timestamp);
+        return bot.ContextCollection.Business.OperationLogic.MarkAsRead(targetChain.GroupUin ?? 0, targetChain.Uid, targetChain.Sequence, timestamp, CancellationToken.None);
+    }
+
+    public static Task<bool> MarkAsRead(this BotContext bot, MessageChain targetChain, CancellationToken ct)
+    {
+        uint timestamp = (uint)(targetChain.Time - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+        return bot.ContextCollection.Business.OperationLogic.MarkAsRead(targetChain.GroupUin ?? 0, targetChain.Uid, targetChain.Sequence, timestamp, ct);
     }
 
     public static Task<bool> UploadFriendFile(this BotContext bot, uint targetUin, FileEntity fileEntity)
-        => bot.ContextCollection.Business.OperationLogic.UploadFriendFile(targetUin, fileEntity);
+        => bot.ContextCollection.Business.OperationLogic.UploadFriendFile(targetUin, fileEntity, CancellationToken.None);
+
+    public static Task<bool> UploadFriendFile(this BotContext bot, uint targetUin, FileEntity fileEntity, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.UploadFriendFile(targetUin, fileEntity, ct);
 
     public static Task<bool> FriendPoke(this BotContext bot, uint friendUin)
-        => bot.ContextCollection.Business.OperationLogic.FriendPoke(friendUin);
+        => bot.ContextCollection.Business.OperationLogic.FriendPoke(friendUin, CancellationToken.None);
+
+    public static Task<bool> FriendPoke(this BotContext bot, uint friendUin, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.FriendPoke(friendUin, ct);
 
     /// <summary>
     /// Send a special window shake to friend
@@ -228,7 +462,17 @@ public static class OperationExt
     /// <param name="type">face type</param>
     /// <param name="count">count of face</param>
     public static Task<MessageResult> FriendSpecialShake(this BotContext bot, uint friendUin, SpecialPokeFaceType type, uint count)
-        => bot.ContextCollection.Business.OperationLogic.FriendSpecialShake(friendUin, type, count);
+        => bot.ContextCollection.Business.OperationLogic.FriendSpecialShake(friendUin, type, count, CancellationToken.None);
+
+    /// <summary>
+    /// Send a special window shake to friend
+    /// </summary>
+    /// <param name="friendUin">target friend uin</param>
+    /// <param name="type">face type</param>
+    /// <param name="count">count of face</param>
+    /// <param name="ct">The cancellation token</param>
+    public static Task<MessageResult> FriendSpecialShake(this BotContext bot, uint friendUin, SpecialPokeFaceType type, uint count, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.FriendSpecialShake(friendUin, type, count, ct);
 
     /// <summary>
     /// Send a window shake to friend
@@ -237,10 +481,23 @@ public static class OperationExt
     /// <param name="type">face type</param>
     /// <param name="strength">How big the face will be displayed ([0,3] is valid)</param>
     public static Task<MessageResult> FriendShake(this BotContext bot, uint friendUin, PokeFaceType type, ushort strength)
-        => bot.ContextCollection.Business.OperationLogic.FriendShake(friendUin, type, strength);
+        => bot.ContextCollection.Business.OperationLogic.FriendShake(friendUin, type, strength, CancellationToken.None);
+
+    /// <summary>
+    /// Send a window shake to friend
+    /// </summary>
+    /// <param name="friendUin">target friend uin</param>
+    /// <param name="type">face type</param>
+    /// <param name="strength">How big the face will be displayed ([0,3] is valid)</param>
+    /// <param name="ct">The cancellation token</param>
+    public static Task<MessageResult> FriendShake(this BotContext bot, uint friendUin, PokeFaceType type, ushort strength, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.FriendShake(friendUin, type, strength, ct);
 
     public static Task<List<string>?> FetchMarketFaceKey(this BotContext bot, List<string> faceIds)
-        => bot.ContextCollection.Business.OperationLogic.FetchMarketFaceKey(faceIds);
+        => bot.ContextCollection.Business.OperationLogic.FetchMarketFaceKey(faceIds, CancellationToken.None);
+
+    public static Task<List<string>?> FetchMarketFaceKey(this BotContext bot, List<string> faceIds, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.FetchMarketFaceKey(faceIds, ct);
     
     /// <summary>
     /// Set the avatar of the bot itself
@@ -248,5 +505,14 @@ public static class OperationExt
     /// <param name="bot">target <see cref="BotContext"/></param>
     /// <param name="avatar">The avatar object, <see cref="ImageEntity"/></param>
     public static Task<bool> SetAvatar(this BotContext bot, ImageEntity avatar)
-        => bot.ContextCollection.Business.OperationLogic.SetAvatar(avatar);
+        => bot.ContextCollection.Business.OperationLogic.SetAvatar(avatar, CancellationToken.None);
+
+    /// <summary>
+    /// Set the avatar of the bot itself
+    /// </summary>
+    /// <param name="bot">target <see cref="BotContext"/></param>
+    /// <param name="avatar">The avatar object, <see cref="ImageEntity"/></param>
+    /// <param name="ct">The cancellation token</param>
+    public static Task<bool> SetAvatar(this BotContext bot, ImageEntity avatar, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.SetAvatar(avatar, ct);
 }
