@@ -73,14 +73,14 @@ internal class BusinessContext : ContextBase
         }
     }
 
-    public async Task<bool> PushEvent(ProtocolEvent @event, CancellationToken ct)
+    public async Task<bool> PushEvent(ProtocolEvent @event, CancellationToken cancellationToken)
     {
         try
         {
             var packets = Collection.Service.ResolvePacketByEvent(@event);
             foreach (var packet in packets)
             {
-                ct.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
                 await Collection.Packet.PostPacket(packet);
             }
         }
@@ -95,23 +95,23 @@ internal class BusinessContext : ContextBase
     /// <summary>
     /// Send Event to the Server, goes through the given context
     /// </summary>
-    public async Task<List<ProtocolEvent>> SendEvent(ProtocolEvent @event, CancellationToken ct)
+    public async Task<List<ProtocolEvent>> SendEvent(ProtocolEvent @event, CancellationToken cancellationToken)
     {
-        await HandleOutgoingEvent(@event, ct);
+        await HandleOutgoingEvent(@event, cancellationToken);
         var result = new List<ProtocolEvent>();
 
-        ct.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfCancellationRequested();
 
         try
         {
             var packets = Collection.Service.ResolvePacketByEvent(@event);
             foreach (var packet in packets)
             {
-                var returnVal = await Collection.Packet.SendPacket(packet, ct);
+                var returnVal = await Collection.Packet.SendPacket(packet, cancellationToken);
                 var resolved = Collection.Service.ResolveEventByPacket(returnVal);
                 foreach (var protocol in resolved)
                 {
-                    await HandleIncomingEvent(protocol, ct);
+                    await HandleIncomingEvent(protocol, cancellationToken);
                     result.Add(protocol);
                 }
             }
@@ -130,7 +130,7 @@ internal class BusinessContext : ContextBase
         return result;
     }
 
-    public async Task<bool> HandleIncomingEvent(ProtocolEvent @event, CancellationToken ct)
+    public async Task<bool> HandleIncomingEvent(ProtocolEvent @event, CancellationToken cancellationToken)
     {
         _businessLogics.TryGetValue(typeof(ProtocolEvent), out var baseLogics);
         _businessLogics.TryGetValue(@event.GetType(), out var normalLogics);
@@ -143,7 +143,7 @@ internal class BusinessContext : ContextBase
         {
             try
             {
-                await logic.Incoming(@event, ct);
+                await logic.Incoming(@event, cancellationToken);
             }
             catch (TaskCanceledException)
             {
@@ -161,7 +161,7 @@ internal class BusinessContext : ContextBase
         return true;
     }
     
-    public async Task<bool> HandleOutgoingEvent(ProtocolEvent @event, CancellationToken ct)
+    public async Task<bool> HandleOutgoingEvent(ProtocolEvent @event, CancellationToken cancellationToken)
     {
         _businessLogics.TryGetValue(typeof(ProtocolEvent), out var baseLogics);
         _businessLogics.TryGetValue(@event.GetType(), out var normalLogics);
@@ -174,7 +174,7 @@ internal class BusinessContext : ContextBase
         {
             try
             {
-                await logic.Outgoing(@event, ct);
+                await logic.Outgoing(@event, cancellationToken);
             }
             catch (TaskCanceledException)
             {

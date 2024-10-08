@@ -35,20 +35,20 @@ internal class SocketContext : ContextBase, IClientListener
         _config = config;
     }
 
-    public async Task<bool> Connect()
+    public async Task<bool> Connect(CancellationToken cancellationToken)
     {
         if (_tcpClient.Connected) return true;
 
-        var servers = await OptimumServer(_config.GetOptimumServer, _config.UseIPv6Network);
+        var servers = await OptimumServer(_config.GetOptimumServer, _config.UseIPv6Network, cancellationToken);
         ServerUri = servers.First();
-        return await _tcpClient.Connect(ServerUri.Host, ServerUri.Port);
+        return await _tcpClient.Connect(ServerUri.Host, ServerUri.Port, cancellationToken);
     }
     
-    private async Task<bool> Reconnect()
+    private async Task<bool> Reconnect(CancellationToken cancellationToken)
     {
         if (ServerUri != null && !_tcpClient.Connected)
         {
-            bool reconnect = await _tcpClient.Connect(ServerUri.Host, ServerUri.Port);
+            bool reconnect = await _tcpClient.Connect(ServerUri.Host, ServerUri.Port, cancellationToken);
             if (reconnect)
             {
                 Collection.Log.LogInfo(Tag, $"Reconnect to {ServerUri}");
@@ -77,10 +77,15 @@ internal class SocketContext : ContextBase, IClientListener
         
         if (_config.AutoReconnect)
         {
-            Collection.Scheduler.Interval("Reconnect", 10 * 1000, async () =>
+            var cancellationToken = CancellationToken.None;
+
+            async void DoScheduleReconnect()
             {
-                if (await Reconnect()) Collection.Scheduler.Cancel("Reconnect");
-            });
+                if (cancellationToken.IsCancellationRequested || await Reconnect(cancellationToken))
+                    Collection.Scheduler.Cancel("Reconnect");
+            }
+
+            Collection.Scheduler.Interval("Reconnect", 10 * 1000, DoScheduleReconnect);
         }
     }
 
@@ -109,12 +114,12 @@ internal class SocketContext : ContextBase, IClientListener
         new("http://119.147.190.138:8080")
     };
     
-    private async Task<List<Uri>> OptimumServer(bool requestMsf, bool useIPv6Network = false)
+    private async Task<List<Uri>> OptimumServer(bool requestMsf, bool useIPv6Network = false, CancellationToken cancellationToken = default)
     {
 
-        var result = requestMsf ? await ResolveDns(useIPv6Network) : useIPv6Network ? HardCodeIPv6Uris : TestIPv4HardCodes;
+        var result = requestMsf ? await ResolveDns(useIPv6Network, cancellationToken: cancellationToken) : useIPv6Network ? HardCodeIPv6Uris : TestIPv4HardCodes;
         var latencyTasks = result.Select(uri => Icmp.PingAsync(uri)).ToArray();
-        var latency = await Task.WhenAll(latencyTasks);
+        var latency = await Task.WhenAll(latencyTasks).WaitAsync(cancellationToken);
         Array.Sort(latency, result);
         
         var list = result.ToList();
@@ -122,10 +127,10 @@ internal class SocketContext : ContextBase, IClientListener
         return list;
     }
     
-    private static async Task<Uri[]> ResolveDns(bool useIPv6Network = false)
+    private static async Task<Uri[]> ResolveDns(bool useIPv6Network = false, CancellationToken cancellationToken = default)
     {
         string dns = useIPv6Network ? "msfwifiv6.3g.qq.com" : "msfwifi.3g.qq.com";
-        var addresses = await Dns.GetHostEntryAsync(dns);
+        var addresses = await Dns.GetHostEntryAsync(dns, cancellationToken);
         var result = new Uri[addresses.AddressList.Length];
         
         for (int i = 0; i < addresses.AddressList.Length; i++) result[i] = new Uri($"http://{addresses.AddressList[i]}:8080");

@@ -8,7 +8,7 @@ internal abstract class LogicBase
     
     protected LogicBase(ContextCollection collection) => Collection = collection;
 
-    public virtual Task Incoming(ProtocolEvent e, CancellationToken ct) => Task.CompletedTask;
+    public virtual Task Incoming(ProtocolEvent e, CancellationToken cancellationToken) => Task.CompletedTask;
     
-    public virtual Task Outgoing(ProtocolEvent e, CancellationToken ct) => Task.CompletedTask;
+    public virtual Task Outgoing(ProtocolEvent e, CancellationToken cancellationToken) => Task.CompletedTask;
 }

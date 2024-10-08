@@ -11,14 +11,14 @@ namespace Lagrange.Core.Internal.Context.Uploader;
 /// </summary>
 internal static class FileUploader
 {
-    public static async Task<bool> UploadPrivate(ContextCollection context, MessageChain chain, IMessageEntity entity, CancellationToken ct)
+    public static async Task<bool> UploadPrivate(ContextCollection context, MessageChain chain, IMessageEntity entity, CancellationToken cancellationToken)
     {
         if (entity is not FileEntity { FileStream: not null } file) return false;
 
         try
         {
             var uploadEvent = FileUploadEvent.Create(chain.Uid ?? "", file);
-            var result = await context.Business.SendEvent(uploadEvent, ct);
+            var result = await context.Business.SendEvent(uploadEvent, cancellationToken);
             var uploadResp = (FileUploadEvent)result[0];
 
             if (!uploadResp.IsExist)
@@ -69,7 +69,7 @@ internal static class FileUploader
                 file.FileUuid = uploadResp.FileId;
 
                 bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(95, file.FileStream,
-                    await Common.GetTicket(context, ct), file.FileMd5, ct, extendInfo: ext.Serialize().ToArray());
+                    await Common.GetTicket(context, cancellationToken), file.FileMd5, cancellationToken, extendInfo: ext.Serialize().ToArray());
                 if (!hwSuccess) return false;
             }
         }
@@ -79,11 +79,11 @@ internal static class FileUploader
         }
 
         var sendEvent = SendMessageEvent.Create(chain);
-        var sendResult = await context.Business.SendEvent(sendEvent, ct);
+        var sendResult = await context.Business.SendEvent(sendEvent, cancellationToken);
         return sendResult.Count != 0 && ((SendMessageEvent)sendResult[0]).MsgResult.Result == 0;
     }
 
-    public static async Task<bool> UploadGroup(ContextCollection context, MessageChain chain, IMessageEntity entity, string targetDirectory, CancellationToken ct)
+    public static async Task<bool> UploadGroup(ContextCollection context, MessageChain chain, IMessageEntity entity, string targetDirectory, CancellationToken cancellationToken)
     {
         if (entity is not FileEntity { FileStream: not null } file) return false;
 
@@ -91,7 +91,7 @@ internal static class FileUploader
         try
         {
             var uploadEvent = GroupFSUploadEvent.Create(chain.GroupUin ?? 0, targetDirectory, file);
-            var result = await context.Business.SendEvent(uploadEvent, ct);
+            var result = await context.Business.SendEvent(uploadEvent, cancellationToken);
             var uploadResp = (GroupFSUploadEvent)result[0];
 
             if (!uploadResp.IsExist)
@@ -143,7 +143,7 @@ internal static class FileUploader
                 };
 
                 bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(71, file.FileStream,
-                    await Common.GetTicket(context, ct), file.FileMd5, ct, extendInfo: ext.Serialize().ToArray());
+                    await Common.GetTicket(context, cancellationToken), file.FileMd5, cancellationToken, extendInfo: ext.Serialize().ToArray());
                 if (!hwSuccess) return false;
 
                 fileId = uploadResp.FileId;
@@ -155,7 +155,7 @@ internal static class FileUploader
         }
         
         var sendEvent = GroupSendFileEvent.Create(chain.GroupUin ?? 0, fileId);
-        var sendResult = await context.Business.SendEvent(sendEvent, ct);
+        var sendResult = await context.Business.SendEvent(sendEvent, cancellationToken);
         return sendResult.Count != 0 && ((GroupSendFileEvent)sendResult[0]).ResultCode == 0;
     }
 }

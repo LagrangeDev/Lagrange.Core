@@ -17,7 +17,7 @@ internal class PacketContext : ContextBase
 {
     internal SignProvider SignProvider { private get; set; }
     
-    private readonly ConcurrentDictionary<uint, (TaskCompletionSource<SsoPacket> task, CancellationToken ct)> _pendingTasks;
+    private readonly ConcurrentDictionary<uint, (TaskCompletionSource<SsoPacket> task, CancellationToken cancellationToken)> _pendingTasks;
     
     public PacketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, BotConfig config) 
         : base(collection, keystore, appInfo, device)
@@ -29,13 +29,13 @@ internal class PacketContext : ContextBase
             "Linux" => new LinuxSigner(),
             _ => throw new Exception("Unknown System Found")
         };
-        _pendingTasks = new ConcurrentDictionary<uint, (TaskCompletionSource<SsoPacket> task, CancellationToken ct)>();
+        _pendingTasks = new ConcurrentDictionary<uint, (TaskCompletionSource<SsoPacket> task, CancellationToken cancellationToken)>();
     }
     
     /// <summary>
     /// Send the packet and wait for the corresponding response by the packet's sequence number.
     /// </summary>
-    public Task<SsoPacket> SendPacket(SsoPacket packet, CancellationToken ct)
+    public Task<SsoPacket> SendPacket(SsoPacket packet, CancellationToken cancellationToken)
     {
         byte[] data;
         switch (packet.PacketType)
@@ -57,10 +57,10 @@ internal class PacketContext : ContextBase
                 throw new Exception("Unknown Packet Type");
         }
 
-        ct.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfCancellationRequested();
 
         var task = new TaskCompletionSource<SsoPacket>();
-        _pendingTasks.TryAdd(packet.Sequence, (task, ct));
+        _pendingTasks.TryAdd(packet.Sequence, (task, cancellationToken));
 
         // We have to wait packet to be sent before we can return the task
         // Because the packet's sequence number is used to identify the response
@@ -101,9 +101,9 @@ internal class PacketContext : ContextBase
         
         if (_pendingTasks.TryRemove(sso.Sequence, out var pendingTask))
         {
-            if (pendingTask.ct.IsCancellationRequested)
+            if (pendingTask.cancellationToken.IsCancellationRequested)
             {
-                pendingTask.task.SetCanceled(pendingTask.ct);
+                pendingTask.task.SetCanceled(pendingTask.cancellationToken);
                 return;
             }
             if (sso is { RetCode: not 0, Extra: { } extra})

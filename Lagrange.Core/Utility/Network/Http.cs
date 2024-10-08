@@ -43,11 +43,11 @@ internal static class Http
         return await response.Content.ReadAsByteArrayAsync();
     }
 
-    public static async Task<byte[]> PostAsync(string url, byte[] payload, string content, CancellationToken ct)
+    public static async Task<byte[]> PostAsync(string url, byte[] payload, string content, CancellationToken cancellationToken)
     {
         var contentData = new ByteArrayContent(payload);
         contentData.Headers.ContentType = new MediaTypeHeaderValue(content);
-        var response = await Client.PostAsync(url, contentData, ct);
-        return await response.Content.ReadAsByteArrayAsync(ct);
+        using var response = await Client.PostAsync(url, contentData, cancellationToken);
+        return await response.Content.ReadAsByteArrayAsync(cancellationToken);
     }
 }

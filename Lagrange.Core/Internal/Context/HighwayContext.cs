@@ -57,7 +57,7 @@ internal class HighwayContext : ContextBase, IDisposable
         _concurrent = config.HighwayConcurrent;
     }
 
-    public async Task UploadResources(MessageChain chain, CancellationToken ct)
+    public async Task UploadResources(MessageChain chain, CancellationToken cancellationToken)
     {
         foreach (var entity in chain)
         {
@@ -65,8 +65,8 @@ internal class HighwayContext : ContextBase, IDisposable
             {
                 try
                 {
-                    if (chain.IsGroup) await uploader.UploadGroup(Collection, chain, entity, ct);
-                    else await uploader.UploadPrivate(Collection, chain, entity, ct);
+                    if (chain.IsGroup) await uploader.UploadGroup(Collection, chain, entity, cancellationToken);
+                    else await uploader.UploadPrivate(Collection, chain, entity, cancellationToken);
                 }
                 catch
                 {
@@ -76,7 +76,7 @@ internal class HighwayContext : ContextBase, IDisposable
         }
     }
 
-    public async Task ManualUploadEntity(IMessageEntity entity, CancellationToken ct)
+    public async Task ManualUploadEntity(IMessageEntity entity, CancellationToken cancellationToken)
     {
         if (_uploaders.TryGetValue(entity.GetType(), out var uploader))
         {
@@ -86,7 +86,7 @@ internal class HighwayContext : ContextBase, IDisposable
                 string uid = Collection.Keystore.Uid ?? "";
                 var chain = new MessageChain(uin, uid, uid) { entity };
                 
-                await uploader.UploadPrivate(Collection, chain, entity, ct);
+                await uploader.UploadPrivate(Collection, chain, entity, cancellationToken);
             }
             catch
             {
