@@ -337,13 +337,30 @@ internal class OperationLogic : LogicBase
         }
     }
 
-    public async Task<List<dynamic>?> FetchFriendRequests(CancellationToken ct)
+    public async Task<List<BotFriendRequest>?> FetchFriendRequests(CancellationToken ct)
     {
         var fetchRequestsEvent = FetchFriendsRequestsEvent.Create();
         var events = await Collection.Business.SendEvent(fetchRequestsEvent, ct);
         if (events.Count == 0) return null;
 
-        return null;
+        var resolved = ((FetchFriendsRequestsEvent)events[0]).Requests;
+        foreach (var result in resolved)
+        {
+            var uins = await Task.WhenAll(ResolveUid(result.TargetUid), ResolveUid(result.SourceUid));
+            result.TargetUin = uins[0];
+            result.SourceUin = uins[1];
+        }
+
+        return resolved;
+
+        async Task<uint> ResolveUid(string? uid)
+        {
+            if (uid == null) return 0;
+
+            var fetchUidEvent = FetchUserInfoEvent.Create(uid);
+            var e = await Collection.Business.SendEvent(fetchUidEvent, ct);
+            return e.Count == 0 ? 0 : ((FetchUserInfoEvent)e[0]).UserInfo.Uin;
+        }
     }
 
     public async Task<bool> GroupTransfer(uint groupUin, uint targetUin, CancellationToken ct)
@@ -623,5 +640,15 @@ internal class OperationLogic : LogicBase
             Field6 = 1
         }.Serialize().ToArray();
         return await Collection.Highway.UploadSrcByStreamAsync(3000, avatar.ImageStream.Value, ticket, md5, ct, extendInfo: extra);
+    }
+
+    public async Task<(uint, uint)> GroupRemainAtAll(uint groupUin, CancellationToken ct)
+    {
+        var groupRemainAtAllEvent = FetchGroupAtAllRemainEvent.Create(groupUin);
+        var results = await Collection.Business.SendEvent(groupRemainAtAllEvent, ct);
+        if (results.Count == 0) return (0, 0);
+
+        var ret = (FetchGroupAtAllRemainEvent)results[0];
+        return (ret.RemainAtAllCountForUin, ret.RemainAtAllCountForGroup);
     }
 }

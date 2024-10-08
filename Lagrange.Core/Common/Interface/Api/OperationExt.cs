@@ -225,7 +225,7 @@ public static class OperationExt
     /// </summary>
     /// <param name="bot"></param>
     /// <returns></returns>
-    public static Task<List<dynamic>?> FetchFriendRequests(this BotContext bot)
+    public static Task<List<BotFriendRequest>?> FetchFriendRequests(this BotContext bot)
         => bot.ContextCollection.Business.OperationLogic.FetchFriendRequests(CancellationToken.None);
 
     /// <summary>
@@ -234,7 +234,7 @@ public static class OperationExt
     /// <param name="bot"></param>
     /// <param name="ct">The cancellation token</param>
     /// <returns></returns>
-    public static Task<List<dynamic>?> FetchFriendRequests(this BotContext bot, CancellationToken ct)
+    public static Task<List<BotFriendRequest>?> FetchFriendRequests(this BotContext bot, CancellationToken ct)
         => bot.ContextCollection.Business.OperationLogic.FetchFriendRequests(ct);
 
     /// <summary>

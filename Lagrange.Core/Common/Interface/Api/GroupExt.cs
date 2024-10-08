@@ -192,6 +192,12 @@ public static class GroupExt
     public static Task<bool> GroupSetAvatar(this BotContext bot, uint groupUin, ImageEntity imageEntity, CancellationToken ct)
         => bot.ContextCollection.Business.OperationLogic.GroupSetAvatar(groupUin, imageEntity, ct);
 
+    public static Task<(uint, uint)> GroupRemainAtAll(this BotContext bot, uint groupUin)
+        => bot.ContextCollection.Business.OperationLogic.GroupRemainAtAll(groupUin, CancellationToken.None);
+
+    public static Task<(uint, uint)> GroupRemainAtAll(this BotContext bot, uint groupUin, CancellationToken ct)
+        => bot.ContextCollection.Business.OperationLogic.GroupRemainAtAll(groupUin, ct);
+
     #region Group File System
 
     public static Task<ulong> FetchGroupFSSpace(this BotContext bot, uint groupUin)
