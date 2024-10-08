@@ -14,14 +14,14 @@ public static class BotExt
     /// <summary>
     /// Use this method to login by QrCode, you should call <see cref="FetchQrCode"/> first
     /// </summary>
-    public static Task LoginByQrCode(this BotContext bot)
-        => bot.ContextCollection.Business.WtExchangeLogic.LoginByQrCode();
+    public static Task LoginByQrCode(this BotContext bot, CancellationToken cancellationToken = default)
+        => bot.ContextCollection.Business.WtExchangeLogic.LoginByQrCode(cancellationToken);
     
     /// <summary>
     /// Use this method to login by password, EasyLogin may be preformed if there is sig in <see cref="BotKeystore"/>
     /// </summary>
-    public static Task<bool> LoginByPassword(this BotContext bot)
-        => bot.ContextCollection.Business.WtExchangeLogic.LoginByPassword();
+    public static Task<bool> LoginByPassword(this BotContext bot, CancellationToken cancellationToken = default)
+        => bot.ContextCollection.Business.WtExchangeLogic.LoginByPassword(cancellationToken);
     
     /// <summary>
     /// Submit the captcha of the url given by the <see cref="EventInvoker.OnBotCaptchaEvent"/>

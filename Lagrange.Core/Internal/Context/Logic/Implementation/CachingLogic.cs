@@ -125,7 +125,7 @@ internal class CachingLogic : LogicBase
         var friendGroups = new Dictionary<uint, string>();
         do
         {
-            var @event = FetchFriendsAndFriendGroupsEvent.Create(next);
+            var @event = FetchFriendsEvent.Create(next);
             var results = await Collection.Business.SendEvent(@event);
 
             if (results.Count == 0)
@@ -134,7 +134,7 @@ internal class CachingLogic : LogicBase
                 return;
             }
 
-            var result = (FetchFriendsAndFriendGroupsEvent)results[0];
+            var result = (FetchFriendsEvent)results[0];
 
             foreach ((uint id, string name) in result.FriendGroups) friendGroups[id] = name;
 

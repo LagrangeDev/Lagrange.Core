@@ -11,13 +11,13 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.System;
 
-[EventSubscribe(typeof(FetchFriendsAndFriendGroupsEvent))]
+[EventSubscribe(typeof(FetchFriendsEvent))]
 [Service("OidbSvcTrpcTcp.0xfd4_1")]
-internal class FetchFriendsAndFriendGroupsService : BaseService<FetchFriendsAndFriendGroupsEvent>
+internal class FetchFriendsService : BaseService<FetchFriendsEvent>
 {
     private const int MaxFriendCount = 300;
 
-    protected override bool Build(FetchFriendsAndFriendGroupsEvent input, BotKeystore keystore, BotAppInfo appInfo,
+    protected override bool Build(FetchFriendsEvent input, BotKeystore keystore, BotAppInfo appInfo,
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFD4_1>(new OidbSvcTrpcTcp0xFD4_1
@@ -46,7 +46,7 @@ internal class FetchFriendsAndFriendGroupsService : BaseService<FetchFriendsAndF
     }
 
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out FetchFriendsAndFriendGroupsEvent output, out List<ProtocolEvent>? extraEvents)
+        out FetchFriendsEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFD4_1Response>>(input);
 
@@ -58,7 +58,7 @@ internal class FetchFriendsAndFriendGroupsService : BaseService<FetchFriendsAndF
             friends.Add(new BotFriend(raw.Uin, raw.Uid, properties[20002], properties[103], properties[102], properties[27394], new(raw.CustomGroup, "")));
         }
 
-        output = FetchFriendsAndFriendGroupsEvent.Result(0, friends, packet.Body.Groups.ToDictionary(k => k.Code, v => v.Value), packet.Body.Next?.Uin); // 全家4完了才能想出来这种分页的逻辑
+        output = FetchFriendsEvent.Result(0, friends, packet.Body.Groups.ToDictionary(k => k.Code, v => v.Value), packet.Body.Next?.Uin); // 全家4完了才能想出来这种分页的逻辑
         extraEvents = null;
         return true;
     }

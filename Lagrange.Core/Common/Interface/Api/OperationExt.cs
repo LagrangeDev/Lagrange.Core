@@ -113,7 +113,7 @@ public static class OperationExt
     /// </summary>
     /// <param name="bot"></param>
     /// <returns></returns>
-    public static Task<List<dynamic>?> FetchFriendRequests(this BotContext bot)
+    public static Task<List<BotFriendRequest>?> FetchFriendRequests(this BotContext bot)
         => bot.ContextCollection.Business.OperationLogic.FetchFriendRequests();
 
     /// <summary>
