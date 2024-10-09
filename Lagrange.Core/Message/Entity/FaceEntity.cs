@@ -50,6 +50,10 @@ public class FaceEntity : IMessageEntity
                     }
                 }
             };
+        } 
+        else if (FaceId >= 260)
+        {
+            
         }
         
         return new Elem[] { new() { Face = new Face { Index = FaceId } } };

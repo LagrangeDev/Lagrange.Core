@@ -14,6 +14,7 @@ using MessageControl = Lagrange.Core.Internal.Packets.Message.MessageControl;
 using PushMsgBody = Lagrange.Core.Internal.Packets.Message.PushMsgBody;
 using ResponseHead = Lagrange.Core.Internal.Packets.Message.ResponseHead;
 using RoutingHead = Lagrange.Core.Internal.Packets.Message.RoutingHead;
+using PushGroupProMsgBody = Lagrange.Core.Internal.Packets.Message.PushGroupProMsgBody;
 
 namespace Lagrange.Core.Message;
 
@@ -153,6 +154,31 @@ internal static class MessagePacker
         }
         return chain;
     }
+    
+    public static MessageChain Parse(PushGroupProMsgBody message, bool isFake = false)
+    {
+        var chain = ParseChain(message);
+
+        if (message.Body?.RichText is { Elems: { } elements }) // 怎么Body还能是null的
+        {
+            foreach (var element in elements)
+            {
+                foreach (var (entityType, expectElems) in EntityToElem)
+                {
+                    foreach (var expectElem in expectElems)
+                    {
+                        if (expectElem.GetValueByExpr(element) is not null &&
+                            Factory[entityType].UnpackElement(element) is { } entity)
+                        {
+                            chain.Add(entity);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return chain;
+    }
 
     public static MessageChain ParsePrivateFile(PushMsgBody message)
     {
@@ -265,6 +291,23 @@ internal static class MessagePacker
                 message.ContentHead.NewId ?? 0,
                 message.ResponseHead.SigMap
                 );
+
+        if (message.Body?.RichText?.Elems is { } elems) chain.Elements.AddRange(elems);
+
+        chain.Time = DateTimeOffset.FromUnixTimeSeconds(message.ContentHead.Timestamp ?? 0).LocalDateTime;
+
+        return chain;
+    }
+    
+    private static MessageChain ParseChain(PushGroupProMsgBody message)
+    {
+        var chain = new MessageChain(
+            (uint)(message.Unknown1.Field1?.GuildId ?? 0 % ((ulong)uint.MaxValue + 1)) ,  
+            (uint)(message.Unknown1.Field1?.SenderId ?? 0 % ((ulong)uint.MaxValue + 1)),
+                message.Unknown1.Field2?.Seq ?? 0,
+                message.ContentHead.NewId ?? 0,
+                0
+            );
 
         if (message.Body?.RichText?.Elems is { } elems) chain.Elements.AddRange(elems);
 

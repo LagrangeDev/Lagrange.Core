@@ -35,6 +35,8 @@ public sealed class MessageChain : List<IMessageEntity>
     internal string? Uid { get; set; }
 
     internal bool IsGroup { get => GroupUin != null; }
+    
+    internal bool IsGroupPro { get => Type == MessageType.GroupPro; }
 
     internal List<Elem> Elements { get; set; }
 
@@ -118,6 +120,7 @@ public sealed class MessageChain : List<IMessageEntity>
     {
         Group,
         Temp,
-        Friend
+        Friend,
+        GroupPro,
     }
 }

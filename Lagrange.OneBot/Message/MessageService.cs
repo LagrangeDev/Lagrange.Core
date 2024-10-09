@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using Lagrange.Core;
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Extension;
@@ -45,6 +46,7 @@ public sealed class MessageService
 
         invoker.OnFriendMessageReceived += OnFriendMessageReceived;
         invoker.OnGroupMessageReceived += OnGroupMessageReceived;
+        invoker.OnGroupProMessageReceived += OnGroupProMessageReceived;
         invoker.OnTempMessageReceived += OnTempMessageReceived;
 
         _entityToFactory = new Dictionary<Type, List<(string, SegmentBase)>>();
@@ -105,6 +107,12 @@ public sealed class MessageService
 
         var request = ConvertToGroupMsg(bot.BotUin, e.Chain);
 
+        _ = _service.SendJsonAsync(request);
+    }
+    
+    private void OnGroupProMessageReceived(BotContext bot, GroupProMessageEvent e)
+    {
+        var request = ConvertToGroupMsg(bot.BotUin, e.Chain);
         _ = _service.SendJsonAsync(request);
     }
 

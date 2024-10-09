@@ -23,6 +23,7 @@ public partial class EventInvoker : IDisposable
         RegisterEvent((GroupInvitationEvent e) => OnGroupInvitationReceived?.Invoke(context, e));
         RegisterEvent((FriendMessageEvent e) => OnFriendMessageReceived?.Invoke(context, e));
         RegisterEvent((GroupMessageEvent e) => OnGroupMessageReceived?.Invoke(context, e));
+        RegisterEvent((GroupProMessageEvent e) => OnGroupProMessageReceived?.Invoke(context, e));
         RegisterEvent((TempMessageEvent e) => OnTempMessageReceived?.Invoke(context, e));
         RegisterEvent((GroupAdminChangedEvent e) => OnGroupAdminChangedEvent?.Invoke(context, e));
         RegisterEvent((GroupMemberIncreaseEvent e) => OnGroupMemberIncreaseEvent?.Invoke(context, e));

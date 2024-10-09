@@ -1,3 +1,4 @@
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Event;
 using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Internal.Context.Attributes;
@@ -64,6 +65,7 @@ internal class MessagingLogic : LogicBase
                     MessageChain.MessageType.Friend => new FriendMessageEvent(chain),
                     MessageChain.MessageType.Group => new GroupMessageEvent(chain),
                     MessageChain.MessageType.Temp => new TempMessageEvent(chain),
+                    MessageChain.MessageType.GroupPro => new GroupProMessageEvent(chain),
                     _ => throw new ArgumentOutOfRangeException()
                 };
                 Collection.Invoker.PostEvent(args);
@@ -436,7 +438,7 @@ internal class MessagingLogic : LogicBase
     /// <param name="chain">The target chain</param>
     private async Task ResolveChainMetadata(MessageChain chain)
     {
-        if (chain is { IsGroup: true, GroupUin: not null })
+        if (chain is { IsGroup: true, GroupUin: not null , IsGroupPro: false })
         {
             var groups = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
             chain.GroupMemberInfo = chain.FriendUin == 0

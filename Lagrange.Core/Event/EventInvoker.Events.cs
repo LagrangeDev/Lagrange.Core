@@ -19,6 +19,8 @@ public partial class EventInvoker
     public event LagrangeEvent<FriendMessageEvent>? OnFriendMessageReceived;
 
     public event LagrangeEvent<GroupMessageEvent>? OnGroupMessageReceived;
+    
+    public event LagrangeEvent<GroupProMessageEvent>? OnGroupProMessageReceived;
 
     public event LagrangeEvent<TempMessageEvent>? OnTempMessageReceived;
 
