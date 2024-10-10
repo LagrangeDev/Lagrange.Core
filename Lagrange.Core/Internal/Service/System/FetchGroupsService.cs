@@ -39,7 +39,8 @@ internal class FetchGroupsService : BaseService<FetchGroupsEvent>
 
         var groups = payload.Body.Groups.Select(raw =>
         {
-            return new BotGroup(raw.GroupUin, raw.Info.GroupName, raw.Info.MemberCount, raw.Info.MemberMax);
+            var i = raw.Info;
+            return new BotGroup(raw.GroupUin, i.GroupName, i.MemberCount, i.MemberMax, i.CreatedTime, i.Description, i.Question, i.Announcement);
         }).ToList();
         
         output = FetchGroupsEvent.Result(groups);

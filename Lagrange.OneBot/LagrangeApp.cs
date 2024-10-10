@@ -100,7 +100,7 @@ public class LagrangeApp : IHost
                 Logger.LogInformation($"Please scan the QR code above, Url: {qrCode.Url}");
                 await File.WriteAllBytesAsync($"qr-{Instance.BotUin}.png", qrCode.QrCode ?? Array.Empty<byte>(), cancellationToken);
 
-                _ = Task.Run(Instance.LoginByQrCode, cancellationToken);
+                await Instance.LoginByQrCode(cancellationToken);
             }
         }
         else
@@ -119,7 +119,7 @@ public class LagrangeApp : IHost
                 }, cancellationToken);
             };
 
-            _ = Task.Run(Instance.LoginByPassword, cancellationToken);
+            await Instance.LoginByPassword(cancellationToken);
         }
     }
 

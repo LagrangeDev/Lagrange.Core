@@ -24,11 +24,19 @@ internal class OidbSvcTrpcTcp0xFE5_2GroupInfo
 {
     [ProtoMember(1)] public OidbSvcTrpcTcp0xFE5_2Member GroupOwner { get; set; }
     
+    [ProtoMember(2)] public uint CreatedTime { get; set; }
+    
     [ProtoMember(3)] public uint MemberMax { get; set; }
     
     [ProtoMember(4)] public uint MemberCount { get; set; }
     
     [ProtoMember(5)] public string GroupName { get; set; }
+    
+    [ProtoMember(18)] public string? Description { get; set; }
+    
+    [ProtoMember(19)] public string? Question { get; set; }
+    
+    [ProtoMember(30)] public string? Announcement { get; set; }
 }
 
 [ProtoContract]
