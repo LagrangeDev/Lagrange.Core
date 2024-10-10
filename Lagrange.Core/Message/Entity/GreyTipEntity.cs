@@ -10,8 +10,17 @@ namespace Lagrange.Core.Message.Entity;
 public class GreyTipEntity : IMessageEntity
 {
     public string GreyTip { get; }
+    public uint ObjectType { get; } = 3;
+    public uint SubType { get; } = 2;
+    public uint Type { get; } = 4;
     
-    public GreyTipEntity(string greyTip) => GreyTip = greyTip;
+    public GreyTipEntity(string greyTip , uint objectType, uint subType, uint type)
+    {
+        GreyTip = greyTip;
+        ObjectType = objectType;
+        SubType = subType;
+        Type = type;
+    }
     
     public GreyTipEntity() => GreyTip = string.Empty;
     
@@ -20,9 +29,9 @@ public class GreyTipEntity : IMessageEntity
         var content = new GreyTipContent
         {
             GrayTip = GreyTip,
-            ObjectType = 3,
-            SubType = 2,
-            Type = 4
+            ObjectType = ObjectType,
+            SubType = SubType,
+            Type = Type
         };
         
         var extra = new GreyTipExtra
