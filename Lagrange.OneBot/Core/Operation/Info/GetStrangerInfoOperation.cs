@@ -63,12 +63,10 @@ public class GetStrangerInfoOperation : IOperation
         {
             if (await context.FetchUserInfo(stranger.UserId, stranger.NoCache) is { } info)
             {
-
                 uint status = info.Status;
-                if (status >= 268435456)
-                {
-                    status -= 268435456;
-                }
+                uint mask = 268435455 - status;
+                mask = (uint)((int)mask >> 31);
+                status -= 268435456 & mask;
                 string? Statusmsg = StatusArray.TryGetValue(status, out string? value) ? value : "未知状态";
                 return new OneBotResult(new OneBotStranger
                 {
