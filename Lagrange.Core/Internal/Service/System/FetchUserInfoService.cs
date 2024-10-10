@@ -51,7 +51,7 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         var birthday = GetBirthday(str[20031]);
         var reg = DateTime.UnixEpoch.AddSeconds(num[20026]);
         string? qid = str.GetValueOrDefault<uint, string>(27394);
-        var info = new BotUserInfo(payload.Body.Body.Uin, str[20002], birthday, str[20020], str[20003], str[20021], num[20037], reg, num[20009], qid, num[105]);
+        var info = new BotUserInfo(payload.Body.Body.Uin, str[20002], birthday, str[20020], str[20003], str[20021], num[20037], reg, num[20009], qid, num[105] , str[102] , num[27372]);
 
         output = FetchUserInfoEvent.Result(0, info);
         extraEvents = null;
