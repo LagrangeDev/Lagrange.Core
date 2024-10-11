@@ -28,5 +28,7 @@ internal class OidbSvcTrpcTcp0xFE1_2ResponseProperty
 {
     [ProtoMember(1)] public List<OidbTwoNumber> NumberProperties { get; set; }
     
-    [ProtoMember(2)] public List<OidbFriendProperty> StringProperties { get; set; }
+    [ProtoMember(2)] public List<OidbFriendPropertybyte> StringProperties { get; set; }
+
 }
+

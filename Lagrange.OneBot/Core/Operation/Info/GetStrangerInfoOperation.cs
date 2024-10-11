@@ -68,6 +68,11 @@ public class GetStrangerInfoOperation : IOperation
                 mask = (uint)((int)mask >> 31);
                 status -= 268435456 & mask;
                 string? Statusmsg = StatusArray.TryGetValue(status, out string? value) ? value : "未知状态";
+
+                if (status == 13633281)
+                {
+                    Statusmsg = "[自定义状态]" + info.Customarray[1];
+                }
                 return new OneBotResult(new OneBotStranger
                 {
                     UserId = info.Uin,
