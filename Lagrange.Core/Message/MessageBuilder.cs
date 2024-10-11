@@ -352,15 +352,7 @@ public sealed class MessageBuilder
 
         return this;
     }
-
-    public MessageBuilder greytip(string greyTip, uint objectType = 3, uint subType = 2, uint type = 4)
-    {
-        var greyTipEntity = new GreyTipEntity(greyTip, objectType, subType, type);
-        _chain.Add(greyTipEntity);
-
-        return this;
-    }
-
+    
     public MessageBuilder Add(IMessageEntity entity)
     {
         _chain.Add(entity);

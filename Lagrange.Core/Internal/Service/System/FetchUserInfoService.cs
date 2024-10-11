@@ -50,9 +50,7 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
 
         var str = GetStringProperties(payload.Body.Body.Properties);
         var num = GetNumberProperties(payload.Body.Body.Properties);
-
-        //如果是嵌套proto就Serializer.Deserialize(Value)如果是String就Encoding.UTF8.GetString(Value)
-
+        
         var birthday = GetBirthday(Encoding.UTF8.GetString(str[20031]));
         var reg = DateTime.UnixEpoch.AddSeconds(num[20026]);
 
