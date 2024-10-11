@@ -21,13 +21,16 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
     {
         var keys = new List<uint> { 20002, 27394, 20009, 20031, 101, 103, 102, 20022, 20023, 20024, 24002, 27037, 27049, 20011, 20016, 20021, 20003, 20004, 20005, 20006, 20020, 20026, 24007, 104, 105, 42432, 42362, 41756, 41757, 42257, 27372, 42315, 107, 45160, 45161, 27406, 62026, 20037 };
 
+        // 27406 自定义状态文本
+        // 27372 状态
+
         object packet = input.Uid == null
             ? new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE1_2Uin>(new OidbSvcTrpcTcp0xFE1_2Uin
             {
                 Uin = input.Uin,
                 Field2 = 0,
                 Keys = keys.Select(x => new OidbSvcTrpcTcp0xFE1_2Key { Key = x }).ToList()
-            }, 0xfe1, 2, false, true) 
+            }, 0xfe1, 2, false, true)
             : new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE1_2>(new OidbSvcTrpcTcp0xFE1_2
             {
                 Uid = input.Uid,
@@ -44,14 +47,44 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         out FetchUserInfoEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE1_2Response>>(input);
-        
+
         var str = GetStringProperties(payload.Body.Body.Properties);
         var num = GetNumberProperties(payload.Body.Body.Properties);
 
-        var birthday = GetBirthday(str[20031]);
+        //如果是嵌套proto就Serializer.Deserialize(Value)如果是String就Encoding.UTF8.GetString(Value)
+
+        var birthday = GetBirthday(Encoding.UTF8.GetString(str[20031]));
         var reg = DateTime.UnixEpoch.AddSeconds(num[20026]);
-        string? qid = str.GetValueOrDefault<uint, string>(27394);
-        var info = new BotUserInfo(payload.Body.Body.Uin, str[20002], birthday, str[20020], str[20003], str[20021], num[20037], reg, num[20009], qid, num[105] , str[102] , num[27372]);
+
+        string? qid = Encoding.UTF8.GetString(str[27394]);
+
+        byte[] custom = str[27406];
+
+        CustomStatus customs;
+        using (var stream = new MemoryStream(custom))
+        {
+            customs = Serializer.Deserialize<CustomStatus>(stream);
+        }
+        object[] customarray = new object[] { customs.FaceId, customs.Msg ?? "" };
+
+        byte[] avatar = str[101];
+        Avatar avatars;
+        using (var stream = new MemoryStream(avatar))
+        {
+            avatars = Serializer.Deserialize<Avatar>(stream);
+        }
+        string? avatarurl = avatars.Url + "640";
+
+
+        string? nickname = Encoding.UTF8.GetString(str[20002]);
+        string? city = Encoding.UTF8.GetString(str[20020]);
+        string? country = Encoding.UTF8.GetString(str[20003]);
+        string? school = Encoding.UTF8.GetString(str[20021]);
+        string? sign = Encoding.UTF8.GetString(str[102]);
+
+
+
+        var info = new BotUserInfo(payload.Body.Body.Uin, nickname, avatarurl, birthday, city, country, school, num[20037], reg, num[20009], qid, num[105], sign, num[27372], customarray);
 
         output = FetchUserInfoEvent.Result(0, info);
         extraEvents = null;
@@ -70,10 +103,10 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         }
         return new DateTime(1970, 1, 1);
     }
-    
-    private static Dictionary<uint, string> GetStringProperties(OidbSvcTrpcTcp0xFE1_2ResponseProperty properties)
+
+    private static Dictionary<uint, byte[]> GetStringProperties(OidbSvcTrpcTcp0xFE1_2ResponseProperty properties)
     {
-        var result = new Dictionary<uint, string>();
+        var result = new Dictionary<uint, byte[]>();
         foreach (var property in properties.StringProperties)
         {
             result[property.Code] = property.Value;
@@ -81,7 +114,7 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
 
         return result;
     }
-    
+
     private static Dictionary<uint, uint> GetNumberProperties(OidbSvcTrpcTcp0xFE1_2ResponseProperty properties)
     {
         var result = new Dictionary<uint, uint>();
@@ -92,4 +125,19 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
 
         return result;
     }
+
+    [ProtoContract]
+    public class CustomStatus
+    {
+        [ProtoMember(1)] public uint FaceId { get; set; }
+
+        [ProtoMember(2)] public string? Msg { get; set; }
+    }
+
+    [ProtoContract]
+    public class Avatar
+    {
+        [ProtoMember(5)] public string? Url { get; set; }
+    }
+
 }
