@@ -353,7 +353,7 @@ public sealed class MessageBuilder
         return this;
     }
 
-    public MessageBuilder GeryTip(string greyTip)
+    public MessageBuilder GreyTip(string greyTip)
     {
         var greyTipEntity = new GreyTipEntity(greyTip);
         _chain.Add(greyTipEntity);
