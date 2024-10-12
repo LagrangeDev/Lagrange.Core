@@ -18,14 +18,10 @@ public class OneBotStranger
     [JsonPropertyName("sex")] public string Sex { get; set; } = "unknown";
 
     [JsonPropertyName("age")] public uint Age { get; set; }
-    
+
     [JsonPropertyName("level")] public uint Level { get; set; }
 
-    [JsonPropertyName("status")] public uint Status { get; set; }
-
-    [JsonPropertyName("status_msg")] public string StatusMsg { get; set; } = "未知状态";
+    [JsonPropertyName("status")] public OneBotFriendStatus Status { get; set; } = new();
 
     [JsonPropertyName("RegisterTime")] public DateTime RegisterTime { get; set; }
-
-
 }
