@@ -10,5 +10,4 @@ internal class OidbFriendProperty
     [ProtoMember(1)] public uint Code { get; set; }
     
     [ProtoMember(2)] public string Value { get; set; }
-
 }
