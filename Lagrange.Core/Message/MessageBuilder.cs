@@ -353,17 +353,10 @@ public sealed class MessageBuilder
         return this;
     }
 
-    [Obsolete("This is an embarrassing typo... sorry; see also: GreyTip")]
-    public MessageBuilder GeryTip(string greyTip)
+    public MessageBuilder GreyTip(string greyTip, uint objectType, uint subType, uint type)
     {
-        return GreyTip(greyTip);
-    }
-
-    public MessageBuilder GreyTip(string greyTip, uint one, uint two, uint three)
-    {
-        var greyTipEntity = new GreyTipEntity(greyTip, one, two, three);
+        var greyTipEntity = new GreyTipEntity(greyTip, objectType, subType, type);
         _chain.Add(greyTipEntity);
-
         return this;
     }
 
