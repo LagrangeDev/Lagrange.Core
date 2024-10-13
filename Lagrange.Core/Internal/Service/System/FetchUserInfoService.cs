@@ -65,7 +65,7 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         CustomStatus? customs = null;
         if (bytesProperties[27406].Length != 0)
         {
-            using var stream = new MemoryStream();
+            using var stream = new MemoryStream(bytesProperties[27406]);
             customs = Serializer.Deserialize<CustomStatus>(stream);
         }
 
