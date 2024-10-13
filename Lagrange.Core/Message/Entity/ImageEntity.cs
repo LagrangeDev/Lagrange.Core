@@ -81,7 +81,7 @@ public class ImageEntity : IMessageEntity
                 {
                     ServiceType = 48,
                     PbElem = common.ToArray(),
-                    BusinessType = 10,
+                    BusinessType = IsGroup ? 20u : 10u,
                 }
             }
         };
