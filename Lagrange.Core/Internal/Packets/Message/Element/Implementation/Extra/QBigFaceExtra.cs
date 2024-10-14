@@ -6,7 +6,7 @@ namespace Lagrange.Core.Internal.Packets.Message.Element.Implementation.Extra;
 /// Constructed at <see cref="CommonElem"/>, Service Type 33, Big face
 /// </summary>
 [ProtoContract]
-internal class QFaceExtra
+internal class QBigFaceExtra
 {
     [ProtoMember(1)] public string? AniStickerPackId { get; set; }
     

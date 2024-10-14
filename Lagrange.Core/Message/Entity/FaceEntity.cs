@@ -24,7 +24,7 @@ public class FaceEntity : IMessageEntity
     {
         if (IsLargeFace)
         {
-            var qFace = new QFaceExtra
+            var qFace = new QBigFaceExtra
             {
                 AniStickerPackId = "1",
                 AniStickerId = "8",
@@ -51,6 +51,11 @@ public class FaceEntity : IMessageEntity
                 }
             };
         }
+        // TODO: 
+        // else if (FaceId >= 260)
+        // {
+        //     
+        // }
         
         return new Elem[] { new() { Face = new Face { Index = FaceId } } };
     }
@@ -65,7 +70,7 @@ public class FaceEntity : IMessageEntity
 
         if (elems.CommonElem is { ServiceType:37, PbElem: not null } common)
         {
-            var qFace = Serializer.Deserialize<QFaceExtra>(common.PbElem.AsSpan());
+            var qFace = Serializer.Deserialize<QBigFaceExtra>(common.PbElem.AsSpan());
             
             ushort? faceId = (ushort?)qFace.FaceId;
             if (faceId != null) return new FaceEntity((ushort)faceId, true);
