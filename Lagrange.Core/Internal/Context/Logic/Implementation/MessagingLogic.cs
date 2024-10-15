@@ -94,32 +94,32 @@ internal class MessagingLogic : LogicBase
             }
             case GroupSysInviteEvent invite:
             {
-                uint invitorUin = await Collection.Business.CachingLogic.ResolveUin(null, invite.InvitorUid, cancellationToken) ?? 0;
+                uint invitorUin = await Collection.Business.CachingLogic.ResolveUin(null, invite.InvitorUid, false, cancellationToken) ?? 0;
                 var inviteArgs = new GroupInvitationEvent(invite.GroupUin, invitorUin);
                 Collection.Invoker.PostEvent(inviteArgs);
                 break;
             }
             case GroupSysAdminEvent admin:
             {
-                uint adminUin = await Collection.Business.CachingLogic.ResolveUin(admin.GroupUin, admin.Uid, cancellationToken) ?? 0;
+                uint adminUin = await Collection.Business.CachingLogic.ResolveUin(admin.GroupUin, admin.Uid, false, cancellationToken) ?? 0;
                 var adminArgs = new GroupAdminChangedEvent(admin.GroupUin, adminUin, admin.IsPromoted);
                 Collection.Invoker.PostEvent(adminArgs);
                 break;
             }
             case GroupSysIncreaseEvent increase:
             {
-                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.MemberUid, cancellationToken, true) ?? 0;
+                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.MemberUid, true, cancellationToken) ?? 0;
                 uint? invitorUin = null;
-                if (increase.InvitorUid != null) invitorUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.InvitorUid, cancellationToken);
+                if (increase.InvitorUid != null) invitorUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.InvitorUid, false, cancellationToken);
                 var increaseArgs = new GroupMemberIncreaseEvent(increase.GroupUin, memberUin, invitorUin, increase.Type);
                 Collection.Invoker.PostEvent(increaseArgs);
                 break;
             }
             case GroupSysDecreaseEvent decrease:
             {
-                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.MemberUid, cancellationToken) ?? 0;
+                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.MemberUid, false, cancellationToken) ?? 0;
                 uint? operatorUin = null;
-                if (decrease.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.OperatorUid, cancellationToken);
+                if (decrease.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.OperatorUid, false, cancellationToken);
                 var decreaseArgs = new GroupMemberDecreaseEvent(decrease.GroupUin, memberUin, operatorUin, decrease.Type);
                 Collection.Invoker.PostEvent(decreaseArgs);
                 break;
@@ -138,7 +138,7 @@ internal class MessagingLogic : LogicBase
             }
             case GroupSysReactionEvent reaction:
             {
-                uint operatorUin = await Collection.Business.CachingLogic.ResolveUin(reaction.TargetGroupUin, reaction.OperatorUid, cancellationToken) ?? 0;
+                uint operatorUin = await Collection.Business.CachingLogic.ResolveUin(reaction.TargetGroupUin, reaction.OperatorUid, false, cancellationToken) ?? 0;
                 var pokeArgs = new GroupReactionEvent(reaction.TargetGroupUin, reaction.TargetSequence, operatorUin, reaction.IsAdd, reaction.Code, reaction.Count);
                 Collection.Invoker.PostEvent(pokeArgs);
                 break;
@@ -158,25 +158,25 @@ internal class MessagingLogic : LogicBase
             case GroupSysMuteEvent groupMute:
             {
                 uint? operatorUin = null;
-                if (groupMute.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(groupMute.GroupUin, groupMute.OperatorUid, cancellationToken);
+                if (groupMute.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(groupMute.GroupUin, groupMute.OperatorUid, false, cancellationToken);
                 var muteArgs = new GroupMuteEvent(groupMute.GroupUin, operatorUin, groupMute.IsMuted);
                 Collection.Invoker.PostEvent(muteArgs);
                 break;
             }
             case GroupSysMemberMuteEvent memberMute:
             {
-                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(memberMute.GroupUin, memberMute.TargetUid, cancellationToken) ?? 0;
+                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(memberMute.GroupUin, memberMute.TargetUid, false, cancellationToken) ?? 0;
                 uint? operatorUin = null;
-                if (memberMute.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(memberMute.GroupUin, memberMute.OperatorUid, cancellationToken);
+                if (memberMute.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(memberMute.GroupUin, memberMute.OperatorUid, false, cancellationToken);
                 var muteArgs = new GroupMemberMuteEvent(memberMute.GroupUin, memberUin, operatorUin, memberMute.Duration);
                 Collection.Invoker.PostEvent(muteArgs);
                 break;
             }
             case GroupSysRecallEvent recall:
             {
-                uint authorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.AuthorUid, cancellationToken) ?? 0;
+                uint authorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.AuthorUid, false, cancellationToken) ?? 0;
                 uint operatorUin = 0;
-                if (recall.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.OperatorUid, cancellationToken) ?? 0;
+                if (recall.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.OperatorUid, false, cancellationToken) ?? 0;
                 var recallArgs = new GroupRecallEvent(recall.GroupUin, authorUin, operatorUin, recall.Sequence, recall.Time, recall.Random, recall.Tip);
                 Collection.Invoker.PostEvent(recallArgs);
                 break;
@@ -193,7 +193,7 @@ internal class MessagingLogic : LogicBase
             }
             case GroupSysRequestInvitationEvent invitation:
             {
-                uint invitorUin = await Collection.Business.CachingLogic.ResolveUin(invitation.GroupUin, invitation.InvitorUid, cancellationToken) ?? 0;
+                uint invitorUin = await Collection.Business.CachingLogic.ResolveUin(invitation.GroupUin, invitation.InvitorUid, false, cancellationToken) ?? 0;
 
                 var fetchUidEvent = FetchUserInfoEvent.Create(invitation.TargetUid);
                 var results = await Collection.Business.SendEvent(fetchUidEvent, cancellationToken);
@@ -205,7 +205,7 @@ internal class MessagingLogic : LogicBase
             }
             case FriendSysRecallEvent recall:
             {
-                uint fromUin = await Collection.Business.CachingLogic.ResolveUin(null, recall.FromUid, cancellationToken) ?? 0;
+                uint fromUin = await Collection.Business.CachingLogic.ResolveUin(null, recall.FromUid, false, cancellationToken) ?? 0;
                 var recallArgs = new FriendRecallEvent(fromUin, recall.ClientSequence, recall.Time, recall.Random, recall.Tip);
                 Collection.Invoker.PostEvent(recallArgs);
                 break;

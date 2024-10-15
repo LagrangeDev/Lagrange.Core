@@ -19,7 +19,7 @@ internal class PttUploader : IHighwayUploader
             if (Common.GenerateExt(metaResult) is { } ext)
             {
                 var hash = metaResult.MsgInfo.MsgInfoBody[0].Index.Info.FileHash.UnHex();
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1007, stream.Value, await Common.GetTicket(context, cancellationToken), hash, cancellationToken, extendInfo: ext.Serialize().ToArray());
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1007, stream.Value, await Common.GetTicket(context, cancellationToken), hash, extendInfo: ext.Serialize().ToArray(), cancellation: cancellationToken);
                 if (!hwSuccess)
                 {
                     await stream.Value.DisposeAsync();
@@ -44,7 +44,7 @@ internal class PttUploader : IHighwayUploader
             if (Common.GenerateExt(metaResult) is { } ext)
             {
                 var hash = metaResult.MsgInfo.MsgInfoBody[0].Index.Info.FileHash.UnHex();
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1008, stream.Value, await Common.GetTicket(context, cancellationToken), hash, cancellationToken, extendInfo: ext.Serialize().ToArray());
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1008, stream.Value, await Common.GetTicket(context, cancellationToken), hash, extendInfo: ext.Serialize().ToArray(), cancellation: cancellationToken);
                 if (!hwSuccess)
                 {
                     await stream.Value.DisposeAsync();

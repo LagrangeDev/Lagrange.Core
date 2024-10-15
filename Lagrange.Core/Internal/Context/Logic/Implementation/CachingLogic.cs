@@ -41,9 +41,9 @@ internal class CachingLogic : LogicBase
     {
         return e switch
         {
-            GroupSysDecreaseEvent groupSysDecreaseEvent when groupSysDecreaseEvent.MemberUid != Collection.Keystore.Uid => CacheUid(groupSysDecreaseEvent.GroupUin, cancellationToken, force: true),
-            GroupSysIncreaseEvent groupSysIncreaseEvent => CacheUid(groupSysIncreaseEvent.GroupUin, cancellationToken, force: true),
-            GroupSysAdminEvent groupSysAdminEvent => CacheUid(groupSysAdminEvent.GroupUin, cancellationToken, force: true),
+            GroupSysDecreaseEvent groupSysDecreaseEvent when groupSysDecreaseEvent.MemberUid != Collection.Keystore.Uid => CacheUid(groupSysDecreaseEvent.GroupUin, force: true, cancellationToken: cancellationToken),
+            GroupSysIncreaseEvent groupSysIncreaseEvent => CacheUid(groupSysIncreaseEvent.GroupUin, force: true, cancellationToken: cancellationToken),
+            GroupSysAdminEvent groupSysAdminEvent => CacheUid(groupSysAdminEvent.GroupUin, force: true, cancellationToken: cancellationToken),
             _ => Task.CompletedTask,
         };
     }
@@ -70,17 +70,17 @@ internal class CachingLogic : LogicBase
         if (_uinToUid.Count == 0) await ResolveFriendsUidAndFriendGroups(cancellationToken);
         if (groupUin == null) return _uinToUid.GetValueOrDefault(friendUin);
 
-        await CacheUid(groupUin.Value, cancellationToken);
+        await CacheUid(groupUin.Value, false, cancellationToken);
 
         return _uinToUid.GetValueOrDefault(friendUin);
     }
 
-    public async Task<uint?> ResolveUin(uint? groupUin, string friendUid, CancellationToken cancellationToken, bool force = false)
+    public async Task<uint?> ResolveUin(uint? groupUin, string friendUid, bool force, CancellationToken cancellationToken)
     {
         if (_uinToUid.Count == 0) await ResolveFriendsUidAndFriendGroups(cancellationToken);
         if (groupUin == null) return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
 
-        await CacheUid(groupUin.Value, cancellationToken, force: force);
+        await CacheUid(groupUin.Value, force: force, cancellationToken: cancellationToken);
 
         return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
     }
@@ -108,7 +108,7 @@ internal class CachingLogic : LogicBase
         return info;
     }
 
-    private async Task CacheUid(uint groupUin, CancellationToken cancellationToken, bool force = false)
+    private async Task CacheUid(uint groupUin, bool force, CancellationToken cancellationToken)
     {
         if (!_cachedGroups.Contains(groupUin) || force)
         {

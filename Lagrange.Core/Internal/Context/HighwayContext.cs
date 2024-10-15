@@ -57,7 +57,7 @@ internal class HighwayContext : ContextBase, IDisposable
         _concurrent = config.HighwayConcurrent;
     }
 
-    public async Task UploadResources(MessageChain chain, CancellationToken cancellationToken)
+    public async Task UploadResources(MessageChain chain, CancellationToken cancellationToken = default)
     {
         foreach (var entity in chain)
         {
@@ -76,7 +76,7 @@ internal class HighwayContext : ContextBase, IDisposable
         }
     }
 
-    public async Task ManualUploadEntity(IMessageEntity entity, CancellationToken cancellationToken)
+    public async Task ManualUploadEntity(IMessageEntity entity, CancellationToken cancellationToken = default)
     {
         if (_uploaders.TryGetValue(entity.GetType(), out var uploader))
         {
@@ -95,7 +95,7 @@ internal class HighwayContext : ContextBase, IDisposable
         }
     }
 
-    public async Task<bool> UploadSrcByStreamAsync(int commonId, Stream data, byte[] ticket, byte[] md5, CancellationToken cancellation, byte[]? extendInfo = null)
+    public async Task<bool> UploadSrcByStreamAsync(int commonId, Stream data, byte[] ticket, byte[] md5, byte[]? extendInfo = null, CancellationToken cancellation = default)
     {
         if (_uri == null)
         {
@@ -134,7 +134,7 @@ internal class HighwayContext : ContextBase, IDisposable
         return success;
     }
 
-    private async Task<bool> SendUpBlockAsync(UpBlock upBlock, Uri server, CancellationToken cancellation)
+    private async Task<bool> SendUpBlockAsync(UpBlock upBlock, Uri server, CancellationToken cancellation = default)
     {
         var head = new DataHighwayHead
         {
@@ -171,7 +171,7 @@ internal class HighwayContext : ContextBase, IDisposable
         };
 
         bool isEnd = upBlock.Offset + (ulong)upBlock.Block.Length == upBlock.FileSize;
-        var payload = await SendPacketAsync(highwayHead, new BinaryPacket(upBlock.Block), server, cancellation, end: isEnd);
+        var payload = await SendPacketAsync(highwayHead, new BinaryPacket(upBlock.Block), server, end: isEnd, cancellation: cancellation);
         var (respHead, resp) = ParsePacket(payload);
 
         Collection.Log.LogDebug(Tag, $"Highway Block Result: {respHead.ErrorCode} | {respHead.MsgSegHead?.RetCode} | {respHead.BytesRspExtendInfo?.Hex()} | {resp.ToArray().Hex()}");
@@ -179,7 +179,7 @@ internal class HighwayContext : ContextBase, IDisposable
         return respHead.ErrorCode == 0;
     }
 
-    private Task<BinaryPacket> SendPacketAsync(ReqDataHighwayHead head, BinaryPacket buffer, Uri server, CancellationToken cancellation, bool end = true)
+    private Task<BinaryPacket> SendPacketAsync(ReqDataHighwayHead head, BinaryPacket buffer, Uri server, bool end = true, CancellationToken cancellation = default)
     {
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, head);

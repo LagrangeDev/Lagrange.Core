@@ -414,10 +414,10 @@ public static class OperationExt
         => bot.ContextCollection.Business.OperationLogic.GroupClockIn(groupUin, cancellationToken);
 
     public static Task<BotUserInfo?> FetchUserInfo(this BotContext bot, uint uin, bool refreshCache = false)
-        => bot.ContextCollection.Business.OperationLogic.FetchUserInfo(uin, CancellationToken.None, refreshCache);
+        => bot.ContextCollection.Business.OperationLogic.FetchUserInfo(uin, refreshCache, CancellationToken.None);
 
     public static Task<BotUserInfo?> FetchUserInfo(this BotContext bot, uint uin, bool refreshCache, CancellationToken cancellationToken)
-        => bot.ContextCollection.Business.OperationLogic.FetchUserInfo(uin, cancellationToken, refreshCache);
+        => bot.ContextCollection.Business.OperationLogic.FetchUserInfo(uin, refreshCache, cancellationToken);
 
     public static Task<List<string>?> FetchCustomFace(this BotContext bot)
         => bot.ContextCollection.Business.OperationLogic.FetchCustomFace(CancellationToken.None);

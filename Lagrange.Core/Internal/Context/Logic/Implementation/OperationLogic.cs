@@ -550,7 +550,7 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((GroupSetSpecialTitleEvent)events[0]).ResultCode == 0;
     }
 
-    public async Task<BotUserInfo?> FetchUserInfo(uint uin, CancellationToken cancellationToken, bool refreshCache = false)
+    public async Task<BotUserInfo?> FetchUserInfo(uint uin, bool refreshCache, CancellationToken cancellationToken)
     {
         return await Collection.Business.CachingLogic.GetCachedUsers(uin, refreshCache, cancellationToken);
     }
@@ -618,7 +618,7 @@ internal class OperationLogic : LogicBase
         
         var ticket = ((HighwayUrlEvent)highwayUrlResults[0]).SigSession;
         var md5 = avatar.ImageStream.Value.Md5().UnHex();
-        return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, md5, cancellationToken, extendInfo: Array.Empty<byte>());
+        return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, md5, extendInfo: Array.Empty<byte>(), cancellation: cancellationToken);
     }
     
     public async Task<bool> GroupSetAvatar(uint groupUin, ImageEntity avatar, CancellationToken cancellationToken)
@@ -639,7 +639,7 @@ internal class OperationLogic : LogicBase
             Field5 = 3,
             Field6 = 1
         }.Serialize().ToArray();
-        return await Collection.Highway.UploadSrcByStreamAsync(3000, avatar.ImageStream.Value, ticket, md5, cancellationToken, extendInfo: extra);
+        return await Collection.Highway.UploadSrcByStreamAsync(3000, avatar.ImageStream.Value, ticket, md5, extendInfo: extra, cancellation: cancellationToken);
     }
 
     public async Task<(uint, uint)> GroupRemainAtAll(uint groupUin, CancellationToken cancellationToken)

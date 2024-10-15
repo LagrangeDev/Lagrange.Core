@@ -69,7 +69,7 @@ internal static class FileUploader
                 file.FileUuid = uploadResp.FileId;
 
                 bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(95, file.FileStream,
-                    await Common.GetTicket(context, cancellationToken), file.FileMd5, cancellationToken, extendInfo: ext.Serialize().ToArray());
+                    await Common.GetTicket(context, cancellationToken), file.FileMd5, extendInfo: ext.Serialize().ToArray(), cancellation: cancellationToken);
                 if (!hwSuccess) return false;
             }
         }
@@ -143,7 +143,7 @@ internal static class FileUploader
                 };
 
                 bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(71, file.FileStream,
-                    await Common.GetTicket(context, cancellationToken), file.FileMd5, cancellationToken, extendInfo: ext.Serialize().ToArray());
+                    await Common.GetTicket(context, cancellationToken), file.FileMd5, extendInfo: ext.Serialize().ToArray(), cancellation: cancellationToken);
                 if (!hwSuccess) return false;
 
                 fileId = uploadResp.FileId;
