@@ -17,7 +17,7 @@ internal class PacketContext : ContextBase
 {
     internal SignProvider SignProvider { private get; set; }
     
-    private readonly ConcurrentDictionary<uint, TaskCompletionSource<SsoPacket>> _pendingTasks;
+    private readonly ConcurrentDictionary<uint, (TaskCompletionSource<SsoPacket> task, CancellationToken cancellationToken)> _pendingTasks;
     
     public PacketContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, BotConfig config) 
         : base(collection, keystore, appInfo, device)
@@ -29,33 +29,42 @@ internal class PacketContext : ContextBase
             "Linux" => new LinuxSigner(),
             _ => throw new Exception("Unknown System Found")
         };
-        _pendingTasks = new ConcurrentDictionary<uint, TaskCompletionSource<SsoPacket>>();
+        _pendingTasks = new ConcurrentDictionary<uint, (TaskCompletionSource<SsoPacket> task, CancellationToken cancellationToken)>();
     }
     
     /// <summary>
     /// Send the packet and wait for the corresponding response by the packet's sequence number.
     /// </summary>
-    public Task<SsoPacket> SendPacket(SsoPacket packet)
+    public Task<SsoPacket> SendPacket(SsoPacket packet, CancellationToken cancellationToken)
     {
-        var task = new TaskCompletionSource<SsoPacket>();
-        _pendingTasks.TryAdd(packet.Sequence, task);
-
+        byte[] data;
         switch (packet.PacketType)
         {
             case 12:
             {
                 var sso = SsoPacker.Build(packet, AppInfo, DeviceInfo, Keystore, SignProvider);
                 var service = ServicePacker.BuildProtocol12(sso, Keystore);
-                bool _ = Collection.Socket.Send(service.ToArray()).GetAwaiter().GetResult();
+                data = service.ToArray();
                 break;
             }
             case 13:
             {
                 var service = ServicePacker.BuildProtocol13(packet.Payload, Keystore, packet.Command, packet.Sequence);
-                bool _ = Collection.Socket.Send(service.ToArray()).GetAwaiter().GetResult();
+                data = service.ToArray();
                 break;
             }
+            default:
+                throw new Exception("Unknown Packet Type");
         }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var task = new TaskCompletionSource<SsoPacket>();
+        _pendingTasks.TryAdd(packet.Sequence, (task, cancellationToken));
+
+        // We have to wait packet to be sent before we can return the task
+        // Because the packet's sequence number is used to identify the response
+        bool _ = Collection.Socket.Send(data).GetAwaiter().GetResult();
 
         return task.Task;
     }
@@ -90,16 +99,21 @@ internal class PacketContext : ContextBase
 
         var sso = SsoPacker.Parse(service);
         
-        if (_pendingTasks.TryRemove(sso.Sequence, out var task))
+        if (_pendingTasks.TryRemove(sso.Sequence, out var pendingTask))
         {
+            if (pendingTask.cancellationToken.IsCancellationRequested)
+            {
+                pendingTask.task.SetCanceled(pendingTask.cancellationToken);
+                return;
+            }
             if (sso is { RetCode: not 0, Extra: { } extra})
             {
                 string msg = $"Packet '{sso.Command}' returns {sso.RetCode} with seq: {sso.Sequence}, extra: {extra}";
-                task.SetException(new InvalidOperationException(msg));
+                pendingTask.task.SetException(new InvalidOperationException(msg));
             }
             else
             {
-                task.SetResult(sso);
+                pendingTask.task.SetResult(sso);
             }
         }
         else

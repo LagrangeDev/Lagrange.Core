@@ -13,7 +13,7 @@ public class SetFriendAddRequestOperation : IOperation
     {
         if (payload.Deserialize<OneBotSetRequest>(SerializerOptions.DefaultOptions) is { } request)
         {
-            bool result = await context.ContextCollection.Business.OperationLogic.SetFriendRequest(request.Flag, request.Approve);
+            bool result = await context.ContextCollection.Business.OperationLogic.SetFriendRequest(request.Flag, request.Approve, CancellationToken.None);
             return new OneBotResult(null, result ? 0 : 1, "ok");
         }
 

@@ -17,7 +17,7 @@ public class SendPacketOperation : IOperation
         {
             int sequence = context.ContextCollection.Service.GetNewSequence();
             var ssoPacket = new SsoPacket(send.Type, send.Command, (uint)sequence, send.Data.UnHex());
-            var task = await context.ContextCollection.Packet.SendPacket(ssoPacket);
+            var task = await context.ContextCollection.Packet.SendPacket(ssoPacket, CancellationToken.None);
 
             return new OneBotResult(new OneBotSendPacketResponse
             {
