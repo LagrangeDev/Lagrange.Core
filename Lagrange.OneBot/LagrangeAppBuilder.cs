@@ -115,6 +115,9 @@ public sealed class LagrangeAppBuilder
         {
             var logger = provider.GetRequiredService<ILogger<LagrangeAppBuilder>>();
 
+            BsonMapper.Global.TrimWhitespace = false;
+            BsonMapper.Global.EmptyStringToNull = false;
+
             string path = Configuration["ConfigPath:Database"] ?? $"lagrange-{Configuration["Account:Uin"]}.db";
 
             var db = new LiteDatabase(path)
