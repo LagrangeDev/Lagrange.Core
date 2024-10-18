@@ -14,7 +14,7 @@ public class MultiMsgEntity : IMessageEntity
 {
     private static readonly XmlSerializer Serializer = new(typeof(MultiMessage));
 
-    internal string? ResId { get; set; }
+    public string? ResId { get; set; }
 
     [Obsolete("No more need for group uin")]
     public uint? GroupUin { get; set; }
@@ -118,7 +118,7 @@ public class MultiMsgEntity : IMessageEntity
     {
         if (elem.RichMsg is { ServiceId: 35, Template1: not null } richMsg)
         {
-            var xml = ZCompression.ZDecompress(richMsg.Template1[1..]);
+            var xml = ZCompression.ZDecompress(richMsg.Template1.AsSpan(1));
             if ((MultiMessage?)Serializer.Deserialize(new MemoryStream(xml)) is { } xmlEntity)
             {
                 return new MultiMsgEntity(xmlEntity.ResId);
