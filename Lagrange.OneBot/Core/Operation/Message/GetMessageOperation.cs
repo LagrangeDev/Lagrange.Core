@@ -23,6 +23,8 @@ public class GetMessageOperation(LiteDatabase database, MessageService service) 
             var record = database.GetCollection<MessageRecord>().FindById(getMsg.MessageId);
             var chain = (MessageChain)record;
 
+            uint seq = chain.Sequence;
+
             OneBotSender sender = chain switch
             {
                 { GroupMemberInfo: BotGroupMember g } => new(g.Uin, g.MemberName),
@@ -31,7 +33,7 @@ public class GetMessageOperation(LiteDatabase database, MessageService service) 
             };
 
             var elements = service.Convert(chain);
-            var response = new OneBotGetMessageResponse(chain.Time, chain.IsGroup ? "group" : "private", record.MessageHash, sender, elements);
+            var response = new OneBotGetMessageResponse(chain.Time, chain.IsGroup ? "group" : "private", record.MessageHash, sender, elements,seq);
 
             return Task.FromResult(new OneBotResult(response, 0, "ok"));
         }

@@ -4,7 +4,7 @@ using Lagrange.OneBot.Core.Entity.Message;
 namespace Lagrange.OneBot.Core.Entity.Action.Response;
 
 [Serializable]
-public class OneBotGetMessageResponse(DateTime time, string messageType, int messageId, OneBotSender sender, List<OneBotSegment> message)
+public class OneBotGetMessageResponse(DateTime time, string messageType, int messageId, OneBotSender sender, List<OneBotSegment> message,uint seq)
 {
     [JsonPropertyName("time")] public int Time { get; set; } = (int)(time - DateTime.UnixEpoch).TotalSeconds;
     
@@ -17,4 +17,6 @@ public class OneBotGetMessageResponse(DateTime time, string messageType, int mes
     [JsonPropertyName("sender")] public OneBotSender Sender { get; set; } = sender;
 
     [JsonPropertyName("message")] public List<OneBotSegment> Message { get; set; } = message;
+
+    [JsonPropertyName("seq")] public uint Seq { get; set; } = seq;
 }
