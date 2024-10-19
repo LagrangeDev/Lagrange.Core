@@ -8,10 +8,10 @@ namespace Lagrange.Core.Message.Entity;
 [MessageElement(typeof(Face)), MessageElement(typeof(CommonElem))]
 public class FaceEntity : IMessageEntity
 {
-    public ushort FaceId { get; }
-    
-    public bool IsLargeFace { get; }
-    
+    public ushort FaceId { get; set; }
+
+    public bool IsLargeFace { get; set; }
+
     public FaceEntity() { }
 
     public FaceEntity(ushort faceId, bool isLargeFace)
@@ -19,7 +19,7 @@ public class FaceEntity : IMessageEntity
         FaceId = faceId;
         IsLargeFace = isLargeFace;
     }
-    
+
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
         if (IsLargeFace)
@@ -51,7 +51,7 @@ public class FaceEntity : IMessageEntity
                 }
             };
         }
-        
+
         return new Elem[] { new() { Face = new Face { Index = FaceId } } };
     }
 
@@ -63,10 +63,10 @@ public class FaceEntity : IMessageEntity
             if (faceId != null) return new FaceEntity((ushort)faceId, false);
         }
 
-        if (elems.CommonElem is { ServiceType:37, PbElem: not null } common)
+        if (elems.CommonElem is { ServiceType: 37, PbElem: not null } common)
         {
             var qFace = Serializer.Deserialize<QFaceExtra>(common.PbElem.AsSpan());
-            
+
             ushort? faceId = (ushort?)qFace.FaceId;
             if (faceId != null) return new FaceEntity((ushort)faceId, true);
         }
@@ -76,7 +76,7 @@ public class FaceEntity : IMessageEntity
             var qSmallFace = Serializer.Deserialize<QSmallFaceExtra>(append.PbElem.AsSpan());
             return new FaceEntity((ushort)qSmallFace.FaceId, false);
         }
-        
+
         return null;
     }
 
