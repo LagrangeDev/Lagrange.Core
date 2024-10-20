@@ -6,7 +6,7 @@ namespace Lagrange.OneBot.Core.Entity.Action.Response;
 [Serializable]
 public class OneBotGetMessageResponse(DateTime time, string messageType, int messageId, OneBotSender sender, List<OneBotSegment> message)
 {
-    [JsonPropertyName("time")] public int Time { get; set; } = (int)(time - DateTime.UnixEpoch).TotalSeconds;
+    [JsonPropertyName("time")] public int Time { get; set; } = (int)(TimeZoneInfo.ConvertTimeToUtc(time, TimeZoneInfo.Local) - DateTime.UnixEpoch).TotalSeconds;
     
     [JsonPropertyName("message_type")] public string MessageType { get; set; } = messageType;
 
