@@ -240,9 +240,7 @@ internal class MessagingLogic : LogicBase
             {
                 uint uin = await Collection.Business.CachingLogic.ResolveUin(todo.GroupUin, todo.OperatorUid) ?? 0;
 
-                var e1 = new GroupTodoEvent(todo.GroupUin, uin);
-                Collection.Invoker.PostEvent(e1);
-                Collection.Log.LogVerbose(Tag, e1.EventMessage);
+                Collection.Invoker.PostEvent(new GroupTodoEvent(todo.GroupUin, uin));
                 break;
             }
         }
