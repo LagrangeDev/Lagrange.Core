@@ -238,9 +238,15 @@ internal class MessagingLogic : LogicBase
             }
             case GroupSysTodoEvent todo:
             {
-                uint uin = await Collection.Business.CachingLogic.ResolveUin(todo.GroupUin, todo.OperatorUid) ?? 0;
-
-                Collection.Invoker.PostEvent(new GroupTodoEvent(todo.GroupUin, uin));
+                Collection.Invoker.PostEvent(new GroupTodoEvent(
+                    todo.GroupUin, 
+                    await Collection.Business.CachingLogic.ResolveUin(
+                        todo.GroupUin,
+                        todo.OperatorUid,
+                        false,
+                        cancellationToken
+                    ) ?? 0
+                ));
                 break;
             }
         }
