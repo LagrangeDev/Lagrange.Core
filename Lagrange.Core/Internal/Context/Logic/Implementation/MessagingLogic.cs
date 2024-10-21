@@ -38,6 +38,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(FriendSysPokeEvent))]
 [EventSubscribe(typeof(LoginNotifyEvent))]
 [EventSubscribe(typeof(MultiMsgDownloadEvent))]
+[EventSubscribe(typeof(GroupSysTodoEvent))]
 [BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
 internal class MessagingLogic : LogicBase
 {
@@ -233,6 +234,15 @@ internal class MessagingLogic : LogicBase
                         MessageFilter.Filter(chain);
                     }
                 }
+                break;
+            }
+            case GroupSysTodoEvent todo:
+            {
+                uint uin = await Collection.Business.CachingLogic.ResolveUin(todo.GroupUin, todo.OperatorUid) ?? 0;
+
+                var e1 = new GroupTodoEvent(todo.GroupUin, uin);
+                Collection.Invoker.PostEvent(e1);
+                Collection.Log.LogVerbose(Tag, e1.EventMessage);
                 break;
             }
         }
