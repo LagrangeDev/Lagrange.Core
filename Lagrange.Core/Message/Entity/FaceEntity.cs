@@ -24,7 +24,7 @@ public class FaceEntity : IMessageEntity
     {
         if (IsLargeFace)
         {
-            var qFace = new QBigFaceExtra
+            var qBigFace = new QBigFaceExtra
             {
                 AniStickerPackId = "1",
                 AniStickerId = "8",
@@ -36,8 +36,7 @@ public class FaceEntity : IMessageEntity
                 Field9 = 1
             };
             using var stream = new MemoryStream();
-            Serializer.Serialize(stream, qFace);
-
+            Serializer.Serialize(stream, qBigFace);
             return new Elem[]
             {
                 new()
@@ -51,11 +50,30 @@ public class FaceEntity : IMessageEntity
                 }
             };
         }
-        // TODO: 
-        // else if (FaceId >= 260)
-        // {
-        //     
-        // }
+        
+        if (FaceId >= 260)
+        {
+            var qSmallFace = new QSmallFaceExtra
+            {
+                FaceId = FaceId,
+                Text = "",
+                CompatText = ""
+            };
+            using var stream = new MemoryStream();
+            Serializer.Serialize(stream, qSmallFace);
+            return new Elem[]
+            {
+                new()
+                {
+                    CommonElem = new CommonElem
+                    {
+                        ServiceType = 33,
+                        PbElem = stream.ToArray(),
+                        BusinessType = 1
+                    }
+                }
+            };
+        }
         
         return new Elem[] { new() { Face = new Face { Index = FaceId } } };
     }
