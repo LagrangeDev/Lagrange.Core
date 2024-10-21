@@ -1,3 +1,4 @@
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation.Extra;
@@ -10,11 +11,13 @@ public class FaceEntity : IMessageEntity
 {
     public ushort FaceId { get; set; }
 
-    public bool IsLargeFace { get; set; }
+    public bool? IsLargeFace { get; set; }
+    
+    public SysFaceEntry? SysFaceEntry { get; set; }
 
     public FaceEntity() { }
 
-    public FaceEntity(ushort faceId, bool isLargeFace)
+    public FaceEntity(ushort faceId, bool? isLargeFace)
     {
         FaceId = faceId;
         IsLargeFace = isLargeFace;
@@ -22,17 +25,17 @@ public class FaceEntity : IMessageEntity
 
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
-        if (IsLargeFace)
+        if (IsLargeFace ?? false)
         {
             var qBigFace = new QBigFaceExtra
             {
-                AniStickerPackId = "1",
-                AniStickerId = "8",
+                AniStickerPackId = SysFaceEntry?.AniStickerPackId.ToString() ?? "1",
+                AniStickerId = SysFaceEntry?.AniStickerId.ToString() ?? "8",
                 FaceId = FaceId,
                 Field4 = 1,
-                AniStickerType = 1,
+                AniStickerType = SysFaceEntry?.AniStickerType ?? 1,
                 Field6 = "",
-                Preview = "",
+                Preview = SysFaceEntry?.QDes ?? "",
                 Field9 = 1
             };
             using var stream = new MemoryStream();
@@ -45,7 +48,7 @@ public class FaceEntity : IMessageEntity
                     {
                         ServiceType = 37,
                         PbElem = stream.ToArray(),
-                        BusinessType = 1
+                        BusinessType = (uint)(SysFaceEntry?.AniStickerType ?? 1)
                     }
                 }
             };
@@ -56,8 +59,8 @@ public class FaceEntity : IMessageEntity
             var qSmallFace = new QSmallFaceExtra
             {
                 FaceId = FaceId,
-                Text = "",
-                CompatText = ""
+                Text = SysFaceEntry?.QDes ?? "",
+                CompatText = SysFaceEntry?.QDes ?? ""
             };
             using var stream = new MemoryStream();
             Serializer.Serialize(stream, qSmallFace);
@@ -69,7 +72,7 @@ public class FaceEntity : IMessageEntity
                     {
                         ServiceType = 33,
                         PbElem = stream.ToArray(),
-                        BusinessType = 1
+                        BusinessType = (uint)(SysFaceEntry?.AniStickerType ?? 1)
                     }
                 }
             };
@@ -103,5 +106,5 @@ public class FaceEntity : IMessageEntity
         return null;
     }
 
-    public string ToPreviewString() => $"[Face][{(IsLargeFace ? "Large" : "Small")}]: {FaceId}";
+    public string ToPreviewString() => $"[Face][{(IsLargeFace ?? false ? "Large" : "Small")}]: {FaceId}";
 }

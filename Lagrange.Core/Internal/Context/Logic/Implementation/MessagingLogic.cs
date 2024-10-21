@@ -10,6 +10,7 @@ using Lagrange.Core.Internal.Service;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Message.Filter;
+using Lagrange.Core.Utility.Extension;
 using FriendPokeEvent = Lagrange.Core.Event.EventArg.FriendPokeEvent;
 using GroupPokeEvent = Lagrange.Core.Event.EventArg.GroupPokeEvent;
 
@@ -382,6 +383,14 @@ internal class MessagingLogic : LogicBase
         {
             switch (entity)
             {
+                case FaceEntity face:
+                {
+                    var cache = Collection.Business.CachingLogic;
+                    face.IsLargeFace ??= await cache.GetCachedIsSuperFaceId(face.FaceId);
+                    face.SysFaceEntry ??= await cache.GetCachedFaceEntity(face.FaceId);
+                    break;
+                }
+                
                 case ForwardEntity forward when forward.TargetUin != 0:
                 {
                     var cache = Collection.Business.CachingLogic;

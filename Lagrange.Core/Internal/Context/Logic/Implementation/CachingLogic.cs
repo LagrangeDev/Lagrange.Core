@@ -25,6 +25,9 @@ internal class CachingLogic : LogicBase
 
     private readonly ConcurrentDictionary<uint, BotUserInfo> _cacheUsers;
 
+    private readonly Dictionary<uint, SysFaceEntry> _cacheFaceEntities;
+    private readonly List<uint> _cacheSuperFaceId;
+
     internal CachingLogic(ContextCollection collection) : base(collection)
     {
         _uinToUid = new Dictionary<uint, string>();
@@ -35,13 +38,17 @@ internal class CachingLogic : LogicBase
         _cachedGroupMembers = new Dictionary<uint, List<BotGroupMember>>();
 
         _cacheUsers = new ConcurrentDictionary<uint, BotUserInfo>();
+
+        _cacheFaceEntities = new Dictionary<uint, SysFaceEntry>();
+        _cacheSuperFaceId = new List<uint>();
     }
 
     public override Task Incoming(ProtocolEvent e)
     {
         return e switch
         {
-            GroupSysDecreaseEvent groupSysDecreaseEvent when groupSysDecreaseEvent.MemberUid != Collection.Keystore.Uid => CacheUid(groupSysDecreaseEvent.GroupUin, true),
+            GroupSysDecreaseEvent groupSysDecreaseEvent when groupSysDecreaseEvent.MemberUid != Collection.Keystore.Uid
+                => CacheUid(groupSysDecreaseEvent.GroupUin, true),
             GroupSysIncreaseEvent groupSysIncreaseEvent => CacheUid(groupSysIncreaseEvent.GroupUin, true),
             GroupSysAdminEvent groupSysAdminEvent => CacheUid(groupSysAdminEvent.GroupUin, true),
             _ => Task.CompletedTask,
@@ -92,6 +99,7 @@ internal class CachingLogic : LogicBase
             await ResolveMembersUid(groupUin);
             return _cachedGroupMembers.TryGetValue(groupUin, out members) ? members : new List<BotGroupMember>();
         }
+
         return members;
     }
 
@@ -142,6 +150,7 @@ internal class CachingLogic : LogicBase
             {
                 friend.Group = new(friend.Group.GroupId, friendGroups[friend.Group.GroupId]);
             }
+
             friends.AddRange(result.Friends);
 
             next = result.NextUin;
@@ -189,5 +198,33 @@ internal class CachingLogic : LogicBase
         {
             _cacheUsers.AddOrUpdate(uin, @event.UserInfo, (_key, _value) => @event.UserInfo);
         }
+    }
+
+    private async Task ResolveEmojiCache()
+    {
+        var fetchSysEmojisEvent = FetchFullSysFacesEvent.Create();
+        var events = await Collection.Business.SendEvent(fetchSysEmojisEvent);
+        var emojiPacks = ((FetchFullSysFacesEvent)events[0]).FacePacks;
+
+        emojiPacks
+            .SelectMany(pack => pack.Emojis)
+            .Where(emoji => uint.TryParse(emoji.QSid, out _))
+            .ToList()
+            .ForEach(emoji => _cacheFaceEntities[uint.Parse(emoji.QSid)] = emoji);
+
+        _cacheSuperFaceId.AddRange(emojiPacks
+            .SelectMany(emojiPack => emojiPack.GetUniqueSuperQSids(new[] { (1, 1) })));
+    }
+
+    public async Task<bool> GetCachedIsSuperFaceId(uint id)
+    {
+        if (!_cacheSuperFaceId.Any()) await ResolveEmojiCache();
+        return _cacheSuperFaceId.Contains(id);
+    }
+
+    public async Task<SysFaceEntry?> GetCachedFaceEntity(uint faceId)
+    {
+        if (!_cacheFaceEntities.ContainsKey(faceId)) await ResolveEmojiCache();
+        return _cacheFaceEntities.GetValueOrDefault(faceId);
     }
 }
