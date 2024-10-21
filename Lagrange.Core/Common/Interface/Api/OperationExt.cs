@@ -13,7 +13,7 @@ public static class OperationExt
     /// <param name="refreshCache">force the cache to be refreshed</param>
     /// <returns></returns>
     public static Task<List<BotFriend>> FetchFriends(this BotContext bot, bool refreshCache = false)
-        => bot.ContextCollection.Business.OperationLogic.FetchFriends(CancellationToken.None, refreshCache);
+        => bot.ContextCollection.Business.OperationLogic.FetchFriends(refreshCache, CancellationToken.None);
 
 
     /// <summary>
@@ -24,7 +24,7 @@ public static class OperationExt
     /// <param name="refreshCache">force the cache to be refreshed</param>
     /// <returns></returns>
     public static Task<List<BotFriend>> FetchFriends(this BotContext bot, bool refreshCache, CancellationToken cancellationToken)
-        => bot.ContextCollection.Business.OperationLogic.FetchFriends(cancellationToken, refreshCache);
+        => bot.ContextCollection.Business.OperationLogic.FetchFriends(refreshCache, CancellationToken.None);
 
     /// <summary>
     /// Fetch the member list of the group from server or cache
