@@ -195,7 +195,7 @@ internal static class MessagePacker
         {
             Type = 1, // regarded as the const
             SubType = 0,
-            DivSeq = 0
+            C2CCmd = 0
         },
         Body = new MessageBody { RichText = new RichText { Elems = new List<Elem>() } },
         ClientSequence = chain.ClientSequence,
@@ -224,13 +224,13 @@ internal static class MessagePacker
         {
             Type = (uint)(chain.IsGroup ? 82 : 9),
             SubType = chain.IsGroup ? null : 4,
-            DivSeq = chain.IsGroup ? null : 4,
-            MsgId = (uint)(chain.MessageId & 0xFFFFFFFF),
+            C2CCmd = chain.IsGroup ? null : 4,
+            Random = (uint)(chain.MessageId & 0xFFFFFFFF),
             Sequence = (uint?)Random.Shared.Next(1000000, 9999999),
             Timestamp = (chain.Time == default ? DateTimeOffset.Now : new(chain.Time)).ToUnixTimeSeconds(),
-            Field7 = 1,
-            Field8 = 0,
-            Field9 = 0,
+            PkgNum = 1,
+            PkgIndex = 0,
+            DivSeq = 0,
             Forward = new ForwardHead
             {
                 Field1 = 0,
@@ -251,16 +251,16 @@ internal static class MessagePacker
                 message.ResponseHead.ToUid ?? string.Empty,
                 message.ResponseHead.FromUid ?? string.Empty,
                 message.ResponseHead.ToUin,
-                message.ContentHead.FriendSequence ?? 0,
+                message.ContentHead.NTMsgSeq ?? 0,
                 message.ContentHead.Sequence ?? 0,
-                message.ContentHead.NewId ?? 0,
+                message.ContentHead.MsgUid ?? 0,
                 message.ContentHead.Type == 141 ? MessageChain.MessageType.Temp : MessageChain.MessageType.Friend)
 
             : new MessageChain(
                 message.ResponseHead.Grp.GroupUin,
                 message.ResponseHead.FromUin,
                 message.ContentHead.Sequence ?? 0,
-                message.ContentHead.NewId ?? 0);
+                message.ContentHead.MsgUid ?? 0);
 
         if (message.Body?.RichText?.Elems is { } elems) chain.Elements.AddRange(elems);
 

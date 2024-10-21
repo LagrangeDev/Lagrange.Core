@@ -25,7 +25,7 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 ? ((FetchCookieEvent)events[0]).Cookies : new List<string>();
     }
 
-    public Task<List<BotFriend>> FetchFriends(CancellationToken cancellationToken, bool refreshCache = false) =>
+    public Task<List<BotFriend>> FetchFriends(bool refreshCache = false, CancellationToken cancellationToken = default) =>
         Collection.Business.CachingLogic.GetCachedFriends(refreshCache, cancellationToken);
 
     public Task<List<BotGroupMember>> FetchMembers(uint groupUin, CancellationToken cancellationToken, bool refreshCache = false) =>
@@ -81,9 +81,63 @@ internal class OperationLogic : LogicBase
         string? uid = await Collection.Business.CachingLogic.ResolveUid(groupUin, targetUin, cancellationToken);
         if (uid == null) return false;
 
-        var muteGroupMemberEvent = GroupSetAdminEvent.Create(groupUin, uid, isAdmin);
-        var events = await Collection.Business.SendEvent(muteGroupMemberEvent, cancellationToken);
+        var setGroupAdminEvent = GroupSetAdminEvent.Create(groupUin, uid, isAdmin);
+        var events = await Collection.Business.SendEvent(setGroupAdminEvent, cancellationToken);
         return events.Count != 0 && ((GroupSetAdminEvent)events[0]).ResultCode == 0;
+    }
+
+    public async Task<(int, string?)> SetGroupTodo(uint groupUin, uint sequence, CancellationToken cancellationToken)
+    {
+        var setGroupTodoEvent = GroupSetTodoEvent.Create(groupUin, sequence);
+        var events = await Collection.Business.SendEvent(setGroupTodoEvent, cancellationToken);
+
+        if (events.Count == 0) return (-1, "No Events");
+
+        var @event = (GroupSetTodoEvent)events[0];
+
+        return (@event.ResultCode, @event.ResultMessage);
+    }
+
+    public async Task<(int, string?)> RemoveGroupTodo(uint groupUin, CancellationToken cancellationToken)
+    {
+        var setGroupTodoEvent = GroupRemoveTodoEvent.Create(groupUin);
+        var events = await Collection.Business.SendEvent(setGroupTodoEvent, cancellationToken);
+
+        if (events.Count == 0) return (-1, "No Event");
+
+        var @event = (GroupRemoveTodoEvent)events[0];
+
+        return (@event.ResultCode, @event.ResultMessage);
+    }
+
+    public async Task<(int, string?)> FinishGroupTodo(uint groupUin, CancellationToken cancellationToken)
+    {
+        var setGroupTodoEvent = GroupFinishTodoEvent.Create(groupUin);
+        var events = await Collection.Business.SendEvent(setGroupTodoEvent, cancellationToken);
+
+        if (events.Count == 0) return (-1, "No Event");
+
+        var @event = (GroupFinishTodoEvent)events[0];
+
+        return (@event.ResultCode, @event.ResultMessage);
+    }
+
+    public async Task<BotGetGroupTodoResult> GetGroupTodo(uint groupUin, CancellationToken cancellationToken)
+    {
+        var setGroupTodoEvent = GroupGetTodoEvent.Create(groupUin);
+        var events = await Collection.Business.SendEvent(setGroupTodoEvent, cancellationToken);
+
+        if (events.Count == 0) return new(-1, "No Event", 0, 0, string.Empty);
+
+        var @event = (GroupGetTodoEvent)events[0];
+
+        return new(
+            @event.ResultCode,
+            @event.ResultMessage,
+            @event.GroupUin,
+            @event.Sequence,
+            @event.Preview
+        );
     }
 
     public async Task<bool> SetGroupBot(uint BotId, uint On, uint groupUin, CancellationToken cancellationToken)
@@ -611,24 +665,25 @@ internal class OperationLogic : LogicBase
     public async Task<bool> SetAvatar(ImageEntity avatar, CancellationToken cancellationToken)
     {
         if (avatar.ImageStream == null) return false;
-        
+
         var highwayUrlEvent = HighwayUrlEvent.Create();
         var highwayUrlResults = await Collection.Business.SendEvent(highwayUrlEvent, cancellationToken);
         if (highwayUrlResults.Count == 0) return false;
-        
+
         var ticket = ((HighwayUrlEvent)highwayUrlResults[0]).SigSession;
         var md5 = avatar.ImageStream.Value.Md5().UnHex();
-        return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, md5, extendInfo: Array.Empty<byte>(), cancellation: cancellationToken);
+        return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, md5,
+            extendInfo: Array.Empty<byte>(), cancellation: cancellationToken);
     }
-    
+
     public async Task<bool> GroupSetAvatar(uint groupUin, ImageEntity avatar, CancellationToken cancellationToken)
     {
         if (avatar.ImageStream == null) return false;
-        
+
         var highwayUrlEvent = HighwayUrlEvent.Create();
         var highwayUrlResults = await Collection.Business.SendEvent(highwayUrlEvent, cancellationToken);
         if (highwayUrlResults.Count == 0) return false;
-        
+
         var ticket = ((HighwayUrlEvent)highwayUrlResults[0]).SigSession;
         var md5 = avatar.ImageStream.Value.Md5().UnHex();
         var extra = new GroupAvatarExtra
