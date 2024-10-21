@@ -21,9 +21,9 @@ public class SetGroupAddRequestOperation : IOperation
             
             bool result = isFiltered
                 ? await context.ContextCollection.Business.OperationLogic.SetGroupFilteredRequest(groupUin, sequence,
-                    eventType, request.Approve, request.Reason, CancellationToken.None)
+                    eventType, request.Approve, request.Reason)
                 : await context.ContextCollection.Business.OperationLogic.SetGroupRequest(groupUin, sequence, eventType,
-                    request.Approve, request.Reason, CancellationToken.None);
+                    request.Approve, request.Reason);
             return new OneBotResult(null, result ? 0 : 1, "ok");
         }
 

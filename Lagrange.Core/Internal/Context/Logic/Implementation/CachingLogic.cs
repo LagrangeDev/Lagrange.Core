@@ -37,25 +37,25 @@ internal class CachingLogic : LogicBase
         _cacheUsers = new ConcurrentDictionary<uint, BotUserInfo>();
     }
 
-    public override Task Incoming(ProtocolEvent e, CancellationToken cancellationToken)
+    public override Task Incoming(ProtocolEvent e)
     {
         return e switch
         {
-            GroupSysDecreaseEvent groupSysDecreaseEvent when groupSysDecreaseEvent.MemberUid != Collection.Keystore.Uid => CacheUid(groupSysDecreaseEvent.GroupUin, force: true, cancellationToken: cancellationToken),
-            GroupSysIncreaseEvent groupSysIncreaseEvent => CacheUid(groupSysIncreaseEvent.GroupUin, force: true, cancellationToken: cancellationToken),
-            GroupSysAdminEvent groupSysAdminEvent => CacheUid(groupSysAdminEvent.GroupUin, force: true, cancellationToken: cancellationToken),
+            GroupSysDecreaseEvent groupSysDecreaseEvent when groupSysDecreaseEvent.MemberUid != Collection.Keystore.Uid => CacheUid(groupSysDecreaseEvent.GroupUin, true),
+            GroupSysIncreaseEvent groupSysIncreaseEvent => CacheUid(groupSysIncreaseEvent.GroupUin, true),
+            GroupSysAdminEvent groupSysAdminEvent => CacheUid(groupSysAdminEvent.GroupUin, true),
             _ => Task.CompletedTask,
         };
     }
 
-    public async Task<List<BotGroup>> GetCachedGroups(bool refreshCache, CancellationToken cancellationToken)
+    public async Task<List<BotGroup>> GetCachedGroups(bool refreshCache)
     {
         if (_cachedGroupEntities.Count == 0 || refreshCache)
         {
             _cachedGroupEntities.Clear();
 
             var fetchGroupsEvent = FetchGroupsEvent.Create();
-            var events = await Collection.Business.SendEvent(fetchGroupsEvent, cancellationToken);
+            var events = await Collection.Business.SendEvent(fetchGroupsEvent);
             var groups = ((FetchGroupsEvent)events[0]).Groups;
 
             _cachedGroupEntities.AddRange(groups);
@@ -65,60 +65,60 @@ internal class CachingLogic : LogicBase
         return _cachedGroupEntities;
     }
 
-    public async Task<string?> ResolveUid(uint? groupUin, uint friendUin, CancellationToken cancellationToken)
+    public async Task<string?> ResolveUid(uint? groupUin, uint friendUin)
     {
-        if (_uinToUid.Count == 0) await ResolveFriendsUidAndFriendGroups(cancellationToken);
+        if (_uinToUid.Count == 0) await ResolveFriendsUidAndFriendGroups();
         if (groupUin == null) return _uinToUid.GetValueOrDefault(friendUin);
 
-        await CacheUid(groupUin.Value, false, cancellationToken);
+        await CacheUid(groupUin.Value);
 
         return _uinToUid.GetValueOrDefault(friendUin);
     }
 
-    public async Task<uint?> ResolveUin(uint? groupUin, string friendUid, bool force = false, CancellationToken cancellationToken = default)
+    public async Task<uint?> ResolveUin(uint? groupUin, string friendUid, bool force = false)
     {
-        if (_uinToUid.Count == 0) await ResolveFriendsUidAndFriendGroups(cancellationToken);
+        if (_uinToUid.Count == 0) await ResolveFriendsUidAndFriendGroups();
         if (groupUin == null) return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
 
-        await CacheUid(groupUin.Value, force: force, cancellationToken: cancellationToken);
+        await CacheUid(groupUin.Value, force);
 
         return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
     }
 
-    public async Task<List<BotGroupMember>> GetCachedMembers(uint groupUin, bool refreshCache, CancellationToken cancellationToken = default)
+    public async Task<List<BotGroupMember>> GetCachedMembers(uint groupUin, bool refreshCache)
     {
         if (!_cachedGroupMembers.TryGetValue(groupUin, out var members) || refreshCache)
         {
-            await ResolveMembersUid(groupUin, cancellationToken);
+            await ResolveMembersUid(groupUin);
             return _cachedGroupMembers.TryGetValue(groupUin, out members) ? members : new List<BotGroupMember>();
         }
         return members;
     }
 
-    public async Task<List<BotFriend>> GetCachedFriends(bool refreshCache, CancellationToken cancellationToken)
+    public async Task<List<BotFriend>> GetCachedFriends(bool refreshCache)
     {
-        if (_cachedFriends.Count == 0 || refreshCache) await ResolveFriendsUidAndFriendGroups(cancellationToken);
+        if (_cachedFriends.Count == 0 || refreshCache) await ResolveFriendsUidAndFriendGroups();
         return _cachedFriends;
     }
 
-    public async Task<BotUserInfo?> GetCachedUsers(uint uin, bool refreshCache, CancellationToken cancellationToken)
+    public async Task<BotUserInfo?> GetCachedUsers(uint uin, bool refreshCache)
     {
-        if (!_cacheUsers.ContainsKey(uin) || refreshCache) await ResolveUser(uin, cancellationToken);
+        if (!_cacheUsers.ContainsKey(uin) || refreshCache) await ResolveUser(uin);
         if (!_cacheUsers.TryGetValue(uin, out BotUserInfo? info)) return null;
         return info;
     }
 
-    private async Task CacheUid(uint groupUin, bool force, CancellationToken cancellationToken)
+    private async Task CacheUid(uint groupUin, bool force = false)
     {
         if (!_cachedGroups.Contains(groupUin) || force)
         {
             Collection.Log.LogVerbose(Tag, $"Caching group members: {groupUin}");
-            await ResolveMembersUid(groupUin, cancellationToken);
+            await ResolveMembersUid(groupUin);
             _cachedGroups.Add(groupUin);
         }
     }
 
-    private async Task ResolveFriendsUidAndFriendGroups(CancellationToken cancellationToken)
+    private async Task ResolveFriendsUidAndFriendGroups()
     {
         uint? next = null;
         var friends = new List<BotFriend>();
@@ -126,7 +126,7 @@ internal class CachingLogic : LogicBase
         do
         {
             var @event = FetchFriendsEvent.Create(next);
-            var results = await Collection.Business.SendEvent(@event, cancellationToken);
+            var results = await Collection.Business.SendEvent(@event);
 
             if (results.Count == 0)
             {
@@ -153,10 +153,10 @@ internal class CachingLogic : LogicBase
         _cachedFriends.AddRange(friends);
     }
 
-    private async Task ResolveMembersUid(uint groupUin, CancellationToken cancellationToken)
+    private async Task ResolveMembersUid(uint groupUin)
     {
         var fetchFriendsEvent = FetchMembersEvent.Create(groupUin);
-        var events = await Collection.Business.SendEvent(fetchFriendsEvent, cancellationToken);
+        var events = await Collection.Business.SendEvent(fetchFriendsEvent);
 
         if (events.Count != 0)
         {
@@ -166,7 +166,7 @@ internal class CachingLogic : LogicBase
             while (token != null)
             {
                 var next = FetchMembersEvent.Create(groupUin, token);
-                var results = await Collection.Business.SendEvent(next, cancellationToken);
+                var results = await Collection.Business.SendEvent(next);
                 @event.Members.AddRange(((FetchMembersEvent)results[0]).Members);
                 token = ((FetchMembersEvent)results[0]).Token;
             }
@@ -181,9 +181,9 @@ internal class CachingLogic : LogicBase
         }
     }
 
-    private async Task ResolveUser(uint uin, CancellationToken cancellationToken)
+    private async Task ResolveUser(uint uin)
     {
-        var events = await Collection.Business.SendEvent(FetchUserInfoEvent.Create(uin), cancellationToken);
+        var events = await Collection.Business.SendEvent(FetchUserInfoEvent.Create(uin));
 
         if (events.Count != 0 && events[0] is FetchUserInfoEvent { } @event)
         {

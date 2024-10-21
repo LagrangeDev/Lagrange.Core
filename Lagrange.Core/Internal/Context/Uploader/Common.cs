@@ -49,10 +49,10 @@ internal static class Common
         };
     }
     
-    public static async Task<byte[]> GetTicket(ContextCollection context, CancellationToken cancellationToken)
+    public static async Task<byte[]> GetTicket(ContextCollection context)
     {
         var hwUrlEvent = HighwayUrlEvent.Create();
-        var highwayUrlResult = await context.Business.SendEvent(hwUrlEvent, cancellationToken);
+        var highwayUrlResult = await context.Business.SendEvent(hwUrlEvent);
         return ((HighwayUrlEvent)highwayUrlResult[0]).SigSession;
     }
 
