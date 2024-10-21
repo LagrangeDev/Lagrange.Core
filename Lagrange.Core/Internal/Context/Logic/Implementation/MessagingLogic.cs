@@ -46,15 +46,15 @@ internal class MessagingLogic : LogicBase
 
     internal MessagingLogic(ContextCollection collection) : base(collection) { }
 
-    public override async Task Incoming(ProtocolEvent e)
+    public override async Task Incoming(ProtocolEvent e, CancellationToken cancellationToken)
     {
         switch (e)
         {
             case PushMessageEvent push:
             {
                 if (push.Chain.Count == 0) return;
-                await ResolveIncomingChain(push.Chain);
-                await ResolveChainMetadata(push.Chain);
+                await ResolveIncomingChain(push.Chain, cancellationToken);
+                await ResolveChainMetadata(push.Chain, cancellationToken);
                 MessageFilter.Filter(push.Chain);
 
                 var chain = push.Chain;
@@ -76,8 +76,8 @@ internal class MessagingLogic : LogicBase
                 foreach (var chain in get.Chains)
                 {
                     if (chain.Count == 0) return;
-                    await ResolveIncomingChain(chain);
-                    await ResolveChainMetadata(chain);
+                    await ResolveIncomingChain(chain, cancellationToken);
+                    await ResolveChainMetadata(chain, cancellationToken);
                     MessageFilter.Filter(chain);
                 }
                 break;
@@ -87,40 +87,40 @@ internal class MessagingLogic : LogicBase
                 foreach (var chain in get.Chains)
                 {
                     if (chain.Count == 0) return;
-                    await ResolveIncomingChain(chain);
-                    await ResolveChainMetadata(chain);
+                    await ResolveIncomingChain(chain, cancellationToken);
+                    await ResolveChainMetadata(chain, cancellationToken);
                     MessageFilter.Filter(chain);
                 }
                 break;
             }
             case GroupSysInviteEvent invite:
             {
-                uint invitorUin = await Collection.Business.CachingLogic.ResolveUin(null, invite.InvitorUid) ?? 0;
+                uint invitorUin = await Collection.Business.CachingLogic.ResolveUin(null, invite.InvitorUid, false, cancellationToken) ?? 0;
                 var inviteArgs = new GroupInvitationEvent(invite.GroupUin, invitorUin);
                 Collection.Invoker.PostEvent(inviteArgs);
                 break;
             }
             case GroupSysAdminEvent admin:
             {
-                uint adminUin = await Collection.Business.CachingLogic.ResolveUin(admin.GroupUin, admin.Uid) ?? 0;
+                uint adminUin = await Collection.Business.CachingLogic.ResolveUin(admin.GroupUin, admin.Uid, false, cancellationToken) ?? 0;
                 var adminArgs = new GroupAdminChangedEvent(admin.GroupUin, adminUin, admin.IsPromoted);
                 Collection.Invoker.PostEvent(adminArgs);
                 break;
             }
             case GroupSysIncreaseEvent increase:
             {
-                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.MemberUid, true) ?? 0;
+                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.MemberUid, true, cancellationToken) ?? 0;
                 uint? invitorUin = null;
-                if (increase.InvitorUid != null) invitorUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.InvitorUid);
+                if (increase.InvitorUid != null) invitorUin = await Collection.Business.CachingLogic.ResolveUin(increase.GroupUin, increase.InvitorUid, false, cancellationToken);
                 var increaseArgs = new GroupMemberIncreaseEvent(increase.GroupUin, memberUin, invitorUin, increase.Type);
                 Collection.Invoker.PostEvent(increaseArgs);
                 break;
             }
             case GroupSysDecreaseEvent decrease:
             {
-                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.MemberUid) ?? 0;
+                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.MemberUid, false, cancellationToken) ?? 0;
                 uint? operatorUin = null;
-                if (decrease.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.OperatorUid);
+                if (decrease.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(decrease.GroupUin, decrease.OperatorUid, false, cancellationToken);
                 var decreaseArgs = new GroupMemberDecreaseEvent(decrease.GroupUin, memberUin, operatorUin, decrease.Type);
                 Collection.Invoker.PostEvent(decreaseArgs);
                 break;
@@ -139,7 +139,7 @@ internal class MessagingLogic : LogicBase
             }
             case GroupSysReactionEvent reaction:
             {
-                uint operatorUin = await Collection.Business.CachingLogic.ResolveUin(reaction.TargetGroupUin, reaction.OperatorUid) ?? 0;
+                uint operatorUin = await Collection.Business.CachingLogic.ResolveUin(reaction.TargetGroupUin, reaction.OperatorUid, false, cancellationToken) ?? 0;
                 var pokeArgs = new GroupReactionEvent(reaction.TargetGroupUin, reaction.TargetSequence, operatorUin, reaction.IsAdd, reaction.Code, reaction.Count);
                 Collection.Invoker.PostEvent(pokeArgs);
                 break;
@@ -159,25 +159,25 @@ internal class MessagingLogic : LogicBase
             case GroupSysMuteEvent groupMute:
             {
                 uint? operatorUin = null;
-                if (groupMute.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(groupMute.GroupUin, groupMute.OperatorUid);
+                if (groupMute.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(groupMute.GroupUin, groupMute.OperatorUid, false, cancellationToken);
                 var muteArgs = new GroupMuteEvent(groupMute.GroupUin, operatorUin, groupMute.IsMuted);
                 Collection.Invoker.PostEvent(muteArgs);
                 break;
             }
             case GroupSysMemberMuteEvent memberMute:
             {
-                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(memberMute.GroupUin, memberMute.TargetUid) ?? 0;
+                uint memberUin = await Collection.Business.CachingLogic.ResolveUin(memberMute.GroupUin, memberMute.TargetUid, false, cancellationToken) ?? 0;
                 uint? operatorUin = null;
-                if (memberMute.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(memberMute.GroupUin, memberMute.OperatorUid);
+                if (memberMute.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(memberMute.GroupUin, memberMute.OperatorUid, false, cancellationToken);
                 var muteArgs = new GroupMemberMuteEvent(memberMute.GroupUin, memberUin, operatorUin, memberMute.Duration);
                 Collection.Invoker.PostEvent(muteArgs);
                 break;
             }
             case GroupSysRecallEvent recall:
             {
-                uint authorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.AuthorUid) ?? 0;
+                uint authorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.AuthorUid, false, cancellationToken) ?? 0;
                 uint operatorUin = 0;
-                if (recall.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.OperatorUid) ?? 0;
+                if (recall.OperatorUid != null) operatorUin = await Collection.Business.CachingLogic.ResolveUin(recall.GroupUin, recall.OperatorUid, false, cancellationToken) ?? 0;
                 var recallArgs = new GroupRecallEvent(recall.GroupUin, authorUin, operatorUin, recall.Sequence, recall.Time, recall.Random, recall.Tip);
                 Collection.Invoker.PostEvent(recallArgs);
                 break;
@@ -185,7 +185,7 @@ internal class MessagingLogic : LogicBase
             case GroupSysRequestJoinEvent join:
             {
                 var fetchUidEvent = FetchUserInfoEvent.Create(join.TargetUid);
-                var results = await Collection.Business.SendEvent(fetchUidEvent);
+                var results = await Collection.Business.SendEvent(fetchUidEvent, cancellationToken);
                 uint targetUin = results.Count == 0 ? 0 : ((FetchUserInfoEvent)results[0]).UserInfo.Uin;
 
                 var joinArgs = new GroupJoinRequestEvent(join.GroupUin, targetUin);
@@ -194,10 +194,10 @@ internal class MessagingLogic : LogicBase
             }
             case GroupSysRequestInvitationEvent invitation:
             {
-                uint invitorUin = await Collection.Business.CachingLogic.ResolveUin(invitation.GroupUin, invitation.InvitorUid) ?? 0;
+                uint invitorUin = await Collection.Business.CachingLogic.ResolveUin(invitation.GroupUin, invitation.InvitorUid, false, cancellationToken) ?? 0;
 
                 var fetchUidEvent = FetchUserInfoEvent.Create(invitation.TargetUid);
-                var results = await Collection.Business.SendEvent(fetchUidEvent);
+                var results = await Collection.Business.SendEvent(fetchUidEvent, cancellationToken);
                 uint targetUin = results.Count == 0 ? 0 : ((FetchUserInfoEvent)results[0]).UserInfo.Uin;
 
                 var invitationArgs = new GroupInvitationRequestEvent(invitation.GroupUin, targetUin, invitorUin);
@@ -206,7 +206,7 @@ internal class MessagingLogic : LogicBase
             }
             case FriendSysRecallEvent recall:
             {
-                uint fromUin = await Collection.Business.CachingLogic.ResolveUin(null, recall.FromUid) ?? 0;
+                uint fromUin = await Collection.Business.CachingLogic.ResolveUin(null, recall.FromUid, false, cancellationToken) ?? 0;
                 var recallArgs = new FriendRecallEvent(fromUin, recall.ClientSequence, recall.Time, recall.Random, recall.Tip);
                 Collection.Invoker.PostEvent(recallArgs);
                 break;
@@ -230,7 +230,7 @@ internal class MessagingLogic : LogicBase
                     foreach (var chain in multi.Chains)
                     {
                         if (chain.Count == 0) continue;
-                        await ResolveIncomingChain(chain);
+                        await ResolveIncomingChain(chain, cancellationToken);
                         MessageFilter.Filter(chain);
                     }
                 }
@@ -246,7 +246,7 @@ internal class MessagingLogic : LogicBase
         }
     }
 
-    public override async Task Outgoing(ProtocolEvent e)
+    public override async Task Outgoing(ProtocolEvent e, CancellationToken cancellationToken)
     {
         switch (e)
         {
@@ -254,23 +254,23 @@ internal class MessagingLogic : LogicBase
             {
                 foreach (var chain in chains)
                 {
-                    await ResolveChainMetadata(chain);
-                    await ResolveOutgoingChain(chain);
-                    await Collection.Highway.UploadResources(chain);
+                    await ResolveChainMetadata(chain, cancellationToken);
+                    await ResolveOutgoingChain(chain, cancellationToken);
+                    await Collection.Highway.UploadResources(chain, cancellationToken);
                 }
                 break;
             }
             case SendMessageEvent send: // resolve Uin to Uid
             {
-                await ResolveChainMetadata(send.Chain);
-                await ResolveOutgoingChain(send.Chain);
-                await Collection.Highway.UploadResources(send.Chain);
+                await ResolveChainMetadata(send.Chain, cancellationToken);
+                await ResolveOutgoingChain(send.Chain, cancellationToken);
+                await Collection.Highway.UploadResources(send.Chain, cancellationToken);
                 break;
             }
         }
     }
 
-    private async Task ResolveIncomingChain(MessageChain chain)
+    private async Task ResolveIncomingChain(MessageChain chain, CancellationToken cancellationToken)
     {
         foreach (var entity in chain)
         {
@@ -279,7 +279,7 @@ internal class MessagingLogic : LogicBase
                 case FileEntity { FileHash: not null, FileUuid: not null } file:  // private
                 {
                     var @event = FileDownloadEvent.Create(file.FileUuid, file.FileHash, chain.Uid, chain.SelfUid);
-                    var results = await Collection.Business.SendEvent(@event);
+                    var results = await Collection.Business.SendEvent(@event, cancellationToken);
                     if (results.Count != 0)
                     {
                         var result = (FileDownloadEvent)results[0];
@@ -291,7 +291,7 @@ internal class MessagingLogic : LogicBase
                 case FileEntity { FileId: not null } file when chain.GroupUin is not null:  // group
                 {
                     var @event = GroupFSDownloadEvent.Create(chain.GroupUin.Value, file.FileId);
-                    var results = await Collection.Business.SendEvent(@event);
+                    var results = await Collection.Business.SendEvent(@event, cancellationToken);
                     if (results.Count != 0)
                     {
                         var result = (GroupFSDownloadEvent)results[0];
@@ -303,7 +303,7 @@ internal class MessagingLogic : LogicBase
                 case MultiMsgEntity { ResId: not null } multi:
                 {
                     var @event = MultiMsgDownloadEvent.Create(chain.Uid ?? "", multi.ResId);
-                    var results = await Collection.Business.SendEvent(@event);
+                    var results = await Collection.Business.SendEvent(@event, cancellationToken);
                     if (results.Count != 0)
                     {
                         var result = (MultiMsgDownloadEvent)results[0];
@@ -318,7 +318,7 @@ internal class MessagingLogic : LogicBase
                         ? RecordGroupDownloadEvent.Create(chain.GroupUin ?? 0, record.MsgInfo)
                         : RecordDownloadEvent.Create(chain.Uid ?? string.Empty, record.MsgInfo);
 
-                    var results = await Collection.Business.SendEvent(@event);
+                    var results = await Collection.Business.SendEvent(@event, cancellationToken);
                     if (results.Count != 0)
                     {
                         var result = (RecordDownloadEvent)results[0];
@@ -333,7 +333,7 @@ internal class MessagingLogic : LogicBase
                         ? RecordGroupDownloadEvent.Create(chain.GroupUin ?? 0, record.AudioUuid)
                         : RecordDownloadEvent.Create(chain.Uid ?? string.Empty, record.AudioUuid);
 
-                    var results = await Collection.Business.SendEvent(@event);
+                    var results = await Collection.Business.SendEvent(@event, cancellationToken);
                     if (results.Count != 0)
                     {
                         var result = (RecordDownloadEvent)results[0];
@@ -345,10 +345,10 @@ internal class MessagingLogic : LogicBase
                 case VideoEntity { VideoUuid: not null } video:
                 {
                     string uid = (chain.IsGroup
-                        ? await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin)
+                        ? await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin, cancellationToken)
                         : chain.Uid) ?? "";
                     var @event = VideoDownloadEvent.Create(video.VideoUuid, uid, video.FilePath, "", "", chain.IsGroup);
-                    var results = await Collection.Business.SendEvent(@event);
+                    var results = await Collection.Business.SendEvent(@event, cancellationToken);
                     if (results.Count != 0)
                     {
                         var result = (VideoDownloadEvent)results[0];
@@ -363,7 +363,7 @@ internal class MessagingLogic : LogicBase
                         ? ImageGroupDownloadEvent.Create(image.GroupUin ?? 0, image.MsgInfo)
                         : ImageDownloadEvent.Create(image.FriendUid ?? string.Empty, image.MsgInfo);
 
-                    var results = await Collection.Business.SendEvent(@event);
+                    var results = await Collection.Business.SendEvent(@event, cancellationToken);
                     if (results.Count != 0)
                     {
                         var result = (ImageDownloadEvent)results[0];
@@ -376,7 +376,7 @@ internal class MessagingLogic : LogicBase
         }
     }
 
-    private async Task ResolveOutgoingChain(MessageChain chain)
+    private async Task ResolveOutgoingChain(MessageChain chain, CancellationToken cancellationToken)
     {
         foreach (var entity in chain)
         {
@@ -385,24 +385,24 @@ internal class MessagingLogic : LogicBase
                 case ForwardEntity forward when forward.TargetUin != 0:
                 {
                     var cache = Collection.Business.CachingLogic;
-                    forward.Uid = await cache.ResolveUid(chain.GroupUin, forward.TargetUin) ?? throw new Exception($"Failed to resolve Uid for Uin {forward.TargetUin}");
+                    forward.Uid = await cache.ResolveUid(chain.GroupUin, forward.TargetUin, cancellationToken) ?? throw new Exception($"Failed to resolve Uid for Uin {forward.TargetUin}");
 
                     break;
                 }
                 case MentionEntity mention when mention.Uin != 0:
                 {
                     var cache = Collection.Business.CachingLogic;
-                    mention.Uid = await cache.ResolveUid(chain.GroupUin, mention.Uin) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
+                    mention.Uid = await cache.ResolveUid(chain.GroupUin, mention.Uin, cancellationToken) ?? throw new Exception($"Failed to resolve Uid for Uin {mention.Uin}");
 
                     if (chain is { IsGroup: true, GroupUin: not null } && mention.Name is null)
                     {
-                        var members = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
+                        var members = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false, cancellationToken);
                         var member = members.FirstOrDefault(x => x.Uin == mention.Uin);
                         if (member != null) mention.Name = $"@{member.MemberCard ?? member.MemberName}";
                     }
                     else if (chain is { IsGroup: false } && mention.Name is null)
                     {
-                        var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
+                        var friends = await Collection.Business.CachingLogic.GetCachedFriends(false, cancellationToken);
                         string? friend = friends.FirstOrDefault(x => x.Uin == mention.Uin)?.Nickname;
                         if (friend != null) mention.Name = $"@{friend}";
                     }
@@ -414,7 +414,7 @@ internal class MessagingLogic : LogicBase
                     if (chain.GroupUin != null) foreach (var c in multiMsg.Chains) c.GroupUin = chain.GroupUin;
 
                     var multiMsgEvent = MultiMsgUploadEvent.Create(chain.GroupUin, multiMsg.Chains);
-                    var results = await Collection.Business.SendEvent(multiMsgEvent);
+                    var results = await Collection.Business.SendEvent(multiMsgEvent, cancellationToken);
                     if (results.Count != 0)
                     {
                         var result = (MultiMsgUploadEvent)results[0];
@@ -425,7 +425,7 @@ internal class MessagingLogic : LogicBase
                 case MultiMsgEntity { ResId: not null, Chains.Count: 0 } multiMsg:
                 {
                     var @event = MultiMsgDownloadEvent.Create(chain.Uid ?? "", multiMsg.ResId);
-                    var results = await Collection.Business.SendEvent(@event);
+                    var results = await Collection.Business.SendEvent(@event, cancellationToken);
                     if (results.Count != 0)
                     {
                         var result = (MultiMsgDownloadEvent)results[0];
@@ -442,11 +442,11 @@ internal class MessagingLogic : LogicBase
     /// <para>for both Incoming and Outgoing MessageChain</para>
     /// </summary>
     /// <param name="chain">The target chain</param>
-    private async Task ResolveChainMetadata(MessageChain chain)
+    private async Task ResolveChainMetadata(MessageChain chain, CancellationToken cancellationToken)
     {
         if (chain is { IsGroup: true, GroupUin: not null })
         {
-            var groups = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false);
+            var groups = await Collection.Business.CachingLogic.GetCachedMembers(chain.GroupUin.Value, false, cancellationToken);
             chain.GroupMemberInfo = chain.FriendUin == 0
                 ? groups.FirstOrDefault(x => x.Uin == Collection.Keystore.Uin)
                 : groups.FirstOrDefault(x => x.Uin == chain.FriendUin);
@@ -455,7 +455,7 @@ internal class MessagingLogic : LogicBase
         }
         else
         {
-            var friends = await Collection.Business.CachingLogic.GetCachedFriends(false);
+            var friends = await Collection.Business.CachingLogic.GetCachedFriends(false, cancellationToken);
             if (friends.FirstOrDefault(x => x.Uin == chain.FriendUin) is { } friend)
             {
                 chain.FriendInfo = friend;
