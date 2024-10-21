@@ -70,6 +70,8 @@ public class ImageEntity : IMessageEntity
 
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
+        bool isGroup = MsgInfo?.MsgInfoBody is { Count: > 0 } body && body[0].HashSum.TroopSource?.GroupUin != null;
+
         var common = MsgInfo.Serialize();
 
         var elems = new Elem[]
@@ -81,7 +83,7 @@ public class ImageEntity : IMessageEntity
                 {
                     ServiceType = 48,
                     PbElem = common.ToArray(),
-                    BusinessType = 10,
+                    BusinessType = isGroup ? 20u : 10u,
                 }
             }
         };

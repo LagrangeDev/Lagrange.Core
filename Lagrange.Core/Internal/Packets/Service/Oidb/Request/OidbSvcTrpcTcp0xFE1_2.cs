@@ -6,12 +6,12 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 
 [ProtoContract]
 [OidbSvcTrpcTcp(0xfe1, 2)]
-internal class OidbSvcTrpcTcp0xFE1_2
+internal class OidbSvcTrpcTcp0xFE1_2Uid
 {
     [ProtoMember(1)] public string? Uid { get; set; }
-    
+
     [ProtoMember(2)] public uint Field2 { get; set; }
-    
+
     [ProtoMember(3)] public List<OidbSvcTrpcTcp0xFE1_2Key>? Keys { get; set; } // can be regarded as constants
 }
 
@@ -19,9 +19,9 @@ internal class OidbSvcTrpcTcp0xFE1_2
 internal class OidbSvcTrpcTcp0xFE1_2Uin
 {
     [ProtoMember(1)] public uint Uin { get; set; }
-    
+
     [ProtoMember(2)] public uint Field2 { get; set; }
-    
+
     [ProtoMember(3)] public List<OidbSvcTrpcTcp0xFE1_2Key>? Keys { get; set; } // can be regarded as constants
 }
 

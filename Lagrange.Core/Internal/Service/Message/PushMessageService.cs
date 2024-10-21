@@ -183,7 +183,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 var mute = Serializer.Deserialize<GroupMute>(content.AsSpan());
                 if (mute.Data.State.TargetUid == null)
                 {
-                    var groupMuteEvent = GroupSysMuteEvent.Result(mute.GroupUin, mute.OperatorUid, mute.Data.State.Duration == uint.MaxValue);
+                    var groupMuteEvent = GroupSysMuteEvent.Result(mute.GroupUin, mute.OperatorUid, mute.Data.State.Duration !=0);
                     extraEvents.Add(groupMuteEvent);
                 }
                 else

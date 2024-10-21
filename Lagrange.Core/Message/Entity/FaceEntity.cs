@@ -8,10 +8,10 @@ namespace Lagrange.Core.Message.Entity;
 [MessageElement(typeof(Face)), MessageElement(typeof(CommonElem))]
 public class FaceEntity : IMessageEntity
 {
-    public ushort FaceId { get; }
-    
-    public bool IsLargeFace { get; }
-    
+    public ushort FaceId { get; set; }
+
+    public bool IsLargeFace { get; set; }
+
     public FaceEntity() { }
 
     public FaceEntity(ushort faceId, bool isLargeFace)
@@ -19,7 +19,7 @@ public class FaceEntity : IMessageEntity
         FaceId = faceId;
         IsLargeFace = isLargeFace;
     }
-    
+
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
         if (IsLargeFace)

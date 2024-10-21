@@ -45,6 +45,19 @@ public static class GroupExt
     public static Task<bool> SetGroupAdmin(this BotContext bot, uint groupUin, uint targetUin, bool isAdmin)
         => bot.ContextCollection.Business.OperationLogic.SetGroupAdmin(groupUin, targetUin, isAdmin);
 
+    // 300204 Check group manager:Not an administrator
+    public static Task<(int, string?)> SetGroupTodo(this BotContext bot, uint groupUin, uint sequence)
+        => bot.ContextCollection.Business.OperationLogic.SetGroupTodo(groupUin, sequence);
+
+    public static Task<(int, string?)> RemoveGroupTodo(this BotContext bot, uint groupUin)
+        => bot.ContextCollection.Business.OperationLogic.RemoveGroupTodo(groupUin);
+
+    public static Task<(int, string?)> FinishGroupTodo(this BotContext bot, uint groupUin)
+        => bot.ContextCollection.Business.OperationLogic.FinishGroupTodo(groupUin);
+
+    public static Task<BotGetGroupTodoResult> GetGroupTodo(this BotContext bot, uint groupUin)
+        => bot.ContextCollection.Business.OperationLogic.GetGroupTodo(groupUin);
+
     public static Task<bool> SetGroupBot(this BotContext bot, uint targetUin, uint On, uint groupUin)
         => bot.ContextCollection.Business.OperationLogic.SetGroupBot(targetUin, On, groupUin);
 
