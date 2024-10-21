@@ -73,16 +73,12 @@ internal class BusinessContext : ContextBase
         }
     }
 
-    public async Task<bool> PushEvent(ProtocolEvent @event, CancellationToken cancellationToken)
+    public async Task<bool> PushEvent(ProtocolEvent @event)
     {
         try
         {
             var packets = Collection.Service.ResolvePacketByEvent(@event);
-            foreach (var packet in packets)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                await Collection.Packet.PostPacket(packet);
-            }
+            foreach (var packet in packets) await Collection.Packet.PostPacket(packet);
         }
         catch
         {
@@ -95,31 +91,24 @@ internal class BusinessContext : ContextBase
     /// <summary>
     /// Send Event to the Server, goes through the given context
     /// </summary>
-    public async Task<List<ProtocolEvent>> SendEvent(ProtocolEvent @event, CancellationToken cancellationToken)
+    public async Task<List<ProtocolEvent>> SendEvent(ProtocolEvent @event)
     {
-        await HandleOutgoingEvent(@event, cancellationToken);
+        await HandleOutgoingEvent(@event);
         var result = new List<ProtocolEvent>();
-
-        cancellationToken.ThrowIfCancellationRequested();
-
+        
         try
         {
             var packets = Collection.Service.ResolvePacketByEvent(@event);
             foreach (var packet in packets)
             {
-                var returnVal = await Collection.Packet.SendPacket(packet, cancellationToken);
+                var returnVal = await Collection.Packet.SendPacket(packet);
                 var resolved = Collection.Service.ResolveEventByPacket(returnVal);
                 foreach (var protocol in resolved)
                 {
-                    await HandleIncomingEvent(protocol, cancellationToken);
+                    await HandleIncomingEvent(protocol);
                     result.Add(protocol);
                 }
             }
-        }
-        catch (TaskCanceledException)
-        {
-            // if task is cancelled, we should throw the exception
-            throw;
         }
         catch (Exception e)
         {
@@ -130,7 +119,7 @@ internal class BusinessContext : ContextBase
         return result;
     }
 
-    public async Task<bool> HandleIncomingEvent(ProtocolEvent @event, CancellationToken cancellationToken)
+    public async Task<bool> HandleIncomingEvent(ProtocolEvent @event)
     {
         _businessLogics.TryGetValue(typeof(ProtocolEvent), out var baseLogics);
         _businessLogics.TryGetValue(@event.GetType(), out var normalLogics);
@@ -143,12 +132,7 @@ internal class BusinessContext : ContextBase
         {
             try
             {
-                await logic.Incoming(@event, cancellationToken);
-            }
-            catch (TaskCanceledException)
-            {
-                // if task is cancelled, we should throw the exception
-                throw;
+                await logic.Incoming(@event);
             }
             catch (Exception e)
             {
@@ -161,7 +145,7 @@ internal class BusinessContext : ContextBase
         return true;
     }
     
-    public async Task<bool> HandleOutgoingEvent(ProtocolEvent @event, CancellationToken cancellationToken)
+    public async Task<bool> HandleOutgoingEvent(ProtocolEvent @event)
     {
         _businessLogics.TryGetValue(typeof(ProtocolEvent), out var baseLogics);
         _businessLogics.TryGetValue(@event.GetType(), out var normalLogics);
@@ -174,12 +158,7 @@ internal class BusinessContext : ContextBase
         {
             try
             {
-                await logic.Outgoing(@event, cancellationToken);
-            }
-            catch (TaskCanceledException)
-            {
-                // if task is cancelled, we should throw the exception
-                throw;
+                await logic.Outgoing(@event);
             }
             catch (Exception e)
             {
@@ -204,7 +183,7 @@ internal class BusinessContext : ContextBase
             var events = Collection.Service.ResolveEventByPacket(packet);
             foreach (var @event in events)
             {
-                var isSuccessful = await Collection.Business.HandleIncomingEvent(@event, CancellationToken.None);
+                var isSuccessful = await Collection.Business.HandleIncomingEvent(@event);
                 if (!isSuccessful) break;
 
                 success = true;

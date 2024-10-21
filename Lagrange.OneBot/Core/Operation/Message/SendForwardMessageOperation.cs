@@ -18,7 +18,7 @@ public class SendForwardMessageOperation(MessageCommon common) : IOperation
             var chains = common.BuildForwardChains(context, forward);
 
             var @event = MultiMsgUploadEvent.Create(null, chains);
-            var result = await context.ContextCollection.Business.SendEvent(@event, CancellationToken.None);
+            var result = await context.ContextCollection.Business.SendEvent(@event);
             if (result.Count != 0 && result[0] is MultiMsgUploadEvent res)
             {
                 return new OneBotResult(res.ResId, 0, "ok");

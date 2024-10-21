@@ -9,37 +9,18 @@ public static class BotExt
     /// </summary>
     /// <returns>return url and qrcode image in PNG format</returns>
     public static Task<(string Url, byte[] QrCode)?> FetchQrCode(this BotContext bot)
-        => bot.ContextCollection.Business.WtExchangeLogic.FetchQrCode(CancellationToken.None);
-
-    /// <summary>
-    /// Fetch the qrcode for QRCode Login
-    /// </summary>
-    /// <returns>return url and qrcode image in PNG format</returns>
-    public static Task<(string Url, byte[] QrCode)?> FetchQrCode(this BotContext bot, CancellationToken cancellationToken)
-        => bot.ContextCollection.Business.WtExchangeLogic.FetchQrCode(cancellationToken);
+        => bot.ContextCollection.Business.WtExchangeLogic.FetchQrCode();
     
     /// <summary>
     /// Use this method to login by QrCode, you should call <see cref="FetchQrCode"/> first
     /// </summary>
-    public static Task LoginByQrCode(this BotContext bot)
-        => bot.ContextCollection.Business.WtExchangeLogic.LoginByQrCode(CancellationToken.None);
-
-    /// <summary>
-    /// Use this method to login by QrCode, you should call <see cref="FetchQrCode"/> first
-    /// </summary>
-    public static Task LoginByQrCode(this BotContext bot, CancellationToken cancellationToken)
+    public static Task LoginByQrCode(this BotContext bot, CancellationToken cancellationToken = default)
         => bot.ContextCollection.Business.WtExchangeLogic.LoginByQrCode(cancellationToken);
     
     /// <summary>
     /// Use this method to login by password, EasyLogin may be preformed if there is sig in <see cref="BotKeystore"/>
     /// </summary>
-    public static Task<bool> LoginByPassword(this BotContext bot)
-        => bot.ContextCollection.Business.WtExchangeLogic.LoginByPassword(CancellationToken.None);
-
-    /// <summary>
-    /// Use this method to login by password, EasyLogin may be preformed if there is sig in <see cref="BotKeystore"/>
-    /// </summary>
-    public static Task<bool> LoginByPassword(this BotContext bot, CancellationToken cancellationToken)
+    public static Task<bool> LoginByPassword(this BotContext bot, CancellationToken cancellationToken = default)
         => bot.ContextCollection.Business.WtExchangeLogic.LoginByPassword(cancellationToken);
     
     /// <summary>
@@ -49,11 +30,8 @@ public static class BotExt
     public static bool SubmitCaptcha(this BotContext bot, string ticket, string randStr)
         => bot.ContextCollection.Business.WtExchangeLogic.SubmitCaptcha(ticket, randStr);
     
-    public static Task<bool> SetNeedToConfirmSwitch(this BotContext bot, bool needToConfirm)
-        => bot.ContextCollection.Business.OperationLogic.SetNeedToConfirmSwitch(needToConfirm, CancellationToken.None);
-
-    public static Task<bool> SetNeedToConfirmSwitch(this BotContext bot, bool needToConfirm, CancellationToken cancellationToken)
-        => bot.ContextCollection.Business.OperationLogic.SetNeedToConfirmSwitch(needToConfirm, cancellationToken);
+    public static Task<bool> SetNeedToConfirmSwitch(this BotContext bot, bool needToConfirm) 
+        => bot.ContextCollection.Business.OperationLogic.SetNeedToConfirmSwitch(needToConfirm);
     
     /// <summary>
     /// Use this method to update keystore, so EasyLogin may be preformed next time by using this keystore
