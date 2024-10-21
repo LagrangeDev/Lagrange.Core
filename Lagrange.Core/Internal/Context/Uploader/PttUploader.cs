@@ -8,18 +8,18 @@ namespace Lagrange.Core.Internal.Context.Uploader;
 [HighwayUploader(typeof(RecordEntity))]
 internal class PttUploader : IHighwayUploader
 {
-    public async Task UploadPrivate(ContextCollection context, MessageChain chain, IMessageEntity entity, CancellationToken cancellationToken)
+    public async Task UploadPrivate(ContextCollection context, MessageChain chain, IMessageEntity entity)
     {
         if (entity is RecordEntity { AudioStream: { } stream } record)
         {
             var uploadEvent = RecordUploadEvent.Create(record, chain.FriendInfo?.Uid ?? "");
-            var uploadResult = await context.Business.SendEvent(uploadEvent, cancellationToken);
+            var uploadResult = await context.Business.SendEvent(uploadEvent);
             var metaResult = (RecordUploadEvent)uploadResult[0];
 
             if (Common.GenerateExt(metaResult) is { } ext)
             {
                 var hash = metaResult.MsgInfo.MsgInfoBody[0].Index.Info.FileHash.UnHex();
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1007, stream.Value, await Common.GetTicket(context, cancellationToken), hash, extendInfo: ext.Serialize().ToArray(), cancellation: cancellationToken);
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1007, stream.Value, await Common.GetTicket(context), hash, ext.Serialize().ToArray());
                 if (!hwSuccess)
                 {
                     await stream.Value.DisposeAsync();
@@ -33,18 +33,18 @@ internal class PttUploader : IHighwayUploader
         }
     }
 
-    public async Task UploadGroup(ContextCollection context, MessageChain chain, IMessageEntity entity, CancellationToken cancellationToken)
+    public async Task UploadGroup(ContextCollection context, MessageChain chain, IMessageEntity entity)
     {
         if (entity is RecordEntity { AudioStream: { } stream } record)
         {
             var uploadEvent = RecordGroupUploadEvent.Create(record, chain.GroupUin ?? 0);
-            var uploadResult = await context.Business.SendEvent(uploadEvent, cancellationToken);
+            var uploadResult = await context.Business.SendEvent(uploadEvent);
             var metaResult = (RecordGroupUploadEvent)uploadResult[0];
 
             if (Common.GenerateExt(metaResult) is { } ext)
             {
                 var hash = metaResult.MsgInfo.MsgInfoBody[0].Index.Info.FileHash.UnHex();
-                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1008, stream.Value, await Common.GetTicket(context, cancellationToken), hash, extendInfo: ext.Serialize().ToArray(), cancellation: cancellationToken);
+                bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(1008, stream.Value, await Common.GetTicket(context), hash, ext.Serialize().ToArray());
                 if (!hwSuccess)
                 {
                     await stream.Value.DisposeAsync();

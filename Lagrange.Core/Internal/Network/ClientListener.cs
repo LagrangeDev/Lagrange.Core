@@ -20,12 +20,12 @@ internal abstract partial class ClientListener : IClientListener
     /// </summary>
     public ClientListener() { }
 
-    private async Task<bool> InternalConnectAsync(SocketSession session, string host, int port, CancellationToken cancellationToken)
+    private async Task<bool> InternalConnectAsync(SocketSession session, string host, int port)
     {
         try
         {
-            await session.Socket.ConnectAsync(host, port, cancellationToken);
-            _ = ReceiveLoop(session, cancellationToken);
+            await session.Socket.ConnectAsync(host, port);
+            _ = ReceiveLoop(session);
             return true;
         }
         catch (Exception e)
@@ -41,9 +41,8 @@ internal abstract partial class ClientListener : IClientListener
     /// </summary>
     /// <param name="host"></param>
     /// <param name="port"></param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<bool> Connect(string host, int port, CancellationToken cancellationToken)
+    public Task<bool> Connect(string host, int port)
     {
         SocketSession? previousSession = Session, createdSession = null;
         if (previousSession != null || // The client has been connected
@@ -53,7 +52,7 @@ internal abstract partial class ClientListener : IClientListener
             return Task.FromResult(false);
         }
 
-        return InternalConnectAsync(createdSession, host, port, cancellationToken); // Connect to server
+        return InternalConnectAsync(createdSession, host, port); // Connect to server
     }
 
     /// <summary>
