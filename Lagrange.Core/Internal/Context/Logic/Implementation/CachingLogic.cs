@@ -75,7 +75,7 @@ internal class CachingLogic : LogicBase
         return _uinToUid.GetValueOrDefault(friendUin);
     }
 
-    public async Task<uint?> ResolveUin(uint? groupUin, string friendUid, bool force, CancellationToken cancellationToken)
+    public async Task<uint?> ResolveUin(uint? groupUin, string friendUid, bool force = false, CancellationToken cancellationToken = default)
     {
         if (_uinToUid.Count == 0) await ResolveFriendsUidAndFriendGroups(cancellationToken);
         if (groupUin == null) return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
@@ -85,7 +85,7 @@ internal class CachingLogic : LogicBase
         return _uinToUid.FirstOrDefault(x => x.Value == friendUid).Key;
     }
 
-    public async Task<List<BotGroupMember>> GetCachedMembers(uint groupUin, bool refreshCache, CancellationToken cancellationToken)
+    public async Task<List<BotGroupMember>> GetCachedMembers(uint groupUin, bool refreshCache, CancellationToken cancellationToken = default)
     {
         if (!_cachedGroupMembers.TryGetValue(groupUin, out var members) || refreshCache)
         {
