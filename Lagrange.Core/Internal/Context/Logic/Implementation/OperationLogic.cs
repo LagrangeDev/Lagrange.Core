@@ -697,4 +697,24 @@ internal class OperationLogic : LogicBase
         var ret = (FetchGroupAtAllRemainEvent)results[0];
         return (ret.RemainAtAllCountForUin, ret.RemainAtAllCountForGroup);
     }
+    
+    public async Task<bool> FetchSuperFaceId(uint id) => await Collection.Business.CachingLogic.GetCachedIsSuperFaceId(id);
+
+    public async Task<SysFaceEntry?> FetchFaceEntity(uint id) => await Collection.Business.CachingLogic.GetCachedFaceEntity(id);
+    
+    public async Task<bool> GroupJoinEmojiChain(uint groupUin, uint emojiId, uint targetMessageSeq)
+    {
+        var groupJoinEmojiChainEvent = GroupJoinEmojiChainEvent.Create(targetMessageSeq, emojiId, groupUin);
+        var results = await Collection.Business.SendEvent(groupJoinEmojiChainEvent);
+        return results.Count != 0 && results[0].ResultCode == 0;
+    }
+    
+    public async Task<bool> FriendJoinEmojiChain(uint friendUin, uint emojiId, uint targetMessageSeq)
+    {
+        string? friendUid = await Collection.Business.CachingLogic.ResolveUid(null, friendUin);
+        if (friendUid == null) return false;
+        var friendJoinEmojiChainEvent = FriendJoinEmojiChainEvent.Create(targetMessageSeq, emojiId, friendUid);
+        var results = await Collection.Business.SendEvent(friendJoinEmojiChainEvent);
+        return results.Count != 0 && results[0].ResultCode == 0;
+    }
 }

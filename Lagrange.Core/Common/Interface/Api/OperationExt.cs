@@ -249,4 +249,16 @@ public static class OperationExt
     /// <param name="avatar">The avatar object, <see cref="ImageEntity"/></param>
     public static Task<bool> SetAvatar(this BotContext bot, ImageEntity avatar)
         => bot.ContextCollection.Business.OperationLogic.SetAvatar(avatar);
+
+    public static Task<bool> FetchSuperFaceId(this BotContext bot, uint id)
+        => bot.ContextCollection.Business.OperationLogic.FetchSuperFaceId(id);
+    
+    public static Task<SysFaceEntry?> FetchFaceEntity(this BotContext bot, uint id)
+        => bot.ContextCollection.Business.OperationLogic.FetchFaceEntity(id);
+    
+    public static Task<bool> GroupJoinEmojiChain(this BotContext bot, uint groupUin, uint emojiId, uint targetMessageSeq)
+        => bot.ContextCollection.Business.OperationLogic.GroupJoinEmojiChain(groupUin, emojiId, targetMessageSeq);
+
+    public static Task<bool> FriendJoinEmojiChain(this BotContext bot, uint friendUin, uint emojiId, uint targetMessageSeq)
+        => bot.ContextCollection.Business.OperationLogic.FriendJoinEmojiChain(friendUin, emojiId, targetMessageSeq);
 }
