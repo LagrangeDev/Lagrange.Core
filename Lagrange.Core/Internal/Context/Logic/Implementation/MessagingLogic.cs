@@ -386,7 +386,6 @@ internal class MessagingLogic : LogicBase
                 case FaceEntity face:
                 {
                     var cache = Collection.Business.CachingLogic;
-                    face.IsLargeFace ??= await cache.GetCachedIsSuperFaceId(face.FaceId);
                     face.SysFaceEntry ??= await cache.GetCachedFaceEntity(face.FaceId);
                     break;
                 }
