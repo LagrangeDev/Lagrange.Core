@@ -212,7 +212,6 @@ internal class OperationLogic : LogicBase
             if (((GroupFSListEvent)events[0]).IsEnd) break;
             startIndex += 20;
         }
-
         return entries;
     }
 
@@ -223,8 +222,7 @@ internal class OperationLogic : LogicBase
         return $"{((GroupFSDownloadEvent)events[0]).FileUrl}{fileId}";
     }
 
-    public async Task<(int, string)> GroupFSMove(uint groupUin, string fileId, string parentDirectory,
-        string targetDirectory)
+    public async Task<(int, string)> GroupFSMove(uint groupUin, string fileId, string parentDirectory, string targetDirectory)
     {
         var groupFSMoveEvent = GroupFSMoveEvent.Create(groupUin, fileId, parentDirectory, targetDirectory);
         var events = await Collection.Business.SendEvent(groupFSMoveEvent);
@@ -273,8 +271,7 @@ internal class OperationLogic : LogicBase
     {
         try
         {
-            return FileUploader.UploadGroup(Collection, MessageBuilder.Group(groupUin).Build(), fileEntity,
-                targetDirectory);
+            return FileUploader.UploadGroup(Collection, MessageBuilder.Group(groupUin).Build(), fileEntity, targetDirectory);
         }
         catch
         {
@@ -327,8 +324,7 @@ internal class OperationLogic : LogicBase
         if (result.Sequence == null) return false;
         if (await Collection.Business.CachingLogic.ResolveUid(null, friendUin) is not { } uid) return false;
 
-        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, result.ClientSequence, result.Sequence ?? 0,
-            (uint)(result.MessageId & uint.MaxValue), result.Timestamp);
+        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, result.ClientSequence, result.Sequence ?? 0, (uint)(result.MessageId & uint.MaxValue), result.Timestamp);
         var events = await Collection.Business.SendEvent(recallMessageEvent);
         return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
     }
@@ -338,8 +334,7 @@ internal class OperationLogic : LogicBase
         if (await Collection.Business.CachingLogic.ResolveUid(null, chain.TargetUin) is not { } uid) return false;
 
         uint timestamp = (uint)new DateTimeOffset(chain.Time).ToUnixTimeSeconds();
-        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, chain.ClientSequence, chain.Sequence,
-            (uint)(chain.MessageId & uint.MaxValue), timestamp);
+        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, chain.ClientSequence, chain.Sequence, (uint)(chain.MessageId & uint.MaxValue), timestamp);
         var events = await Collection.Business.SendEvent(recallMessageEvent);
         return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
     }
@@ -355,8 +350,7 @@ internal class OperationLogic : LogicBase
 
         foreach (var result in resolved)
         {
-            var uins = await Task.WhenAll(ResolveUid(result.InvitorMemberUid), ResolveUid(result.TargetMemberUid),
-                ResolveUid(result.OperatorUid));
+            var uins = await Task.WhenAll(ResolveUid(result.InvitorMemberUid), ResolveUid(result.TargetMemberUid), ResolveUid(result.OperatorUid));
             uint invitorUin = uins[0];
             uint targetUin = uins[1];
             uint operatorUin = uins[2];
@@ -493,8 +487,7 @@ internal class OperationLogic : LogicBase
         return results.Count != 0 && results[0].ResultCode == 0;
     }
 
-    public async Task<bool> SetGroupFilteredRequest(uint groupUin, ulong sequence, uint type, bool accept,
-        string reason)
+    public async Task<bool> SetGroupFilteredRequest(uint groupUin, ulong sequence, uint type, bool accept, string reason)
     {
         var inviteEvent = SetGroupFilteredRequestEvent.Create(accept, groupUin, sequence, type, reason);
         var results = await Collection.Business.SendEvent(inviteEvent);
@@ -671,8 +664,7 @@ internal class OperationLogic : LogicBase
 
         var ticket = ((HighwayUrlEvent)highwayUrlResults[0]).SigSession;
         var md5 = avatar.ImageStream.Value.Md5().UnHex();
-        return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, md5,
-            Array.Empty<byte>());
+        return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, md5, Array.Empty<byte>());
     }
 
     public async Task<bool> GroupSetAvatar(uint groupUin, ImageEntity avatar)

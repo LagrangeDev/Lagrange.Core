@@ -11,7 +11,7 @@ namespace Lagrange.Core.Internal.Service.Action;
 [EventSubscribe(typeof(GroupJoinEmojiChainEvent))]
 [EventSubscribe(typeof(FriendJoinEmojiChainEvent))]
 [Service("OidbSvcTrpcTcp.0x90ee_1")]
-internal class FetchClientKeyService : BaseService<JoinEmojiChainEvent>
+internal class JoinEmojiChainService : BaseService<JoinEmojiChainEvent>
 {
     protected override bool Build(JoinEmojiChainEvent input, BotKeystore keystore, BotAppInfo appInfo,
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
