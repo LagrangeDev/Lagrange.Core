@@ -7,6 +7,7 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Message.Entity;
 
+[MessageElement(typeof(CommonElem))]
 public class MarkdownEntity : IMessageEntity
 {
     public MarkdownData Data { get; set; }
@@ -30,7 +31,13 @@ public class MarkdownEntity : IMessageEntity
         }
     };
 
-    IMessageEntity? IMessageEntity.UnpackElement(Elem elem) => null;
+    IMessageEntity? IMessageEntity.UnpackElement(Elem elem)
+    {
+        if (elem.CommonElem?.ServiceType != 45 || elem.CommonElem?.BusinessType != 1)
+            return null;
+
+        return new MarkdownEntity(Serializer.Deserialize<MarkdownData>(elem.CommonElem.PbElem.AsSpan()));
+    }
 
     public string ToPreviewString() => throw new NotImplementedException();
 }
