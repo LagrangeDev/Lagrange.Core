@@ -155,7 +155,8 @@ public sealed class LagrangeAppBuilder
             if (!isFirstCreate && hasFirstIndex)
             {
                 db.Dispose(); // Ensure that the database is written correctly
-                logger.LogInformation("Indexing Complete! Please restart the program manually!");
+                logger.LogInformation("Indexing Complete! Press any key to close and restart the program manually!");
+                Console.ReadKey(true);
                 Environment.Exit(0);
             }
             return db;
