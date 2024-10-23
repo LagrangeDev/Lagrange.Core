@@ -39,7 +39,10 @@ public class MarkdownEntity : IMessageEntity
         return new MarkdownEntity(Serializer.Deserialize<MarkdownData>(elem.CommonElem.PbElem.AsSpan()));
     }
 
-    public string ToPreviewString() => throw new NotImplementedException();
+    public string ToPreviewString()
+    {
+        return $"[Markdown] {Data.Content}";
+    }
 }
 
 [ProtoContract]
