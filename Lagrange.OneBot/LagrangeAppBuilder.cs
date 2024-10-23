@@ -111,6 +111,7 @@ public sealed class LagrangeAppBuilder
             return services.GetRequiredService<ILagrangeWebServiceFactory>().Create() ?? throw new Exception("Invalid conf detected");
         });
 
+        // Database
         Services.AddSingleton(provider =>
         {
             var logger = provider.GetRequiredService<ILogger<LagrangeAppBuilder>>();
@@ -119,6 +120,9 @@ public sealed class LagrangeAppBuilder
             BsonMapper.Global.EmptyStringToNull = false;
 
             string path = Configuration["ConfigPath:Database"] ?? $"lagrange-{Configuration["Account:Uin"]}.db";
+
+            bool isFirstCreate = false;
+            if (!File.Exists(path)) isFirstCreate = true;
 
             var db = new LiteDatabase(path)
             {
@@ -135,7 +139,7 @@ public sealed class LagrangeAppBuilder
 
                 logger.LogWarning("In the database index");
                 logger.LogWarning("Depending on the size of the database will consume some time and memory");
-                logger.LogWarning("Please restart the program after indexing is complete");
+                logger.LogWarning("Not yet finished, please wait...");
 
                 hasFirstIndex = true;
                 break;
@@ -147,14 +151,14 @@ public sealed class LagrangeAppBuilder
                 records.EnsureIndex(BsonExpression.Create(expression));
             }
 
-            if (hasFirstIndex)
+            // Skipping the first database creation is a restart after indexing
+            if (!isFirstCreate && hasFirstIndex)
             {
                 db.Dispose(); // Ensure that the database is written correctly
-                logger.LogWarning("Indexing complete, please restart the program");
+                logger.LogInformation("Indexing Complete! Press any key to close and restart the program manually!");
                 Console.ReadKey(true);
                 Environment.Exit(0);
             }
-
             return db;
         });
         Services.AddSingleton<SignProvider, OneBotSigner>();
