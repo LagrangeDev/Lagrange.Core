@@ -44,7 +44,10 @@ public abstract class SignProvider
         "OidbSvcTrpcTcp.0xf67_1",
         "OidbSvcTrpcTcp.0xf67_5",
         "OidbSvcTrpcTcp.0x6d9_4",
-        "QQLBSShareSvc.room_operation"
+        "QQLBSShareSvc.room_operation",
+        "OidbSvcTrpcTcp.0xdc2_34",
+        "QQAIOMediaSvc.share_trans_check",
+        "OidbSvcTrpcTcp.0x929b_0"
     };
 
     public abstract byte[]? Sign(string cmd, uint seq, byte[] body, out byte[]? ver, out string? token);
