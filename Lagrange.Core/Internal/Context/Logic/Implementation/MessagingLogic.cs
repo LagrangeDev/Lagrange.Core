@@ -11,6 +11,7 @@ using Lagrange.Core.Internal.Service;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Message.Filter;
+using Lagrange.Core.Utility.Extension;
 using FriendPokeEvent = Lagrange.Core.Event.EventArg.FriendPokeEvent;
 using GroupPokeEvent = Lagrange.Core.Event.EventArg.GroupPokeEvent;
 
@@ -39,6 +40,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(FriendSysPokeEvent))]
 [EventSubscribe(typeof(LoginNotifyEvent))]
 [EventSubscribe(typeof(MultiMsgDownloadEvent))]
+[EventSubscribe(typeof(GroupSysTodoEvent))]
 [BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
 internal class MessagingLogic : LogicBase
 {
@@ -237,6 +239,13 @@ internal class MessagingLogic : LogicBase
                 }
                 break;
             }
+            case GroupSysTodoEvent todo:
+            {
+                uint uin = await Collection.Business.CachingLogic.ResolveUin(todo.GroupUin, todo.OperatorUid) ?? 0;
+
+                Collection.Invoker.PostEvent(new GroupTodoEvent(todo.GroupUin, uin));
+                break;
+            }
         }
     }
 
@@ -376,6 +385,13 @@ internal class MessagingLogic : LogicBase
         {
             switch (entity)
             {
+                case FaceEntity face:
+                {
+                    var cache = Collection.Business.CachingLogic;
+                    face.SysFaceEntry ??= await cache.GetCachedFaceEntity(face.FaceId);
+                    break;
+                }
+                
                 case ForwardEntity forward when forward.TargetUin != 0:
                 {
                     var cache = Collection.Business.CachingLogic;

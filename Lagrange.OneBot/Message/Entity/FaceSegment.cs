@@ -10,6 +10,9 @@ public partial class FaceSegment(int id)
     public FaceSegment() : this(0) { }
     
     [JsonPropertyName("id")] [CQProperty] public string Id { get; set; } = id.ToString();
+    
+    [JsonPropertyName("large")] [CQProperty] public bool? IsLarge { get; set; }
+    
 }
 
 [SegmentSubscriber(typeof(FaceEntity), "face")]
@@ -19,7 +22,7 @@ public partial class FaceSegment : SegmentBase
     
     public override void Build(MessageBuilder builder, SegmentBase segment)
     {
-        if (segment is FaceSegment faceSegment) builder.Face(ushort.Parse(faceSegment.Id));
+        if (segment is FaceSegment faceSegment) builder.Face(ushort.Parse(faceSegment.Id), faceSegment.IsLarge);
     }
     
     public override SegmentBase? FromEntity(MessageChain chain, IMessageEntity entity)

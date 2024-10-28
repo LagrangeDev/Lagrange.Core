@@ -81,9 +81,63 @@ internal class OperationLogic : LogicBase
         string? uid = await Collection.Business.CachingLogic.ResolveUid(groupUin, targetUin);
         if (uid == null) return false;
 
-        var muteGroupMemberEvent = GroupSetAdminEvent.Create(groupUin, uid, isAdmin);
-        var events = await Collection.Business.SendEvent(muteGroupMemberEvent);
+        var setGroupAdminEvent = GroupSetAdminEvent.Create(groupUin, uid, isAdmin);
+        var events = await Collection.Business.SendEvent(setGroupAdminEvent);
         return events.Count != 0 && ((GroupSetAdminEvent)events[0]).ResultCode == 0;
+    }
+
+    public async Task<(int, string?)> SetGroupTodo(uint groupUin, uint sequence)
+    {
+        var setGroupTodoEvent = GroupSetTodoEvent.Create(groupUin, sequence);
+        var events = await Collection.Business.SendEvent(setGroupTodoEvent);
+
+        if (events.Count == 0) return (-1, "No Events");
+
+        var @event = (GroupSetTodoEvent)events[0];
+
+        return (@event.ResultCode, @event.ResultMessage);
+    }
+
+    public async Task<(int, string?)> RemoveGroupTodo(uint groupUin)
+    {
+        var setGroupTodoEvent = GroupRemoveTodoEvent.Create(groupUin);
+        var events = await Collection.Business.SendEvent(setGroupTodoEvent);
+
+        if (events.Count == 0) return (-1, "No Event");
+
+        var @event = (GroupRemoveTodoEvent)events[0];
+
+        return (@event.ResultCode, @event.ResultMessage);
+    }
+
+    public async Task<(int, string?)> FinishGroupTodo(uint groupUin)
+    {
+        var setGroupTodoEvent = GroupFinishTodoEvent.Create(groupUin);
+        var events = await Collection.Business.SendEvent(setGroupTodoEvent);
+
+        if (events.Count == 0) return (-1, "No Event");
+
+        var @event = (GroupFinishTodoEvent)events[0];
+
+        return (@event.ResultCode, @event.ResultMessage);
+    }
+
+    public async Task<BotGetGroupTodoResult> GetGroupTodo(uint groupUin)
+    {
+        var setGroupTodoEvent = GroupGetTodoEvent.Create(groupUin);
+        var events = await Collection.Business.SendEvent(setGroupTodoEvent);
+
+        if (events.Count == 0) return new(-1, "No Event", 0, 0, string.Empty);
+
+        var @event = (GroupGetTodoEvent)events[0];
+
+        return new(
+            @event.ResultCode,
+            @event.ResultMessage,
+            @event.GroupUin,
+            @event.Sequence,
+            @event.Preview
+        );
     }
 
     public async Task<bool> SetGroupBot(uint BotId, uint On, uint groupUin)
@@ -349,9 +403,9 @@ internal class OperationLogic : LogicBase
             result.TargetUin = uins[0];
             result.SourceUin = uins[1];
         }
-        
+
         return resolved;
-        
+
         async Task<uint> ResolveUid(string? uid)
         {
             if (uid == null) return 0;
@@ -610,24 +664,24 @@ internal class OperationLogic : LogicBase
     public async Task<bool> SetAvatar(ImageEntity avatar)
     {
         if (avatar.ImageStream == null) return false;
-        
+
         var highwayUrlEvent = HighwayUrlEvent.Create();
         var highwayUrlResults = await Collection.Business.SendEvent(highwayUrlEvent);
         if (highwayUrlResults.Count == 0) return false;
-        
+
         var ticket = ((HighwayUrlEvent)highwayUrlResults[0]).SigSession;
         var md5 = avatar.ImageStream.Value.Md5().UnHex();
         return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, md5, Array.Empty<byte>());
     }
-    
+
     public async Task<bool> GroupSetAvatar(uint groupUin, ImageEntity avatar)
     {
         if (avatar.ImageStream == null) return false;
-        
+
         var highwayUrlEvent = HighwayUrlEvent.Create();
         var highwayUrlResults = await Collection.Business.SendEvent(highwayUrlEvent);
         if (highwayUrlResults.Count == 0) return false;
-        
+
         var ticket = ((HighwayUrlEvent)highwayUrlResults[0]).SigSession;
         var md5 = avatar.ImageStream.Value.Md5().UnHex();
         var extra = new GroupAvatarExtra
@@ -640,14 +694,34 @@ internal class OperationLogic : LogicBase
         }.Serialize().ToArray();
         return await Collection.Highway.UploadSrcByStreamAsync(3000, avatar.ImageStream.Value, ticket, md5, extra);
     }
-    
+
     public async Task<(uint, uint)> GroupRemainAtAll(uint groupUin)
     {
         var groupRemainAtAllEvent = FetchGroupAtAllRemainEvent.Create(groupUin);
         var results = await Collection.Business.SendEvent(groupRemainAtAllEvent);
         if (results.Count == 0) return (0, 0);
-        
+
         var ret = (FetchGroupAtAllRemainEvent)results[0];
         return (ret.RemainAtAllCountForUin, ret.RemainAtAllCountForGroup);
+    }
+    
+    public async Task<bool> FetchSuperFaceId(uint id) => await Collection.Business.CachingLogic.GetCachedIsSuperFaceId(id);
+
+    public async Task<SysFaceEntry?> FetchFaceEntity(uint id) => await Collection.Business.CachingLogic.GetCachedFaceEntity(id);
+    
+    public async Task<bool> GroupJoinEmojiChain(uint groupUin, uint emojiId, uint targetMessageSeq)
+    {
+        var groupJoinEmojiChainEvent = GroupJoinEmojiChainEvent.Create(targetMessageSeq, emojiId, groupUin);
+        var results = await Collection.Business.SendEvent(groupJoinEmojiChainEvent);
+        return results.Count != 0 && results[0].ResultCode == 0;
+    }
+    
+    public async Task<bool> FriendJoinEmojiChain(uint friendUin, uint emojiId, uint targetMessageSeq)
+    {
+        string? friendUid = await Collection.Business.CachingLogic.ResolveUid(null, friendUin);
+        if (friendUid == null) return false;
+        var friendJoinEmojiChainEvent = FriendJoinEmojiChainEvent.Create(targetMessageSeq, emojiId, friendUid);
+        var results = await Collection.Business.SendEvent(friendJoinEmojiChainEvent);
+        return results.Count != 0 && results[0].ResultCode == 0;
     }
 }

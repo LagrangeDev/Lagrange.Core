@@ -55,4 +55,6 @@ public partial class EventInvoker
     public event LagrangeEvent<GroupReactionEvent>? OnGroupReactionEvent;
 
     public event LagrangeEvent<GroupNameChangeEvent>? OnGroupNameChangeEvent;
+
+    public event LagrangeEvent<GroupTodoEvent>? OnGroupTodoEvent;
 }

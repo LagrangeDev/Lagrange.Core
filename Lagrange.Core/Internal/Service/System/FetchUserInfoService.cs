@@ -17,8 +17,46 @@ namespace Lagrange.Core.Internal.Service.System;
 [Service("OidbSvcTrpcTcp.0xfe1_2")]
 internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
 {
-    private static readonly List<OidbSvcTrpcTcp0xFE1_2Key> _keys = new() {
-        new() { Key = 20002 }, new() { Key = 27394 }, new() { Key = 20009 }, new() { Key = 20031 }, new() { Key = 101 }, new() { Key = 103 }, new() { Key = 102 }, new() { Key = 20022 }, new() { Key = 20023 }, new() { Key = 20024 }, new() { Key = 24002 }, new() { Key = 27037 }, new() { Key = 27049 }, new() { Key = 20011 }, new() { Key = 20016 }, new() { Key = 20021 }, new() { Key = 20003 }, new() { Key = 20004 }, new() { Key = 20005 }, new() { Key = 20006 }, new() { Key = 20020 }, new() { Key = 20026 }, new() { Key = 24007 }, new() { Key = 104 }, new() { Key = 105 }, new() { Key = 42432 }, new() { Key = 42362 }, new() { Key = 41756 }, new() { Key = 41757 }, new() { Key = 42257 }, new() { Key = 27372 }, new() { Key = 42315 }, new() { Key = 107 }, new() { Key = 45160 }, new() { Key = 45161 }, new() { Key = 27406 }, new() { Key = 62026 }, new() { Key = 20037 }
+    private static readonly List<OidbSvcTrpcTcp0xFE1_2Key> _keys = new()
+    {
+        new() { Key = 20002 },
+        new() { Key = 27394 },
+        new() { Key = 20009 },
+        new() { Key = 20031 },
+        new() { Key = 101 },
+        new() { Key = 103 },
+        new() { Key = 102 },
+        new() { Key = 20022 },
+        new() { Key = 20023 },
+        new() { Key = 20024 },
+        new() { Key = 24002 },
+        new() { Key = 27037 },
+        new() { Key = 27049 },
+        new() { Key = 20011 },
+        new() { Key = 20016 },
+        new() { Key = 20021 },
+        new() { Key = 20003 },
+        new() { Key = 20004 },
+        new() { Key = 20005 },
+        new() { Key = 20006 },
+        new() { Key = 20020 },
+        new() { Key = 20026 },
+        new() { Key = 24007 },
+        new() { Key = 104 },
+        new() { Key = 105 },
+        new() { Key = 42432 },
+        new() { Key = 42362 },
+        new() { Key = 41756 },
+        new() { Key = 41757 },
+        new() { Key = 42257 },
+        new() { Key = 27372 },
+        new() { Key = 42315 },
+        new() { Key = 107 },
+        new() { Key = 45160 },
+        new() { Key = 45161 },
+        new() { Key = 27406 },
+        new() { Key = 62026 },
+        new() { Key = 20037 }
     };
 
     protected override bool Build(FetchUserInfoEvent input, BotKeystore keystore, BotAppInfo appInfo,
@@ -82,7 +120,27 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         string? school = Encoding.UTF8.GetString(bytesProperties[20021]);
         string? sign = Encoding.UTF8.GetString(bytesProperties[102]);
 
-        var info = new BotUserInfo(payload.Body.Body.Uin, nickname, avatarurl, birthday, city, country, school, numberProperties[20037], reg, (GenderInfo)numberProperties[20009], qid, numberProperties[105], sign, new() { StatusId = statusId, FaceId = customs?.FaceId ?? 0, Msg = customs?.Msg });
+        var info = new BotUserInfo(
+            payload.Body.Body.Uin,
+            nickname,
+            avatarurl,
+            birthday,
+            city,
+            country,
+            school,
+            numberProperties[20037],
+            reg,
+            (GenderInfo)numberProperties[20009],
+            qid,
+            numberProperties[105],
+            sign,
+            new()
+            {
+                StatusId = statusId,
+                FaceId = customs?.FaceId ?? 0,
+                Msg = customs?.Msg
+            }
+        );
 
         output = FetchUserInfoEvent.Result(0, info);
         extraEvents = null;

@@ -143,6 +143,11 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                         extraEvents.Add(GroupSysNameChangeEvent.Result(msgBody.GroupUin, param.Name));
                         break;
                     }
+                    case Event0x2DCSubType16Field13.GroupTodoNotice:
+                    {
+                        extraEvents.Add(GroupSysTodoEvent.Result(msgBody.GroupUin, msgBody.OperatorUid));
+                        break;
+                    }
                     case Event0x2DCSubType16Field13.GroupReactionNotice:
                     {
                         uint group = msgBody.GroupUin;
@@ -183,7 +188,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 var mute = Serializer.Deserialize<GroupMute>(content.AsSpan());
                 if (mute.Data.State.TargetUid == null)
                 {
-                    var groupMuteEvent = GroupSysMuteEvent.Result(mute.GroupUin, mute.OperatorUid, mute.Data.State.Duration == uint.MaxValue);
+                    var groupMuteEvent = GroupSysMuteEvent.Result(mute.GroupUin, mute.OperatorUid, mute.Data.State.Duration != 0);
                     extraEvents.Add(groupMuteEvent);
                 }
                 else
@@ -329,6 +334,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
     {
         GroupMemberSpecialTitleNotice = 6,
         GroupNameChangeNotice = 12,
+        GroupTodoNotice = 23,
         GroupReactionNotice = 35,
     }
 
