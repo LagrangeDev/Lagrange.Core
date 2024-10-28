@@ -12,9 +12,9 @@ public partial class LocationSegment(float latitude, float longitude)
 {
     public LocationSegment() : this(0f, 0f) { }
 
-    [JsonPropertyName("lat")] [CQProperty] public string Latitude { get; set; } = latitude.ToString("F5");
+    [JsonPropertyName("lat")][CQProperty] public string Latitude { get; set; } = latitude.ToString("F5");
 
-    [JsonPropertyName("lon")] [CQProperty] public string Longitude { get; set; } = longitude.ToString("F5");
+    [JsonPropertyName("lon")][CQProperty] public string Longitude { get; set; } = longitude.ToString("F5");
 
     [JsonPropertyName("title")] public string Title { get; set; } = string.Empty;
 
@@ -24,8 +24,8 @@ public partial class LocationSegment(float latitude, float longitude)
 [SegmentSubscriber(typeof(LightAppEntity), "location")]
 public partial class LocationSegment : SegmentBase
 {
-    private static readonly JsonSerializerOptions Options = new() { Converters = { new AutosizeConverter() } };
-    
+    private static readonly JsonSerializerOptions Options = new() { Converters = { new AutosizeConverter() }, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
+
     public override void Build(MessageBuilder builder, SegmentBase segment)
     {
         if (segment is not LocationSegment location) return;
@@ -33,13 +33,13 @@ public partial class LocationSegment : SegmentBase
         var json = new LightApp
         {
             App = "com.tencent.map",
-            Config = new Config
-            {
-                Autosize = false,
-                Ctime = DateTimeOffset.UtcNow.Second,
-                Token = "626399d3453d0693fe19e12cd3747c56",
-                Type = "normal"
-            },
+            // Config = new Config
+            // {
+            //     Autosize = false,
+            //     Ctime = DateTimeOffset.UtcNow.Second,
+            //     Token = "626399d3453d0693fe19e12cd3747c56",
+            //     Type = "normal",
+            // },
             Desc = "",
             From = 1,
             Meta = new Meta
@@ -59,8 +59,8 @@ public partial class LocationSegment : SegmentBase
             Ver = "1.1.2.21",
             View = "LocationShare"
         };
-        
-        builder.LightApp(JsonSerializer.Serialize(json));
+
+        builder.LightApp(JsonSerializer.Serialize(json, Options));
     }
 
     public override SegmentBase? FromEntity(MessageChain chain, IMessageEntity entity)
@@ -72,12 +72,12 @@ public partial class LocationSegment : SegmentBase
             return new LocationSegment
             {
                 Latitude = app.Meta.LocationSearch.Lat,
-                Longitude =app.Meta.LocationSearch.Lng,
+                Longitude = app.Meta.LocationSearch.Lng,
                 Content = app.Meta.LocationSearch.Address,
                 Title = app.Meta.LocationSearch.Name,
             };
         }
-        
+
         return null;
     }
 }
