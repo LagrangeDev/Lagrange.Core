@@ -119,7 +119,10 @@ public sealed class LagrangeAppBuilder
             BsonMapper.Global.EmptyStringToNull = false;
 
             // Specify ctor for some classes
-            BsonMapper.Global.RegisterType(BsonMapper.Global.Serialize, LiteDbUtility.IMessageEntityDeserialize);
+            BsonMapper.Global.RegisterType(
+                LiteDbUtility.IMessageEntitySerialize,
+                LiteDbUtility.IMessageEntityDeserialize
+            );
 
             string path = Configuration["ConfigPath:Database"] ?? $"lagrange-{Configuration["Account:Uin"]}.db";
 

@@ -6,6 +6,14 @@ namespace Lagrange.OneBot.Utility;
 
 public static class LiteDbUtility
 {
+    public static BsonValue IMessageEntitySerialize(IMessageEntity entity)
+    {
+        var type = entity.GetType();
+        var result = BsonMapper.Global.Serialize(type, entity);
+        result["_type"] = new BsonValue(DefaultTypeNameBinder.Instance.GetName(type));
+        return result;
+    }
+
     public static IMessageEntity IMessageEntityDeserialize(BsonValue bson)
     {
         if (!bson.IsDocument) throw new Exception("bson not BsonDocument");
@@ -17,6 +25,7 @@ public static class LiteDbUtility
         }
 
         var type = DefaultTypeNameBinder.Instance.GetType(typeBson.AsString);
+        
         if (type == typeof(MarkdownEntity)) return MarkdownEntityDeserialize(doc);
 
         return (IMessageEntity)BsonMapper.Global.Deserialize(type, bson);
