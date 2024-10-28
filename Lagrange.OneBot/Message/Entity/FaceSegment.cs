@@ -22,7 +22,7 @@ public partial class FaceSegment : SegmentBase
     
     public override void Build(MessageBuilder builder, SegmentBase segment)
     {
-        if (segment is FaceSegment faceSegment) builder.Face(ushort.Parse(faceSegment.Id), faceSegment.IsLarge);
+        if (segment is FaceSegment faceSegment) builder.Face(ushort.Parse(faceSegment.Id), faceSegment.IsLarge ?? false);
     }
     
     public override SegmentBase? FromEntity(MessageChain chain, IMessageEntity entity)

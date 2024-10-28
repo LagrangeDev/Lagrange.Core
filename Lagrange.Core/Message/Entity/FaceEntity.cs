@@ -11,13 +11,13 @@ public class FaceEntity : IMessageEntity
 {
     public ushort FaceId { get; set; }
 
-    public bool? IsLargeFace { get; set; }
+    public bool IsLargeFace { get; set; }
     
     public SysFaceEntry? SysFaceEntry { get; set; }
 
     public FaceEntity() { }
 
-    public FaceEntity(ushort faceId, bool? isLargeFace)
+    public FaceEntity(ushort faceId, bool isLargeFace)
     {
         FaceId = faceId;
         IsLargeFace = isLargeFace;
@@ -25,7 +25,7 @@ public class FaceEntity : IMessageEntity
 
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
-        if (IsLargeFace ?? false)
+        if (IsLargeFace)
         {
             var qBigFace = new QBigFaceExtra
             {
@@ -106,5 +106,5 @@ public class FaceEntity : IMessageEntity
         return null;
     }
 
-    public string ToPreviewString() => $"[Face][{(IsLargeFace ?? false ? "Large" : "Small")}]: {FaceId}";
+    public string ToPreviewString() => $"[Face][{(IsLargeFace ? "Large" : "Small")}]: {FaceId}";
 }

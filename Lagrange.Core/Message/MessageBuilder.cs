@@ -102,7 +102,7 @@ public sealed class MessageBuilder
     /// </summary>
     /// <param name="id">The id of emoji</param>
     /// <param name="isLarge">Is the emoji large</param>
-    public MessageBuilder Face(ushort id, bool? isLarge = false)
+    public MessageBuilder Face(ushort id, bool isLarge = false)
     {
         var faceEntity = new FaceEntity(id, isLarge);
         _chain.Add(faceEntity);
