@@ -7,15 +7,15 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 [OidbSvcTrpcTcp(0x929B, 0)]
 internal class OidbSvcTrpcTcp0x929B_0
 {
-    [ProtoMember(1)] public uint Group { get; set; }
+    [ProtoMember(1)] public uint GroupOrUin { get; set; }
+    
+    [ProtoMember(2)] public string CharacterId { get; set; }
+    
+    [ProtoMember(3)] public string Text { get; set; }
 
-    [ProtoMember(2)] public string tts { get; set; }
+    [ProtoMember(4)] public uint ChartType { get; set; } = 1;//1 group,2 private
 
-    [ProtoMember(3)] public string Msg { get; set; }
-
-    [ProtoMember(4)] private uint Field4 { get; set; } = 1;
-
-    [ProtoMember(5)] OidbSvcTrpcTcp0x929B_0Random Field5 { get; set; }
+    [ProtoMember(5)] private OidbSvcTrpcTcp0x929B_0Random Field5 { get; set; }
 }
 
 [ProtoContract]
