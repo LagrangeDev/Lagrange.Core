@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Lagrange.OneBot.Core.Operation.Converters;
 
 namespace Lagrange.OneBot.Core.Entity.Common;
 #pragma warning disable CS8618
@@ -14,9 +15,9 @@ public class LightApp
 
     [JsonPropertyName("from")] public long From { get; set; }
 
-    [JsonPropertyName("meta")] public Meta Meta { get; set; }
+    [JsonPropertyName("meta")] [JsonConverter(typeof(NullIfEmptyConverter<Meta>))] public Meta Meta { get; set; }
     
-    [JsonPropertyName("extra")] public Extra? Extra { get; set; }
+    [JsonPropertyName("extra")] [JsonConverter(typeof(NullIfEmptyConverter<Extra>))] public Extra? Extra { get; set; }
 
     [JsonPropertyName("prompt")] public string Prompt { get; set; }
 
