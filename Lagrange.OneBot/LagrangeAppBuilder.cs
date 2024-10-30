@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Utility.Sign;
@@ -118,6 +117,12 @@ public sealed class LagrangeAppBuilder
 
             BsonMapper.Global.TrimWhitespace = false;
             BsonMapper.Global.EmptyStringToNull = false;
+
+            // Specify ctor for some classes
+            BsonMapper.Global.RegisterType(
+                LiteDbUtility.IMessageEntitySerialize,
+                LiteDbUtility.IMessageEntityDeserialize
+            );
 
             string path = Configuration["ConfigPath:Database"] ?? $"lagrange-{Configuration["Account:Uin"]}.db";
 

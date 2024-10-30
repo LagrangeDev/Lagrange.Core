@@ -37,6 +37,7 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(GroupSysNameChangeEvent))]
 [EventSubscribe(typeof(FriendSysRecallEvent))]
 [EventSubscribe(typeof(FriendSysRequestEvent))]
+[EventSubscribe(typeof(GroupSysMemberEnterEvent))]
 [EventSubscribe(typeof(FriendSysPokeEvent))]
 [EventSubscribe(typeof(LoginNotifyEvent))]
 [EventSubscribe(typeof(MultiMsgDownloadEvent))]
@@ -157,6 +158,12 @@ internal class MessagingLogic : LogicBase
             {
                 var requestArgs = new FriendRequestEvent(info.SourceUin, info.SourceUid, info.Message, info.Source);
                 Collection.Invoker.PostEvent(requestArgs);
+                break;
+            }
+            case GroupSysMemberEnterEvent info:
+            {
+                var @event = new GroupMemberEnterEvent(info.GroupUin, info.GroupMemberUin, info.StyleId);
+                Collection.Invoker.PostEvent(@event);
                 break;
             }
             case GroupSysMuteEvent groupMute:
