@@ -44,7 +44,7 @@ internal class GroupAiRecordService : BaseService<GroupAiRecordEvent>
         var index = payload.Body.MsgInfo.MsgInfoBody[0].Index;
 
         output = GroupAiRecordEvent.Result((int)payload.ErrorCode,
-            new RecordEntity(index.FileUuid, index.Info.FileName)
+            new RecordEntity(index.FileUuid, index.Info.FileName, index.Info.FileHash.UnHex())
             {
                 AudioLength = (int)index.Info.Time, FileSha1 = index.Info.FileSha1, MsgInfo = payload.Body.MsgInfo
             });

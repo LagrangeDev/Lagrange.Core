@@ -1,5 +1,4 @@
-﻿
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
@@ -16,8 +15,8 @@ public class GetAiRecordOperation : IOperation
         var message = payload.Deserialize<OneBotGetAiRecord>(SerializerOptions.DefaultOptions);
         if (message != null)
         {
-           var  e = await context.ContextCollection.Business.OperationLogic.GetAiRecordUrl(message.GroupId,message.Character,message.Text);
-           return new OneBotResult(e, 0, "ok");
+            var e = await context.GetGroupGenerateAiRecordUrl(message.GroupId, message.Character, message.Text);
+            return e.code != 0 ? new OneBotResult(e.errMsg, e.code, "failed") : new OneBotResult(e.Url, 0, "ok");
         }
 
         throw new Exception();

@@ -212,6 +212,7 @@ internal class OperationLogic : LogicBase
             if (((GroupFSListEvent)events[0]).IsEnd) break;
             startIndex += 20;
         }
+
         return entries;
     }
 
@@ -222,7 +223,8 @@ internal class OperationLogic : LogicBase
         return $"{((GroupFSDownloadEvent)events[0]).FileUrl}{fileId}";
     }
 
-    public async Task<(int, string)> GroupFSMove(uint groupUin, string fileId, string parentDirectory, string targetDirectory)
+    public async Task<(int, string)> GroupFSMove(uint groupUin, string fileId, string parentDirectory,
+        string targetDirectory)
     {
         var groupFSMoveEvent = GroupFSMoveEvent.Create(groupUin, fileId, parentDirectory, targetDirectory);
         var events = await Collection.Business.SendEvent(groupFSMoveEvent);
@@ -271,7 +273,8 @@ internal class OperationLogic : LogicBase
     {
         try
         {
-            return FileUploader.UploadGroup(Collection, MessageBuilder.Group(groupUin).Build(), fileEntity, targetDirectory);
+            return FileUploader.UploadGroup(Collection, MessageBuilder.Group(groupUin).Build(), fileEntity,
+                targetDirectory);
         }
         catch
         {
@@ -324,7 +327,8 @@ internal class OperationLogic : LogicBase
         if (result.Sequence == null) return false;
         if (await Collection.Business.CachingLogic.ResolveUid(null, friendUin) is not { } uid) return false;
 
-        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, result.ClientSequence, result.Sequence ?? 0, (uint)(result.MessageId & uint.MaxValue), result.Timestamp);
+        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, result.ClientSequence, result.Sequence ?? 0,
+            (uint)(result.MessageId & uint.MaxValue), result.Timestamp);
         var events = await Collection.Business.SendEvent(recallMessageEvent);
         return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
     }
@@ -334,7 +338,8 @@ internal class OperationLogic : LogicBase
         if (await Collection.Business.CachingLogic.ResolveUid(null, chain.TargetUin) is not { } uid) return false;
 
         uint timestamp = (uint)new DateTimeOffset(chain.Time).ToUnixTimeSeconds();
-        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, chain.ClientSequence, chain.Sequence, (uint)(chain.MessageId & uint.MaxValue), timestamp);
+        var recallMessageEvent = RecallFriendMessageEvent.Create(uid, chain.ClientSequence, chain.Sequence,
+            (uint)(chain.MessageId & uint.MaxValue), timestamp);
         var events = await Collection.Business.SendEvent(recallMessageEvent);
         return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
     }
@@ -350,7 +355,8 @@ internal class OperationLogic : LogicBase
 
         foreach (var result in resolved)
         {
-            var uins = await Task.WhenAll(ResolveUid(result.InvitorMemberUid), ResolveUid(result.TargetMemberUid), ResolveUid(result.OperatorUid));
+            var uins = await Task.WhenAll(ResolveUid(result.InvitorMemberUid), ResolveUid(result.TargetMemberUid),
+                ResolveUid(result.OperatorUid));
             uint invitorUin = uins[0];
             uint targetUin = uins[1];
             uint operatorUin = uins[2];
@@ -487,7 +493,8 @@ internal class OperationLogic : LogicBase
         return results.Count != 0 && results[0].ResultCode == 0;
     }
 
-    public async Task<bool> SetGroupFilteredRequest(uint groupUin, ulong sequence, uint type, bool accept, string reason)
+    public async Task<bool> SetGroupFilteredRequest(uint groupUin, ulong sequence, uint type, bool accept,
+        string reason)
     {
         var inviteEvent = SetGroupFilteredRequestEvent.Create(accept, groupUin, sequence, type, reason);
         var results = await Collection.Business.SendEvent(inviteEvent);
@@ -664,7 +671,8 @@ internal class OperationLogic : LogicBase
 
         var ticket = ((HighwayUrlEvent)highwayUrlResults[0]).SigSession;
         var md5 = avatar.ImageStream.Value.Md5().UnHex();
-        return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, md5, Array.Empty<byte>());
+        return await Collection.Highway.UploadSrcByStreamAsync(90, avatar.ImageStream.Value, ticket, md5,
+            Array.Empty<byte>());
     }
 
     public async Task<bool> GroupSetAvatar(uint groupUin, ImageEntity avatar)
@@ -697,18 +705,20 @@ internal class OperationLogic : LogicBase
         var ret = (FetchGroupAtAllRemainEvent)results[0];
         return (ret.RemainAtAllCountForUin, ret.RemainAtAllCountForGroup);
     }
-    
-    public async Task<bool> FetchSuperFaceId(uint id) => await Collection.Business.CachingLogic.GetCachedIsSuperFaceId(id);
 
-    public async Task<SysFaceEntry?> FetchFaceEntity(uint id) => await Collection.Business.CachingLogic.GetCachedFaceEntity(id);
-    
+    public async Task<bool> FetchSuperFaceId(uint id) =>
+        await Collection.Business.CachingLogic.GetCachedIsSuperFaceId(id);
+
+    public async Task<SysFaceEntry?> FetchFaceEntity(uint id) =>
+        await Collection.Business.CachingLogic.GetCachedFaceEntity(id);
+
     public async Task<bool> GroupJoinEmojiChain(uint groupUin, uint emojiId, uint targetMessageSeq)
     {
         var groupJoinEmojiChainEvent = GroupJoinEmojiChainEvent.Create(targetMessageSeq, emojiId, groupUin);
         var results = await Collection.Business.SendEvent(groupJoinEmojiChainEvent);
         return results.Count != 0 && results[0].ResultCode == 0;
     }
-    
+
     public async Task<bool> FriendJoinEmojiChain(uint friendUin, uint emojiId, uint targetMessageSeq)
     {
         string? friendUid = await Collection.Business.CachingLogic.ResolveUid(null, friendUin);
@@ -716,5 +726,41 @@ internal class OperationLogic : LogicBase
         var friendJoinEmojiChainEvent = FriendJoinEmojiChainEvent.Create(targetMessageSeq, emojiId, friendUid);
         var results = await Collection.Business.SendEvent(friendJoinEmojiChainEvent);
         return results.Count != 0 && results[0].ResultCode == 0;
+    }
+
+    public async Task<(int code, string errMsg, string? Url)> GetGroupGenerateAiRecordUrl(uint groupUin,
+        string character, string text)
+    {
+        var groupAiRecordEvent = GroupAiRecordEvent.Create(groupUin, character, text);
+        var results = await Collection.Business.SendEvent(groupAiRecordEvent);
+        if (results.Count == 0) return (-1,"running event missing!",null);
+        if (results[0].ResultCode != 0)
+            return (results[0].ResultCode, ((GroupAiRecordEvent)results[0]).ErrorMessage, null);
+
+        var info = (GroupAiRecordEvent)results[0];
+        var recordGroupDownloadEvent = RecordGroupDownloadEvent.Create(groupUin, info.Record.MsgInfo!);
+        var @event = await Collection.Business.SendEvent(recordGroupDownloadEvent);
+        if (@event.Count == 0) return (-1,"running event missing!",null);
+        return @event[0].ResultCode == 0
+            ? (@event[0].ResultCode, string.Empty, ((RecordGroupDownloadEvent)@event[0]).AudioUrl)
+            : (@event[0].ResultCode, "Failed to get group ai record", null);
+    }
+
+    public async Task<(int code, string errMsg, RecordEntity? Url)> GetGroupGenerateAiRecord(uint groupUin,
+        string character, string text)
+    {
+        var groupAiRecordEvent = GroupAiRecordEvent.Create(groupUin, character, text);
+        var results = await Collection.Business.SendEvent(groupAiRecordEvent);
+        if (results.Count == 0) return (-1, "running event missing!", null);
+        if (results[0].ResultCode != 0)
+            return (results[0].ResultCode, ((GroupAiRecordEvent)results[0]).ErrorMessage, null);
+        return (results[0].ResultCode, String.Empty, ((GroupAiRecordEvent)results[0]).Record);
+    }
+
+    public async Task<List<AiCharacter>?> GetAiCharacters(uint groupUin)
+    {
+        var fetchAiRecordListEvent = FetchAiCharacterListEvent.Create(groupUin);
+        var results = await Collection.Business.SendEvent(fetchAiRecordListEvent);
+        return results.Count!=0 ? ((FetchAiCharacterListEvent)results[0]).AiCharacters : null;
     }
 }
