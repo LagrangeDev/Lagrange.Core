@@ -5,7 +5,6 @@ using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Packets.Service.Highway;
-using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Utility.Extension;
@@ -493,8 +492,7 @@ internal class OperationLogic : LogicBase
         return results.Count != 0 && results[0].ResultCode == 0;
     }
 
-    public async Task<bool> SetGroupFilteredRequest(uint groupUin, ulong sequence, uint type, bool accept,
-        string reason)
+    public async Task<bool> SetGroupFilteredRequest(uint groupUin, ulong sequence, uint type, bool accept, string reason)
     {
         var inviteEvent = SetGroupFilteredRequestEvent.Create(accept, groupUin, sequence, type, reason);
         var results = await Collection.Business.SendEvent(inviteEvent);
@@ -728,8 +726,7 @@ internal class OperationLogic : LogicBase
         return results.Count != 0 && results[0].ResultCode == 0;
     }
 
-    public async Task<(int Code, string ErrMsg, string? Url)> GetGroupGenerateAiRecordUrl(uint groupUin,
-        string character, string text)
+    public async Task<(int Code, string ErrMsg, string? Url)> GetGroupGenerateAiRecordUrl(uint groupUin, string character, string text)
     {
         var (code, errMsg, record) = await GetGroupGenerateAiRecord(groupUin, character, text);
         if (code != 0)
@@ -743,8 +740,7 @@ internal class OperationLogic : LogicBase
             : (@event[0].ResultCode, "Failed to get group ai record", null);
     }
 
-    public async Task<(int Code, string ErrMsg, RecordEntity? Record)> GetGroupGenerateAiRecord(uint groupUin,
-        string character, string text)
+    public async Task<(int Code, string ErrMsg, RecordEntity? Record)> GetGroupGenerateAiRecord(uint groupUin, string character, string text)
     {
         var groupAiRecordEvent = GroupAiRecordEvent.Create(groupUin, character, text);
         while (true)
@@ -767,11 +763,17 @@ internal class OperationLogic : LogicBase
 
     }
 
-    public async Task<(List<AiCharacterList>? Result, string ErrMsg)> GetAiCharacters(uint chatType, uint groupUin)
+    public async Task<(int Code, string ErrMsg, List<AiCharacterList>? Result)> GetAiCharacters(uint chatType, uint groupUin)
     {
         var fetchAiRecordListEvent = FetchAiCharacterListEvent.Create(chatType, groupUin);
+
         var results = await Collection.Business.SendEvent(fetchAiRecordListEvent);
-        return results.Count != 0 ? (((FetchAiCharacterListEvent)results[0]).AiCharacters, ((FetchAiCharacterListEvent)results[0]).ErrorMessage) : (null, "Event missing!");
+        if (results.Count == 0) return (-1, "Event missing!", null);
+
+        var result = (FetchAiCharacterListEvent)results[0];
+        if (result.ResultCode != 0) return (result.ResultCode, result.ErrorMessage, null);
+
+        return (result.ResultCode, result.ErrorMessage, result.AiCharacters);
     }
 
     public async Task<string> UploadImage(ImageEntity image)

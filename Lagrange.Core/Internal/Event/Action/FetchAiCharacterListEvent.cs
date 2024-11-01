@@ -1,5 +1,4 @@
 ﻿using Lagrange.Core.Common.Entity;
-using Lagrange.Core.Internal.Packets.Service.Oidb.Response;
 
 namespace Lagrange.Core.Internal.Event.Action;
 

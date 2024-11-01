@@ -137,8 +137,7 @@ public static class OperationExt
     public static Task<bool> GroupTransfer(this BotContext bot, uint groupUin, uint targetUin)
         => bot.ContextCollection.Business.OperationLogic.GroupTransfer(groupUin, targetUin);
 
-    public static Task<bool> RequestFriend(this BotContext bot, uint targetUin, string question = "",
-        string message = "")
+    public static Task<bool> RequestFriend(this BotContext bot, uint targetUin, string question = "", string message = "")
         => bot.ContextCollection.Business.OperationLogic.RequestFriend(targetUin, question, message);
 
     public static Task<bool> Like(this BotContext bot, uint targetUin, uint count = 1)
@@ -157,8 +156,7 @@ public static class OperationExt
     /// <param name="groupUin">target GroupUin</param>
     /// <param name="startSequence">Start Sequence of the message</param>
     /// <param name="endSequence">End Sequence of the message</param>
-    public static Task<List<MessageChain>?> GetGroupMessage(this BotContext bot, uint groupUin, uint startSequence,
-        uint endSequence)
+    public static Task<List<MessageChain>?> GetGroupMessage(this BotContext bot, uint groupUin, uint startSequence, uint endSequence)
         => bot.ContextCollection.Business.OperationLogic.GetGroupMessage(groupUin, startSequence, endSequence);
 
     /// <summary>
@@ -168,8 +166,7 @@ public static class OperationExt
     /// <param name="friendUin">target FriendUin</param>
     /// <param name="timestamp">timestamp of the message chain</param>
     /// <param name="count">number of message to be fetched before timestamp</param>
-    public static Task<List<MessageChain>?> GetRoamMessage(this BotContext bot, uint friendUin, uint timestamp,
-        uint count)
+    public static Task<List<MessageChain>?> GetRoamMessage(this BotContext bot, uint friendUin, uint timestamp, uint count)
         => bot.ContextCollection.Business.OperationLogic.GetRoamMessage(friendUin, timestamp, count);
 
     /// <summary>
@@ -184,8 +181,7 @@ public static class OperationExt
         return bot.ContextCollection.Business.OperationLogic.GetRoamMessage(targetChain.FriendUin, timestamp, count);
     }
 
-    public static Task<List<MessageChain>?> GetC2cMessage(this BotContext bot, uint friendUin, uint startSequence,
-        uint endSequence)
+    public static Task<List<MessageChain>?> GetC2cMessage(this BotContext bot, uint friendUin, uint startSequence, uint endSequence)
     {
         return bot.ContextCollection.Business.OperationLogic.GetC2cMessage(friendUin, startSequence, endSequence);
     }
@@ -232,8 +228,7 @@ public static class OperationExt
     /// <param name="friendUin">target friend uin</param>
     /// <param name="type">face type</param>
     /// <param name="count">count of face</param>
-    public static Task<MessageResult> FriendSpecialShake(this BotContext bot, uint friendUin, SpecialPokeFaceType type,
-        uint count)
+    public static Task<MessageResult> FriendSpecialShake(this BotContext bot, uint friendUin, SpecialPokeFaceType type, uint count)
         => bot.ContextCollection.Business.OperationLogic.FriendSpecialShake(friendUin, type, count);
 
     /// <summary>
@@ -242,8 +237,7 @@ public static class OperationExt
     /// <param name="friendUin">target friend uin</param>
     /// <param name="type">face type</param>
     /// <param name="strength">How big the face will be displayed ([0,3] is valid)</param>
-    public static Task<MessageResult> FriendShake(this BotContext bot, uint friendUin, PokeFaceType type,
-        ushort strength)
+    public static Task<MessageResult> FriendShake(this BotContext bot, uint friendUin, PokeFaceType type, ushort strength)
         => bot.ContextCollection.Business.OperationLogic.FriendShake(friendUin, type, strength);
 
     public static Task<List<string>?> FetchMarketFaceKey(this BotContext bot, List<string> faceIds)
@@ -263,33 +257,28 @@ public static class OperationExt
     public static Task<SysFaceEntry?> FetchFaceEntity(this BotContext bot, uint id)
         => bot.ContextCollection.Business.OperationLogic.FetchFaceEntity(id);
 
-    public static Task<bool> GroupJoinEmojiChain(this BotContext bot, uint groupUin, uint emojiId,
-        uint targetMessageSeq)
+    public static Task<bool> GroupJoinEmojiChain(this BotContext bot, uint groupUin, uint emojiId, uint targetMessageSeq)
         => bot.ContextCollection.Business.OperationLogic.GroupJoinEmojiChain(groupUin, emojiId, targetMessageSeq);
 
     public static Task<bool> FriendJoinEmojiChain(this BotContext bot, uint friendUin, uint emojiId,
         uint targetMessageSeq)
         => bot.ContextCollection.Business.OperationLogic.FriendJoinEmojiChain(friendUin, emojiId, targetMessageSeq);
-    
+
     public static Task<string> UploadImage(this BotContext bot, ImageEntity entity)
         => bot.ContextCollection.Business.OperationLogic.UploadImage(entity);
-    
+
     public static Task<ImageOcrResult?> OcrImage(this BotContext bot, string url)
         => bot.ContextCollection.Business.OperationLogic.ImageOcr(url);
-    
+
     public static Task<ImageOcrResult?> OcrImage(this BotContext bot, ImageEntity entity)
         => bot.ContextCollection.Business.OperationLogic.ImageOcr(entity);
 
+    public static Task<(int Code, string ErrMsg, string? Url)> GetGroupGenerateAiRecordUrl(this BotContext bot, uint groupUin, string character, string text)
+        => bot.ContextCollection.Business.OperationLogic.GetGroupGenerateAiRecordUrl(groupUin, character, text);
 
-    public static Task<(int Code, string ErrMsg, string? Url)> GetGroupGenerateAiRecordUrl(this BotContext bot,
-        uint groupUin, string character, string text) =>
-        bot.ContextCollection.Business.OperationLogic.GetGroupGenerateAiRecordUrl(groupUin, character, text);
+    public static Task<(int Code, string ErrMsg, RecordEntity? RecordEntity)> GetGroupGenerateAiRecord(this BotContext bot, uint groupUin, string character, string text)
+        => bot.ContextCollection.Business.OperationLogic.GetGroupGenerateAiRecord(groupUin, character, text);
 
-    public static Task<(int Code, string ErrMsg, RecordEntity? RecordEntity)> GetGroupGenerateAiRecord(
-        this BotContext bot, uint groupUin, string character, string text) =>
-        bot.ContextCollection.Business.OperationLogic.GetGroupGenerateAiRecord(groupUin, character, text);
-
-    public static Task<(List<AiCharacterList>? Result,string ErrMsg)>
-        GetAiCharacters(this BotContext bot, uint chatType, uint groupUin = 42) =>
-        bot.ContextCollection.Business.OperationLogic.GetAiCharacters(chatType, groupUin);
+    public static Task<(int Code, string ErrMsg, List<AiCharacterList>? Result)> GetAiCharacters(this BotContext bot, uint chatType, uint groupUin = 42)
+        => bot.ContextCollection.Business.OperationLogic.GetAiCharacters(chatType, groupUin);
 }

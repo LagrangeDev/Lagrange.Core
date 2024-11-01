@@ -13,13 +13,14 @@ public class GetAiCharacters : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        var message = payload.Deserialize<OneBotGetAiCharacters>(SerializerOptions.DefaultOptions);
-        if (message == null) throw new Exception();
+        var message = payload.Deserialize<OneBotGetAiCharacters>(SerializerOptions.DefaultOptions)
+            ?? throw new Exception();
 
+        var (code, errMsg, result) = await context.GetAiCharacters(message.ChatType, message.GroupId);
+        if (code != 0) return new(null, -1, "failed");
 
-        var (result, errMsg) = await context.GetAiCharacters(message.ChatType, message.GroupId);
         return result != null
-            ? new OneBotResult(result.Select(x => new OneBotAiCharacters(x)), 0, "OK")
-            : new OneBotResult(null, -1, "Failed");
+            ? new OneBotResult(result.Select(x => new OneBotAiCharacters(x)), 0, "ok")
+            : new OneBotResult(null, -1, "failed");
     }
 }

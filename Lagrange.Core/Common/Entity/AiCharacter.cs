@@ -1,6 +1,4 @@
-﻿namespace Lagrange.Core.Common.Entity
-
-;
+﻿namespace Lagrange.Core.Common.Entity;
 
 [Serializable]
 public class AiCharacter
