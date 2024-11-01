@@ -18,11 +18,11 @@ public class GetAiRecordOperation : IOperation
         var message = payload.Deserialize<OneBotGetAiRecord>(SerializerOptions.DefaultOptions);
         if (message != null)
         {
-            var e = await context.GetGroupGenerateAiRecord(message.GroupId, message.Character, message.Text);
-            if (e.code != 0 || e.recordEntity == null) return new OneBotResult(e.errMsg, e.code, "failed");
+            (int code, string errMsg, var recordEntity) = await context.GetGroupGenerateAiRecord(message.GroupId, message.Character, message.Text);
+            if (code != 0 || recordEntity == null) return new OneBotResult(errMsg, code, "failed");
 
 
-            var chain = MessageBuilder.Group(message.GroupId).Add(e.recordEntity).Build();
+            var chain = MessageBuilder.Group(message.GroupId).Add(recordEntity).Build();
             var result = await context.SendMessage(chain);
             int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence ?? 0);
 

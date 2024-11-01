@@ -7,19 +7,19 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 [OidbSvcTrpcTcp(0x929B, 0)]
 internal class OidbSvcTrpcTcp0x929B_0
 {
-    [ProtoMember(1)] public uint GroupOrUin { get; set; }
-    
-    [ProtoMember(2)] public string CharacterId { get; set; }
-    
+    [ProtoMember(1)] public uint GroupCode { get; set; }
+
+    [ProtoMember(2)] public string VoiceId { get; set; }
+
     [ProtoMember(3)] public string Text { get; set; }
 
-    [ProtoMember(4)] public uint ChartType { get; set; } = 1;//1 group,2 private
+    [ProtoMember(4)] public uint ChatType { get; set; } = 1; //1 voice,2 song
 
-    [ProtoMember(5)] private OidbSvcTrpcTcp0x929B_0Random Field5 { get; set; }
+    [ProtoMember(5)] private OidbSvcTrpcTcp0x929B_0ClientMsgInfo ClientMsgInfo { get; set; }
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0x929B_0Random
+internal class OidbSvcTrpcTcp0x929B_0ClientMsgInfo
 {
-    [ProtoMember(1)] private uint Random { get; set; } = 233;
+    [ProtoMember(1)] private uint MsgRandom { get; set; } = 233;
 }

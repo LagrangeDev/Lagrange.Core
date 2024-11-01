@@ -5,6 +5,7 @@ using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Internal.Packets.Service.Highway;
+using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Utility.Extension;
@@ -728,17 +729,14 @@ internal class OperationLogic : LogicBase
         return results.Count != 0 && results[0].ResultCode == 0;
     }
 
-    public async Task<(int code, string errMsg, string? Url)> GetGroupGenerateAiRecordUrl(uint groupUin,
+    public async Task<(int Code, string ErrMsg, string? Url)> GetGroupGenerateAiRecordUrl(uint groupUin,
         string character, string text)
     {
-        var groupAiRecordEvent = GroupAiRecordEvent.Create(groupUin, character, text);
-        var results = await Collection.Business.SendEvent(groupAiRecordEvent);
-        if (results.Count == 0) return (-1,"running event missing!",null);
-        if (results[0].ResultCode != 0)
-            return (results[0].ResultCode, ((GroupAiRecordEvent)results[0]).ErrorMessage, null);
+        var (code,errMsg,record) = await GetGroupGenerateAiRecord(groupUin, character, text);
+        if (code != 0)
+            return (code, errMsg, null);
 
-        var info = (GroupAiRecordEvent)results[0];
-        var recordGroupDownloadEvent = RecordGroupDownloadEvent.Create(groupUin, info.Record.MsgInfo!);
+        var recordGroupDownloadEvent = RecordGroupDownloadEvent.Create(groupUin, record!.MsgInfo!);
         var @event = await Collection.Business.SendEvent(recordGroupDownloadEvent);
         if (@event.Count == 0) return (-1,"running event missing!",null);
         return @event[0].ResultCode == 0
@@ -746,21 +744,33 @@ internal class OperationLogic : LogicBase
             : (@event[0].ResultCode, "Failed to get group ai record", null);
     }
 
-    public async Task<(int code, string errMsg, RecordEntity? Url)> GetGroupGenerateAiRecord(uint groupUin,
+    public async Task<(int Code, string ErrMsg, RecordEntity? Record)> GetGroupGenerateAiRecord(uint groupUin,
         string character, string text)
     {
         var groupAiRecordEvent = GroupAiRecordEvent.Create(groupUin, character, text);
-        var results = await Collection.Business.SendEvent(groupAiRecordEvent);
-        if (results.Count == 0) return (-1, "running event missing!", null);
-        if (results[0].ResultCode != 0)
-            return (results[0].ResultCode, ((GroupAiRecordEvent)results[0]).ErrorMessage, null);
-        return (results[0].ResultCode, String.Empty, ((GroupAiRecordEvent)results[0]).Record);
+        while (true)
+        {
+            var results = await Collection.Business.SendEvent(groupAiRecordEvent);
+            if (results.Count == 0) return (-1, "running event missing!", null);
+            if (results[0].ResultCode != 0)
+                return (results[0].ResultCode, ((GroupAiRecordEvent)results[0]).ErrorMessage, null);
+            if (((GroupAiRecordEvent)results[0]).RecordInfo is not null)
+            {
+                var index=((GroupAiRecordEvent)results[0]).RecordInfo!.MsgInfoBody[0].Index;
+                return (results[0].ResultCode, String.Empty, new RecordEntity(index.FileUuid, index.Info.FileName, index.Info.FileHash.UnHex()){
+                    AudioLength = (int)index.Info.Time,
+                    FileSha1 = index.Info.FileSha1,
+                    MsgInfo = ((GroupAiRecordEvent)results[0]).RecordInfo
+                });
+            };
+        }
+        
     }
 
-    public async Task<List<AiCharacter>?> GetAiCharacters(uint groupUin)
+    public async Task<(List<AiCharacterList>? Result,string ErrMsg)> GetAiCharacters(uint chatType,uint groupUin)
     {
-        var fetchAiRecordListEvent = FetchAiCharacterListEvent.Create(groupUin);
+        var fetchAiRecordListEvent = FetchAiCharacterListEvent.Create(chatType,groupUin);
         var results = await Collection.Business.SendEvent(fetchAiRecordListEvent);
-        return results.Count!=0 ? ((FetchAiCharacterListEvent)results[0]).AiCharacters : null;
+        return results.Count!=0 ? (((FetchAiCharacterListEvent)results[0]).AiCharacters,((FetchAiCharacterListEvent)results[0]).ErrorMessage) : (null, "Event missing!") ;
     }
 }

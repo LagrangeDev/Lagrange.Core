@@ -9,18 +9,19 @@ using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Action;
-#pragma warning disable CS8601 
+
 [EventSubscribe(typeof(FetchAiCharacterListEvent))]
-[Service("OidbSvcTrpcTcp.0x929c_0")]
-internal class FetchAiRecordListService : BaseService<FetchAiCharacterListEvent>
+[Service("OidbSvcTrpcTcp.0x929d_0")]
+internal class FetchAiCharacterListService : BaseService<FetchAiCharacterListEvent>
 {
     protected override bool Build(FetchAiCharacterListEvent input, BotKeystore keystore, BotAppInfo appInfo,
         BotDeviceInfo device,
         out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
-        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x929C_0>(new OidbSvcTrpcTcp0x929C_0()
+        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x929D_0>(new OidbSvcTrpcTcp0x929D_0()
         {
-            Group = input.GroupUin
+            Group = input.GroupUin,
+            ChatType = input.ChatType,
         });
         output = packet.Serialize();
         extraPackets = null;
@@ -30,11 +31,21 @@ internal class FetchAiRecordListService : BaseService<FetchAiCharacterListEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out FetchAiCharacterListEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x929C_0Response>>(input);
-        output = FetchAiCharacterListEvent.Result(payload.Body.Property
-            .Select(x => new AiCharacter(x.CharacterId, x.CharacterName, x.CharacterVoiceUrl)).ToList()
-        );
+        var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x929D_0Response>>(input);
         extraEvents = null;
+        if (payload.ErrorCode == 0)
+        {
+
+            output = FetchAiCharacterListEvent.Result((int)payload.ErrorCode,payload.Body.Property
+                .Select(x => new AiCharacterList(x.Type,
+                    x.Vulue.Select(x => new AiCharacter(x.CharacterId, x.CharacterName, x.CharacterVoiceUrl)).ToList())
+                ).ToList(),string.Empty);            
+        }
+        else
+        {
+            output = FetchAiCharacterListEvent.Result((int)payload.ErrorCode, null,payload.ErrorMsg);
+        }
+
         return true;
     }
 }

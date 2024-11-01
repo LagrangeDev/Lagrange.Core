@@ -271,13 +271,15 @@ public static class OperationExt
         uint targetMessageSeq)
         => bot.ContextCollection.Business.OperationLogic.FriendJoinEmojiChain(friendUin, emojiId, targetMessageSeq);
 
-    public static Task<(int code, string errMsg, string? Url)> GetGroupGenerateAiRecordUrl(this BotContext bot,
+    public static Task<(int Code, string ErrMsg, string? Url)> GetGroupGenerateAiRecordUrl(this BotContext bot,
         uint groupUin, string character, string text) =>
         bot.ContextCollection.Business.OperationLogic.GetGroupGenerateAiRecordUrl(groupUin, character, text);
 
-    public static Task<(int code, string errMsg, RecordEntity? recordEntity)> GetGroupGenerateAiRecord(
+    public static Task<(int Code, string ErrMsg, RecordEntity? RecordEntity)> GetGroupGenerateAiRecord(
         this BotContext bot, uint groupUin, string character, string text) =>
         bot.ContextCollection.Business.OperationLogic.GetGroupGenerateAiRecord(groupUin, character, text);
-    
-    public static Task<List<AiCharacter>?> GetAiCharacters(this BotContext bot, uint groupUin) =>bot.ContextCollection.Business.OperationLogic.GetAiCharacters(groupUin);
+
+    public static Task<(List<AiCharacterList>? Result,string ErrMsg)>
+        GetAiCharacters(this BotContext bot, uint chatType, uint groupUin = 42) =>
+        bot.ContextCollection.Business.OperationLogic.GetAiCharacters(chatType, groupUin);
 }
