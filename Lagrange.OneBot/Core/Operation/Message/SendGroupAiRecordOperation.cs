@@ -19,7 +19,7 @@ public class GetAiRecordOperation : IOperation
         if (message != null)
         {
             (int code, string errMsg, var recordEntity) = await context.GetGroupGenerateAiRecord(message.GroupId, message.Character, message.Text);
-            if (code != 0 || recordEntity == null) return new OneBotResult(errMsg, code, "failed");
+            if (code != 0 || recordEntity == null) return new OneBotResult(null, code, "failed");
 
 
             var chain = MessageBuilder.Group(message.GroupId).Add(recordEntity).Build();

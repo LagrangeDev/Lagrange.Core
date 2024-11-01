@@ -20,6 +20,6 @@ public class GetAiCharacters : IOperation
         var (result, errMsg) = await context.GetAiCharacters(message.ChatType, message.GroupId);
         return result != null
             ? new OneBotResult(result.Select(x => new OneBotAiCharacters(x)), 0, "OK")
-            : new OneBotResult(errMsg, -1, "Failed");
+            : new OneBotResult(null, -1, "Failed");
     }
 }
