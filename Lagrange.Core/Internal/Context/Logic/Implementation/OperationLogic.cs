@@ -224,8 +224,7 @@ internal class OperationLogic : LogicBase
         return $"{((GroupFSDownloadEvent)events[0]).FileUrl}{fileId}";
     }
 
-    public async Task<(int, string)> GroupFSMove(uint groupUin, string fileId, string parentDirectory,
-        string targetDirectory)
+    public async Task<(int, string)> GroupFSMove(uint groupUin, string fileId, string parentDirectory, string targetDirectory)
     {
         var groupFSMoveEvent = GroupFSMoveEvent.Create(groupUin, fileId, parentDirectory, targetDirectory);
         var events = await Collection.Business.SendEvent(groupFSMoveEvent);
@@ -732,13 +731,13 @@ internal class OperationLogic : LogicBase
     public async Task<(int Code, string ErrMsg, string? Url)> GetGroupGenerateAiRecordUrl(uint groupUin,
         string character, string text)
     {
-        var (code,errMsg,record) = await GetGroupGenerateAiRecord(groupUin, character, text);
+        var (code, errMsg, record) = await GetGroupGenerateAiRecord(groupUin, character, text);
         if (code != 0)
             return (code, errMsg, null);
 
         var recordGroupDownloadEvent = RecordGroupDownloadEvent.Create(groupUin, record!.MsgInfo!);
         var @event = await Collection.Business.SendEvent(recordGroupDownloadEvent);
-        if (@event.Count == 0) return (-1,"running event missing!",null);
+        if (@event.Count == 0) return (-1, "running event missing!", null);
         return @event[0].ResultCode == 0
             ? (@event[0].ResultCode, string.Empty, ((RecordGroupDownloadEvent)@event[0]).AudioUrl)
             : (@event[0].ResultCode, "Failed to get group ai record", null);
@@ -756,24 +755,25 @@ internal class OperationLogic : LogicBase
                 return (results[0].ResultCode, ((GroupAiRecordEvent)results[0]).ErrorMessage, null);
             if (((GroupAiRecordEvent)results[0]).RecordInfo is not null)
             {
-                var index=((GroupAiRecordEvent)results[0]).RecordInfo!.MsgInfoBody[0].Index;
-                return (results[0].ResultCode, String.Empty, new RecordEntity(index.FileUuid, index.Info.FileName, index.Info.FileHash.UnHex()){
+                var index = ((GroupAiRecordEvent)results[0]).RecordInfo!.MsgInfoBody[0].Index;
+                return (results[0].ResultCode, String.Empty, new RecordEntity(index.FileUuid, index.Info.FileName, index.Info.FileHash.UnHex())
+                {
                     AudioLength = (int)index.Info.Time,
                     FileSha1 = index.Info.FileSha1,
                     MsgInfo = ((GroupAiRecordEvent)results[0]).RecordInfo
                 });
             };
         }
-        
+
     }
 
-    public async Task<(List<AiCharacterList>? Result,string ErrMsg)> GetAiCharacters(uint chatType,uint groupUin)
+    public async Task<(List<AiCharacterList>? Result, string ErrMsg)> GetAiCharacters(uint chatType, uint groupUin)
     {
-        var fetchAiRecordListEvent = FetchAiCharacterListEvent.Create(chatType,groupUin);
+        var fetchAiRecordListEvent = FetchAiCharacterListEvent.Create(chatType, groupUin);
         var results = await Collection.Business.SendEvent(fetchAiRecordListEvent);
-        return results.Count!=0 ? (((FetchAiCharacterListEvent)results[0]).AiCharacters,((FetchAiCharacterListEvent)results[0]).ErrorMessage) : (null, "Event missing!") ;
+        return results.Count != 0 ? (((FetchAiCharacterListEvent)results[0]).AiCharacters, ((FetchAiCharacterListEvent)results[0]).ErrorMessage) : (null, "Event missing!");
     }
-    
+
     public async Task<string> UploadImage(ImageEntity image)
     {
         await Collection.Highway.ManualUploadEntity(image);
@@ -784,14 +784,14 @@ internal class OperationLogic : LogicBase
         var ret = (ImageDownloadEvent)result[0];
         return ret.ImageUrl;
     }
-    
+
     public async Task<ImageOcrResult?> ImageOcr(string imageUrl)
     {
         var imageOcrEvent = ImageOcrEvent.Create(imageUrl);
         var results = await Collection.Business.SendEvent(imageOcrEvent);
         return results.Count != 0 ? ((ImageOcrEvent)results[0]).ImageOcrResult : null;
     }
-    
+
     public async Task<ImageOcrResult?> ImageOcr(ImageEntity image)
     {
         var imageUrl = await UploadImage(image);
