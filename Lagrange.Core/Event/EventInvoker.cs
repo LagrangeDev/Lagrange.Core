@@ -43,6 +43,7 @@ public partial class EventInvoker : IDisposable
         RegisterEvent((GroupReactionEvent e) => OnGroupReactionEvent?.Invoke(context, e));
         RegisterEvent((GroupNameChangeEvent e) => OnGroupNameChangeEvent?.Invoke(context, e));
         RegisterEvent((GroupTodoEvent e) => OnGroupTodoEvent?.Invoke(context, e));
+        RegisterEvent((GroupMemberEnterEvent e) => OnGroupMemberEnterEvent?.Invoke(context, e));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
