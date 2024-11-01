@@ -24,7 +24,7 @@ public partial class LocationSegment(float latitude, float longitude)
 [SegmentSubscriber(typeof(LightAppEntity), "location")]
 public partial class LocationSegment : SegmentBase
 {
-    private static readonly JsonSerializerOptions Options = new() { Converters = { new AutosizeConverter() }, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
+    private static readonly JsonSerializerOptions Options = new() { Converters = { new AutosizeConverter(), new ForwardConverter() }, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
 
     public override void Build(MessageBuilder builder, SegmentBase segment)
     {

@@ -773,4 +773,28 @@ internal class OperationLogic : LogicBase
         var results = await Collection.Business.SendEvent(fetchAiRecordListEvent);
         return results.Count!=0 ? (((FetchAiCharacterListEvent)results[0]).AiCharacters,((FetchAiCharacterListEvent)results[0]).ErrorMessage) : (null, "Event missing!") ;
     }
+    
+    public async Task<string> UploadImage(ImageEntity image)
+    {
+        await Collection.Highway.ManualUploadEntity(image);
+        var msgInfo = image.MsgInfo;
+        if (msgInfo is null) throw new Exception();
+        var downloadEvent = ImageDownloadEvent.Create(Collection.Keystore.Uid ?? "", msgInfo);
+        var result = await Collection.Business.SendEvent(downloadEvent);
+        var ret = (ImageDownloadEvent)result[0];
+        return ret.ImageUrl;
+    }
+    
+    public async Task<ImageOcrResult?> ImageOcr(string imageUrl)
+    {
+        var imageOcrEvent = ImageOcrEvent.Create(imageUrl);
+        var results = await Collection.Business.SendEvent(imageOcrEvent);
+        return results.Count != 0 ? ((ImageOcrEvent)results[0]).ImageOcrResult : null;
+    }
+    
+    public async Task<ImageOcrResult?> ImageOcr(ImageEntity image)
+    {
+        var imageUrl = await UploadImage(image);
+        return await ImageOcr(imageUrl);
+    }
 }

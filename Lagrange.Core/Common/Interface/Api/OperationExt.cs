@@ -270,6 +270,16 @@ public static class OperationExt
     public static Task<bool> FriendJoinEmojiChain(this BotContext bot, uint friendUin, uint emojiId,
         uint targetMessageSeq)
         => bot.ContextCollection.Business.OperationLogic.FriendJoinEmojiChain(friendUin, emojiId, targetMessageSeq);
+    
+    public static Task<string> UploadImage(this BotContext bot, ImageEntity entity)
+        => bot.ContextCollection.Business.OperationLogic.UploadImage(entity);
+    
+    public static Task<ImageOcrResult?> OcrImage(this BotContext bot, string url)
+        => bot.ContextCollection.Business.OperationLogic.ImageOcr(url);
+    
+    public static Task<ImageOcrResult?> OcrImage(this BotContext bot, ImageEntity entity)
+        => bot.ContextCollection.Business.OperationLogic.ImageOcr(entity);
+
 
     public static Task<(int Code, string ErrMsg, string? Url)> GetGroupGenerateAiRecordUrl(this BotContext bot,
         uint groupUin, string character, string text) =>
