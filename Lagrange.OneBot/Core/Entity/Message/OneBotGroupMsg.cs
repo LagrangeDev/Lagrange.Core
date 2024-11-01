@@ -8,7 +8,7 @@ public class OneBotGroupMsg(uint selfId, uint groupUin, List<OneBotSegment> mess
 {
     [JsonPropertyName("message_type")] public string MessageType { get; set; } = "group";
 
-    [JsonPropertyName("Appid")] public uint Appid { get; set; } = appid;
+    [JsonPropertyName("appid")] public uint Appid { get; set; } = appid;
 
     [JsonPropertyName("sub_type")] public string SubType { get; set; } = "normal";
 
@@ -30,11 +30,11 @@ public class OneBotGroupMsg(uint selfId, uint groupUin, List<OneBotSegment> mess
 }
 
 [Serializable]
-public class OneBotGroupStringMsg(uint selfId, uint groupUin, string message, BotGroupMember member, int messageId , uint appid) : OneBotEntityBase(selfId, "message")
+public class OneBotGroupStringMsg(uint selfId, uint groupUin, string message, BotGroupMember member, int messageId, uint appid) : OneBotEntityBase(selfId, "message")
 {
     [JsonPropertyName("message_type")] public string MessageType { get; set; } = "group";
 
-    [JsonPropertyName("Appid")] public uint Appid { get; set; } = appid;
+    [JsonPropertyName("appid")] public uint Appid { get; set; } = appid;
 
     [JsonPropertyName("sub_type")] public string SubType { get; set; } = "normal";
 

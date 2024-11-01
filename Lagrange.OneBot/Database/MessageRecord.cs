@@ -29,7 +29,7 @@ public class MessageRecord
 
     public uint TargetUin { get; set; }
 
-    public uint SigMap { get; set; }
+    public uint Appid { get; set; }
 
     static MessageRecord()
     {
@@ -63,7 +63,7 @@ public class MessageRecord
         Entities = chain,
         MessageHash = CalcMessageHash(chain.MessageId, chain.Sequence),
         TargetUin = chain.TargetUin,
-        SigMap = chain.SigMap,
+        Appid = chain.Appid,
     };
 
     public static int CalcMessageHash(ulong msgId, uint seq)

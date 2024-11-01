@@ -12,7 +12,7 @@ internal class ResponseHead
     
     [ProtoMember(3)] public uint Type { get; set; }
     
-    [ProtoMember(4)] public uint SigMap { get; set; } // 鬼知道是啥
+    [ProtoMember(4)] public uint Appid { get; set; } // appid
     
     [ProtoMember(5)] public uint ToUin { get; set; }
     

@@ -260,7 +260,9 @@ internal static class MessagePacker
                 message.ResponseHead.Grp.GroupUin,
                 message.ResponseHead.FromUin,
                 message.ContentHead.Sequence ?? 0,
-                message.ContentHead.MsgUid ?? 0);
+                message.ContentHead.MsgUid ?? 0,
+                message.ResponseHead.Appid
+                );
 
         if (message.Body?.RichText?.Elems is { } elems) chain.Elements.AddRange(elems);
 
