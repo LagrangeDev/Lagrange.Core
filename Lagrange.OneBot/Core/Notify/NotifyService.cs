@@ -240,5 +240,15 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                 @event.Name
             ));
         };
+
+        bot.Invoker.OnBotOnlineEvent += async (bot, @event) =>
+        {
+            await service.SendJsonAsync(new OneBotBotOnline(bot.BotUin, @event.Reason));
+        };
+
+        bot.Invoker.OnBotOfflineEvent += async (bot, @event) =>
+        {
+            await service.SendJsonAsync(new OneBotBotOffline(bot.BotUin, @event.Tag, @event.Message));
+        };
     }
 }
