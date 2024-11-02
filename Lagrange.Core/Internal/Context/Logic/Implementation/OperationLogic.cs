@@ -735,9 +735,11 @@ internal class OperationLogic : LogicBase
         var recordGroupDownloadEvent = RecordGroupDownloadEvent.Create(groupUin, record!.MsgInfo!);
         var @event = await Collection.Business.SendEvent(recordGroupDownloadEvent);
         if (@event.Count == 0) return (-1, "running event missing!", null);
-        return @event[0].ResultCode == 0
-            ? (@event[0].ResultCode, string.Empty, ((RecordGroupDownloadEvent)@event[0]).AudioUrl)
-            : (@event[0].ResultCode, "Failed to get group ai record", null);
+
+        var finalResult = (RecordGroupDownloadEvent)@event[0];
+        return finalResult.ResultCode == 0
+            ? (finalResult.ResultCode, string.Empty, finalResult.AudioUrl)
+            : (finalResult.ResultCode, "Failed to get group ai record", null);
     }
 
     public async Task<(int Code, string ErrMsg, RecordEntity? Record)> GetGroupGenerateAiRecord(uint groupUin, string character, string text)
@@ -747,18 +749,19 @@ internal class OperationLogic : LogicBase
         {
             var results = await Collection.Business.SendEvent(groupAiRecordEvent);
             if (results.Count == 0) return (-1, "running event missing!", null);
-            if (results[0].ResultCode != 0)
-                return (results[0].ResultCode, ((GroupAiRecordEvent)results[0]).ErrorMessage, null);
-            if (((GroupAiRecordEvent)results[0]).RecordInfo is not null)
+            var aiRecordResult = (GroupAiRecordEvent)results[0];
+            if (aiRecordResult.ResultCode != 0)
+                return (aiRecordResult.ResultCode, aiRecordResult.ErrorMessage, null);
+            if (aiRecordResult.RecordInfo is not null)
             {
-                var index = ((GroupAiRecordEvent)results[0]).RecordInfo!.MsgInfoBody[0].Index;
-                return (results[0].ResultCode, String.Empty, new RecordEntity(index.FileUuid, index.Info.FileName, index.Info.FileHash.UnHex())
+                var index = aiRecordResult.RecordInfo!.MsgInfoBody[0].Index;
+                return (aiRecordResult.ResultCode, string.Empty, new RecordEntity(index.FileUuid, index.Info.FileName, index.Info.FileHash.UnHex())
                 {
                     AudioLength = (int)index.Info.Time,
                     FileSha1 = index.Info.FileSha1,
-                    MsgInfo = ((GroupAiRecordEvent)results[0]).RecordInfo
+                    MsgInfo = aiRecordResult.RecordInfo
                 });
-            };
+            }
         }
 
     }
@@ -771,7 +774,6 @@ internal class OperationLogic : LogicBase
         if (results.Count == 0) return (-1, "Event missing!", null);
 
         var result = (FetchAiCharacterListEvent)results[0];
-        if (result.ResultCode != 0) return (result.ResultCode, result.ErrorMessage, null);
 
         return (result.ResultCode, result.ErrorMessage, result.AiCharacters);
     }

@@ -6,32 +6,26 @@ namespace Lagrange.Core.Internal.Event.Action;
 internal class GroupAiRecordEvent : ProtocolEvent
 {
     public uint GroupUin { get; set; }
-    public string Character { get; set; }
-    public string Text { get; set; }
+    public string Character { get; set; }= string.Empty;
+    public string Text { get; set; }= string.Empty;
 
     public MsgInfo? RecordInfo { get; set; }
-    public string ErrorMessage { get; set; }
+    public string ErrorMessage { get; set; }= string.Empty;
 
     private GroupAiRecordEvent(uint groupUin, string character, string text) : base(0)
     {
         GroupUin = groupUin;
         Character = character;
         Text = text;
-        ErrorMessage = string.Empty;
     }
 
     private GroupAiRecordEvent(int resultCode, MsgInfo? msgInfo) : base(resultCode)
     {
-        Character = string.Empty;
-        Text = string.Empty;
-        ErrorMessage = string.Empty;
         RecordInfo = msgInfo;
     }
 
     private GroupAiRecordEvent(int resultCode, string errMsg) : base(resultCode)
     {
-        Character = string.Empty;
-        Text = string.Empty;
         ErrorMessage = errMsg;
     }
 

@@ -20,7 +20,7 @@ internal class GroupAiRecordService : BaseService<GroupAiRecordEvent>
         out List<Memory<byte>>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x929B_0>(
-            new OidbSvcTrpcTcp0x929B_0() { GroupCode = input.GroupUin, VoiceId = input.Character, Text = input.Text }
+            new OidbSvcTrpcTcp0x929B_0 { GroupCode = input.GroupUin, VoiceId = input.Character, Text = input.Text }
         );
         output = packet.Serialize();
         extraPackets = null;
@@ -37,12 +37,6 @@ internal class GroupAiRecordService : BaseService<GroupAiRecordEvent>
         if (payload.ErrorCode != 0)
         {
             output = GroupAiRecordEvent.Result((int)payload.ErrorCode, payload.ErrorMsg);
-            return true;
-        }
-
-        if (payload.Body.MsgInfo is null)
-        {
-            output = GroupAiRecordEvent.Result(0, (MsgInfo?)null);
         }
         else
         {
