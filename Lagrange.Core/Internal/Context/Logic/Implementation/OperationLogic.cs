@@ -730,9 +730,9 @@ internal class OperationLogic : LogicBase
         return results.Count != 0 && results[0].ResultCode == 0;
     }
 
-    public async Task<(int Code, string ErrMsg, string? Url)> GetGroupGenerateAiRecordUrl(uint groupUin, string character, string text)
+    public async Task<(int Code, string ErrMsg, string? Url)> GetGroupGenerateAiRecordUrl(uint groupUin, string character, string text, uint chattype)
     {
-        var (code, errMsg, record) = await GetGroupGenerateAiRecord(groupUin, character, text);
+        var (code, errMsg, record) = await GetGroupGenerateAiRecord(groupUin, character, text, chattype);
         if (code != 0)
             return (code, errMsg, null);
 
@@ -746,9 +746,9 @@ internal class OperationLogic : LogicBase
             : (finalResult.ResultCode, "Failed to get group ai record", null);
     }
 
-    public async Task<(int Code, string ErrMsg, RecordEntity? Record)> GetGroupGenerateAiRecord(uint groupUin, string character, string text)
+    public async Task<(int Code, string ErrMsg, RecordEntity? Record)> GetGroupGenerateAiRecord(uint groupUin, string character, string text, uint chattype)
     {
-        var groupAiRecordEvent = GroupAiRecordEvent.Create(groupUin, character, text);
+        var groupAiRecordEvent = GroupAiRecordEvent.Create(groupUin, character, text, chattype);
         while (true)
         {
             var results = await Collection.Business.SendEvent(groupAiRecordEvent);

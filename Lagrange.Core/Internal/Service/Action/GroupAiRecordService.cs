@@ -20,7 +20,7 @@ internal class GroupAiRecordService : BaseService<GroupAiRecordEvent>
         out List<Memory<byte>>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x929B_0>(
-            new OidbSvcTrpcTcp0x929B_0 { GroupCode = input.GroupUin, VoiceId = input.Character, Text = input.Text }
+            new OidbSvcTrpcTcp0x929B_0 { GroupCode = input.GroupUin, VoiceId = input.Character, Text = input.Text , ChatType = input.ChatType} 
         );
         output = packet.Serialize();
         extraPackets = null;
