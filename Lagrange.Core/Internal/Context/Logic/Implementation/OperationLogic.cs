@@ -272,8 +272,7 @@ internal class OperationLogic : LogicBase
     {
         try
         {
-            return FileUploader.UploadGroup(Collection, MessageBuilder.Group(groupUin).Build(), fileEntity,
-                targetDirectory);
+            return FileUploader.UploadGroup(Collection, MessageBuilder.Group(groupUin).Build(), fileEntity, targetDirectory);
         }
         catch
         {
