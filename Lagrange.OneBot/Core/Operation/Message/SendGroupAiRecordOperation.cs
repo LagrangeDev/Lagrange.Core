@@ -18,7 +18,12 @@ public class GetAiRecordOperation : IOperation
         var message = payload.Deserialize<OneBotGetAiRecord>(SerializerOptions.DefaultOptions);
         if (message != null)
         {
-            (int code, string errMsg, var recordEntity) = await context.GetGroupGenerateAiRecord(message.GroupId, message.Character, message.Text);
+            (int code, string _, var recordEntity) = await context.GetGroupGenerateAiRecord(
+                message.GroupId,
+                message.Character,
+                message.Text,
+                message.ChatType
+            );
             if (code != 0 || recordEntity == null) return new OneBotResult(null, code, "failed");
 
 

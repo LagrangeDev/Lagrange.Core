@@ -10,4 +10,6 @@ public class OneBotGetAiRecord
     [JsonPropertyName("group_id")] public uint GroupId { get; set; }
 
     [JsonPropertyName("text")] public string Text { get; set; } = string.Empty;
+
+    [JsonPropertyName("chat_type")] public uint ChatType { get; set; } = 1;
 }
