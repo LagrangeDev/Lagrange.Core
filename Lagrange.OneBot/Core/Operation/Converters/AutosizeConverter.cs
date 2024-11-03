@@ -14,6 +14,7 @@ public class AutosizeConverter : JsonConverter<bool>
             JsonTokenType.True => true,
             JsonTokenType.False => false,
             JsonTokenType.String when Utf8Parser.TryParse(reader.HasValueSequence ? reader.ValueSequence.ToArray() : reader.ValueSpan, out bool value, out _) => value,
+            JsonTokenType.String when Utf8Parser.TryParse(reader.HasValueSequence ? reader.ValueSequence.ToArray() : reader.ValueSpan, out int intValue, out _) => intValue != 0,
             JsonTokenType.Number when reader.TryGetInt32(out int val) => Convert.ToBoolean(val),
             _ => throw new JsonException()
         };

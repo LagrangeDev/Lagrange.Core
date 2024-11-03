@@ -213,7 +213,8 @@ public static class OperationExt
     public static Task<bool> MarkAsRead(this BotContext bot, MessageChain targetChain)
     {
         uint timestamp = (uint)(targetChain.Time - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
-        return bot.ContextCollection.Business.OperationLogic.MarkAsRead(targetChain.GroupUin ?? 0, targetChain.Uid, targetChain.Sequence, timestamp);
+        return bot.ContextCollection.Business.OperationLogic.MarkAsRead(targetChain.GroupUin ?? 0, targetChain.Uid,
+            targetChain.Sequence, timestamp);
     }
 
     public static Task<bool> UploadFriendFile(this BotContext bot, uint targetUin, FileEntity fileEntity)
@@ -260,23 +261,32 @@ public static class OperationExt
 
     public static Task<bool> FetchSuperFaceId(this BotContext bot, uint id)
         => bot.ContextCollection.Business.OperationLogic.FetchSuperFaceId(id);
-    
+
     public static Task<SysFaceEntry?> FetchFaceEntity(this BotContext bot, uint id)
         => bot.ContextCollection.Business.OperationLogic.FetchFaceEntity(id);
-    
+
     public static Task<bool> GroupJoinEmojiChain(this BotContext bot, uint groupUin, uint emojiId, uint targetMessageSeq)
         => bot.ContextCollection.Business.OperationLogic.GroupJoinEmojiChain(groupUin, emojiId, targetMessageSeq);
 
-    public static Task<bool> FriendJoinEmojiChain(this BotContext bot, uint friendUin, uint emojiId, uint targetMessageSeq)
+    public static Task<bool> FriendJoinEmojiChain(this BotContext bot, uint friendUin, uint emojiId,
+        uint targetMessageSeq)
         => bot.ContextCollection.Business.OperationLogic.FriendJoinEmojiChain(friendUin, emojiId, targetMessageSeq);
-    
+
     public static Task<string> UploadImage(this BotContext bot, ImageEntity entity)
         => bot.ContextCollection.Business.OperationLogic.UploadImage(entity);
-    
+
     public static Task<ImageOcrResult?> OcrImage(this BotContext bot, string url)
         => bot.ContextCollection.Business.OperationLogic.ImageOcr(url);
-    
+
     public static Task<ImageOcrResult?> OcrImage(this BotContext bot, ImageEntity entity)
         => bot.ContextCollection.Business.OperationLogic.ImageOcr(entity);
-}
 
+    public static Task<(int Code, string ErrMsg, string? Url)> GetGroupGenerateAiRecordUrl(this BotContext bot, uint groupUin, string character, string text)
+        => bot.ContextCollection.Business.OperationLogic.GetGroupGenerateAiRecordUrl(groupUin, character, text);
+
+    public static Task<(int Code, string ErrMsg, RecordEntity? RecordEntity)> GetGroupGenerateAiRecord(this BotContext bot, uint groupUin, string character, string text)
+        => bot.ContextCollection.Business.OperationLogic.GetGroupGenerateAiRecord(groupUin, character, text);
+
+    public static Task<(int Code, string ErrMsg, List<AiCharacterList>? Result)> GetAiCharacters(this BotContext bot, uint chatType, uint groupUin = 42)
+        => bot.ContextCollection.Business.OperationLogic.GetAiCharacters(chatType, groupUin);
+}
