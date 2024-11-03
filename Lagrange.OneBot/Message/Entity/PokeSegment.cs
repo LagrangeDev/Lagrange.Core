@@ -13,7 +13,7 @@ public partial class PokeSegment(uint type, uint strength)
     
     [JsonPropertyName("strength")] public string? Strength { get; set; } = strength.ToString();
 
-    [JsonPropertyName("id")] [CQProperty] public int Id { get; set; } = -1;  // can not get id
+    [JsonPropertyName("id")] [CQProperty] public string Id { get; set; } = "-1";  // can not get id
 }
 
 [SegmentSubscriber(typeof(PokeEntity), "poke")]
