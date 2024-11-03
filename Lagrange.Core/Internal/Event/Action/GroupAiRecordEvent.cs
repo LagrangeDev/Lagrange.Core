@@ -1,5 +1,4 @@
 ﻿using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
-using Lagrange.Core.Message.Entity;
 
 namespace Lagrange.Core.Internal.Event.Action;
 
@@ -14,14 +13,13 @@ internal class GroupAiRecordEvent : ProtocolEvent
     public MsgInfo? RecordInfo { get; set; }
     public string ErrorMessage { get; set; } = string.Empty;
 
-    private GroupAiRecordEvent(uint groupUin, string character, string text ,uint chattype) : base(0)
+    private GroupAiRecordEvent(uint groupUin, string character, string text, uint chatType) : base(0)
     {
         GroupUin = groupUin;
         Character = character;
         Text = text;
-        ChatType = chattype;
+        ChatType = chatType;
     }
-
     private GroupAiRecordEvent(int resultCode, MsgInfo? msgInfo) : base(resultCode)
     {
         RecordInfo = msgInfo;
@@ -32,8 +30,8 @@ internal class GroupAiRecordEvent : ProtocolEvent
         ErrorMessage = errMsg;
     }
 
-    public static GroupAiRecordEvent Create(uint groupUin, string character, string text , uint chattype) =>
-        new(groupUin, character, text , chattype);
+    public static GroupAiRecordEvent Create(uint groupUin, string character, string text, uint chatType) =>
+        new(groupUin, character, text, chatType);
 
     public static GroupAiRecordEvent Result(int resultCode, MsgInfo? msgInfo) => new(resultCode, msgInfo);
 

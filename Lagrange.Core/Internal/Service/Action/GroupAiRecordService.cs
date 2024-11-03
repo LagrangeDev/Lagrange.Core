@@ -2,10 +2,8 @@
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Packets.Service.Oidb;
-using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Response;
-using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
@@ -20,7 +18,13 @@ internal class GroupAiRecordService : BaseService<GroupAiRecordEvent>
         out List<Memory<byte>>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x929B_0>(
-            new OidbSvcTrpcTcp0x929B_0 { GroupCode = input.GroupUin, VoiceId = input.Character, Text = input.Text , ChatType = input.ChatType} 
+            new OidbSvcTrpcTcp0x929B_0
+            {
+                GroupCode = input.GroupUin,
+                VoiceId = input.Character,
+                Text = input.Text,
+                ChatType = input.ChatType
+            }
         );
         output = packet.Serialize();
         extraPackets = null;

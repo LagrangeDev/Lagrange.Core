@@ -281,11 +281,11 @@ public static class OperationExt
     public static Task<ImageOcrResult?> OcrImage(this BotContext bot, ImageEntity entity)
         => bot.ContextCollection.Business.OperationLogic.ImageOcr(entity);
 
-    public static Task<(int Code, string ErrMsg, string? Url)> GetGroupGenerateAiRecordUrl(this BotContext bot, uint groupUin, string character, string text, uint chattype)
-        => bot.ContextCollection.Business.OperationLogic.GetGroupGenerateAiRecordUrl(groupUin, character, text, chattype);
+    public static Task<(int Code, string ErrMsg, string? Url)> GetGroupGenerateAiRecordUrl(this BotContext bot, uint groupUin, string character, string text, uint chatType)
+        => bot.ContextCollection.Business.OperationLogic.GetGroupGenerateAiRecordUrl(groupUin, character, text, chatType);
 
-    public static Task<(int Code, string ErrMsg, RecordEntity? RecordEntity)> GetGroupGenerateAiRecord(this BotContext bot, uint groupUin, string character, string text, uint chattype)
-        => bot.ContextCollection.Business.OperationLogic.GetGroupGenerateAiRecord(groupUin, character, text, chattype);
+    public static Task<(int Code, string ErrMsg, RecordEntity? RecordEntity)> GetGroupGenerateAiRecord(this BotContext bot, uint groupUin, string character, string text, uint chatType)
+        => bot.ContextCollection.Business.OperationLogic.GetGroupGenerateAiRecord(groupUin, character, text, chatType);
 
     public static Task<(int Code, string ErrMsg, List<AiCharacterList>? Result)> GetAiCharacters(this BotContext bot, uint chatType, uint groupUin = 42)
         => bot.ContextCollection.Business.OperationLogic.GetAiCharacters(chatType, groupUin);
