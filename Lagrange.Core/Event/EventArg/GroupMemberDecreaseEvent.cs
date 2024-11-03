@@ -23,6 +23,7 @@ public class GroupMemberDecreaseEvent : EventBase
     public enum EventType : uint
     {
         KickMe = 3,
+        Disband = 129,
         Leave = 130,
         Kick = 131
     }

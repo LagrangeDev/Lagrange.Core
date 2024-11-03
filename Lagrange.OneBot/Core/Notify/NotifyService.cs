@@ -115,6 +115,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             string type = @event.Type switch
             {
                 GroupMemberDecreaseEvent.EventType.KickMe => "kick_me",
+                GroupMemberDecreaseEvent.EventType.Disband => "disband",
                 GroupMemberDecreaseEvent.EventType.Leave => "leave",
                 GroupMemberDecreaseEvent.EventType.Kick => "kick",
                 _ => @event.Type.ToString()
