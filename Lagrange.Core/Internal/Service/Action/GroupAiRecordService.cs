@@ -24,8 +24,9 @@ internal class GroupAiRecordService : BaseService<GroupAiRecordEvent>
                 VoiceId = input.Character,
                 Text = input.Text,
                 ChatType = input.ChatType,
-                ClientMsgInfo = new OidbSvcTrpcTcp0x929B_0ClientMsgInfo {
-                    MsgRandom = (uint)Random.Shared.Next()
+                ClientMsgInfo = new OidbSvcTrpcTcp0x929B_0ClientMsgInfo
+                {
+                    MsgRandom = input.ChatId
                 }
             }
         );
