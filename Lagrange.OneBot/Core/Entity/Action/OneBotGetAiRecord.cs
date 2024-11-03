@@ -5,11 +5,11 @@ namespace Lagrange.OneBot.Core.Entity.Action;
 [Serializable]
 public class OneBotGetAiRecord
 {
-    [JsonPropertyName("character")] public required string Character { get; set; }
+    [JsonPropertyName("character")] public string Character { get; set; } = string.Empty;
 
-    [JsonPropertyName("group_id")] public required uint GroupId { get; set; }
+    [JsonPropertyName("group_id")] public uint GroupId { get; set; }
 
-    [JsonPropertyName("text")] public required string Text { get; set; }
+    [JsonPropertyName("text")] public string Text { get; set; } = string.Empty;
 
     [JsonPropertyName("chat_type")] public uint ChatType { get; set; } = 1;
 }
