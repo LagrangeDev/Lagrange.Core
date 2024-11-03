@@ -15,11 +15,11 @@ internal class OidbSvcTrpcTcp0x929B_0
 
     [ProtoMember(4)] public uint ChatType { get; set; } = 1; //1 voice,2 song
 
-    [ProtoMember(5)] private OidbSvcTrpcTcp0x929B_0ClientMsgInfo ClientMsgInfo { get; set; }
+    [ProtoMember(5)] public OidbSvcTrpcTcp0x929B_0ClientMsgInfo ClientMsgInfo { get; set; }
 }
 
 [ProtoContract]
 internal class OidbSvcTrpcTcp0x929B_0ClientMsgInfo
 {
-    [ProtoMember(1)] private uint MsgRandom { get; set; } = 233;
+    [ProtoMember(1)] public uint MsgRandom { get; set; }
 }

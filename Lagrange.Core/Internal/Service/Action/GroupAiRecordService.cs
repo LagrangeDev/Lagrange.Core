@@ -23,7 +23,11 @@ internal class GroupAiRecordService : BaseService<GroupAiRecordEvent>
                 GroupCode = input.GroupUin,
                 VoiceId = input.Character,
                 Text = input.Text,
-                ChatType = input.ChatType
+                ChatType = input.ChatType,
+                ClientMsgInfo = new OidbSvcTrpcTcp0x929B_0ClientMsgInfo
+                {
+                    MsgRandom = input.ChatId
+                }
             }
         );
         output = packet.Serialize();

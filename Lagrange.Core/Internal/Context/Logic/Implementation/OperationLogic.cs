@@ -741,7 +741,7 @@ internal class OperationLogic : LogicBase
 
     public async Task<(int Code, string ErrMsg, RecordEntity? Record)> GetGroupGenerateAiRecord(uint groupUin, string character, string text, uint chatType)
     {
-        var groupAiRecordEvent = GroupAiRecordEvent.Create(groupUin, character, text, chatType);
+        var groupAiRecordEvent = GroupAiRecordEvent.Create(groupUin, character, text, chatType, (uint)Random.Shared.Next());
         while (true)
         {
             var results = await Collection.Business.SendEvent(groupAiRecordEvent);
