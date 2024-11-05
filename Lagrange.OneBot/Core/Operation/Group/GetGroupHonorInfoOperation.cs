@@ -25,6 +25,11 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
     {
         { "talkative", 1 }, { "performer", 2 }, { "legend", 3 }, { "strong_newbie", 5 }, { "emotion", 6 },
     };
+    
+    private static readonly Dictionary<string, string> KeyToOnebot11 = new()
+    {
+        {"uin", "user_id"}, {"name", "nickname"}, {"nick", "nickname"}, {"desc", "description"}
+    };
 
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
@@ -35,6 +40,8 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
                 ? HonorToType.Select(x => x.Key).ToArray()
                 : [honor.Type];
 
+            result.TryAdd("group_id", honor.GroupId);
+            
             foreach (string honorRaw in honors)
             {
                 string url = $"https://qun.qq.com/interactive/honorlist?gc={honor.GroupId}&type={HonorToType[honorRaw]}";
@@ -46,7 +53,22 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
                 {
                     foreach (var (key, value) in Keys)
                     {
-                        if (json[value] is { } node) result.TryAdd(key, node.Deserialize<JsonNode>()); // 神经病
+                        if (json[value] is JsonObject jsonObject)
+                        {
+                            ProcessJsonObject(jsonObject);
+                            if (honor.Type == "all" || honor.Type == "talkative") result.TryAdd(key, jsonObject.Deserialize<JsonNode>());
+                        }
+                        else if (json[value] is JsonArray jsonArray)
+                        {
+                            foreach (var item in jsonArray)
+                            {
+                                if (item is JsonObject itemObject)
+                                {
+                                    ProcessJsonObject(itemObject);
+                                }
+                            }
+                            if (honor.Type == "all" || key.Contains(honor.Type)) result.TryAdd(key, jsonArray.Deserialize<JsonNode>());
+                        }
                     }
                 }
             }
@@ -55,5 +77,18 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
         }
 
         throw new Exception();
+    }
+    
+    private static void ProcessJsonObject(JsonObject jsonObject)
+    {
+        foreach (var oldKey in KeyToOnebot11.Keys)
+        {
+            if (jsonObject.ContainsKey(oldKey))
+            {
+                var nodeValue = jsonObject[oldKey];
+                jsonObject.Remove(oldKey);
+                jsonObject[KeyToOnebot11[oldKey]] = nodeValue;
+            }
+        }
     }
 }
