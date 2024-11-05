@@ -53,7 +53,7 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
                 {
                     foreach (var (key, value) in Keys)
                     {
-                        if (json[value] is JsonObject jsonObject)
+                        if (json[value] is JsonObject jsonObject)                                                                            // 神经病 (我也觉得)
                         {
                             ProcessJsonObject(jsonObject);
                             if (honor.Type == "all" || honor.Type == "talkative") result.TryAdd(key, jsonObject.Deserialize<JsonNode>());
