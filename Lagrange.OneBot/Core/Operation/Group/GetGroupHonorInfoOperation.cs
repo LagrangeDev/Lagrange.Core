@@ -53,7 +53,7 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
                 {
                     foreach (var (key, value) in Keys)
                     {
-                        if (json[value] is JsonObject jsonObject)                                                                            // 神经病 (我也觉得)
+                        if (json[value] is JsonObject jsonObject) // 神经病 (我也觉得)
                         {
                             ProcessJsonObject(jsonObject);
                             if (honor.Type == "all" || honor.Type == "talkative") result.TryAdd(key, jsonObject.Deserialize<JsonNode>());
@@ -67,7 +67,7 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
                                     ProcessJsonObject(itemObject);
                                 }
                             }
-                            if (honor.Type == "all" || key.Contains(honor.Type)) result.TryAdd(key, jsonArray.Deserialize<JsonNode>());
+                            if ((honor.Type == "all" && key.Contains(honorRaw)) || key.Contains(honor.Type)) result.TryAdd(key, jsonArray.Deserialize<JsonNode>());
                         }
                     }
                 }
