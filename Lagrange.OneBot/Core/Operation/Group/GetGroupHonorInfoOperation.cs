@@ -83,10 +83,8 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
     {
         foreach (var oldKey in KeyToOnebot11.Keys)
         {
-            if (jsonObject.ContainsKey(oldKey))
+            if (jsonObject.Remove(oldKey, out var nodeValue))
             {
-                var nodeValue = jsonObject[oldKey];
-                jsonObject.Remove(oldKey);
                 jsonObject[KeyToOnebot11[oldKey]] = nodeValue;
             }
         }
