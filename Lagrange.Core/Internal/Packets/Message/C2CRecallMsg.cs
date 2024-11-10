@@ -24,7 +24,7 @@ internal class C2CRecallMsgInfo
     
     [ProtoMember(2)] public uint Random { get; set; }
     
-    [ProtoMember(3)] public ulong MessageId { get; set; } // 0x1000000 << 32 | Random
+    [ProtoMember(3)] public ulong MessageId { get; set; } // 0x01000000 << 32 | Random
     
     [ProtoMember(4)] public uint Timestamp { get; set; }
     
