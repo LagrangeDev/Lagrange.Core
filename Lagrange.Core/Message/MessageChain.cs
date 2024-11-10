@@ -48,7 +48,7 @@ public sealed class MessageChain : List<IMessageEntity>
         ClientSequence = clientSequence == 0 ? (uint)Random.Shared.Next(100000000, int.MaxValue) : clientSequence;
         SelfUid = selfUid;
         Uid = friendUid;
-        MessageId = messageId ?? (0x10000000ul << 32) | (uint)Random.Shared.Next(100000000, int.MaxValue);
+        MessageId = messageId ?? (0x01000000ul << 32) | (uint)Random.Shared.Next(100000000, int.MaxValue);
         Elements = new List<Elem>();
         Type = type;
     }
@@ -58,7 +58,7 @@ public sealed class MessageChain : List<IMessageEntity>
         GroupUin = groupUin;
         Sequence = 0; // unuseful at there
         ClientSequence = 0;
-        MessageId = (0x10000000ul << 32) | (uint)Random.Shared.Next(100000000, int.MaxValue);
+        MessageId = (0x01000000ul << 32) | (uint)Random.Shared.Next(100000000, int.MaxValue);
         Uid = null;
         Elements = new List<Elem>();
     }
