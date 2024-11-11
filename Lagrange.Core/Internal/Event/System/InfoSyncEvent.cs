@@ -1,17 +1,16 @@
+#pragma warning disable CS8618
+
 namespace Lagrange.Core.Internal.Event.System;
 
 internal class InfoSyncEvent : ProtocolEvent
 {
-    public uint Random { get; set; }
-
-    private InfoSyncEvent() : base(true)
-    {
-        Random = (uint) new Random().Next();
-    }
+    public string Message { get; set; }
     
-    private InfoSyncEvent(int resultCode) : base(resultCode) { }
+    private InfoSyncEvent() : base(true) { }
+
+    private InfoSyncEvent(string result) : base(0) => Message = result;
     
     public static InfoSyncEvent Create() => new();
-    
-    public static InfoSyncEvent Result(int resultCode) => new(resultCode);
+
+    public static InfoSyncEvent Result(string result) => new(result);
 }

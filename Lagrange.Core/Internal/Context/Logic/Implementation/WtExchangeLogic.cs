@@ -432,13 +432,13 @@ internal class WtExchangeLogic : LogicBase
 
     public async Task<bool> BotOnline(BotOnlineEvent.OnlineReason reason = BotOnlineEvent.OnlineReason.Login)
     {
-        var registerEvent = StatusRegisterEvent.Create();
+        var registerEvent = InfoSyncEvent.Create();
         var registerResponse = await Collection.Business.SendEvent(registerEvent);
         var heartbeatDelegate = new Action(async () => await Collection.Business.PushEvent(SsoAliveEvent.Create()));
 
         if (registerResponse.Count != 0)
         {
-            var resp = (StatusRegisterEvent)registerResponse[0];
+            var resp = (InfoSyncEvent)registerResponse[0];
             Collection.Log.LogInfo(Tag, $"Register Status: {resp.Message}");
 
             bool result = resp.Message.Contains("register success");
@@ -448,9 +448,7 @@ internal class WtExchangeLogic : LogicBase
 
                 var onlineEvent = new BotOnlineEvent(reason);
                 Collection.Invoker.PostEvent(onlineEvent);
-
-                await Collection.Business.PushEvent(InfoSyncEvent.Create());
-
+                
                 _reLoginTimer.Change(TimeSpan.FromDays(15), TimeSpan.FromDays(15));
                 Collection.Log.LogInfo(Tag, "AutoReLogin Enabled, session would be refreshed in 15 days period");
             }

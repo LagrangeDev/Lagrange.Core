@@ -14,7 +14,7 @@ internal class StatusRegisterService : BaseService<StatusRegisterEvent>
     protected override bool Build(StatusRegisterEvent input, BotKeystore keystore, BotAppInfo appInfo,
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
-        var packet = new ServiceRegister
+        var packet = new RegisterInfo
         {
             Guid = device.Guid.ToByteArray().Hex(true),
             KickPC = 0,
@@ -42,7 +42,7 @@ internal class StatusRegisterService : BaseService<StatusRegisterEvent>
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out StatusRegisterEvent output, out List<ProtocolEvent>? extraEvents)
     {
-        var response = Serializer.Deserialize<ServiceRegisterResponse>(input);
+        var response = Serializer.Deserialize<RegisterInfoResponse>(input);
 
         output = StatusRegisterEvent.Result(response.Message ?? "OK");
         extraEvents = null;
