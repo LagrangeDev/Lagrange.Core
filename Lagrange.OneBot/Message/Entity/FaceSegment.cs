@@ -5,7 +5,7 @@ using Lagrange.Core.Message.Entity;
 namespace Lagrange.OneBot.Message.Entity;
 
 [Serializable]
-public partial class FaceSegment(int id)
+public partial class FaceSegment(uint id)
 {
     public FaceSegment() : this(0) { }
     
@@ -18,13 +18,23 @@ public partial class FaceSegment(int id)
 [SegmentSubscriber(typeof(FaceEntity), "face")]
 public partial class FaceSegment : SegmentBase
 {
-    private static readonly ushort[] Excluded = [358, 359];
-    
+    private static readonly uint[] Excluded = { 358, 359 };
+
     public override void Build(MessageBuilder builder, SegmentBase segment)
     {
-        if (segment is FaceSegment faceSegment) builder.Face(ushort.Parse(faceSegment.Id), faceSegment.IsLarge ?? false);
+        if (segment is FaceSegment faceSegment)
+        {
+            if (uint.TryParse(faceSegment.Id, out uint faceId))
+            {
+                builder.Face(faceId, faceSegment.IsLarge ?? false);
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid Face ID: {faceSegment.Id}");
+            }
+        }
     }
-    
+
     public override SegmentBase? FromEntity(MessageChain chain, IMessageEntity entity)
     {
         if (entity is not FaceEntity faceEntity) throw new ArgumentException("Invalid entity type.");
