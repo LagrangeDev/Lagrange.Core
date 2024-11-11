@@ -12,7 +12,7 @@ internal class QBigFaceExtra
     
     [ProtoMember(2)] public string? AniStickerId { get; set; }
     
-    [ProtoMember(3)] public int? FaceId { get; set; } // 318
+    [ProtoMember(3)] public uint? FaceId { get; set; } // 318
     
     [ProtoMember(4)] public int? Field4 { get; set; }
     
