@@ -53,21 +53,23 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
                 {
                     foreach (var (key, value) in Keys)
                     {
-                        if (json[value] is JsonObject jsonObject) // 神经病 (我也觉得)
+                        if (json.Remove(value, out var node))
                         {
-                            ProcessJsonObject(jsonObject);
-                            result.TryAdd(key, jsonObject.Deserialize<JsonNode>());
-                        }
-                        else if (json[value] is JsonArray jsonArray)
-                        {
-                            foreach (var item in jsonArray)
+                            if (node is JsonObject jsonObject)
                             {
-                                if (item is JsonObject itemObject)
+                                ProcessJsonObject(jsonObject);
+                            }
+                            else if (node is JsonArray jsonArray)
+                            {
+                                foreach (var subNode in jsonArray)
                                 {
-                                    ProcessJsonObject(itemObject);
+                                    if (subNode is JsonObject subObject)
+                                    {
+                                        ProcessJsonObject(subObject);
+                                    }
                                 }
                             }
-                            if (key.Contains(honorRaw)) result.TryAdd(key, jsonArray.Deserialize<JsonNode>());
+                            if (key.Contains(honorRaw)) result.TryAdd(key, node);
                         }
                     }
                 }
