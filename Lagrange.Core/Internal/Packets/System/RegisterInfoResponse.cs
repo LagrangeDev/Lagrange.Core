@@ -3,7 +3,7 @@ using ProtoBuf;
 namespace Lagrange.Core.Internal.Packets.System;
 
 [ProtoContract]
-internal class ServiceRegisterResponse
+internal class RegisterInfoResponse
 {
     [ProtoMember(2)] public string? Message { get; set; }
     

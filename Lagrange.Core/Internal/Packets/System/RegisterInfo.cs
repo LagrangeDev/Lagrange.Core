@@ -6,7 +6,7 @@ namespace Lagrange.Core.Internal.Packets.System;
 /// trpc.qq_new_tech.status_svc.StatusService.Register
 /// </summary>
 [ProtoContract]
-internal class ServiceRegister
+internal class RegisterInfo
 {
     [ProtoMember(1)] public string? Guid { get; set; }
     
@@ -25,4 +25,10 @@ internal class ServiceRegister
     [ProtoMember(8)] public int? RegisterVendorType { get; set; }
     
     [ProtoMember(9)] public int? RegType { get; set; }
+    
+    [ProtoMember(10)] public OnlineBusinessInfo? BusinessInfo { get; set; }
+    
+    [ProtoMember(11)] public int? BatteryStatus { get; set; }
+
+    [ProtoMember(12)] public uint? Field12 { get; set; }
 }
