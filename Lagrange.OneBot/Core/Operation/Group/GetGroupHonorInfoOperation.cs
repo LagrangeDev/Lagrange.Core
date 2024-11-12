@@ -49,7 +49,7 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
                 string raw = await response.Content.ReadAsStringAsync();
                 var match = HonorRegex().Match(raw);
 
-                if (JsonSerializer.Deserialize<JsonObject>(match.Groups[1].Value) is { } json)
+                if (JsonSerializer.Deserialize<JsonObject>(match.Groups[1].Value) is { } json) // 神经病
                 {
                     foreach (var (key, value) in Keys)
                     {
