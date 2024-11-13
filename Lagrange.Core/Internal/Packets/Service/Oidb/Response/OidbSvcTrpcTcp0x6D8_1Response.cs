@@ -82,9 +82,9 @@ internal class OidbSvcTrpcTcp0x6D8_1ResponseFolderInfo
 [ProtoContract]
 internal class OidbSvcTrpcTcp0x6D8_1ResponseFileInfo
 {
-    [ProtoMember(1)] public string? FileId { get; set; }
+    [ProtoMember(1)] public string FileId { get; set; }
     
-    [ProtoMember(2)] public string? FileName { get; set; }
+    [ProtoMember(2)] public string FileName { get; set; }
     
     [ProtoMember(3)] public ulong FileSize { get; set; }
     
