@@ -125,7 +125,7 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         var info = new BotUserInfo(
             payload.Body.Body.Uin,
             nickname,
-            $"{avatars.Url}0",
+            $"{avatars.Url}640",
             birthday,
             city,
             country,
