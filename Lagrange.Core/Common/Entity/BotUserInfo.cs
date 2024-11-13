@@ -3,7 +3,7 @@ namespace Lagrange.Core.Common.Entity;
 [Serializable]
 public class BotUserInfo
 {
-    internal BotUserInfo(uint uin, string nickname, string avatar, DateTime birthday, string city, string country, string school, uint age, DateTime registerTime, GenderInfo gender, string? qid, uint level, string sign, BotStatus status)
+    internal BotUserInfo(uint uin, string nickname, string avatar, DateTime birthday, string city, string country, string school, uint age, DateTime registerTime, GenderInfo gender, string? qid, uint level, string sign, BotStatus status, List<BusinessCustom> business)
     {
         Uin = uin;
         Avatar = avatar;
@@ -20,6 +20,7 @@ public class BotUserInfo
         Level = level;
         Sign = sign;
         Status = status;
+        Business = business;
     }
 
     public uint Uin { get; set; }
@@ -49,6 +50,8 @@ public class BotUserInfo
     public string Sign { get; set; }
 
     public BotStatus Status { get; set; }
+
+    public List<BusinessCustom> Business { get; set; }
 
     public enum GenderInfo
     {
