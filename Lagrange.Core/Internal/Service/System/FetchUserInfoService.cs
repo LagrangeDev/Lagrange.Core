@@ -112,6 +112,34 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         }
         string? avatarurl = avatars.Url + "0";
 
+        Business business;
+        using (var stream = new MemoryStream(bytesProperties[107]))
+        {
+            business = Serializer.Deserialize<Business>(stream);
+        }
+
+        var businessList = business.Body?.Lists ?? new();
+
+        List<BusinessCustom> businessA = new();
+
+        foreach (var businessAll in businessList)
+        {
+            uint type = businessAll.Type;
+            uint level = businessAll.Level;
+            string? icon = businessAll.Icon;
+            uint ispro = businessAll.IsPro;
+            uint isyear = businessAll.IsYear;
+
+            businessA.Add(new BusinessCustom
+            {
+                Type = type,
+                Level = level,
+                Icon = icon,
+                IsPro = ispro,
+                IsYear = isyear
+            });
+        }
+
         string? nickname = Encoding.UTF8.GetString(bytesProperties[20002]);
         string? city = Encoding.UTF8.GetString(bytesProperties[20020]);
         string? country = Encoding.UTF8.GetString(bytesProperties[20003]);
@@ -137,7 +165,8 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
                 StatusId = statusId,
                 FaceId = customs?.FaceId ?? 0,
                 Msg = customs?.Msg
-            }
+            },
+            businessA
         );
 
         output = FetchUserInfoEvent.Result(0, info);
@@ -178,5 +207,55 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         }
 
         return result;
+    }
+
+    [ProtoContract]
+    public class CustomStatus
+    {
+        [ProtoMember(1)] public uint FaceId { get; set; }
+
+        [ProtoMember(2)] public string? Msg { get; set; }
+    }
+
+    [ProtoContract]
+    public class Avatar
+    {
+        [ProtoMember(5)] public string? Url { get; set; }
+    }
+
+    [ProtoContract]
+    public class Business
+    {
+        [ProtoMember(3)] public Body? Body { get; set; }
+    }
+
+    [ProtoContract]
+    internal class Body
+    {
+        [ProtoMember(1)] public string? Msg { get; set; }
+
+        [ProtoMember(3)] public List<BusinessList>? Lists { get; set; }
+    }
+
+    [ProtoContract]
+
+    internal class BusinessList
+    {
+        [ProtoMember(1)] public uint Type { get; set; }
+
+        [ProtoMember(2)] internal uint Field2 { get; set; }
+
+        [ProtoMember(3)] public uint IsYear { get; set; } // 是否年费
+
+        [ProtoMember(4)] public uint Level { get; set; }
+
+        [ProtoMember(5)] public uint IsPro { get; set; } // 是否为超级
+
+        [ProtoMember(6)] internal string? Icon1 { get; set; }
+
+        [ProtoMember(7)] internal string? Icon2 { get; set; }
+
+        public string? Icon => !string.IsNullOrEmpty(Icon1) ? Icon1 : Icon2;
+
     }
 }
