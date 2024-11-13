@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Lagrange.Core;
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.OneBot.Core.Entity;
 using Lagrange.OneBot.Core.Entity.Action;
@@ -58,6 +59,24 @@ public class GetStrangerInfoOperation : IOperation
         { 13633281, "自定义状态"}
     };
 
+    private static readonly Dictionary<uint, string> _BusinessName = new()
+    {
+        { 113, "QQ大会员" },
+        { 1, "QQ会员" },
+        { 102, "黄钻" },
+        { 117, "QQ集卡" },
+        { 119, "情侣会员" },
+        { 103, "绿钻" },
+        { 4, "腾讯视频" },
+        { 108, "大王超级会员" },
+        { 104, "情侣个性钻" },
+        { 105, "微云会员"},
+        { 101, "红钻"},
+        { 115, "cf游戏特权"},
+        { 118, "蓝钻"},
+        { 107, "SVIP+腾讯视频"}
+    };
+
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         if (payload.Deserialize<OneBotGetStrangerInfo>(SerializerOptions.DefaultOptions) is { } stranger)
@@ -82,12 +101,26 @@ public class GetStrangerInfoOperation : IOperation
                             ? _statusMessage.GetValueOrDefault(info.Status.StatusId)
                             : info.Status.Msg
                     },
-                    RegisterTime = info.RegisterTime
+                    RegisterTime = info.RegisterTime,
+                    Business = BusinessList(info.Business)
                 }, 0, "ok");
             }
 
             return new OneBotResult(null, -1, "failed");
         }
         throw new Exception();
+    }
+
+    private List<OneBotBusiness> BusinessList(List<BusinessCustom> businessCustomList)
+    {
+        return businessCustomList.Select(b => new OneBotBusiness
+        {
+            Type = b.Type,
+            Name = (b.IsPro == 1 ? "超级" : "") + (_BusinessName.GetValueOrDefault(b.Type) ?? "未知"),
+            Level = b.Level,
+            Icon = b.Icon,
+            IsPro = b.IsPro,
+            IsYear = b.IsYear
+        }).ToList();
     }
 }

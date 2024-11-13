@@ -19,13 +19,13 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
 {
     private static readonly List<OidbSvcTrpcTcp0xFE1_2Key> _keys = new()
     {
-        new() { Key = 20002 },
-        new() { Key = 27394 },
-        new() { Key = 20009 },
-        new() { Key = 20031 },
-        new() { Key = 101 },
+        new() { Key = 20002 }, //昵称
+        new() { Key = 27394 }, //QID
+        new() { Key = 20009 }, //性别
+        new() { Key = 20031 }, //生日
+        new() { Key = 101 },   //头像
         new() { Key = 103 },
-        new() { Key = 102 },
+        new() { Key = 102 },   //简介/签名
         new() { Key = 20022 },
         new() { Key = 20023 },
         new() { Key = 20024 },
@@ -34,36 +34,34 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         new() { Key = 27049 },
         new() { Key = 20011 },
         new() { Key = 20016 },
-        new() { Key = 20021 },
-        new() { Key = 20003 },
+        new() { Key = 20021 }, //学校
+        new() { Key = 20003 }, //国家
         new() { Key = 20004 },
         new() { Key = 20005 },
         new() { Key = 20006 },
-        new() { Key = 20020 },
-        new() { Key = 20026 },
+        new() { Key = 20020 }, //城市
+        new() { Key = 20026 }, //注册时间
         new() { Key = 24007 },
         new() { Key = 104 },
-        new() { Key = 105 },
+        new() { Key = 105 },   //等级
         new() { Key = 42432 },
         new() { Key = 42362 },
         new() { Key = 41756 },
         new() { Key = 41757 },
         new() { Key = 42257 },
-        new() { Key = 27372 },
+        new() { Key = 27372 }, //状态
         new() { Key = 42315 },
-        new() { Key = 107 },
+        new() { Key = 107 },   //业务列表
         new() { Key = 45160 },
         new() { Key = 45161 },
-        new() { Key = 27406 },
+        new() { Key = 27406 }, //自定义状态文本
         new() { Key = 62026 },
-        new() { Key = 20037 }
+        new() { Key = 20037 }  //年龄
     };
 
     protected override bool Build(FetchUserInfoEvent input, BotKeystore keystore, BotAppInfo appInfo,
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
-        // 27406 自定义状态文本
-        // 27372 状态
 
         output = input.Uid == null
             ? new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xFE1_2Uin>(new OidbSvcTrpcTcp0xFE1_2Uin
@@ -100,19 +98,23 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         mask = (uint)((int)mask >> 31);
         statusId -= 268435456 & mask;
 
-        CustomStatus? customs = null;
-        if (bytesProperties[27406].Length != 0)
-        {
-            using var stream = new MemoryStream(bytesProperties[27406]);
-            customs = Serializer.Deserialize<CustomStatus>(stream);
-        }
-
-        Avatar avatars;
-        using (var stream = new MemoryStream(bytesProperties[101]))
-        {
-            avatars = Serializer.Deserialize<Avatar>(stream);
-        }
-        string? avatarurl = avatars.Url + "0";
+        var customs = bytesProperties[27406].Length != 0 
+            ? Serializer.Deserialize<CustomStatus>(new MemoryStream(bytesProperties[27406])) 
+            : null;
+        
+        var avatars = Serializer.Deserialize<Avatar>(new MemoryStream(bytesProperties[101]));
+        
+        var business = Serializer.Deserialize<Business>(new MemoryStream(bytesProperties[107]));
+        var businessA = (business.Body?.Lists ?? new())
+            .Select(b => new BusinessCustom
+            {
+                Type = b.Type,
+                Level = b.Level,
+                Icon = b.Icon,
+                IsPro = b.IsPro,
+                IsYear = b.IsYear
+            })
+            .ToList();
 
         string? nickname = Encoding.UTF8.GetString(bytesProperties[20002]);
         string? city = Encoding.UTF8.GetString(bytesProperties[20020]);
@@ -123,7 +125,7 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         var info = new BotUserInfo(
             payload.Body.Body.Uin,
             nickname,
-            avatarurl,
+            $"{avatars.Url}640",
             birthday,
             city,
             country,
@@ -139,7 +141,8 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
                 StatusId = statusId,
                 FaceId = customs?.FaceId ?? 0,
                 Msg = customs?.Msg
-            }
+            },
+            businessA
         );
 
         output = FetchUserInfoEvent.Result(0, info);
