@@ -281,4 +281,13 @@ public static class OperationExt
 
     public static Task<(int Code, string ErrMsg, List<AiCharacterList>? Result)> GetAiCharacters(this BotContext bot, uint chatType, uint groupUin = 42)
         => bot.ContextCollection.Business.OperationLogic.GetAiCharacters(chatType, groupUin);
+
+    public static Task<(int Retcode, string Message, List<uint> FriendUins, List<uint> GroupUins)> GetPins(this BotContext bot)
+        => bot.ContextCollection.Business.OperationLogic.GetPins();
+
+    public static Task<(int Retcode, string Message)> SetPinFriend(this BotContext bot, uint uin, bool isPin)
+        => bot.ContextCollection.Business.OperationLogic.SetPinFriend(uin, isPin);
+
+    public static Task<(int Retcode, string Message)> SetPinGroup(this BotContext bot, uint uin, bool isPin)
+        => bot.ContextCollection.Business.OperationLogic.SetPinGroup(uin, isPin);
 }

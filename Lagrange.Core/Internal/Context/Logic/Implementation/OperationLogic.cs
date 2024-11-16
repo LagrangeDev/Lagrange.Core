@@ -798,4 +798,46 @@ internal class OperationLogic : LogicBase
         var imageUrl = await UploadImage(image);
         return await ImageOcr(imageUrl);
     }
+
+    public async Task<(int Retcode, string Message, List<uint> FriendUins, List<uint> GroupUins)> GetPins()
+    {
+        var @event = FetchPinsEvent.Create();
+
+        var results = await Collection.Business.SendEvent(@event);
+        if (results.Count == 0)
+        {
+            return (-1, "No Result", new(), new());
+        }
+
+        var result = (FetchPinsEvent)results[0];
+        return (result.ResultCode, result.Message, result.FriendUins, result.GroupUins);
+    }
+
+    public async Task<(int Retcode, string Message)> SetPinFriend(uint uin, bool isPin)
+    {
+        var @event = SetPinFriendEvent.Create(uin, isPin);
+
+        var results = await Collection.Business.SendEvent(@event);
+        if (results.Count == 0)
+        {
+            return (-1, "No Result");
+        }
+
+        var result = (SetPinFriendEvent)results[0];
+        return (result.ResultCode, result.Message);
+    }
+
+    public async Task<(int Retcode, string Message)> SetPinGroup(uint uin, bool isPin)
+    {
+        var @event = SetPinGroupEvent.Create(uin, isPin);
+
+        var results = await Collection.Business.SendEvent(@event);
+        if (results.Count == 0)
+        {
+            return (-1, "No Result");
+        }
+
+        var result = (SetPinGroupEvent)results[0];
+        return (result.ResultCode, result.Message);
+    }
 }
