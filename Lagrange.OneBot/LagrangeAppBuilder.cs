@@ -86,7 +86,16 @@ public sealed class LagrangeAppBuilder
             deviceInfo = JsonSerializer.Deserialize<BotDeviceInfo>(File.ReadAllText(deviceInfoPath)) ?? BotDeviceInfo.GenerateInfo();
         }
 
-        Services.AddSingleton(BotFactory.Create(config, deviceInfo, keystore));
+        if (File.Exists("custom_appinfo.json"))
+        {
+            var appInfo = JsonSerializer.Deserialize<BotAppInfo>(File.ReadAllText("custom_appinfo.json"))!;
+            Console.WriteLine($"Using custom app info, version: {appInfo.CurrentVersion} @ {appInfo.Os}; App ID: {appInfo.SubAppId}");
+            Services.AddSingleton(BotFactory.Create(config, deviceInfo, keystore, appInfo));
+        }
+        else
+        {
+            Services.AddSingleton(BotFactory.Create(config, deviceInfo, keystore));
+        }
 
         return this;
     }
