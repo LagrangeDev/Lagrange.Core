@@ -41,6 +41,7 @@ public sealed class LagrangeAppBuilder
     {
         string keystorePath = Configuration["ConfigPath:Keystore"] ?? "keystore.json";
         string deviceInfoPath = Configuration["ConfigPath:DeviceInfo"] ?? "device.json";
+        string appInfoPath = Configuration["ConfigPath:AppInfo"] ?? "appinfo.json";
 
         bool isSuccess = Enum.TryParse<Protocols>(Configuration["Account:Protocol"], out var protocol);
         var config = new BotConfig
@@ -86,16 +87,24 @@ public sealed class LagrangeAppBuilder
             deviceInfo = JsonSerializer.Deserialize<BotDeviceInfo>(File.ReadAllText(deviceInfoPath)) ?? BotDeviceInfo.GenerateInfo();
         }
 
-        if (File.Exists("custom_appinfo.json"))
+        BotAppInfo appInfo;
+        if (!File.Exists(appInfoPath))
         {
-            var appInfo = JsonSerializer.Deserialize<BotAppInfo>(File.ReadAllText("custom_appinfo.json"))!;
-            Console.WriteLine($"Using custom app info, version: {appInfo.CurrentVersion} @ {appInfo.Os}; App ID: {appInfo.SubAppId}");
-            Services.AddSingleton(BotFactory.Create(config, deviceInfo, keystore, appInfo));
+            appInfo = BotAppInfo.ProtocolToAppInfo[config.Protocol];
+            string json = JsonSerializer.Serialize(appInfo);
+            string? directoryPath = Path.GetDirectoryName(appInfoPath);
+            if (!string.IsNullOrEmpty(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+            File.WriteAllText(appInfoPath, json);
         }
         else
         {
-            Services.AddSingleton(BotFactory.Create(config, deviceInfo, keystore));
+            appInfo = JsonSerializer.Deserialize<BotAppInfo>(File.ReadAllText(appInfoPath)) ?? BotAppInfo.ProtocolToAppInfo[config.Protocol];
         }
+        
+        Services.AddSingleton(BotFactory.Create(config, deviceInfo, keystore, appInfo));
 
         return this;
     }
