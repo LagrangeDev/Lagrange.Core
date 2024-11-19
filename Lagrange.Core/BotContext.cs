@@ -24,13 +24,13 @@ public class BotContext : IDisposable
 
     private readonly BotKeystore _keystore;
 
-    internal BotContext(BotConfig config, BotDeviceInfo deviceInfo, BotKeystore keystore)
+    internal BotContext(BotConfig config, BotDeviceInfo deviceInfo, BotKeystore keystore, BotAppInfo appInfo)
     {
         Invoker = new EventInvoker(this);
         Scheduler = new Utility.TaskScheduler();
 
         Config = config;
-        AppInfo = BotAppInfo.ProtocolToAppInfo[config.Protocol];
+        AppInfo = appInfo;
         _deviceInfo = deviceInfo;
         _keystore = keystore;
 

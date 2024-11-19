@@ -25,6 +25,11 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
     {
         { "talkative", 1 }, { "performer", 2 }, { "legend", 3 }, { "strong_newbie", 5 }, { "emotion", 6 },
     };
+    
+    private static readonly Dictionary<string, string> KeyToOnebot11 = new()
+    {
+        {"uin", "user_id"}, {"name", "nickname"}, {"nick", "nickname"}, {"desc", "description"}
+    };
 
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
@@ -35,6 +40,8 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
                 ? HonorToType.Select(x => x.Key).ToArray()
                 : [honor.Type];
 
+            result.TryAdd("group_id", honor.GroupId);
+            
             foreach (string honorRaw in honors)
             {
                 string url = $"https://qun.qq.com/interactive/honorlist?gc={honor.GroupId}&type={HonorToType[honorRaw]}";
@@ -42,11 +49,28 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
                 string raw = await response.Content.ReadAsStringAsync();
                 var match = HonorRegex().Match(raw);
 
-                if (JsonSerializer.Deserialize<JsonObject>(match.Groups[1].Value) is { } json)
+                if (JsonSerializer.Deserialize<JsonObject>(match.Groups[1].Value) is { } json) // 神经病
                 {
                     foreach (var (key, value) in Keys)
                     {
-                        if (json[value] is { } node) result.TryAdd(key, node.Deserialize<JsonNode>()); // 神经病
+                        if (json.Remove(value, out var node))
+                        {
+                            if (node is JsonObject jsonObject)
+                            {
+                                ProcessJsonObject(jsonObject);
+                            }
+                            else if (node is JsonArray jsonArray)
+                            {
+                                foreach (var subNode in jsonArray)
+                                {
+                                    if (subNode is JsonObject subObject)
+                                    {
+                                        ProcessJsonObject(subObject);
+                                    }
+                                }
+                            }
+                            if (key.Contains(honorRaw)) result.TryAdd(key, node);
+                        }
                     }
                 }
             }
@@ -55,5 +79,16 @@ public partial class GetGroupHonorInfoOperation(TicketService ticket) : IOperati
         }
 
         throw new Exception();
+    }
+    
+    private static void ProcessJsonObject(JsonObject jsonObject)
+    {
+        foreach (var oldKey in KeyToOnebot11.Keys)
+        {
+            if (jsonObject.Remove(oldKey, out var nodeValue))
+            {
+                jsonObject[KeyToOnebot11[oldKey]] = nodeValue;
+            }
+        }
     }
 }

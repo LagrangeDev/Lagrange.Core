@@ -4,38 +4,38 @@ namespace Lagrange.Core.Common;
 
 public class BotAppInfo
 {
-    public string Os { get; private set; }
+    public string Os { get; set; }
     
-    public string VendorOs { get; private set; }
+    public string VendorOs { get; set; }
     
-    public string Kernel { get; private set; }
+    public string Kernel { get; set; }
 
-    public string CurrentVersion { get; private set; }
+    public string CurrentVersion { get; set; }
 
-    public int MiscBitmap { get; private set; }
+    public int MiscBitmap { get; set; }
     
-    public string PtVersion { get; private set; }
+    public string PtVersion { get; set; }
     
-    public int SsoVersion { get; private set; }
+    public int SsoVersion { get; set; }
     
-    public string PackageName { get; private set; }
+    public string PackageName { get; set; }
     
-    public string WtLoginSdk { get; private set; }
+    public string WtLoginSdk { get; set; }
 
-    public int AppId { get; private set; }
+    public int AppId { get; set; }
     
     /// <summary>Or known as pubId in tencent log</summary>
-    public int SubAppId { get; private set; }
+    public int SubAppId { get; set; }
     
-    public int AppIdQrCode { get; private set; }
+    public int AppIdQrCode { get; set; }
     
-    public ushort AppClientVersion { get; private set; }
+    public ushort AppClientVersion { get; set; }
     
-    public uint MainSigMap { get; private set; }
+    public uint MainSigMap { get; set; }
     
-    public ushort SubSigMap { get; private set; }
+    public ushort SubSigMap { get; set; }
     
-    public ushort NTLoginType { get; private set; }
+    public ushort NTLoginType { get; set; }
 
     private static readonly BotAppInfo Linux = new()
     {
