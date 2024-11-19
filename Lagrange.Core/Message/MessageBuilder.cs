@@ -110,6 +110,14 @@ public sealed class MessageBuilder
         return this;
     }
 
+    public MessageBuilder OldFace(uint id, uint Type = 1)
+    {
+        var OldFaceEntity = new OldFaceEntity(id, Type);
+        _chain.Add(OldFaceEntity);
+
+        return this;
+    }
+
     /// <summary>
     /// Add a forward entity to the message chain (reply)
     /// </summary>

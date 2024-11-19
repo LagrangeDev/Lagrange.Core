@@ -37,6 +37,8 @@ internal class Elem
 	[ProtoMember(24)] public QQWalletMsg? QQWalletMsg { get; set; }
 	
 	[ProtoMember(31)] public CustomElem? CustomElem { get; set; }
+
+	[ProtoMember(34)] public OldFace? OldFace { get; set; }
 	
 	[ProtoMember(37)] public GeneralFlags? GeneralFlags { get; set; }
 	
