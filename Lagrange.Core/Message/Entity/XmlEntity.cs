@@ -9,10 +9,14 @@ namespace Lagrange.Core.Message.Entity;
 public class XmlEntity : IMessageEntity
 {
     public string Xml { get; set; }
+
+    public int ServiceId { get; set; } = 35;
     
     public XmlEntity() => Xml = "";
-    
+
     public XmlEntity(string xml) => Xml = xml;
+
+    public XmlEntity(string xml, int serviceId) => (Xml, ServiceId) = (xml, serviceId);
     
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
@@ -22,12 +26,12 @@ public class XmlEntity : IMessageEntity
             {
                 RichMsg = new RichMsg
                 {
-                    ServiceId = 35,
+                    ServiceId = ServiceId,
                     Template1 = ZCompression.ZCompress(Xml, new byte[] { 0x01 }),
                 }
             }
         };
-    }   
+    }
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
