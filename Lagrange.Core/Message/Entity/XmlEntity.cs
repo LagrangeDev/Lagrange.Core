@@ -12,21 +12,11 @@ public class XmlEntity : IMessageEntity
 
     public int ServiceId { get; set; } = 35;
     
-    public XmlEntity()
-    {
-        Xml = "";
-    }
+    public XmlEntity() => Xml = "";
 
-    public XmlEntity(string xml)
-    {
-        Xml = xml;
-    }
+    public XmlEntity(string xml) => Xml = xml;
 
-    public XmlEntity(string xml, int serviceId)
-    {
-        Xml = xml;
-        ServiceId = serviceId;
-    }
+    public XmlEntity(string xml, int serviceId) => (Xml, ServiceId) = (xml, serviceId);
     
     IEnumerable<Elem> IMessageEntity.PackElement()
     {
