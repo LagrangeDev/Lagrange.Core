@@ -10,18 +10,18 @@ public class XmlEntity : IMessageEntity
 {
     public string Xml { get; set; }
 
-    public int ServiceId {get;set;}
+    public int ServiceId { get; set; }
     
     public XmlEntity()
     {
         Xml = "";
         ServiceId = 35;
     }
-    
-    public XmlEntity(string xml,int serviceid = 35)
+
+    public XmlEntity(string xml, int serviceId = 35)
     {
         Xml = xml;
-        ServiceId = serviceid;
+        ServiceId = serviceId;
     }
     
     IEnumerable<Elem> IMessageEntity.PackElement()
@@ -37,7 +37,7 @@ public class XmlEntity : IMessageEntity
                 }
             }
         };
-    }   
+    }
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {

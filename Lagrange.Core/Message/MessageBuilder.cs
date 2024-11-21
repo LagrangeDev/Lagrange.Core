@@ -159,9 +159,10 @@ public sealed class MessageBuilder
     /// Add a xml entity to the message chain (card message)
     /// </summary>
     /// <param name="xml">The xml to be sent</param>
-    public MessageBuilder Xml(string xml,int serviceid = 35)
+    /// <param name="serviceId">The service id of the xml</param>
+    public MessageBuilder Xml(string xml, int serviceId = 35)
     {
-        var xmlEntity = new XmlEntity(xml,serviceid);
+        var xmlEntity = new XmlEntity(xml, serviceId);
         _chain.Add(xmlEntity);
 
         return this;
