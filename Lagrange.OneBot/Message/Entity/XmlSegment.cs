@@ -26,6 +26,6 @@ public partial class XmlSegment : SegmentBase
     {
         if (entity is not XmlEntity xmlEntity) throw new ArgumentException("Invalid entity type.");
 
-        return new XmlSegment(xmlEntity.Xml,xmlEntity.ServiceId);
+        return new XmlSegment(xmlEntity.Xml, xmlEntity.ServiceId);
     }
 }
