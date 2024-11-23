@@ -150,6 +150,7 @@ public sealed partial class HttpService(
                             var body = await reader.ReadToEndAsync(token);
                             Log.LogReceived(_logger, identifier, body);
                             var @params = body.Split('&')
+                                .Where(pair => !string.IsNullOrEmpty(pair))
                                 .Select(pair => pair.Split('=', 2))
                                 .ToDictionary(pair => pair[0], pair => Uri.UnescapeDataString(pair[1]));
                             payload = JsonSerializer.Serialize(new { action, @params });
