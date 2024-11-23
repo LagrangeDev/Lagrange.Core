@@ -128,7 +128,7 @@ public sealed partial class HttpService(
                     if (!MediaTypeHeaderValue.TryParse(request.ContentType, out var mediaType))
                     {
                         Log.LogCannotParseMediaType(_logger, request.ContentType ?? string.Empty);
-                        response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
+                        response.StatusCode = (int)HttpStatusCode.NotAcceptable;
                         response.Close();
                         return;
                     }
