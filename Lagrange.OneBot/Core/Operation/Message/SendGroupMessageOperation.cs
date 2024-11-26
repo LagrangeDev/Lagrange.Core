@@ -21,10 +21,14 @@ public sealed class SendGroupMessageOperation(MessageCommon common) : IOperation
             OneBotGroupMessageText messageText => common.ParseChain(messageText).Build(),
             _ => throw new Exception()
         };
-        
+
         var result = await context.SendMessage(chain);
+
+        if (result.Result != 0) return new OneBotResult(null, (int)result.Result, "failed");
+        if (result.Sequence == null || result.Sequence == 0) return new OneBotResult(null, 9000, "failed");
+
         int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence ?? 0);
-        
+
         return new OneBotResult(new OneBotMessageResponse(hash), (int)result.Result, "ok");
     }
 }
