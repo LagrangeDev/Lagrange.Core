@@ -108,7 +108,7 @@ public static class OperationExt
         => bot.ContextCollection.Business.OperationLogic.FetchGroupRequests();
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="bot"></param>
     /// <returns></returns>
@@ -136,6 +136,9 @@ public static class OperationExt
 
     public static Task<bool> GroupTransfer(this BotContext bot, uint groupUin, uint targetUin)
         => bot.ContextCollection.Business.OperationLogic.GroupTransfer(groupUin, targetUin);
+
+    public static Task<bool> DeleteFriend (this BotContext bot, uint friendUin, bool block)
+        =>bot.ContextCollection.Business.OperationLogic.DeleteFriend(friendUin, block);
 
     public static Task<bool> RequestFriend(this BotContext bot, uint targetUin, string question = "", string message = "")
         => bot.ContextCollection.Business.OperationLogic.RequestFriend(targetUin, question, message);

@@ -435,6 +435,14 @@ internal class OperationLogic : LogicBase
         return results.Count != 0 && results[0].ResultCode == 0;
     }
 
+    public async Task<bool> DeleteFriend(uint targetUin, bool block)
+    {
+        var uid = await Collection.Business.CachingLogic.ResolveUid(null, targetUin);
+        var deleteFriendEvent = DeleteFriendEvent.Create(uid, block);
+        var results = await Collection.Business.SendEvent(deleteFriendEvent);
+        return results.Count != 0 && results[0].ResultCode == 0;
+    }
+
     public async Task<bool> RequestFriend(uint targetUin, string question, string message)
     {
         var requestFriendSearchEvent = RequestFriendSearchEvent.Create(targetUin);
