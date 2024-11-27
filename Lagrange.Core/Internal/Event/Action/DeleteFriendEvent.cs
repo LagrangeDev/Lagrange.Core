@@ -6,7 +6,7 @@ internal class DeleteFriendEvent : ProtocolEvent
 
     public bool Block { get; set; }
 
-    private DeleteFriendEvent(string targetUid, bool block) : base(true)
+    private DeleteFriendEvent(string? targetUid, bool block) : base(true)
     {
         TargetUid = targetUid;
         Block = block;
