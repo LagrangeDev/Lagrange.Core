@@ -26,9 +26,12 @@ public class GetAiRecordOperation : IOperation
             );
             if (code != 0 || recordEntity == null) return new OneBotResult(null, code, "failed");
 
-
             var chain = MessageBuilder.Group(message.GroupId).Add(recordEntity).Build();
             var result = await context.SendMessage(chain);
+
+            if (result.Result != 0) return new OneBotResult(null, (int)result.Result, "failed");
+            if (result.Sequence == null || result.Sequence == 0) return new OneBotResult(null, 9000, "failed");
+
             int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence ?? 0);
 
             return new OneBotResult(new OneBotMessageResponse(hash), (int)result.Result, "ok");
