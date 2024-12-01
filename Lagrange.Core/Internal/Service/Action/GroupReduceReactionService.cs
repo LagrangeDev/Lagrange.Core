@@ -20,7 +20,7 @@ internal class GroupReduceReactionService : BaseService<GroupReduceReactionEvent
             GroupUin = input.GroupUin,
             Sequence = input.Sequence,
             Code = input.Code,
-            Field5 = true,
+            Type = input.IsEmoji ? 2u : 1u,
             Field6 = false,
             Field7 = false
         }, 0x9082, 2, false, true);
