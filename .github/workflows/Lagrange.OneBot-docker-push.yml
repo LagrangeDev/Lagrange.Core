@@ -44,8 +44,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: |
-            ghcr.io/${{ github.repository_owner }}/lagrange.onebot
+          images: ghcr.io/${{ github.repository_owner }}/lagrange.onebot
           tags: |
             type=edge
             type=sha,event=branch
