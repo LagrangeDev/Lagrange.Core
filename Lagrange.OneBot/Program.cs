@@ -17,7 +17,7 @@ internal abstract class Program
         Console.OutputEncoding = Encoding.UTF8;
         Console.InputEncoding = Encoding.UTF8;
 
-        GCSettings.LatencyMode = GCLatencyMode.Batch;
+        // GCSettings.LatencyMode = GCLatencyMode.Batch;
 
         if (!File.Exists("appsettings.json"))
         {
