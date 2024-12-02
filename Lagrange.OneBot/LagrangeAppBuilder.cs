@@ -103,7 +103,7 @@ public sealed class LagrangeAppBuilder
         {
             appInfo = JsonSerializer.Deserialize<BotAppInfo>(File.ReadAllText(appInfoPath)) ?? BotAppInfo.ProtocolToAppInfo[config.Protocol];
         }
-        
+
         Services.AddSingleton(BotFactory.Create(config, deviceInfo, keystore, appInfo));
 
         return this;
