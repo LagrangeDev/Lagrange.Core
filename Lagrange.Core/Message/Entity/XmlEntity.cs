@@ -35,7 +35,7 @@ public class XmlEntity : IMessageEntity
     
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
-        if (elems.RichMsg is { ServiceId: 35, Template1: not null } richMsg)
+        if (elems.RichMsg is { ServiceId: not null, Template1: not null } richMsg)
         {
             var xml = ZCompression.ZDecompress(richMsg.Template1.Skip(1).ToArray());
             return new XmlEntity(Encoding.UTF8.GetString(xml));
