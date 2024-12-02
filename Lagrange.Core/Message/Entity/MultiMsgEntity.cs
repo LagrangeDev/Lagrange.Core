@@ -116,7 +116,7 @@ public class MultiMsgEntity : IMessageEntity
 
     IMessageEntity? IMessageEntity.UnpackElement(Elem elem)
     {
-        if (elem.RichMsg is { ServiceId: 35, Template1: not null } richMsg)
+        if (elem.RichMsg is { ServiceId: not null, Template1: not null } richMsg)
         {
             var xml = ZCompression.ZDecompress(richMsg.Template1.AsSpan(1));
             if ((MultiMessage?)Serializer.Deserialize(new MemoryStream(xml)) is { } xmlEntity)
