@@ -293,4 +293,7 @@ public static class OperationExt
 
     public static Task<(int Retcode, string Message)> SetPinGroup(this BotContext bot, uint uin, bool isPin)
         => bot.ContextCollection.Business.OperationLogic.SetPinGroup(uin, isPin);
+    
+    public static Task<string> FetchPrivateFSDownload(this BotContext bot, string fileId, string fileHash, uint userId)
+        => bot.ContextCollection.Business.OperationLogic.FetchPrivateFSDownload(fileId, fileHash, userId);
 }

@@ -28,7 +28,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
         {
             if (@event.Chain.GetEntity<FileEntity>() is { FileUrl: { } url } file)
             {
-                var fileInfo = new OneBotFileInfo(file.FileId ?? "", file.FileName, (ulong)file.FileSize, url);
+                var fileInfo = new OneBotPrivateFileInfo(file.FileUuid ?? "", file.FileName, (ulong)file.FileSize, url, file.FileHash ?? "");
                 await service.SendJsonAsync(new OneBotPrivateFile(bot.BotUin, @event.Chain.FriendUin, fileInfo));
             }
         };

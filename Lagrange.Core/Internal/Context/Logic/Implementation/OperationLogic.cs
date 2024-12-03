@@ -222,6 +222,15 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(groupFSDownloadEvent);
         return $"{((GroupFSDownloadEvent)events[0]).FileUrl}{fileId}";
     }
+    
+    public async Task<string> FetchPrivateFSDownload(string fileId, string fileHash, uint userId)
+    {
+        var uid = await Collection.Business.CachingLogic.ResolveUid(null, userId);
+        if (uid == null) return "false";
+        var privateFSDownloadEvent = FileDownloadEvent.Create(fileId, fileHash, uid, uid);
+        var events = await Collection.Business.SendEvent(privateFSDownloadEvent);
+        return $"{((FileDownloadEvent)events[0]).FileUrl}";
+    }
 
     public async Task<(int, string)> GroupFSMove(uint groupUin, string fileId, string parentDirectory, string targetDirectory)
     {
