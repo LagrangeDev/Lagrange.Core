@@ -24,5 +24,5 @@ public class OneBotPrivateFileInfo(string id, string name, ulong size, string ur
 
     [JsonPropertyName("url")] public string Url { get; set; } = url;
 
-    [JsonPropertyName("file_hash")] public string FileHash { get; set; } = hash;
+    [JsonPropertyName("hash")] public string FileHash { get; set; } = hash;
 }
