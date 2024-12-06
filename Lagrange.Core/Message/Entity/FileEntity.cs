@@ -24,9 +24,9 @@ public class FileEntity : IMessageEntity
     /// </summary>
     public string? FileId { get; set; }
     
-    internal string? FileUuid { get; set; }
+    public string? FileUuid { get; set; }
     
-    internal string? FileHash { get; set; }
+    public string? FileHash { get; set; }
     
     internal Stream? FileStream { get; set; }
     
