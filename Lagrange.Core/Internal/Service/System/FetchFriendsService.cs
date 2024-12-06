@@ -55,7 +55,7 @@ internal class FetchFriendsService : BaseService<FetchFriendsEvent>
         {
             var additional = raw.Additional.First(x => x.Type == 1);
             var properties = Property(additional.Layer1.Properties);
-            friends.Add(new BotFriend(raw.Uin, raw.Uid, properties[20002], properties[103], properties[102], properties[27394], new(raw.CustomGroup, "")));
+            friends.Add(new BotFriend(raw.Uin, raw.Uid, properties.ContainsKey(20002) ? properties[20002] : raw.Uin.ToString(), properties[103], properties[102], properties.ContainsKey(27394) ? properties[27394] : "", new(raw.CustomGroup, "")));
         }
 
         output = FetchFriendsEvent.Result(0, friends, packet.Body.Groups.ToDictionary(k => k.Code, v => v.Value), packet.Body.Next?.Uin); // 全家4完了才能想出来这种分页的逻辑
