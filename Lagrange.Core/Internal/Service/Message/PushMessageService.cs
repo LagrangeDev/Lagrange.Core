@@ -1,3 +1,4 @@
+using System.Text;
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Event;
 using Lagrange.Core.Internal.Event.Message;
@@ -88,14 +89,23 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             case PkgType.GroupMemberIncreaseNotice when message.Message.Body?.MsgContent is { } content:
             {
                 var increase = Serializer.Deserialize<GroupChange>(content.AsSpan());
-                var increaseEvent = GroupSysIncreaseEvent.Result(increase.GroupUin, increase.MemberUid, increase.OperatorUid, increase.DecreaseType);
+                var increaseEvent = GroupSysIncreaseEvent.Result(increase.GroupUin, increase.MemberUid, Encoding.UTF8.GetString(increase.Operator.AsSpan()), increase.DecreaseType);
                 extraEvents.Add(increaseEvent);
                 break;
             }
             case PkgType.GroupMemberDecreaseNotice when message.Message.Body?.MsgContent is { } content:
             {
                 var decrease = Serializer.Deserialize<GroupChange>(content.AsSpan());
-                var decreaseEvent = GroupSysDecreaseEvent.Result(decrease.GroupUin, decrease.MemberUid, decrease.OperatorUid, decrease.DecreaseType);
+                GroupSysDecreaseEvent decreaseEvent;
+                if (decrease.DecreaseType == 3) // 3 是bot自身被踢出，Operator字段会是一个protobuf
+                {
+                    var op = Serializer.Deserialize<OperatorInfo>(decrease.Operator.AsSpan());
+                    decreaseEvent = GroupSysDecreaseEvent.Result(decrease.GroupUin, decrease.MemberUid, op.Operator.Uid, decrease.DecreaseType);
+                }
+                else
+                {
+                    decreaseEvent = GroupSysDecreaseEvent.Result(decrease.GroupUin, decrease.MemberUid, Encoding.UTF8.GetString(decrease.Operator.AsSpan()), decrease.DecreaseType);
+                }
                 extraEvents.Add(decreaseEvent);
                 break;
             }
