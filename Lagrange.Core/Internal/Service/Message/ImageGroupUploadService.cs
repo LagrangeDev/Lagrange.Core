@@ -20,10 +20,10 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         if (input.Entity.ImageStream is null) throw new Exception();
-        
+
         string md5 = input.Entity.ImageStream.Value.Md5(true);
         string sha1 = input.Entity.ImageStream.Value.Sha1(true);
-        
+
         var buffer = new byte[1024]; // parse image header
         int _ = input.Entity.ImageStream.Value.Read(buffer.AsSpan());
         var type = ImageResolver.Resolve(buffer, out var size);
@@ -39,6 +39,7 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
         };
         input.Entity.ImageStream.Value.Position = 0;
 
+        string subType = input.Entity.SubType.ToString("X2");
         var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq
         {
             ReqHead = new MultiMediaReqHead
@@ -76,8 +77,8 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
                                 VideoFormat = 0,
                                 VoiceFormat = 0
                             },
-                            Width = (uint)size.X,
-                            Height = (uint)size.Y,
+                            Width = input.Entity.W == 0 ?(uint)size.X : input.Entity.W,
+                            Height = input.Entity.H == 0 ?(uint)size.Y : input.Entity.H,
                             Time = 0,
                             Original = 1
                         },
@@ -92,8 +93,9 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
                 {
                     Pic = new PicExtBizInfo
                     {
+                        BizType = (uint)input.Entity.SubType,
                         TextSummary = input.Entity.Summary!,
-                        BytesPbReserveTroop = "0800180020004a00500062009201009a0100aa010c080012001800200028003a00".UnHex()
+                        BytesPbReserveTroop = $"08{subType}180020004a00500062009201009a0100aa010c080012001800200028003a00".UnHex()
                     },
                     Video = new VideoExtBizInfo { BytesPbReserve = Array.Empty<byte>() },
                     Ptt = new PttExtBizInfo
@@ -107,7 +109,7 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
                 NoNeedCompatMsg = false
             }
         }, 0x11c4, 100, false, true);
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
@@ -119,7 +121,7 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
         var packet = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         var upload = packet.Body.Upload;
         var compat = Serializer.Deserialize<CustomFace>(upload.CompatQMsg.AsSpan());
-        
+
         output = ImageGroupUploadEvent.Result((int)packet.ErrorCode, upload.MsgInfo, upload.UKey, upload.IPv4s, upload.SubFileInfos, compat);
         extraEvents = null;
         return true;

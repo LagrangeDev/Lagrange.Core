@@ -5,19 +5,23 @@ using Lagrange.Core.Message.Entity;
 namespace Lagrange.OneBot.Message.Entity;
 
 [Serializable]
-public partial class ImageSegment(string url, string filename, string summary = "[图片]", int subType = 0)
+public partial class ImageSegment(string url, string filename, string summary = "[图片]", int subType = 0, uint height = 0, uint width = 0)
 {
     public ImageSegment() : this("", "") { }
 
-    [JsonPropertyName("file")] [CQProperty] public string File { get; set; } = url;
-    
+    [JsonPropertyName("file")][CQProperty] public string File { get; set; } = url;
+
     [JsonPropertyName("filename")] public string Filename { get; set; } = filename;
-    
-    [JsonPropertyName("url")] public string Url { get; set; }  = url;
+
+    [JsonPropertyName("url")] public string Url { get; set; } = url;
 
     [JsonPropertyName("summary")] public string Summary { get; set; } = summary;
-    
+
     [JsonPropertyName("subType")] public int SubType { get; set; } = subType;
+
+    [JsonPropertyName("height")] public uint Height { get; set; } = height;
+
+    [JsonPropertyName("width")] public uint Width { get; set; } = width;
 }
 
 [SegmentSubscriber(typeof(ImageEntity), "image")]
@@ -32,7 +36,9 @@ public partial class ImageSegment : SegmentBase
                 FilePath = imageSegment.Filename,
                 ImageStream = new Lazy<Stream>(stream),
                 Summary = imageSegment.Summary,
-                SubType = imageSegment.SubType
+                SubType = imageSegment.SubType,
+                H = imageSegment.Height,
+                W = imageSegment.Width
             });
         }
     }

@@ -40,6 +40,9 @@ public class ImageEntity : IMessageEntity
 
     internal string? Summary { get; set; }
 
+    internal uint H { get; set; }
+    internal uint W { get; set; }
+
     public int SubType { get; set; }
 
     internal bool IsGroup => GroupUin.HasValue;
