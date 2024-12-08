@@ -204,6 +204,7 @@ public class ImageEntity : IMessageEntity
         ? SubType switch
         {
             1 => "[动画表情]",
+            14 => "[AI表情]",
             _ => "[图片]",
         }
         : Summary;
