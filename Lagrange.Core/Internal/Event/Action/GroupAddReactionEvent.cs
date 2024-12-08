@@ -8,6 +8,8 @@ internal class GroupAddReactionEvent : ProtocolEvent
 
     public string Code { get; } = string.Empty;
 
+    public bool IsEmoji => Code.Length > 3;
+
     private GroupAddReactionEvent(uint groupUin, uint sequence, string code) : base(true)
     {
         GroupUin = groupUin;

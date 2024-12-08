@@ -16,7 +16,7 @@ internal class OidbSvcTrpcTcp0x9082
 
     [ProtoMember(4)] public string? Code { get; set; }
 
-    [ProtoMember(5)] public bool Field5 { get; set; } // true
+    [ProtoMember(5)] public uint Type { get; set; } // 1 Face 2 Emoji
 
     [ProtoMember(6)] public bool Field6 { get; set; } // false
 
