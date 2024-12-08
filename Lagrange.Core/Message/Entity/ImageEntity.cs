@@ -114,7 +114,9 @@ public class ImageEntity : IMessageEntity
                 MsgInfo = extra,
                 SubType = (int)extra.ExtBizInfo.Pic.BizType,
                 GroupUin = msgInfoBody.HashSum.TroopSource?.GroupUin,
-                FriendUid = msgInfoBody.HashSum.BytesPbReserveC2c?.FriendUid
+                FriendUid = msgInfoBody.HashSum.BytesPbReserveC2c?.FriendUid,
+                H = index.Info.Height,
+                W = index.Info.Width
             };
         }
 
@@ -130,7 +132,9 @@ public class ImageEntity : IMessageEntity
                     ImageSize = image.FileLen,
                     ImageUrl = $"{BaseUrl}{image.OrigUrl}",
                     Summary = image.PbRes.Summary,
-                    SubType = image.PbRes.SubType
+                    SubType = image.PbRes.SubType,
+                    H = image.PicHeight,
+                    W = image.PicWidth
                 };
             }
 
@@ -142,7 +146,9 @@ public class ImageEntity : IMessageEntity
                 ImageSize = image.FileLen,
                 ImageUrl = $"{LegacyBaseUrl}{image.OrigUrl}",
                 Summary = image.PbRes.Summary,
-                SubType = image.PbRes.SubType
+                SubType = image.PbRes.SubType,
+                H = image.PicHeight,
+                W = image.PicWidth
             };
         }
 
@@ -158,7 +164,9 @@ public class ImageEntity : IMessageEntity
                     ImageSize = face.Size,
                     ImageUrl = $"{BaseUrl}{face.OrigUrl}",
                     Summary = face.PbReserve?.Summary,
-                    SubType = face.PbReserve?.SubType ?? GetImageTypeFromFaceOldData(face)
+                    SubType = face.PbReserve?.SubType ?? GetImageTypeFromFaceOldData(face),
+                    H = (uint)face.Height,
+                    W = (uint)face.Width
                 };
             }
 
@@ -170,7 +178,9 @@ public class ImageEntity : IMessageEntity
                 ImageSize = face.Size,
                 ImageUrl = $"{LegacyBaseUrl}{face.OrigUrl}",
                 Summary = face.PbReserve?.Summary,
-                SubType = face.PbReserve?.SubType ?? GetImageTypeFromFaceOldData(face)
+                SubType = face.PbReserve?.SubType ?? GetImageTypeFromFaceOldData(face),
+                H = (uint)face.Height,
+                W = (uint)face.Width
             };
         }
 
