@@ -47,6 +47,6 @@ public partial class ImageSegment : SegmentBase
     {
         if (entity is not ImageEntity imageEntity) throw new ArgumentException("Invalid entity type.");
 
-        return new ImageSegment(imageEntity.ImageUrl, imageEntity.FilePath, imageEntity.ToPreviewText(), imageEntity.SubType);
+        return new ImageSegment(imageEntity.ImageUrl, imageEntity.FilePath, imageEntity.ToPreviewText(), imageEntity.SubType, imageEntity.H, imageEntity.W);
     }
 }
