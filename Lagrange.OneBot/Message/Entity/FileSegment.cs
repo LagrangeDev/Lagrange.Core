@@ -9,11 +9,11 @@ public partial class FileSegment(string fileName, string fileHash, string fileId
 {
     public FileSegment() : this("", "", "", "") { }
     
-    [JsonPropertyName("filename")] public string Filename { get; set; } = fileName;
+    [JsonPropertyName("file_name")] public string Filename { get; set; } = fileName;
     
-    [JsonPropertyName("filehash")] public string Filehash { get; set; }  = fileHash;
+    [JsonPropertyName("file_hash")] public string Filehash { get; set; }  = fileHash;
 
-    [JsonPropertyName("id")] public string Fileid { get; set; } = fileId;
+    [JsonPropertyName("file_id")] public string Fileid { get; set; } = fileId;
 
     [JsonPropertyName("url")] public string Url { get; set; } = url;
     
