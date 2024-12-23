@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using Lagrange.Core.Common.Entity;
 
 namespace Lagrange.OneBot.Core.Entity;
 
