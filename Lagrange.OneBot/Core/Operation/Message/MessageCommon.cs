@@ -2,7 +2,6 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Lagrange.Core;
-using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Message;
 using Lagrange.Core.Utility.Extension;
 using Lagrange.OneBot.Core.Entity;
