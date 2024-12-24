@@ -18,7 +18,7 @@ public class OidbSvcTrpcTcp0x88D_0ResponseGroupInfo
     [ProtoMember(1)]
     public ulong Uin { get; set; }
 
-    [ProtoMember(2)]
+    [ProtoMember(3)]
     public OidbSvcTrpcTcp0x88D_0ResponseResults Results { get; set; }
 }
 
