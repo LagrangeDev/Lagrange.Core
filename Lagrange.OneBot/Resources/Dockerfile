@@ -1,15 +1,15 @@
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine3.18 AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build-env
 
 WORKDIR /root/build
 ARG TARGETARCH
 
 COPY . /root/build
 
-RUN dotnet publish -p:DebugType="none" -a $TARGETARCH -f "net8.0" -o "/root/out" "Lagrange.OneBot"
+RUN dotnet publish -p:DebugType="none" -a $TARGETARCH -f "net9.0" -o "/root/out" "Lagrange.OneBot"
 
 # ===
 
-FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine3.18
+FROM mcr.microsoft.com/dotnet/runtime:9.0-alpine
 
 WORKDIR /app/data
 
