@@ -48,9 +48,14 @@ public static class HostApplicationBuilderExtension
                 var configuration = services.GetRequiredService<IConfiguration>();
                 string path = configuration["ConfigPath:DeviceInfo"] ?? "device.json";
 
-                return File.Exists(path)
+                var device = File.Exists(path)
                     ? JsonSerializer.Deserialize<BotDeviceInfo>(File.ReadAllText(path)) ?? BotDeviceInfo.GenerateInfo()
                     : BotDeviceInfo.GenerateInfo();
+
+                string deviceJson = JsonSerializer.Serialize(device);
+                File.WriteAllText(path, deviceJson);
+
+                return device;
             })
             .AddSingleton((services) => // Keystore
             {
