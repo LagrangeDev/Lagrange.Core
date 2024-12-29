@@ -57,7 +57,7 @@ public class LoginService(IConfiguration configuration, ILogger<LoginService> lo
         if (!isSucceed) throw new Exception("All login failed!");
 
         string keystoreJson = JsonSerializer.Serialize(_lagrange.UpdateKeystore());
-        File.WriteAllText(configuration["ConfigPath:Keystore"] ?? "keystroe.json", keystoreJson);
+        File.WriteAllText(configuration["ConfigPath:Keystore"] ?? "keystore.json", keystoreJson);
 
         _logger.LogInformation("Bot Uin: {}", _lagrange.BotUin);
 
