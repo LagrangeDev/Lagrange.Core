@@ -90,7 +90,7 @@ public static class HostApplicationBuilderExtension
                     LiteDbUtility.IMessageEntityDeserialize
                 );
 
-                string path = configuration["ConfigPath:Database"] ?? "lagrange.db";
+                string path = configuration["ConfigPath:Database"] ?? $"lagrange-{configuration["Account:Uin"]}.db";
 
                 bool isFirstCreate = false;
                 if (!File.Exists(path)) isFirstCreate = true;
