@@ -48,7 +48,7 @@ public class LoginService(IConfiguration configuration, ILogger<LoginService> lo
                 (string Url, byte[] QrCode)? qrcode = await _lagrange.FetchQrCode().WaitAsync(token);
                 if (!qrcode.HasValue) return false;
 
-                await File.WriteAllBytesAsync($"qr-{Configuration["Account:Uin"]}.png", qrcode.Value.QrCode, token);
+                await File.WriteAllBytesAsync($"qr-{configuration["Account:Uin"]}.png", qrcode.Value.QrCode, token);
                 QrCodeHelper.Output(qrcode.Value.Url, _isCompatibility);
 
                 return await (Task<bool>)_lagrange.LoginByQrCode(token);
