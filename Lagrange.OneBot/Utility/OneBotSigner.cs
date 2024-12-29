@@ -14,9 +14,9 @@ namespace Lagrange.OneBot.Utility;
 
 public class OneBotSigner : SignProvider
 {
-    private IConfiguration _configuration;
+    private readonly IConfiguration _configuration;
 
-    private ILogger<OneBotSigner> _logger;
+    private readonly ILogger<OneBotSigner> _logger;
 
     private const string Url = "https://sign.lagrangecore.org/api/sign/25765";
 
