@@ -300,7 +300,7 @@ Thanks for 外国热心网友 for Provision of Azure Servlet
     },
     "SignServerUrl": "",
     "Account": {
-        "Uin": 0,
+        "Uin": 0, // Only used to create lagrange-{uin}.db and qr-{uin}.png
         "Protocol": "Linux",
         "AutoReconnect": true,
         "GetOptimumServer": true

@@ -296,7 +296,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
   },
   "SignServerUrl": "",
   "Account": {
-    "Uin": 0,
+    "Uin": 0, // 仅用于创建 lagrange-{uin}.db 和 qr-{uin}.png
     "Protocol": "Linux",
     "AutoReconnect": true,
     "GetOptimumServer": true
