@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Event.EventArg;
@@ -54,6 +55,9 @@ public class LoginService(IConfiguration configuration, ILogger<LoginService> lo
             .ExecuteAsync(token);
 
         if (!isSucceed) throw new Exception("All login failed!");
+
+        string keystoreJson = JsonSerializer.Serialize(_lagrange.UpdateKeystore());
+        File.WriteAllText(configuration["ConfigPath:Keystore"] ?? "keystroe.json", keystoreJson);
 
         _logger.LogInformation("Bot Uin: {}", _lagrange.BotUin);
 
