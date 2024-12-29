@@ -123,16 +123,16 @@ public class OneBotSigner : SignProvider
         return FallbackAsync<BotAppInfo>.Create()
             .Add(token =>
             {
+                try { return _client.GetFromJsonAsync<BotAppInfo>($"{_signServer}/appinfo", token); }
+                catch { return Task.FromResult(null as BotAppInfo); }
+            })
+            .Add(token =>
+            {
                 string path = _configuration["ConfigPath:AppInfo"] ?? "appinfo.json";
 
                 if (!File.Exists(path)) return Task.FromResult(null as BotAppInfo);
 
                 try { return Task.FromResult(JsonSerializer.Deserialize<BotAppInfo>(File.ReadAllText(path))); }
-                catch { return Task.FromResult(null as BotAppInfo); }
-            })
-            .Add(token =>
-            {
-                try { return _client.GetFromJsonAsync<BotAppInfo>($"{_signServer}/appinfo", token); }
                 catch { return Task.FromResult(null as BotAppInfo); }
             })
             .ExecuteAsync(token => Task.FromResult(
