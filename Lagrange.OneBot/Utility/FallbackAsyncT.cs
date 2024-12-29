@@ -1,6 +1,3 @@
-
-using System.Diagnostics.CodeAnalysis;
-
 namespace Lagrange.OneBot.Utility.Fallbacks;
 
 public class FallbackAsync<T>
@@ -26,14 +23,5 @@ public class FallbackAsync<T>
             if (result != null) return result;
         }
         return await @default(token);
-    }
-
-    public readonly struct FallbackResult
-    {
-        [MemberNotNull(nameof(Value))]
-        public required bool IsSucceed { get; init; }
-
-        
-        public required T? Value { get; init; }
     }
 }
