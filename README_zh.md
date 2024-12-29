@@ -67,11 +67,11 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 | 协议    | 支持情况 | 登录类型          | 支持情况 | 消息段           | 支持情况 | 操作             | 支持情况 | 事件             | 支持情况 |
 | ------- | :------: | ----------------- | :------: | :--------------- | :------: | :--------------- | :------: | :--------------- | :------: |
 | Windows |    🟢    | 扫码登录          |    🟢    | 图片             |    🟢    | 戳一戳       |    🟢    | 验证码           |    🟢    |
-| macOS   |    🟢    | 密码登录          |    🟢    | 文本 / At        |    🟢    | 撤回消息         |    🟢    | 机器人在线       |    🟢    |
+| macOS   |    🟢    | 密码登录          |    🔴    | 文本 / At        |    🟢    | 撤回消息         |    🟢    | 机器人在线       |    🟢    |
 | Linux   |    🟢    | 快速登录          |    🟢    | 语音             |    🟢    | 退出群组         |    🟢    | 机器人离线       |    🟢    |
 |         |          | 异常设备<br/>密码 |    🔴    | QQ 黄脸表情      |    🟢    | 特殊头衔     |    🟢    | 消息事件         |    🟢    |
 |         |          | 异常设备<br/>快速 |    🟢    | Json             |    🟢    | 移除群成员       |    🟢    | 戳一戳事件   |    🟢    |
-|         |          | 新设备验证        |    🟢    | Xml              |    🟢    | 禁言群成员       |    🟢    | 消息撤回事件     |    🟢    |
+|         |          | 新设备验证        |    🔴    | Xml              |    🟢    | 禁言群成员       |    🟢    | 消息撤回事件     |    🟢    |
 |         |          |                   |          | 合并转发         |    🟢    | 设置管理员       |    🟢    | 群成员减少       |    🟢    |
 |         |          |                   |          | 视频             |    🟢    | 处理添加好友请求 |    🟢    | 群成员增加       |    🟢    |
 |         |          |                   |          | 回复             |    🟢    | 处理加群请求     |    🟢    | 群管理员变动     |    🟢    |
@@ -296,8 +296,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
   },
   "SignServerUrl": "",
   "Account": {
-    "Uin": 0,
-    "Password": "",
+    "Uin": 0, // 仅用于创建 lagrange-{uin}.db 和 qr-{uin}.png
     "Protocol": "Linux",
     "AutoReconnect": true,
     "GetOptimumServer": true
