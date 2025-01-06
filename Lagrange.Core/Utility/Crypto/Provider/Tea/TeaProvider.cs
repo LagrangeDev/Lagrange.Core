@@ -1,138 +1,126 @@
-using System.Runtime.CompilerServices;
+using System.Buffers.Binary;
 
 namespace Lagrange.Core.Utility.Crypto.Provider.Tea;
 
-internal static unsafe class TeaProvider
+internal static class TeaProvider
 {
-    private const long Delta = 2654435769L; // 0x9E3779B9, Fibonacci's hashing constant.
-    
-    private const long SumMax = (Delta << 4) & uint.MaxValue; // 0x9E3779B9 * 16 = 0x3C6EF35F, max sum value.
-
-    public static byte[] Encrypt(Span<byte> data, Span<byte> key)
+    public static byte[] Encrypt(byte[] data, byte[] key)
     {
-        var keyStruct = new Key(key);
-        int inputLength = data.Length;
-        int fill = ((8 - ((inputLength + 10) & 7)) & 7) + 2;
-        int length = fill + inputLength + 8;
-        
-        var cipher = new byte[length];
-        cipher[0] = (byte)(RandomByte(248) | (fill - 2));
-        for (int i = 1; i <= fill; ++i) cipher[i] = RandomByte();
-        
-        fixed (byte* dataPtr = cipher, rawPtr = data)
+        uint a = BinaryPrimitives.ReadUInt32BigEndian(key.AsSpan(0));
+        uint b = BinaryPrimitives.ReadUInt32BigEndian(key.AsSpan(4));
+        uint c = BinaryPrimitives.ReadUInt32BigEndian(key.AsSpan(8));
+        uint d = BinaryPrimitives.ReadUInt32BigEndian(key.AsSpan(12));
+
+        int fill = 10 - ((data.Length + 1) & 7);
+        var result = new byte[fill + data.Length + 7];
+        Random.Shared.NextBytes(result.AsSpan(0, fill));
+        result[0] = (byte)((fill - 3) | 0xF8);
+        data.CopyTo(result.AsSpan(fill));
+
+        ulong plainXor = 0, prevXor = 0;
+
+        for (int i = 0; i < result.Length; i += 8)
         {
-            Buffer.MemoryCopy(rawPtr, dataPtr + fill + 1, inputLength, inputLength);
+            ulong plain = BinaryPrimitives.ReadUInt64BigEndian(result.AsSpan(i)) ^ plainXor;
+            uint x = (uint)(plain >> 32);
+            uint y = (uint)(plain);
 
-            byte* plainXorPrev = stackalloc byte[8];
-            byte* tempCipher = stackalloc byte[8];
-            byte* plainXor = stackalloc byte[8];
-            byte* encipher = stackalloc byte[8];
+            x += (y + 0x9e3779b9) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0x9e3779b9) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0x3c6ef372) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0x3c6ef372) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0xdaa66d2b) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0xdaa66d2b) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0x78dde6e4) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0x78dde6e4) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0x1715609d) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0x1715609d) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0xb54cda56) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0xb54cda56) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0x5384540f) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0x5384540f) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0xf1bbcdc8) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0xf1bbcdc8) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0x8ff34781) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0x8ff34781) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0x2e2ac13a) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0x2e2ac13a) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0xcc623af3) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0xcc623af3) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0x6a99b4ac) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0x6a99b4ac) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0x08d12e65) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0x08d12e65) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0xa708a81e) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0xa708a81e) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0x454021d7) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0x454021d7) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x += (y + 0xe3779b90) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y += (x + 0xe3779b90) ^ ((x << 4) + c) ^ ((x >> 5) + d);
 
-            for (int i = 0; i < length; i += 8)
-            {
-                *(long*)plainXor = *(long*)(dataPtr + i) ^ *(long*)(tempCipher);
-
-                long sum = 0;
-                long y = ReadUInt32(plainXor, 0);
-                long z = ReadUInt32(plainXor, 4);
-                for (int j = 0; j < 16; ++j)
-                {
-                    sum += Delta;
-                    sum &= uint.MaxValue;
-                    y += ((z << 4) + keyStruct.A) ^ (z + sum) ^ ((z >> 5) + keyStruct.B);
-                    y &= uint.MaxValue;
-                    z += ((y << 4) + keyStruct.C) ^ (y + sum) ^ ((y >> 5) + keyStruct.D);
-                    z &= uint.MaxValue;
-                }
-                
-                WriteUInt32(encipher, 0, (uint)y);
-                WriteUInt32(encipher, 4, (uint)z);
-                
-                *(long*)tempCipher = *(long*)(encipher) ^ *(long*)(plainXorPrev); // Xor8(EnCipher(plainXor, key), plainXorPrev);
-                *(long*)(plainXorPrev) = *(long*)(plainXor); // write data back to plainXorPrev
-                
-                *(long*)(dataPtr + i) = *(long*)(tempCipher); // write data back to cipher
-            }
+            plainXor = ((ulong)x << 32 | y) ^ prevXor;
+            prevXor = plain;
+            BinaryPrimitives.WriteUInt64BigEndian(result.AsSpan(i), plainXor);
         }
-        
-        return cipher;
+
+        return result;
     }
 
     public static byte[] Decrypt(Span<byte> data, Span<byte> key)
     {
-        var keyStruct = new Key(key);
-        int length = data.Length;
-        if ((length & 7) != 0 || (length >> 4) == 0) throw new Exception("Invalid cipher data length.");
-        
-        var plain = new byte[length];
-        byte* plainSub = stackalloc byte[8];
-        byte* plainXor = stackalloc byte[8];
+        uint a = BinaryPrimitives.ReadUInt32BigEndian(key[..]);
+        uint b = BinaryPrimitives.ReadUInt32BigEndian(key[4..]);
+        uint c = BinaryPrimitives.ReadUInt32BigEndian(key[8..]);
+        uint d = BinaryPrimitives.ReadUInt32BigEndian(key[12..]);
 
-        fixed (byte* rawPtr = data, dataPtr = plain)
+        var dest = new byte[data.Length];
+
+        ulong plainXor = 0, prevXor = 0;
+        for (int i = 0; i < data.Length; i += 8)
         {
-            for (int i = 0; i < length; i += 8) // Decrypt data.
-            {
-                *(long*)plainXor = *(long*)(rawPtr + i) ^ *(long*)(plainSub);
-                
-                long sum = SumMax;
-                long y = ReadUInt32(plainXor, 0);
-                long z = ReadUInt32(plainXor, 4);
-                for (int j = 0; j < 16; ++j)
-                {
-                    z -= ((y << 4) + keyStruct.C) ^ (y + sum) ^ ((y >> 5) + keyStruct.D);
-                    z &= uint.MaxValue;
-                    y -= ((z << 4) + keyStruct.A) ^ (z + sum) ^ ((z >> 5) + keyStruct.B);
-                    y &= uint.MaxValue;
-                    sum -= Delta;
-                    sum &= uint.MaxValue;
-                }
-                
-                WriteUInt32(plainSub, 0, (uint)y);
-                WriteUInt32(plainSub, 4, (uint)z);
-                
-                *(long*)(dataPtr + i) = *(long*)(plainSub) ^ *(long*)(rawPtr + i - 8);
-            }
-            
-            for (int i = length - 7; i < length; ++i) // Verify that the last 7 bytes are 0.
-            {
-                if (plain[i] != 0) throw new Exception("Verification failed.");
-            }
-            int from = (plain[0] & 7) + 3;  // Extract valid data.
-            return plain[from..(length - 7)];
+            ulong plain = BinaryPrimitives.ReadUInt64BigEndian(data[i..]);
+            plainXor ^= plain;
+            uint x = (uint)(plainXor >> 32);
+            uint y = (uint)(plainXor);
+
+            y -= (x + 0xe3779b90) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0xe3779b90) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0x454021d7) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0x454021d7) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0xa708a81e) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0xa708a81e) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0x08d12e65) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0x08d12e65) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0x6a99b4ac) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0x6a99b4ac) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0xcc623af3) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0xcc623af3) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0x2e2ac13a) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0x2e2ac13a) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0x8ff34781) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0x8ff34781) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0xf1bbcdc8) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0xf1bbcdc8) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0x5384540f) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0x5384540f) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0xb54cda56) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0xb54cda56) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0x1715609d) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0x1715609d) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0x78dde6e4) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0x78dde6e4) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0xdaa66d2b) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0xdaa66d2b) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0x3c6ef372) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0x3c6ef372) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+            y -= (x + 0x9e3779b9) ^ ((x << 4) + c) ^ ((x >> 5) + d);
+            x -= (y + 0x9e3779b9) ^ ((y << 4) + a) ^ ((y >> 5) + b);
+
+            plainXor = ((ulong)x << 32) | y;
+            BinaryPrimitives.WriteUInt64BigEndian(dest.AsSpan(i), plainXor ^ prevXor);
+            prevXor = plain;
         }
+
+        return dest[((dest[0] & 7) + 3)..^7];
     }
-
-    private readonly struct Key
-    {
-        public uint A { get; }
-        public uint B { get; }
-        public uint C { get; }
-        public uint D { get; }
-
-        public Key(Span<byte> rawKey)
-        {
-            fixed (byte* rawKeyPtr = rawKey)
-            {
-                A = ReadUInt32(rawKeyPtr, 0);
-                B = ReadUInt32(rawKeyPtr, 4);
-                C = ReadUInt32(rawKeyPtr, 8);
-                D = ReadUInt32(rawKeyPtr, 12);
-            }
-        }
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static uint ReadUInt32(byte* data, int index) => (uint)(data[index] << 24 | data[index + 1] << 16 | data[index + 2] << 8 | data[index + 3]);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void WriteUInt32(byte* data, int index, uint value)
-    {
-        data[index] = (byte)(value >> 24);
-        data[index + 1] = (byte)(value >> 16);
-        data[index + 2] = (byte)(value >> 8);
-        data[index + 3] = (byte)value;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static byte RandomByte(int max = byte.MaxValue) => (byte) (Random.Shared.Next() & max);
 }
