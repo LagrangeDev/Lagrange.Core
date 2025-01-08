@@ -229,7 +229,7 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(groupFSDownloadEvent);
         return $"{((GroupFSDownloadEvent)events[0]).FileUrl}{fileId}";
     }
-    
+
     public async Task<string> FetchPrivateFSDownload(string fileId, string fileHash, uint userId)
     {
         var uid = await Collection.Business.CachingLogic.ResolveUid(null, userId);
@@ -625,6 +625,14 @@ internal class OperationLogic : LogicBase
     public async Task<BotUserInfo?> FetchUserInfo(uint uin, bool refreshCache = false)
     {
         return await Collection.Business.CachingLogic.GetCachedUsers(uin, refreshCache);
+    }
+
+    public async Task<(int code, string? message, BotGroupInfo info)> FetchGroupInfo(ulong uin)
+    {
+        var events = await Collection.Business.SendEvent(GetGroupInfoEvent.Create(uin));
+        if (events.Count == 0) return (-1, "No Result", new());
+        var @event = (GetGroupInfoEvent)events[0];
+        return (@event.ResultCode, @event.Message, @event.Info);
     }
 
     public async Task<bool> SetMessageReaction(uint groupUin, uint sequence, string code, bool isAdd)

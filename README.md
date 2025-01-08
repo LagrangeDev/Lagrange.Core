@@ -72,20 +72,20 @@ Thanks for 外国热心网友 for Provision of Azure Servlet
 
 | Protocol | Support | Login                     | Support | Messages  | Support | Operations        | Support | Events              | Support |
 | -------- | :-----: | ------------------------- | :-----: | :-------- | :-----: | :---------------- | :-----: | :------------------ | :-----: |
-| Windows  |   🟢    | QrCode                    |   🟢    | Images    |   🟢    |   Poke            |   🟢    | Captcha             |   🟢    |
-| macOS    |   🟢    | Password                  |   🟢    | Text / At |   🟢    | Recall            |   🟢    | BotOnline           |   🟢    |
+| Windows  |   🟢    | QrCode                    |   🟢    | Images    |   🟢    | Poke              |   🟢    | Captcha             |   🟢    |
+| macOS    |   🟢    | Password                  |   🔴    | Text / At |   🟢    | Recall            |   🟢    | BotOnline           |   🟢    |
 | Linux    |   🟢    | EasyLogin                 |   🟢    | Records   |   🟢    | Leave Group       |   🟢    | BotOffline          |   🟢    |
-|          |         | UnusalDevice<br/>Password |   🔴    | QFace     |   🟢    | Set Special Title |   🟢    | Message              |   🟢    |
-|          |         | UnusalDevice<br/>Easy     |   🟢    | Json      |   🟢    | Kick Member       |   🟢    | Poke             |   🟢    |
-|          |         | NewDeviceVerify           |   🟢    | Xml       |   🟢    | Mute Member       |   🟢    | MessageRecall        |   🟢    |
-|          |         |                           |         | Forward   |   🟢    | Set Admin          |   🟢    | GroupMemberDecrease  |   🟢    |
-|          |         |                           |         | Video     |   🟢    | Friend Request     |   🟢    | GroupMemberIncrease  |   🟢    |
-|          |         |                           |         | Reply     |   🟢    | Group Request      |   🟢    | GroupPromoteAdmin    |   🟢    |
-|          |         |                           |         | File      |   🟢    | ~~Voice Call~~     |   🔴    | GroupInvite          |   🟢    |
-|          |         |                           |         | Poke      |   🟢    | Client Key         |   🟢    | GroupRequestJoin     |   🟢    |
-|          |         |                           |         | LightApp  |   🟢    | Cookies            |   🟢    | FriendRequest        |   🟢    |
-|          |         |                           |         |           |         | Send Message        |   🟢    | ~~FriendTyping~~     |   🔴    |
-|          |         |                           |         |           |         |                     |         | ~~FriendVoiceCall~~   |   🔴    |
+|          |         | UnusalDevice<br/>Password |   🔴    | QFace     |   🟢    | Set Special Title |   🟢    | Message             |   🟢    |
+|          |         | UnusalDevice<br/>Easy     |   🟢    | Json      |   🟢    | Kick Member       |   🟢    | Poke                |   🟢    |
+|          |         | NewDeviceVerify           |   🔴    | Xml       |   🟢    | Mute Member       |   🟢    | MessageRecall       |   🟢    |
+|          |         |                           |         | Forward   |   🟢    | Set Admin         |   🟢    | GroupMemberDecrease |   🟢    |
+|          |         |                           |         | Video     |   🟢    | Friend Request    |   🟢    | GroupMemberIncrease |   🟢    |
+|          |         |                           |         | Reply     |   🟢    | Group Request     |   🟢    | GroupPromoteAdmin   |   🟢    |
+|          |         |                           |         | File      |   🟢    | ~~Voice Call~~    |   🔴    | GroupInvite         |   🟢    |
+|          |         |                           |         | Poke      |   🟢    | Client Key        |   🟢    | GroupRequestJoin    |   🟢    |
+|          |         |                           |         | LightApp  |   🟢    | Cookies           |   🟢    | FriendRequest       |   🟢    |
+|          |         |                           |         |           |         | Send Message      |   🟢    | ~~FriendTyping~~    |   🔴    |
+|          |         |                           |         |           |         |                   |         | ~~FriendVoiceCall~~ |   🔴    |
 
 ## Lagrange.OneBot
 
@@ -144,7 +144,7 @@ Thanks for 外国热心网友 for Provision of Azure Servlet
 <Summary>API</Summary>
 
 | API                            | Support |
-|--------------------------------| :-----: |
+| ------------------------------ | :-----: |
 | [/send_private_msg]            |   🟢    |
 | [/send_group_msg]              |   🟢    |
 | [/send_msg]                    |   🟢    |
@@ -291,86 +291,85 @@ Thanks for 外国热心网友 for Provision of Azure Servlet
 
 ```json
 {
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft": "Warning",
-      "Microsoft.Hosting.Lifetime": "Information"
-    }
-  },
-  "SignServerUrl": "",
-  "Account": {
-    "Uin": 0,
-    "Password": "",
-    "Protocol": "Linux",
-    "AutoReconnect": true,
-    "GetOptimumServer": true
-  },
-  "Message": {
-    "IgnoreSelf": true,
-    "StringPost": false
-  },
-  "QrCode": {
-    "ConsoleCompatibilityMode": false
-  },
-  "Implementations": [
-    {
-      "Type": "ReverseWebSocket",
-      "Host": "127.0.0.1",
-      "Port": 8080,
-      "Suffix": "/onebot/v11/ws",
-      "ReconnectInterval": 5000,
-      "HeartBeatInterval": 5000,
-      "HeartBeatEnable": true,
-      "AccessToken": ""
+    "Logging": {
+        "LogLevel": {
+            "Default": "Information",
+            "Microsoft": "Warning",
+            "Microsoft.Hosting.Lifetime": "Information"
+        }
     },
-    {
-      "Type": "ForwardWebSocket",
-      "Host": "*",
-      "Port": 8081,
-      "HeartBeatInterval": 5000,
-      "HeartBeatEnable": true,
-      "AccessToken": ""
+    "SignServerUrl": "",
+    "Account": {
+        "Uin": 0, // Only used to create lagrange-{uin}.db and qr-{uin}.png
+        "Protocol": "Linux",
+        "AutoReconnect": true,
+        "GetOptimumServer": true
     },
-    {
-      "Type": "HttpPost",
-      "Host": "127.0.0.1",
-      "Port": 8082,
-      "Suffix": "/",
-      "HeartBeatInterval": 5000,
-      "HeartBeatEnable": true,
-      "AccessToken": ""
+    "Message": {
+        "IgnoreSelf": true,
+        "StringPost": false
     },
-    {
-      "Type": "Http",
-      "Host": "*",
-      "Port": 8083,
-      "AccessToken": ""
-    }
-  ]
+    "QrCode": {
+        "ConsoleCompatibilityMode": false
+    },
+    "Implementations": [
+        {
+            "Type": "ReverseWebSocket",
+            "Host": "127.0.0.1",
+            "Port": 8080,
+            "Suffix": "/onebot/v11/ws",
+            "ReconnectInterval": 5000,
+            "HeartBeatInterval": 5000,
+            "HeartBeatEnable": true,
+            "AccessToken": ""
+        },
+        {
+            "Type": "ForwardWebSocket",
+            "Host": "*",
+            "Port": 8081,
+            "HeartBeatInterval": 5000,
+            "HeartBeatEnable": true,
+            "AccessToken": ""
+        },
+        {
+            "Type": "HttpPost",
+            "Host": "127.0.0.1",
+            "Port": 8082,
+            "Suffix": "/",
+            "HeartBeatInterval": 5000,
+            "HeartBeatEnable": true,
+            "AccessToken": ""
+        },
+        {
+            "Type": "Http",
+            "Host": "*",
+            "Port": 8083,
+            "AccessToken": ""
+        }
+    ]
 }
 ```
 
 > [!WARNING]
 > Currently, `ForwardWebSocket` and `Http` are implemented based on `HttpListener`, which has the following problems:
-> 
+>
 > 1. On Linux, the `Host` header of an Http request must match the value of `Prefix` unless it is `+` or `*`, so configure the `Host` of `ForwardWebSocket` and `Http` to be the domain name or IP you are using to access it.
-> 
+>
 > 2. On Windows, the `HttpListener` is based on the `http.sys` implementation, so you need to register `urlacl` before using it. see [netsh](https://learn.microsoft.com/en-us/windows-server/networking/technologies/netsh/netsh-http). You can also start `Lagrange.OneBot` using the administrator, at which point `HttpListener` will automatically register the required `urlacl`.
 
 ## NOTICE BEFORE LOGIN
 
-- The NewDeviceLogin feature has not been implemented yet. It is recommended to use QRCode login for now.
-- Currently, only the signature server implementation for Linux protocol is available. It is recommended to use the Linux protocol.
+-   The NewDeviceLogin feature has not been implemented yet. It is recommended to use QRCode login for now.
+-   Currently, only the signature server implementation for Linux protocol is available. It is recommended to use the Linux protocol.
 
 ## Known Problem
 
-- ~~[ ] Signature Service is currently not established, so the login tend to be failed and return code may be 45, you can establish your own sign service by rewriting the `Signature` static class.~~
+-   ~~[ ] Signature Service is currently not established, so the login tend to be failed and return code may be 45, you can establish your own sign service by rewriting the `Signature` static class.~~
 
 ~~Thanks KonataDev/TheSnowfield for Provision of Signature API~~
 
 ~~Signature API is now not provided, you may need to find it somewhere and inherit `SignProvider` class for `CustomSignProvider` in `BotConfig`~~
 
-- ~~Built-in SignServer is now provided, Enjoy!~~
+-   ~~Built-in SignServer is now provided, Enjoy!~~
 
-- Signature of Windows and macOS is missing, you need to figure out by your self
+-   Signature of Windows and macOS is missing, you need to figure out by your self

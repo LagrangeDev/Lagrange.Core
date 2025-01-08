@@ -7,7 +7,7 @@ namespace Lagrange.Core.Internal.Packets.System;
 /// <para>没错 这个就是臭名昭著的0C03算法 每一个包都有这个几把</para>
 /// </summary>
 [ProtoContract]
-internal class SecInfo
+internal class SsoSecureInfo
 {
     [ProtoMember(1)] public byte[]? SecSign { get; set; }
     

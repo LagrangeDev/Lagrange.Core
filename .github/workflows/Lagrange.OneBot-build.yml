@@ -49,24 +49,24 @@ jobs:
       - name: Install .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
-
-      - name: Build Lagrange.OneBot .NET 7.0
-        run: dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net7.0
-
+          dotnet-version: '9.0.x'
+          
       - name: Build Lagrange.OneBot .NET 8.0
         run: dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
 
-      - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 7.0
-        uses: actions/upload-artifact@v4
-        if: github.event_name != 'pull_request'
-        with:
-          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net7.0_NoSelfContained
-          path: Lagrange.OneBot/bin/Debug/net7.0/${{ matrix.runtimeIdentifier }}/publish
+      - name: Build Lagrange.OneBot .NET 9.0
+        run: dotnet publish Lagrange.OneBot/Lagrange.OneBot.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net9.0
 
       - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 8.0
         uses: actions/upload-artifact@v4
         if: github.event_name != 'pull_request'
         with:
           name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net8.0_NoSelfContained
+          path: Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
+          
+      - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 9.0
+        uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net9.0_NoSelfContained
           path: Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish

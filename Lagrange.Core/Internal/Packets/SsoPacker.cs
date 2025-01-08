@@ -19,15 +19,15 @@ internal static class SsoPacker
         var writer = new BinaryPacket();
 
         var sign = signProvider.Sign(packet.Command, packet.Sequence, packet.Payload.ToArray(), out var extra, out var token);
-        var signature = new NTDeviceSign
+        var signature = new SsoReserveFields
         {
-            Sign = sign == null ? null : new SecInfo
+            SecInfo = sign == null ? null : new SsoSecureInfo
             {
                 SecSign = sign,
                 SecToken = token,
                 SecExtra = extra
             },
-            Trace = StringGen.GenerateTrace(),
+            TraceParent = StringGen.GenerateTrace(),
             Uid = keystore.Uid
         };
         var stream = new MemoryStream();
