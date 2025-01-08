@@ -299,6 +299,35 @@ public sealed class MessageBuilder
     }
 
     /// <summary>
+    /// Add a bounce face entity to message chain
+    /// </summary>
+    /// <param name="face">The face entry of the face to be added to the message chain</param>
+    /// <param name="count">The number of face entities to generate</param>
+    /// <param name="shouldAddPreviewText">Should the entity add a preview text</param>
+    public MessageBuilder BounceFace(SysFaceEntry face, uint count, bool shouldAddPreviewText = true)
+    {
+        var bounceFaceEntity = new BounceFaceEntity(face, count, shouldAddPreviewText);
+        _chain.Add(bounceFaceEntity);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Add a bounce face entity to message chain
+    /// </summary>
+    /// <param name="faceId">The face ID of the face to be added to the message chain</param>
+    /// <param name="count">The number of face entities to generate, default is 1</param>
+    /// <param name="name">The name of the face</param>
+    /// <param name="shouldAddPreviewText">Should the entity add a preview text</param>
+    public MessageBuilder BounceFace(uint faceId, uint count, string? name = null, bool shouldAddPreviewText = true)
+    {
+        var bounceFaceEntity = new BounceFaceEntity(faceId, count, name, shouldAddPreviewText);
+        _chain.Add(bounceFaceEntity);
+
+        return this;
+    }
+
+    /// <summary>
     /// Add a dedicated LightApp entity to message chain
     /// </summary>
     /// <param name="payload">Json Payload</param>
