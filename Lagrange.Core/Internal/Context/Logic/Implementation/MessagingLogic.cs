@@ -425,6 +425,24 @@ internal class MessagingLogic : LogicBase
                     face.SysFaceEntry ??= await cache.GetCachedFaceEntity(face.FaceId);
                     break;
                 }
+                case BounceFaceEntity bounceFace:
+                {
+                    var cache = Collection.Business.CachingLogic;
+
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+                    if (bounceFace.Name != null)
+                        break;
+
+                    string name = (await cache.GetCachedFaceEntity(bounceFace.FaceId))?.QDes ?? string.Empty;
+                    
+                    // Because the name is used as a preview text, it should not start with '/'
+                    // But the QDes of the face may start with '/', so remove it
+                    if (name.StartsWith('/'))
+                        name = name[1..];
+
+                    bounceFace.Name = name;
+                    break;
+                }
                 case ForwardEntity forward when forward.TargetUin != 0:
                 {
                     var cache = Collection.Business.CachingLogic;
