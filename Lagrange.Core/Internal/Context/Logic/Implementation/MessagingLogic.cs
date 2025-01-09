@@ -399,8 +399,8 @@ internal class MessagingLogic : LogicBase
                 case ImageEntity image when !image.ImageUrl.Contains("&rkey=") && image.MsgInfo is not null:
                 {
                     var @event = image.IsGroup
-                        ? ImageGroupDownloadEvent.Create(image.GroupUin ?? 0, image.MsgInfo)
-                        : ImageDownloadEvent.Create(image.FriendUid ?? string.Empty, image.MsgInfo);
+                        ? ImageGroupDownloadEvent.Create(chain.GroupUin ?? 0, image.MsgInfo)
+                        : ImageDownloadEvent.Create(chain.Uid ?? string.Empty, image.MsgInfo);
 
                     var results = await Collection.Business.SendEvent(@event);
                     if (results.Count != 0)

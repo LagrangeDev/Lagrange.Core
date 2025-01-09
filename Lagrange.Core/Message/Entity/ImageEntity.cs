@@ -27,11 +27,7 @@ public class ImageEntity : IMessageEntity
     public string ImageUrl { get; set; } = string.Empty;
 
     internal Lazy<Stream>? ImageStream { get; set; }
-
-    internal string? Path { get; set; }
-
-    internal uint FileId { get; set; }
-
+    
     internal MsgInfo? MsgInfo { get; set; }
 
     internal NotOnlineImage? CompatImage { get; set; }
@@ -45,11 +41,7 @@ public class ImageEntity : IMessageEntity
 
     public int SubType { get; set; }
 
-    internal bool IsGroup => GroupUin.HasValue;
-
-    internal uint? GroupUin { get; set; }
-
-    internal string? FriendUid { get; set; }
+    internal bool IsGroup { get; set; }
 
     public ImageEntity() { }
 
@@ -113,10 +105,12 @@ public class ImageEntity : IMessageEntity
                 ImageSize = index.Info.FileSize,
                 MsgInfo = extra,
                 SubType = (int)extra.ExtBizInfo.Pic.BizType,
-                GroupUin = msgInfoBody.HashSum.TroopSource?.GroupUin,
-                FriendUid = msgInfoBody.HashSum.BytesPbReserveC2c?.FriendUid,
+                // GroupUin = msgInfoBody.HashSum.TroopSource?.GroupUin,
+                // FriendUid = msgInfoBody.HashSum.BytesPbReserveC2c?.FriendUid,
                 H = index.Info.Height,
-                W = index.Info.Width
+                W = index.Info.Width,
+                IsGroup = extra.ExtBizInfo.Pic.BytesPbReserveTroop != null,
+                Summary = string.IsNullOrEmpty(extra.ExtBizInfo.Pic.TextSummary) ? "[图片]" : extra.ExtBizInfo.Pic.TextSummary,
             };
         }
 
@@ -134,7 +128,8 @@ public class ImageEntity : IMessageEntity
                     Summary = image.PbRes.Summary,
                     SubType = image.PbRes.SubType,
                     H = image.PicHeight,
-                    W = image.PicWidth
+                    W = image.PicWidth,
+                    IsGroup = false
                 };
             }
 
@@ -148,7 +143,8 @@ public class ImageEntity : IMessageEntity
                 Summary = image.PbRes.Summary,
                 SubType = image.PbRes.SubType,
                 H = image.PicHeight,
-                W = image.PicWidth
+                W = image.PicWidth,
+                IsGroup = false
             };
         }
 
@@ -166,7 +162,8 @@ public class ImageEntity : IMessageEntity
                     Summary = face.PbReserve?.Summary,
                     SubType = face.PbReserve?.SubType ?? GetImageTypeFromFaceOldData(face),
                     H = (uint)face.Height,
-                    W = (uint)face.Width
+                    W = (uint)face.Width,
+                    IsGroup = true
                 };
             }
 
@@ -180,7 +177,8 @@ public class ImageEntity : IMessageEntity
                 Summary = face.PbReserve?.Summary,
                 SubType = face.PbReserve?.SubType ?? GetImageTypeFromFaceOldData(face),
                 H = (uint)face.Height,
-                W = (uint)face.Width
+                W = (uint)face.Width,
+                IsGroup = true
             };
         }
 
