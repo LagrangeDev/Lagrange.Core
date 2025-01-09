@@ -69,4 +69,4 @@ jobs:
         if: github.event_name != 'pull_request'
         with:
           name: Lagrange.OneBot_${{ matrix.runtimeIdentifier }}_net9.0_NoSelfContained
-          path: Lagrange.OneBot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
+          path: Lagrange.OneBot/bin/Release/net9.0/${{ matrix.runtimeIdentifier }}/publish
