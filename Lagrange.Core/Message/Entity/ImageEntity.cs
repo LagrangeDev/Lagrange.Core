@@ -103,6 +103,7 @@ public class ImageEntity : IMessageEntity
                 MsgInfo = extra,
                 SubType = (int)extra.ExtBizInfo.Pic.BizType,
                 IsGroup = extra.ExtBizInfo.Pic.BytesPbReserveTroop != null,
+                Summary = string.IsNullOrEmpty(extra.ExtBizInfo.Pic.TextSummary) ? "[图片]" : extra.ExtBizInfo.Pic.TextSummary,
             };
         }
 
