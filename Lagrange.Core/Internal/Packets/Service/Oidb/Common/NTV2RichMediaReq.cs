@@ -295,9 +295,9 @@ internal class PicExtBizInfo
 
     [ProtoMember(2)] public string TextSummary { get; set; }
 
-    [ProtoMember(11)] public byte[] BytesPbReserveC2c { get; set; }
+    [ProtoMember(11)] public byte[]? BytesPbReserveC2c { get; set; }
 
-    [ProtoMember(12)] public byte[] BytesPbReserveTroop { get; set; }
+    [ProtoMember(12)] public byte[]? BytesPbReserveTroop { get; set; }
 
     [ProtoMember(1001)] public uint FromScene { get; set; }
 

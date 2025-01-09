@@ -27,11 +27,7 @@ public class ImageEntity : IMessageEntity
     public string ImageUrl { get; set; } = string.Empty;
 
     internal Lazy<Stream>? ImageStream { get; set; }
-
-    internal string? Path { get; set; }
-
-    internal uint FileId { get; set; }
-
+    
     internal MsgInfo? MsgInfo { get; set; }
 
     internal NotOnlineImage? CompatImage { get; set; }
@@ -42,11 +38,7 @@ public class ImageEntity : IMessageEntity
 
     public int SubType { get; set; }
 
-    internal bool IsGroup => GroupUin.HasValue;
-
-    internal uint? GroupUin { get; set; }
-
-    internal string? FriendUid { get; set; }
+    internal bool IsGroup { get; set; }
 
     public ImageEntity() { }
 
@@ -110,8 +102,7 @@ public class ImageEntity : IMessageEntity
                 ImageSize = index.Info.FileSize,
                 MsgInfo = extra,
                 SubType = (int)extra.ExtBizInfo.Pic.BizType,
-                GroupUin = msgInfoBody.HashSum.TroopSource?.GroupUin,
-                FriendUid = msgInfoBody.HashSum.BytesPbReserveC2c?.FriendUid
+                IsGroup = extra.ExtBizInfo.Pic.BytesPbReserveTroop != null,
             };
         }
 
@@ -127,7 +118,8 @@ public class ImageEntity : IMessageEntity
                     ImageSize = image.FileLen,
                     ImageUrl = $"{BaseUrl}{image.OrigUrl}",
                     Summary = image.PbRes.Summary,
-                    SubType = image.PbRes.SubType
+                    SubType = image.PbRes.SubType,
+                    IsGroup = false
                 };
             }
 
@@ -139,7 +131,8 @@ public class ImageEntity : IMessageEntity
                 ImageSize = image.FileLen,
                 ImageUrl = $"{LegacyBaseUrl}{image.OrigUrl}",
                 Summary = image.PbRes.Summary,
-                SubType = image.PbRes.SubType
+                SubType = image.PbRes.SubType,
+                IsGroup = false
             };
         }
 
@@ -155,7 +148,8 @@ public class ImageEntity : IMessageEntity
                     ImageSize = face.Size,
                     ImageUrl = $"{BaseUrl}{face.OrigUrl}",
                     Summary = face.PbReserve?.Summary,
-                    SubType = face.PbReserve?.SubType ?? GetImageTypeFromFaceOldData(face)
+                    SubType = face.PbReserve?.SubType ?? GetImageTypeFromFaceOldData(face),
+                    IsGroup = true
                 };
             }
 
@@ -167,7 +161,8 @@ public class ImageEntity : IMessageEntity
                 ImageSize = face.Size,
                 ImageUrl = $"{LegacyBaseUrl}{face.OrigUrl}",
                 Summary = face.PbReserve?.Summary,
-                SubType = face.PbReserve?.SubType ?? GetImageTypeFromFaceOldData(face)
+                SubType = face.PbReserve?.SubType ?? GetImageTypeFromFaceOldData(face),
+                IsGroup = true
             };
         }
 
