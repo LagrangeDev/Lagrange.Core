@@ -4,7 +4,7 @@ using Lagrange.Core.Common.Entity;
 namespace Lagrange.OneBot.Core.Entity.Message;
 
 [Serializable]
-public class OneBotGroupMsg(uint selfId, uint groupUin, List<OneBotSegment> message, string rawMessage, BotGroupMember member, int messageId , uint appid) : OneBotEntityBase(selfId, "message")
+public class OneBotGroupMsg(uint selfId, uint groupUin, List<OneBotSegment> message, string rawMessage, BotGroupMember member, int messageId, uint appid, int seq) : OneBotEntityBase(selfId, "message")
 {
     [JsonPropertyName("message_type")] public string MessageType { get; set; } = "group";
 
@@ -14,10 +14,12 @@ public class OneBotGroupMsg(uint selfId, uint groupUin, List<OneBotSegment> mess
 
     [JsonPropertyName("message_id")] public int MessageId { get; set; } = messageId;
 
+    [JsonPropertyName("message_seq")] public int MessageSeq { get; set; } = seq;
+
     [JsonPropertyName("group_id")] public uint GroupId { get; set; } = groupUin;
-    
+
     [JsonPropertyName("user_id")] public uint UserId { get; set; } = member.Uin;
-    
+
     [JsonPropertyName("anonymous")] public object? Anonymous { get; set; } = null;
 
     [JsonPropertyName("message")] public List<OneBotSegment> Message { get; set; } = message;
@@ -30,7 +32,7 @@ public class OneBotGroupMsg(uint selfId, uint groupUin, List<OneBotSegment> mess
 }
 
 [Serializable]
-public class OneBotGroupStringMsg(uint selfId, uint groupUin, string message, BotGroupMember member, int messageId, uint appid) : OneBotEntityBase(selfId, "message")
+public class OneBotGroupStringMsg(uint selfId, uint groupUin, string message, BotGroupMember member, int messageId, uint appid, int seq) : OneBotEntityBase(selfId, "message")
 {
     [JsonPropertyName("message_type")] public string MessageType { get; set; } = "group";
 
@@ -40,12 +42,14 @@ public class OneBotGroupStringMsg(uint selfId, uint groupUin, string message, Bo
 
     [JsonPropertyName("message_id")] public int MessageId { get; set; } = messageId;
 
+    [JsonPropertyName("message_seq")] public int MessageSeq { get; set; } = seq;
+
     [JsonPropertyName("group_id")] public uint GroupId { get; set; } = groupUin;
-    
+
     [JsonPropertyName("user_id")] public uint UserId { get; set; } = member.Uin;
-    
+
     [JsonPropertyName("anonymous")] public object? Anonymous { get; set; } = null;
-    
+
     [JsonPropertyName("message")] public string Message { get; set; } = message;
 
     [JsonPropertyName("raw_message")] public string RawMessage { get; set; } = message;

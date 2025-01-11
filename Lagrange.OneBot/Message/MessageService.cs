@@ -109,7 +109,7 @@ public sealed class MessageService
 
         _ = _service.SendJsonAsync(request);
     }
-    
+
     private void OnGroupProMessageReceived(BotContext bot, GroupProMessageEvent e)
     {
         var request = ConvertToGroupMsg(bot.BotUin, e.Chain);
@@ -121,8 +121,8 @@ public sealed class MessageService
         var segments = Convert(chain);
         int hash = MessageRecord.CalcMessageHash(chain.MessageId, chain.Sequence);
         object request = _stringPost
-            ? new OneBotGroupStringMsg(uin, chain.GroupUin ?? 0, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash, chain.Appid)
-            : new OneBotGroupMsg(uin, chain.GroupUin ?? 0, segments, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash, chain.Appid);
+            ? new OneBotGroupStringMsg(uin, chain.GroupUin ?? 0, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash, chain.Appid, (int)chain.Sequence)
+            : new OneBotGroupMsg(uin, chain.GroupUin ?? 0, segments, ToRawMessage(segments), chain.GroupMemberInfo ?? throw new Exception("Group member not found"), hash, chain.Appid, (int)chain.Sequence);
         return request;
     }
 
