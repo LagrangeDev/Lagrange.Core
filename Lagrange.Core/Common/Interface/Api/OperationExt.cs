@@ -2,6 +2,7 @@ using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Internal.Event.System;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
+using Lagrange.Core.Internal.Packets.Message;
 
 namespace Lagrange.Core.Common.Interface.Api;
 
@@ -51,6 +52,9 @@ public static class OperationExt
     /// <param name="chain">the chain constructed by <see cref="MessageBuilder"/></param>
     public static Task<MessageResult> SendMessage(this BotContext bot, MessageChain chain)
         => bot.ContextCollection.Business.OperationLogic.SendMessage(chain);
+    
+    internal static Task<MessageResult> SendMessage(this BotContext bot, MessageChain chain, PushMsgBody pushMsgBody)
+        => bot.ContextCollection.Business.OperationLogic.SendMessage(chain, pushMsgBody);
 
     /// <summary>
     /// Recall the group message from Bot itself by <see cref="MessageResult"/>
@@ -162,6 +166,9 @@ public static class OperationExt
     /// <param name="endSequence">End Sequence of the message</param>
     public static Task<List<MessageChain>?> GetGroupMessage(this BotContext bot, uint groupUin, uint startSequence, uint endSequence)
         => bot.ContextCollection.Business.OperationLogic.GetGroupMessage(groupUin, startSequence, endSequence);
+    
+    internal static Task<(List<MessageChain>?, List<PushMsgBody>?)> GetGroupMessageWithPushMsgBody(this BotContext bot, uint groupUin, uint startSequence, uint endSequence)
+        => bot.ContextCollection.Business.OperationLogic.GetGroupMessageWithPushMsgBody(groupUin, startSequence, endSequence);
 
     /// <summary>
     /// Get the history message record for private message

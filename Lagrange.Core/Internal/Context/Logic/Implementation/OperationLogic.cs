@@ -4,6 +4,7 @@ using Lagrange.Core.Internal.Context.Uploader;
 using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.System;
+using Lagrange.Core.Internal.Packets.Message;
 using Lagrange.Core.Internal.Packets.Service.Highway;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
@@ -43,6 +44,21 @@ internal class OperationLogic : LogicBase
         var events = await Collection.Business.SendEvent(sendMessageEvent);
         if (events.Count == 0) return new MessageResult { Result = 9057 };
 
+        var result = ((SendMessageEvent)events[0]).MsgResult;
+        result.ClientSequence = clientSeq;
+        result.MessageId = messageId;
+        return result;
+    }
+    
+    public async Task<MessageResult> SendMessage(MessageChain chain, PushMsgBody pushMsgBody)
+    {
+        uint clientSeq = chain.ClientSequence;
+        ulong messageId = chain.MessageId;
+        
+        var sendMessageEvent = SendMessageEvent.Create(chain, pushMsgBody);
+        var events = await Collection.Business.SendEvent(sendMessageEvent);
+        if (events.Count == 0) return new MessageResult { Result = 9057 };
+        
         var result = ((SendMessageEvent)events[0]).MsgResult;
         result.ClientSequence = clientSeq;
         result.MessageId = messageId;
@@ -534,6 +550,15 @@ internal class OperationLogic : LogicBase
         return results.Count != 0 ? ((GetGroupMessageEvent)results[0]).Chains : null;
     }
 
+    public async Task<(List<MessageChain>?, List<PushMsgBody>?)> GetGroupMessageWithPushMsgBody(uint groupUin, uint startSequence, uint endSequence)
+    {
+        var getMsgEvent = GetGroupMessageEvent.Create(groupUin, startSequence, endSequence);
+        var results = await Collection.Business.SendEvent(getMsgEvent);
+        return results.Count != 0 
+            ? (((GetGroupMessageEvent)results[0]).Chains, ((GetGroupMessageEvent)results[0]).PushMsgBodies) 
+            : (null, null);
+    }
+    
     public async Task<List<MessageChain>?> GetRoamMessage(uint friendUin, uint time, uint count)
     {
         if (await Collection.Business.CachingLogic.ResolveUid(null, friendUin) is not { } uid) return null;

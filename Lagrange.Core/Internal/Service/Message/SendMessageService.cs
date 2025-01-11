@@ -16,7 +16,7 @@ internal class SendMessageService : BaseService<SendMessageEvent>
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = MessagePacker.Build(input.Chain, keystore.Uid ?? throw new Exception("No UID found in keystore"));
-
+        if (input.PushMsgBody != null) packet.Body = input.PushMsgBody.Body;
         output = packet.Serialize();
         extraPackets = null;
         return true;

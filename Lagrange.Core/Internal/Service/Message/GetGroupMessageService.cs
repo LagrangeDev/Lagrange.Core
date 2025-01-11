@@ -37,7 +37,7 @@ internal class GetGroupMessageService : BaseService<GetGroupMessageEvent>
         var payload = Serializer.Deserialize<SsoGetGroupMsgResponse>(input);
         var chains = payload.Body.Messages.Select(x => MessagePacker.Parse(x)).ToList();
         
-        output = GetGroupMessageEvent.Result(0, chains);
+        output = GetGroupMessageEvent.Result(0, chains, payload.Body.Messages);
         extraEvents = null;
         return true;
     }
