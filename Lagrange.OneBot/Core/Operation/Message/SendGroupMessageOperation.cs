@@ -29,6 +29,6 @@ public sealed class SendGroupMessageOperation(MessageCommon common) : IOperation
 
         int hash = MessageRecord.CalcMessageHash(chain.MessageId, result.Sequence ?? 0);
 
-        return new OneBotResult(new OneBotMessageResponse(hash), (int)result.Result, "ok");
+        return new OneBotResult(new OneBotMessageResponse(hash, (int)result.Sequence.GetValueOrDefault()), (int)result.Result, "ok");
     }
 }
