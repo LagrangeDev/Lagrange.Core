@@ -50,6 +50,6 @@ public sealed class SendMessageOperation(MessageCommon common, LiteDatabase data
             TargetUin = chain.FriendUin
         });
 
-        return new OneBotResult(new OneBotMessageResponse(hash), 0, "ok");
+        return new OneBotResult(new OneBotMessageResponse(hash,(int)result.Sequence.GetValueOrDefault()), 0, "ok");
     }
 }
