@@ -42,7 +42,7 @@ public class LoginService(IConfiguration configuration, ILogger<LoginService> lo
                 var keystore = _lagrange.UpdateKeystore();
                 if (keystore.Session.TempPassword == null) return Task.FromResult(false);
                 if (keystore.Session.TempPassword.Length == 0) return Task.FromResult(false);
-                return _lagrange.LoginByPassword(token);
+                return _lagrange.LoginByEasy(token);
             })
             .Add(async (token) =>
             {
