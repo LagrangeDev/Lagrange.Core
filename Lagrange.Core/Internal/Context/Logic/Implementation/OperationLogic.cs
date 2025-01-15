@@ -491,14 +491,15 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((RequestFriendEvent)events[0]).ResultCode == 0;
     }
 
-    public async Task<bool> Like(uint targetUin, uint count)
+    public async Task<string?> Like(uint targetUin, uint count)
     {
-        var uid = await Collection.Business.CachingLogic.ResolveUid(null, targetUin);
-        if (uid == null) return false;
+        // var uid = await Collection.Business.CachingLogic.ResolveUid(null, targetUin);
+        // if (uid == null) return false;
 
-        var friendLikeEvent = FriendLikeEvent.Create(uid, count);
+        var friendLikeEvent = FriendLikeEvent.Create(targetUin, count);
         var results = await Collection.Business.SendEvent(friendLikeEvent);
-        return results.Count != 0 && results[0].ResultCode == 0;
+        var res = (FriendLikeEvent)results[0];
+        return  results.Count == 0 ? null : res.Error;
     }
 
     public async Task<bool> InviteGroup(uint targetGroupUin, Dictionary<uint, uint?> invitedUins)

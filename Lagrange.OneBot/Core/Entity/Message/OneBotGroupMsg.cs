@@ -4,7 +4,7 @@ using Lagrange.Core.Common.Entity;
 namespace Lagrange.OneBot.Core.Entity.Message;
 
 [Serializable]
-public class OneBotGroupMsg(uint selfId, uint groupUin, List<OneBotSegment> message, string rawMessage, BotGroupMember member, int messageId, uint appid, int seq) : OneBotEntityBase(selfId, "message")
+public class OneBotGroupMsg(uint selfId, uint groupUin, List<OneBotSegment> message, string rawMessage, BotGroupMember member, int messageId, uint appid, int seq, long time) : OneBotEntityBase(selfId, "message",time)
 {
     [JsonPropertyName("message_type")] public string MessageType { get; set; } = "group";
 
@@ -32,7 +32,7 @@ public class OneBotGroupMsg(uint selfId, uint groupUin, List<OneBotSegment> mess
 }
 
 [Serializable]
-public class OneBotGroupStringMsg(uint selfId, uint groupUin, string message, BotGroupMember member, int messageId, uint appid, int seq) : OneBotEntityBase(selfId, "message")
+public class OneBotGroupStringMsg(uint selfId, uint groupUin, string message, BotGroupMember member, int messageId, uint appid, int seq, long time) : OneBotEntityBase(selfId, "message",time)
 {
     [JsonPropertyName("message_type")] public string MessageType { get; set; } = "group";
 

@@ -148,7 +148,7 @@ public static class OperationExt
     public static Task<bool> RequestFriend(this BotContext bot, uint targetUin, string question = "", string message = "")
         => bot.ContextCollection.Business.OperationLogic.RequestFriend(targetUin, question, message);
 
-    public static Task<bool> Like(this BotContext bot, uint targetUin, uint count = 1)
+    public static Task<string?> Like(this BotContext bot, uint targetUin, uint count = 1)
         => bot.ContextCollection.Business.OperationLogic.Like(targetUin, count);
 
     /// <summary>

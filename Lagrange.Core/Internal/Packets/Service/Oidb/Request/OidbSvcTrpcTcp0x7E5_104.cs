@@ -11,7 +11,7 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 [OidbSvcTrpcTcp(0x7e5, 104)]
 internal class OidbSvcTrpcTcp0x7E5_104
 {
-    [ProtoMember(11)] public string? TargetUid { get; set; }
+    [ProtoMember(11)] public uint? TargetUin { get; set; }
     
     [ProtoMember(12)] public uint Field2 { get; set; } // 71
     

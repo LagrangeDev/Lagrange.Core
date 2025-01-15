@@ -17,10 +17,10 @@ internal class FriendLikeService : BaseService<FriendLikeEvent>
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x7E5_104>(new OidbSvcTrpcTcp0x7E5_104
         {
-            TargetUid = input.TargetUid,
+            TargetUin = input.TargetUin,
             Field2 = 71,
             Field3 = input.Count
-        });
+        },false,true);
         output = packet.Serialize();
         
         extraPackets = null;
@@ -31,7 +31,7 @@ internal class FriendLikeService : BaseService<FriendLikeEvent>
         out FriendLikeEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
-        output = FriendLikeEvent.Result((int)payload.ErrorCode);
+        output = FriendLikeEvent.Result((int)payload.ErrorCode, payload.ErrorMsg);
 
         extraEvents = null;
         return true;
