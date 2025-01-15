@@ -10,29 +10,35 @@ public static class BotExt
     /// <returns>return url and qrcode image in PNG format</returns>
     public static Task<(string Url, byte[] QrCode)?> FetchQrCode(this BotContext bot)
         => bot.ContextCollection.Business.WtExchangeLogic.FetchQrCode();
-    
+
     /// <summary>
     /// Use this method to login by QrCode, you should call <see cref="FetchQrCode"/> first
     /// </summary>
     public static Task LoginByQrCode(this BotContext bot, CancellationToken cancellationToken = default)
         => bot.ContextCollection.Business.WtExchangeLogic.LoginByQrCode(cancellationToken);
-    
+
     /// <summary>
     /// Use this method to login by password, EasyLogin may be preformed if there is sig in <see cref="BotKeystore"/>
     /// </summary>
     public static Task<bool> LoginByPassword(this BotContext bot, CancellationToken cancellationToken = default)
-        => bot.ContextCollection.Business.WtExchangeLogic.LoginByPassword(cancellationToken);
-    
+        => bot.ContextCollection.Business.WtExchangeLogic.LoginByEasy(true, cancellationToken);
+
+    /// <summary>
+    /// Use this method to login by easy, no fallback to password login/>
+    /// </summary>
+    public static Task<bool> LoginByEasy(this BotContext bot, CancellationToken cancellationToken = default)
+        => bot.ContextCollection.Business.WtExchangeLogic.LoginByEasy(false, cancellationToken);
+
     /// <summary>
     /// Submit the captcha of the url given by the <see cref="EventInvoker.OnBotCaptchaEvent"/>
     /// </summary>
     /// <returns>Whether the captcha is submitted successfully</returns>
     public static bool SubmitCaptcha(this BotContext bot, string ticket, string randStr)
         => bot.ContextCollection.Business.WtExchangeLogic.SubmitCaptcha(ticket, randStr);
-    
-    public static Task<bool> SetNeedToConfirmSwitch(this BotContext bot, bool needToConfirm) 
+
+    public static Task<bool> SetNeedToConfirmSwitch(this BotContext bot, bool needToConfirm)
         => bot.ContextCollection.Business.OperationLogic.SetNeedToConfirmSwitch(needToConfirm);
-    
+
     /// <summary>
     /// Use this method to update keystore, so EasyLogin may be preformed next time by using this keystore
     /// </summary>
