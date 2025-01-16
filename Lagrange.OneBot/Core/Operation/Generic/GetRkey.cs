@@ -14,8 +14,6 @@ public class GetRkey : IOperation
         var fetchRKeyEvent = FetchRKeyEvent.Create();
         var events = await context.ContextCollection.Business.SendEvent(fetchRKeyEvent);
         var rKeyEvent = (FetchRKeyEvent)events[0];
-        // rKeyEvent.RKeys[0].RkeyCreateTime;
-        context.ContextCollection.Log.LogDebug("[get_rkey]", rKeyEvent.RKeys.ToString() ?? throw new InvalidOperationException());
         if (rKeyEvent.ResultCode!=0) return new OneBotResult(null, rKeyEvent.ResultCode, "failed");
         var response = new OneBotGetRkeyResponse(rKeyEvent.RKeys.Select(x=>new OneBotRkey
         {
