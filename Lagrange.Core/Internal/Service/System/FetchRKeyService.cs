@@ -48,7 +48,7 @@ internal class FetchRKeyService : BaseService<FetchRKeyEvent>
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
 
-        output = FetchRKeyEvent.Result((int)payload.ErrorCode, payload.Body.DownloadRKey.RKeys.Select(x => x.Rkey).ToList());
+        output = FetchRKeyEvent.Result((int)payload.ErrorCode, payload.Body.DownloadRKey.RKeys);
         extraEvents = null;
         return true;
     }
