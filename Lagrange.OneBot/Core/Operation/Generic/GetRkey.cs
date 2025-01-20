@@ -6,7 +6,7 @@ using Lagrange.OneBot.Core.Entity.Action.Response;
 
 namespace Lagrange.OneBot.Core.Operation.Generic;
 
-[Operation("get_rkey")]
+[Operation("get_rkeys")]
 public class GetRkey : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
