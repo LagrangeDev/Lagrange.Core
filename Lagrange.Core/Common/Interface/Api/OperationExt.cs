@@ -257,12 +257,12 @@ public static class OperationExt
     public static Task<List<string>?> FetchMarketFaceKey(this BotContext bot, List<string> faceIds)
         => bot.ContextCollection.Business.OperationLogic.FetchMarketFaceKey(faceIds);
 
-    public static async Task<List<string>> FetchRkey(this BotContext bot)
-    {
-        var fetchRkeyEvent = FetchRKeyEvent.Create();
-        var events = await bot.ContextCollection.Business.SendEvent(fetchRkeyEvent);
-        return ((FetchRKeyEvent)events[0]).RKeys;
-    }
+    // public static async Task<List<string>> FetchRkey(this BotContext bot)
+    // {
+    //     var fetchRkeyEvent = FetchRKeyEvent.Create();
+    //     var events = await bot.ContextCollection.Business.SendEvent(fetchRkeyEvent);
+    //     return ((FetchRKeyEvent)events[0]).RKeys;
+    // }
 
     /// <summary>
     /// Set the avatar of the bot itself
