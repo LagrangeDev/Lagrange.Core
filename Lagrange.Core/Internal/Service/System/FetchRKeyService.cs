@@ -43,12 +43,12 @@ internal class FetchRKeyService : BaseService<FetchRKeyEvent>
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out FetchRKeyEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
 
-        output = FetchRKeyEvent.Result((int)payload.ErrorCode, payload.Body.DownloadRKey.RKeys.Select(x => x.Rkey).ToList());
+        output = FetchRKeyEvent.Result((int)payload.ErrorCode, payload.Body.DownloadRKey.RKeys);
         extraEvents = null;
         return true;
     }
