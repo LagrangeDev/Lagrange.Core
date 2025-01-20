@@ -15,7 +15,16 @@ public class GetRkey : IOperation
         var events = await context.ContextCollection.Business.SendEvent(fetchRKeyEvent);
         var rKeyEvent = (FetchRKeyEvent)events[0];
         if (rKeyEvent.ResultCode != 0) return new OneBotResult(null, rKeyEvent.ResultCode, "failed");
-        var response = new OneBotGetRkeyResponse(rKeyEvent.RKeys.Select(x => new OneBotRkey { Type = x.Type == 10 ? "private" : "group", Rkey = x.Rkey, CreateTime = x.RkeyCreateTime, TtlSeconds = x.RkeyTtlSec }).ToList());
+        var response = new OneBotGetRkeyResponse(rKeyEvent.RKeys.Select(x => new OneBotRkey
+            {
+                Type = x.Type == 10
+                    ? "private"
+                    : "group",
+                Rkey = x.Rkey,
+                CreateTime = x.RkeyCreateTime,
+                TtlSeconds = x.RkeyTtlSec
+            })
+            .ToList());
         return new OneBotResult(response, 0, "ok");
     }
 }

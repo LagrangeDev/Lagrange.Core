@@ -15,7 +15,28 @@ internal class FetchRKeyService : BaseService<FetchRKeyEvent>
     protected override bool Build(FetchRKeyEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
-        var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq { ReqHead = new MultiMediaReqHead { Common = new CommonHead { RequestId = 1, Command = 202 }, Scene = new SceneInfo { RequestType = 2, BusinessType = 1, SceneType = 0 }, Client = new ClientMeta { AgentType = 2 } }, DownloadRKey = new DownloadRKeyReq { Types = new List<int> { 10, 20, 2 } } }, 0x9067, 202, false, true);
+        var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq
+        {
+            ReqHead = new MultiMediaReqHead
+            {
+                Common = new CommonHead
+                {
+                    RequestId = 1,
+                    Command = 202
+                },
+                Scene = new SceneInfo
+                {
+                    RequestType = 2,
+                    BusinessType = 1,
+                    SceneType = 0
+                },
+                Client = new ClientMeta { AgentType = 2 }
+            },
+            DownloadRKey = new DownloadRKeyReq
+            {
+                Types = new List<int> { 10, 20, 2 }
+            }
+        }, 0x9067, 202, false, true);
 
         extraPackets = null;
         output = packet.Serialize();
