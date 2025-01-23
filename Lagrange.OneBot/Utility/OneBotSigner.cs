@@ -18,7 +18,7 @@ public class OneBotSigner : SignProvider
 
     private readonly ILogger<OneBotSigner> _logger;
 
-    private const string Url = "https://sign.lagrangecore.org/api/sign/25765";
+    private const string Url = "https://sign.lagrangecore.org/api/sign/30366";
 
     private readonly string? _signServer;
 
