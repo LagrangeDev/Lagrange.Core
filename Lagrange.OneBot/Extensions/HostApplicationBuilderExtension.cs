@@ -82,7 +82,7 @@ public static class HostApplicationBuilderExtension
             {
                 var configuration = services.GetRequiredService<IConfiguration>();
 
-                string prefix = configuration["ConfigPath:Database"] ?? $"./lagrange-{configuration["Account:Uin"]}";
+                string prefix = configuration["ConfigPath:Database"] ?? $"./lagrange-{configuration["Account:Uin"]}-db";
                 if (!Directory.Exists(prefix)) Directory.CreateDirectory(prefix);
                 string path = Path.GetFullPath(Path.Join(prefix, ".realm"));
 
