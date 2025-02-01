@@ -6,19 +6,20 @@ using Lagrange.Core.Message;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Operation.Converters;
 using Lagrange.OneBot.Database;
-using LiteDB;
+using Lagrange.OneBot.Utility;
 
 namespace Lagrange.OneBot.Core.Operation.Message;
 
 [Operation("delete_essence_msg")]
-public class DeleteEssenceMessageOperation(LiteDatabase database) : IOperation
+public class DeleteEssenceMessageOperation(RealmHelper realm) : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         if (payload.Deserialize<OneBotGetMessage>(SerializerOptions.DefaultOptions) is { } getMsg)
         {
-            var record = database.GetCollection<MessageRecord>().FindById(getMsg.MessageId);
-            var chain = (MessageChain)record;
+            var chain = realm.Do<MessageChain>(realm => realm.All<MessageRecord>()
+                .First(record => record.Id == getMsg.MessageId));
+
             bool result = await context.RemoveEssenceMessage(chain);
             return new OneBotResult(null, result ? 0 : 1, result ? "ok" : "failed");
         }

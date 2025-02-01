@@ -1,6 +1,3 @@
-
-using System.Diagnostics.CodeAnalysis;
-
 namespace Lagrange.OneBot.Utility.Fallbacks;
 
 public class FallbackAsync

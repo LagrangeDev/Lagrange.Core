@@ -59,7 +59,7 @@ public partial class EventInvoker : IDisposable
             }
             catch (Exception ex)
             {
-                PostEvent(new BotLogEvent(Tag, LogLevel.Exception, $"{ex.StackTrace}\n{ex.Message}"));
+                PostEvent(new BotLogEvent(Tag, LogLevel.Exception, $"{ex}"));
             }
         });
     }

@@ -1,11 +1,11 @@
 using Lagrange.Core.Message;
-using LiteDB;
+using Lagrange.OneBot.Utility;
 
 namespace Lagrange.OneBot.Message;
 
 public abstract class SegmentBase
 {
-    public LiteDatabase? Database { protected get; set; }
+    public RealmHelper? Realm { protected get; set; }
     
     public abstract void Build(MessageBuilder builder, SegmentBase segment);
     
