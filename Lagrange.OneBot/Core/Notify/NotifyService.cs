@@ -230,7 +230,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             await service.SendJsonAsync(new OneBotGroupReaction(
                 bot.BotUin,
                 @event.TargetGroupUin,
-                id,
+                id.Value,
                 @event.OperatorUin,
                 @event.IsAdd ? "add" : "remove",
                 @event.Code,
