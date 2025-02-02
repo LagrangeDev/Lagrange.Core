@@ -20,29 +20,29 @@ public partial class MessageRecord : IRealmObject
     public int Id { get; set; }
 
     [MapTo(nameof(Type)), Indexed]
-    private int TypeInt { get; set; }
+    public int TypeInt { get; set; }
     public MessageType Type { get => (MessageType)TypeInt; set => TypeInt = (int)value; }
 
     [MapTo(nameof(Sequence)), Indexed]
-    private long SequenceLong { get; set; }
+    public long SequenceLong { get; set; }
     public ulong Sequence { get => (ulong)SequenceLong; set => SequenceLong = (long)value; }
 
     [MapTo(nameof(ClientSequence)), Indexed]
-    private long ClientSequenceLong { get; set; }
-    public ulong ClientSequence { get => (ulong)ClientSequenceLong; set => SequenceLong = (long)value; }
+    public long ClientSequenceLong { get; set; }
+    public ulong ClientSequence { get => (ulong)ClientSequenceLong; set => ClientSequenceLong = (long)value; }
 
     [MapTo(nameof(MessageId)), Indexed]
-    private long MessageIdLong { get; set; }
+    public long MessageIdLong { get; set; }
     public ulong MessageId { get => (ulong)MessageIdLong; set => MessageIdLong = (long)value; }
 
     public DateTimeOffset Time { get; set; }
 
     [MapTo(nameof(FromUin)), Indexed]
-    private long FromUinLong { get; set; }
+    public long FromUinLong { get; set; }
     public ulong FromUin { get => (ulong)FromUinLong; set => FromUinLong = (long)value; }
 
     [MapTo(nameof(ToUin)), Indexed]
-    private long ToUinLong { get; set; }
+    public long ToUinLong { get; set; }
     public ulong ToUin { get => (ulong)ToUinLong; set => ToUinLong = (long)value; }
 
     public byte[] Entities { get; set; }

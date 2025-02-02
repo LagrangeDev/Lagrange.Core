@@ -149,10 +149,10 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             logger.LogInformation(@event.ToString());
 
             var sequence = realm.Do(realm => realm.All<MessageRecord>()
-                .First(record => record.Type == MessageType.Friend
-                    && record.FromUin == @event.FriendUin
-                    && record.ClientSequence == @event.ClientSequence
-                    && record.MessageId == (0x01000000UL << 32 | @event.Random)
+                .First(record => record.TypeInt == (int)MessageType.Friend
+                    && record.FromUinLong == @event.FriendUin
+                    && record.ClientSequenceLong == @event.ClientSequence
+                    && record.MessageIdLong == (0x01000000L << 32 | @event.Random)
                 )
                 .Sequence);
 
@@ -210,10 +210,9 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             logger.LogInformation(@event.ToString());
 
             var id = realm.Do(realm => realm.All<MessageRecord>()
-                .FirstOrDefault(record => record.Type == MessageType.Group
-                    && record.ToUin == @event.TargetGroupUin
-                    && record.Sequence == @event.TargetSequence
-                )?
+                .FirstOrDefault(record => record.TypeInt == (int)MessageType.Group
+                    && record.ToUinLong == @event.TargetGroupUin
+                    && record.SequenceLong == @event.TargetSequence)?
                 .Id);
 
             if (id == null)
