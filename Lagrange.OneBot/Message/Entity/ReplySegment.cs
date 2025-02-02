@@ -24,10 +24,10 @@ public partial class ReplySegment : SegmentBase
     {
         if (segment is ReplySegment reply && Realm is not null)
         {
-            var messageRecord = Realm.Do(realm => realm.All<MessageRecord>()
+            var chain = Realm.Do<MessageChain>(realm => realm.All<MessageRecord>()
                 .First(record => record.Id == int.Parse(reply.MessageId)));
 
-            reply.TargetChain ??= messageRecord;
+            reply.TargetChain ??= chain;
 
             var build = MessagePacker.Build(reply.TargetChain, "");
             var virtualElem = build.Body?.RichText?.Elems;
