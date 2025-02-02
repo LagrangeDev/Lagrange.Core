@@ -209,13 +209,14 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
         {
             logger.LogInformation(@event.ToString());
 
-            var record = realm.Do(realm => realm.All<MessageRecord>()
-                .First(record => record.Type == MessageType.Group
+            var id = realm.Do(realm => realm.All<MessageRecord>()
+                .FirstOrDefault(record => record.Type == MessageType.Group
                     && record.ToUin == @event.TargetGroupUin
                     && record.Sequence == @event.TargetSequence
-                ));
+                )?
+                .Id);
 
-            if (record == null)
+            if (id == null)
             {
                 logger.LogInformation(
                     "Unable to find the corresponding message using GroupUin: {} and Sequence: {}",
@@ -229,7 +230,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             await service.SendJsonAsync(new OneBotGroupReaction(
                 bot.BotUin,
                 @event.TargetGroupUin,
-                record.Id,
+                id,
                 @event.OperatorUin,
                 @event.IsAdd ? "add" : "remove",
                 @event.Code,
