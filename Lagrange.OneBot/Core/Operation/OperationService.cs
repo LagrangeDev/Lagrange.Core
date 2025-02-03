@@ -5,7 +5,7 @@ using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Core.Notify;
 using Lagrange.OneBot.Core.Operation.Message;
 using Lagrange.OneBot.Message;
-using LiteDB;
+using Lagrange.OneBot.Utility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -19,7 +19,7 @@ public sealed class OperationService
     private readonly Dictionary<string, Type> _operations;
     private readonly ServiceProvider _service;
 
-    public OperationService(BotContext bot, ILogger<OperationService> logger, LiteDatabase context, MessageService message)
+    public OperationService(BotContext bot, ILogger<OperationService> logger, RealmHelper realm, MessageService message)
     {
         _bot = bot;
         _logger = logger;
@@ -33,7 +33,7 @@ public sealed class OperationService
 
         var service = new ServiceCollection();
         service.AddSingleton(bot);
-        service.AddSingleton(context);
+        service.AddSingleton(realm);
         service.AddSingleton(logger);
         service.AddSingleton(message);
         service.AddSingleton<MessageCommon>();
