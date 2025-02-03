@@ -6,7 +6,7 @@ namespace Lagrange.Core.Internal.Packets.Message.Action;
 [ProtoContract]
 internal class LongMsgResult
 {
-    [ProtoMember(2)] public LongMsgAction Action { get; set; }
+    [ProtoMember(2)] public List<LongMsgAction> Action { get; set; }
 }
 
 [ProtoContract]

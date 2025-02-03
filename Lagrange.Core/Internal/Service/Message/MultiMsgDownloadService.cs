@@ -32,7 +32,7 @@ internal class MultiMsgDownloadService : BaseService<MultiMsgDownloadEvent>
                 Field4 = 0
             }
         };
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
@@ -45,7 +45,9 @@ internal class MultiMsgDownloadService : BaseService<MultiMsgDownloadEvent>
         var inflate = GZip.Inflate(packet.Result.Payload);
         var result = Serializer.Deserialize<LongMsgResult>(inflate.AsSpan());
 
-        output = MultiMsgDownloadEvent.Result(0, result.Action.ActionData.MsgBody.Select(x => MessagePacker.Parse(x, true)).ToList());
+        var main = result.Action.First(a => a.ActionCommand == "MultiMsg");
+        var chains = main.ActionData.MsgBody.Select(x => MessagePacker.Parse(x, true)).ToList();
+        output = MultiMsgDownloadEvent.Result(0, chains);
         extraEvents = null;
         return true;
     }
