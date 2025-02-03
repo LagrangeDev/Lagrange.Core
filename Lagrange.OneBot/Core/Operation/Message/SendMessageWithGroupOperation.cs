@@ -9,18 +9,18 @@ using Lagrange.OneBot.Core.Operation.Converters;
 using Lagrange.OneBot.Message;
 using Lagrange.OneBot.Database;
 using Lagrange.OneBot.Core.Entity.Action.Response;
+using Lagrange.OneBot.Utility;
+
 namespace Lagrange.OneBot.Core.Operation.Message;
 
-using LiteDB;
-
 [Operation("send_msg_with_group")]
-public class SendMessageWithGroupOperation(LiteDatabase database) : IOperation
+public class SendMessageWithGroupOperation(RealmHelper realm) : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         if (payload.Deserialize<OneBotSendMessageWithGroup>(SerializerOptions.DefaultOptions) is { } history)
         {
-            var record = database.GetCollection<MessageRecord>().FindById(history.MessageId);
+            var record = realm.Do(realm => realm.All<MessageRecord>().First(record => record.Id == history.MessageId));
             var chain = (MessageChain)record;
             if (chain.GroupUin == 0)
             {
