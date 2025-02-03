@@ -409,6 +409,13 @@ public sealed class MessageBuilder
         return this;
     }
 
+    public MessageBuilder Style(MessageStyle? style)
+    {
+        _chain.Style = style;
+
+        return this;
+    }
+
     public MessageBuilder Add(IMessageEntity entity)
     {
         _chain.Add(entity);
