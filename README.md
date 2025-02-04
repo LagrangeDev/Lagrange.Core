@@ -32,10 +32,6 @@
 </tr>
 </table>
 
-## Document
-
-[Lagrange.Core Document](https://lagrangedev.github.io/Lagrange.Doc/Lagrange.Core/)
-
 ## Out of Active Feature Requesting
 
 Lagrange.Core has completed nearly all the function and task scheduled by Linwenxuan05, so mostly enhance to the library would be concentrated to the repo for next.
@@ -57,6 +53,12 @@ Furthermore, any discussions, suggestions, or guidance provided by the Lagrange.
 By using or accessing Lagrange.Core, the user acknowledges and agrees to release the developers, contributors, and affiliated individuals or entities from any and all liability arising from the use or misuse of the project, including any legal consequences incurred as a result of their actions.
 
 Please use Lagrange.Core responsibly and in accordance with the law.
+
+# Lagrange.Core
+
+## Document
+
+[Lagrange.Core Document](https://lagrangedev.github.io/Lagrange.Doc/Lagrange.Core/)
 
 ## Features List
 

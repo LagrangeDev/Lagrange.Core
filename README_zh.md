@@ -32,10 +32,6 @@
 </tr>
 </table>
 
-## 文档
-
-[Lagrange.Core 文档](https://lagrangedev.github.io/Lagrange.Doc/Lagrange.Core/)
-
 ## 减缓新功能的实现
 
 Lagrange.Core 已完成了几乎所有由 Linwenxuan05 安排的功能和任务，因此大部分对库的增强将集中在下一个存储库中
@@ -59,6 +55,12 @@ Furthermore, any discussions, suggestions, or guidance provided by the Lagrange.
 By using or accessing Lagrange.Core, the user acknowledges and agrees to release the developers, contributors, and affiliated individuals or entities from any and all liability arising from the use or misuse of the project, including any legal consequences incurred as a result of their actions.
 
 Please use Lagrange.Core responsibly and in accordance with the law.
+
+# Lagrange.Core
+
+## 文档
+
+[Lagrange.Core 文档](https://lagrangedev.github.io/Lagrange.Doc/Lagrange.Core/)
 
 ## 功能列表
 
