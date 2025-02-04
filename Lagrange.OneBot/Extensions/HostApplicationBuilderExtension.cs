@@ -10,6 +10,7 @@ using Lagrange.OneBot.Utility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Realms;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -80,9 +81,23 @@ public static class HostApplicationBuilderExtension
         builder.Services.AddOptions()
             .AddSingleton(services => // Realm Configuration
             {
+                var logger = services.GetRequiredService<ILogger<RealmConfiguration>>();
                 var configuration = services.GetRequiredService<IConfiguration>();
+                var host = services.GetRequiredService<IHost>();
 
-                string prefix = configuration["ConfigPath:Database"] ?? $"./lagrange-{configuration["Account:Uin"]}-db";
+                string? dpath = configuration["ConfigPath:Database"];
+
+                // Check LiteDB
+                string litedb = dpath ?? $"./lagrange-{configuration["Account:Uin"]}.db";
+                if (File.Exists(litedb)) {
+                    logger.LogCritical("Found LiteDB database, currently Lagrange.OneBot has been migrated to Realm database");
+                    logger.LogCritical("Please remove {} or refer to https://lagrangedev.github.io/Lagrange.Doc/Lagrange.OneBot/#从-litedb-迁移到-realm to migrate the database to Realm", litedb);
+                    logger.LogCritical("Press any key to terminate the program");
+                    Console.ReadKey(true);
+                    host.StopAsync(default);
+                }
+
+                string prefix = dpath ?? $"./lagrange-{configuration["Account:Uin"]}-db";
                 if (!Directory.Exists(prefix)) Directory.CreateDirectory(prefix);
                 string path = Path.GetFullPath(Path.Join(prefix, ".realm"));
 
