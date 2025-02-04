@@ -83,6 +83,7 @@ public static class HostApplicationBuilderExtension
             {
                 var logger = services.GetRequiredService<ILogger<RealmConfiguration>>();
                 var configuration = services.GetRequiredService<IConfiguration>();
+                var host = services.GetRequiredService<IHost>();
 
                 string? dpath = configuration["ConfigPath:Database"];
 
@@ -90,8 +91,10 @@ public static class HostApplicationBuilderExtension
                 string litedb = dpath ?? $"./lagrange-{configuration["Account:Uin"]}.db";
                 if (File.Exists(litedb)) {
                     logger.LogCritical("Found LiteDB database, currently Lagrange.OneBot has been migrated to Realm database");
-                    logger.LogCritical("Please remove {} or refer to https://lagrangedev.github.io/Lagrange.Doc/Lagrange.OneBot/#Migrate-from-litedb-to-realm to migrate the database to Realm", litedb);
+                    logger.LogCritical("Please remove {} or refer to https://lagrangedev.github.io/Lagrange.Doc/Lagrange.OneBot/#从-litedb-迁移到-realm to migrate the database to Realm", litedb);
                     logger.LogCritical("Press any key to terminate the program");
+                    Console.ReadKey(true);
+                    host.StopAsync(default);
                 }
 
                 string prefix = dpath ?? $"./lagrange-{configuration["Account:Uin"]}-db";
