@@ -9,7 +9,7 @@ using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Message;
 using Lagrange.OneBot.Core.Operation.Converters;
 using Lagrange.OneBot.Message;
-using LiteDB;
+using Lagrange.OneBot.Utility;
 using Microsoft.Extensions.Logging;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -21,7 +21,7 @@ public partial class MessageCommon
 
     private readonly Dictionary<string, SegmentBase> _typeToSegment;
 
-    public MessageCommon(LiteDatabase database, ILogger<MessageCommon> logger)
+    public MessageCommon(RealmHelper realm, ILogger<MessageCommon> logger)
     {
         _logger = logger;
         _typeToSegment = new Dictionary<string, SegmentBase>();
@@ -31,7 +31,7 @@ public partial class MessageCommon
             if (type.GetCustomAttribute<SegmentSubscriberAttribute>() is { } attribute)
             {
                 var instance = (SegmentBase)type.CreateInstance(false);
-                instance.Database = database;
+                instance.Realm = realm;
                 _typeToSegment[attribute.SendType] = instance;
             }
         }

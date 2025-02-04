@@ -1,83 +1,120 @@
-using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Message;
-using Lagrange.OneBot.Utility;
+using MessagePack;
+using MessagePack.Resolvers;
+using Realms;
+using static Lagrange.Core.Message.MessageChain;
 
 namespace Lagrange.OneBot.Database;
 
-[Serializable]
-public class MessageRecord
+#pragma warning disable CS8618
+
+// # ################################################### #
+// #                       WARNING                       #
+// # ################################################### #
+// 
+// When modifying MessageRecord, increment `SchemaVersion`.
+// Beyond adding/removing fields (Realm auto-assigns
+// defaults; complex processing requires migration logic
+// in MigrationCallback), implement migration logic in
+// `MigrationCallback` to handle all previous schema
+// versions to current version.
+// 
+// SchemaVersion
+// Lagrange.OneBot/Extensions/HostApplicationBuilderExtension.cs#L91
+// 
+// MigrationCallback
+// Lagrange.OneBot/Extensions/HostApplicationBuilderExtension.cs#L92
+
+public partial class MessageRecord : IRealmObject
 {
-    public uint FriendUin { get; set; }
+    public static readonly MessagePackSerializerOptions OPTIONS = MessagePackSerializerOptions.Standard
+        .WithResolver(CompositeResolver.Create(
+            ContractlessStandardResolver.Instance,
+            new MessageEntityResolver()
+        ));
 
-    public uint GroupUin { get; set; }
+    [PrimaryKey]
+    public int Id { get; set; }
 
-    public uint Sequence { get; set; }
+    [MapTo(nameof(Type)), Indexed]
+    public int TypeInt { get; set; }
+    public MessageType Type { get => (MessageType)TypeInt; set => TypeInt = (int)value; }
 
-    public uint ClientSequence { get; set; }
+    [MapTo(nameof(Sequence)), Indexed]
+    public long SequenceLong { get; set; }
+    public ulong Sequence { get => (ulong)SequenceLong; set => SequenceLong = (long)value; }
 
-    public DateTime Time { get; set; }
+    [MapTo(nameof(ClientSequence)), Indexed]
+    public long ClientSequenceLong { get; set; }
+    public ulong ClientSequence { get => (ulong)ClientSequenceLong; set => ClientSequenceLong = (long)value; }
 
-    public ulong MessageId { get; set; }
+    [MapTo(nameof(MessageId)), Indexed]
+    public long MessageIdLong { get; set; }
+    public ulong MessageId { get => (ulong)MessageIdLong; set => MessageIdLong = (long)value; }
 
-    public BotFriend? FriendInfo { get; set; }
+    public DateTimeOffset Time { get; set; }
 
-    public BotGroupMember? GroupMemberInfo { get; set; }
+    [MapTo(nameof(FromUin)), Indexed]
+    public long FromUinLong { get; set; }
+    public ulong FromUin { get => (ulong)FromUinLong; set => FromUinLong = (long)value; }
 
-    public List<IMessageEntity> Entities { get; set; } = [];
+    [MapTo(nameof(ToUin)), Indexed]
+    public long ToUinLong { get; set; }
+    public ulong ToUin { get => (ulong)ToUinLong; set => ToUinLong = (long)value; }
 
-    public int MessageHash { get; set; }
-
-    public uint TargetUin { get; set; }
-
-    static MessageRecord()
-    {
-        Vector2Mapper.RegisterType(); // I HATE THIS
-    }
-
-    public static explicit operator MessageChain(MessageRecord record)
-    {
-        var chain = record.GroupUin != 0
-            ? new MessageChain(record.GroupUin, record.FriendUin, record.Sequence, record.MessageId)
-            : new MessageChain(record.FriendUin, string.Empty, string.Empty, record.TargetUin, record.Sequence, record.ClientSequence, record.MessageId);
-
-        chain.Time = record.Time;
-        chain.FriendInfo = record.FriendInfo;
-        chain.GroupMemberInfo = record.GroupMemberInfo;
-
-        chain.AddRange(record.Entities);
-        return chain;
-    }
-
-    public static explicit operator MessageRecord(MessageChain chain) => new()
-    {
-        FriendUin = chain.FriendUin,
-        GroupUin = chain.GroupUin ?? 0,
-        Sequence = chain.Sequence,
-        ClientSequence = chain.ClientSequence,
-        Time = chain.Time,
-        MessageId = chain.MessageId,
-        FriendInfo = chain.FriendInfo,
-        GroupMemberInfo = chain.GroupMemberInfo,
-        Entities = chain,
-        MessageHash = CalcMessageHash(chain.MessageId, chain.Sequence),
-        TargetUin = chain.TargetUin
-    };
+    public byte[] Entities { get; set; }
 
     public static int CalcMessageHash(ulong msgId, uint seq)
     {
-        var messageId = BitConverter.GetBytes(msgId);
-        var sequence = BitConverter.GetBytes(seq);
-
-        byte[] id = [messageId[0], messageId[1], sequence[0], sequence[1]];
-        return BitConverter.ToInt32(id.AsSpan());
+        return ((ushort)seq << 16) | (ushort)msgId;
     }
 
-    public static int CalcMessageHash(uint random, uint seq)
+    public static implicit operator MessageRecord(MessageChain chain) => new()
     {
-        var messageId = BitConverter.GetBytes(random);
-        var sequence = BitConverter.GetBytes(seq);
+        Id = CalcMessageHash(chain.MessageId, chain.Sequence),
+        Sequence = chain.Sequence,
+        ClientSequence = chain.ClientSequence,
+        MessageId = chain.MessageId,
+        Time = chain.Time,
+        FromUin = chain.FriendUin,
+        ToUin = chain.Type switch
+        {
+            MessageType.Group => (ulong)chain.GroupUin!,
+            MessageType.Temp or
+            MessageType.Friend => chain.TargetUin,
+            _ => throw new NotImplementedException(),
+        },
+        Entities = MessagePackSerializer.Serialize<List<IMessageEntity>>(chain, OPTIONS)
+    };
 
-        byte[] id = [messageId[0], messageId[1], sequence[0], sequence[1]];
-        return BitConverter.ToInt32(id.AsSpan());
+    public static implicit operator MessageChain(MessageRecord record)
+    {
+        var chain = record.Type switch
+        {
+            MessageType.Group => new MessageChain(
+                (uint)record.ToUin,
+                (uint)record.FromUin,
+                (uint)record.Sequence,
+                record.MessageId
+            ),
+            MessageType.Temp or
+            MessageType.Friend => new MessageChain(
+                (uint)record.FromUin,
+                string.Empty,
+                string.Empty,
+                (uint)record.ToUin,
+                (uint)record.Sequence,
+                (uint)record.ClientSequence,
+                record.MessageId
+            ),
+            _ => throw new NotImplementedException(),
+        };
+
+        var entities = MessagePackSerializer.Deserialize<List<IMessageEntity>>(record.Entities, OPTIONS);
+        chain.AddRange(entities);
+
+        chain.Time = record.Time.DateTime;
+
+        return chain;
     }
 }

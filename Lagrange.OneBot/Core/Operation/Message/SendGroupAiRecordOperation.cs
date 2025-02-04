@@ -2,11 +2,9 @@
 using System.Text.Json.Nodes;
 using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
-using Lagrange.Core.Message;
 using Lagrange.OneBot.Core.Entity.Action;
 using Lagrange.OneBot.Core.Entity.Action.Response;
 using Lagrange.OneBot.Core.Operation.Converters;
-using Lagrange.OneBot.Database;
 
 namespace Lagrange.OneBot.Core.Operation.Message;
 

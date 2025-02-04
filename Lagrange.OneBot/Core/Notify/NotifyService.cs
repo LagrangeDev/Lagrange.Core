@@ -6,12 +6,13 @@ using Lagrange.Core.Message.Entity;
 using Lagrange.OneBot.Core.Entity.Notify;
 using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Database;
-using LiteDB;
+using Lagrange.OneBot.Utility;
 using Microsoft.Extensions.Logging;
+using static Lagrange.Core.Message.MessageChain;
 
 namespace Lagrange.OneBot.Core.Notify;
 
-public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger, LagrangeWebSvcCollection service, LiteDatabase database)
+public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger, LagrangeWebSvcCollection service, RealmHelper realm)
 {
     public void RegisterEvents()
     {
@@ -147,17 +148,18 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
         {
             logger.LogInformation(@event.ToString());
 
-            var collection = database.GetCollection<MessageRecord>();
-            var record = collection.FindOne(Query.And(
-                Query.EQ("FriendUin", new BsonValue(@event.FriendUin)),
-                Query.EQ("ClientSequence", new BsonValue(@event.ClientSequence)),
-                Query.EQ("MessageId", new BsonValue(0x01000000L << 32 | @event.Random))
-            ));
+            var sequence = realm.Do(realm => realm.All<MessageRecord>()
+                .First(record => record.TypeInt == (int)MessageType.Friend
+                    && record.FromUinLong == @event.FriendUin
+                    && record.ClientSequenceLong == @event.ClientSequence
+                    && record.MessageIdLong == (0x01000000L << 32 | @event.Random)
+                )
+                .Sequence);
 
             await service.SendJsonAsync(new OneBotFriendRecall(bot.BotUin)
             {
                 UserId = @event.FriendUin,
-                MessageId = MessageRecord.CalcMessageHash(@event.Random, record.Sequence),
+                MessageId = MessageRecord.CalcMessageHash(@event.Random, (uint)sequence),
                 Tip = @event.Tip
             });
         };
@@ -207,24 +209,27 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
         {
             logger.LogInformation(@event.ToString());
 
-            var record = database.GetCollection<MessageRecord>().FindOne(Query.And(
-                Query.EQ("GroupUin", new BsonValue(@event.TargetGroupUin)),
-                Query.EQ("Sequence", new BsonValue(@event.TargetSequence))
-            ));
+            var id = realm.Do(realm => realm.All<MessageRecord>()
+                .FirstOrDefault(record => record.TypeInt == (int)MessageType.Group
+                    && record.ToUinLong == @event.TargetGroupUin
+                    && record.SequenceLong == @event.TargetSequence)?
+                .Id);
 
-            if (record == null)
+            if (id == null)
             {
                 logger.LogInformation(
                     "Unable to find the corresponding message using GroupUin: {} and Sequence: {}",
                     @event.TargetGroupUin,
                     @event.TargetSequence
                 );
+
+                return;
             }
 
             await service.SendJsonAsync(new OneBotGroupReaction(
                 bot.BotUin,
                 @event.TargetGroupUin,
-                record?.MessageHash ?? 0,
+                id.Value,
                 @event.OperatorUin,
                 @event.IsAdd ? "add" : "remove",
                 @event.Code,
