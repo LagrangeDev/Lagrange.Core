@@ -8,6 +8,23 @@ namespace Lagrange.OneBot.Database;
 
 #pragma warning disable CS8618
 
+// # ################################################### #
+// #                       WARNING                       #
+// # ################################################### #
+// 
+// When modifying MessageRecord, increment `SchemaVersion`.
+// Beyond adding/removing fields (Realm auto-assigns
+// defaults; complex processing requires migration logic
+// in MigrationCallback), implement migration logic in
+// `MigrationCallback` to handle all previous schema
+// versions to current version.
+// 
+// SchemaVersion
+// Lagrange.OneBot/Extensions/HostApplicationBuilderExtension.cs#L91
+// 
+// MigrationCallback
+// Lagrange.OneBot/Extensions/HostApplicationBuilderExtension.cs#L92
+
 public partial class MessageRecord : IRealmObject
 {
     public static readonly MessagePackSerializerOptions OPTIONS = MessagePackSerializerOptions.Standard

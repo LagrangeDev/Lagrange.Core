@@ -86,7 +86,11 @@ public static class HostApplicationBuilderExtension
                 if (!Directory.Exists(prefix)) Directory.CreateDirectory(prefix);
                 string path = Path.GetFullPath(Path.Join(prefix, ".realm"));
 
-                return new RealmConfiguration(path);
+                return new RealmConfiguration(path)
+                {
+                    SchemaVersion = 1,
+                    MigrationCallback = null,
+                };
             })
             .AddSingleton<RealmHelper>()
 
