@@ -6,7 +6,7 @@ namespace Lagrange.Core.Internal.Packets.Message.Component.Extra;
 internal class MessageStyleExtra
 {
     /// <summary>
-    /// 如果是管理员/群主则会有这个field并且值是10315
+    /// If the user is an admin or group owner, this field value is 10315
     /// </summary>
     [ProtoMember(4)] public int Field4 { get; set; } = 10315;
     [ProtoMember(15)] public ulong Font { get; set; }
