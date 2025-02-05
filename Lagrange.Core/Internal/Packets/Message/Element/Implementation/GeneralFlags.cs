@@ -6,7 +6,7 @@ namespace Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 [ProtoContract]
 internal class GeneralFlags
 {
-    [ProtoMember(1)] public int BubbleDiyTextId { get; set; }
+    [ProtoMember(1)] public uint BubbleDiyTextId { get; set; }
     
     [ProtoMember(2)] public int GroupFlagNew { get; set; }
     

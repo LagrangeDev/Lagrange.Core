@@ -75,6 +75,8 @@ internal static class MessagePacker
 
         BuildAdditional(chain, message);
 
+        BuildMessageStyle(chain, message.Body);
+
         return message;
     }
 
@@ -97,6 +99,9 @@ internal static class MessagePacker
                 message.Body.MsgContent = stream.ToArray();
             }
         }
+
+        BuildMessageStyle(chain, message.Body);
+
         return message;
     }
 
@@ -116,6 +121,39 @@ internal static class MessagePacker
                 }
             }
         }
+    }
+
+    private static void BuildMessageStyle(MessageChain chain, MessageBody? messageBody)
+    {
+        if (chain.Style == null || messageBody?.RichText == null) return;
+
+        messageBody.RichText.Elems.Add(new Elem
+        {
+            ElemFlags2 = new Internal.Packets.Message.Element.Implementation.ElemFlags2
+            {
+                ColorTextId = chain.Style.BubbleId,
+            }
+        });
+
+        ulong font = chain.Style.FontId == 0
+            ? 0x10000
+            : (ulong)((chain.Style.FontId >> 8) | (chain.Style.FontId << 8) & 0xFFFF) | 0x20000;
+        if (chain.Style.IsCsFontEffectEnabled)
+            font |= 1 << 24;
+
+        messageBody.RichText.Elems.Add(new Elem
+        {
+            GeneralFlags = new Internal.Packets.Message.Element.Implementation.GeneralFlags
+            {
+                BubbleDiyTextId = chain.Style.BubbleDiyTextId,
+                PendantId = chain.Style.PendantId,
+                PbReserve = new MessageStyleExtra
+                {
+                    Font = font,
+                    FontEffectId = chain.Style.FontEffectId
+                }.Serialize().ToArray()
+            }
+        });
     }
 
     public static MessageChain Parse(PushMsgBody message, bool isFake = false)
@@ -138,6 +176,8 @@ internal static class MessagePacker
                         }
                     }
                 }
+
+                ParseMessageStyle(chain, element);
             }
         }
 
@@ -170,6 +210,34 @@ internal static class MessagePacker
         }
 
         throw new Exception();
+    }
+
+    private static void ParseMessageStyle(MessageChain chain, Elem element)
+    {
+        if (element.ElemFlags2 != null)
+        {
+            chain.Style ??= new MessageStyle();
+            chain.Style.BubbleId = element.ElemFlags2.ColorTextId;
+        }
+
+        if (element.GeneralFlags == null) return;
+
+        chain.Style ??= new MessageStyle();
+        chain.Style.BubbleDiyTextId = element.GeneralFlags.BubbleDiyTextId;
+        chain.Style.PendantId = element.GeneralFlags.PendantId;
+
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (element.GeneralFlags.PbReserve == null) return;
+
+        MessageStyleExtra? styleExtra;
+        try { styleExtra = Serializer.Deserialize<MessageStyleExtra>(element.GeneralFlags.PbReserve.AsSpan()); }
+        catch (Exception) { return; }
+
+        if (styleExtra == null) return;
+
+        chain.Style.FontId = (ushort)((styleExtra.Font & 0xFF00) >> 8 | (styleExtra.Font & 0x00FF) << 8);
+        chain.Style.FontEffectId = styleExtra.FontEffectId;
+        chain.Style.IsCsFontEffectEnabled = (styleExtra.Font & 0x010000) != 0;
     }
 
     private static Internal.Packets.Message.Message BuildPacketBase(MessageChain chain) => new()
