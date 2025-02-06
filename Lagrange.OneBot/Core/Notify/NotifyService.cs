@@ -57,11 +57,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
             if (sequence == null) // received by msg
             {
                 var requests = await bot.FetchGroupRequests();
-                if (requests == null)
-                {
-                    logger.LogWarning("OnGroupInvitationReceived but no group requests");
-                    return;
-                }
+                if (requests == null) return;
 
                 var request = requests.FirstOrDefault(r =>
                 {
@@ -69,11 +65,7 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
                         && r.GroupUin == @event.GroupUin
                         && r.InvitorMemberUin == @event.InvitorUin;
                 });
-                if (request == null)
-                {
-                    logger.LogWarning("OnGroupInvitationReceived but matching no group requests");
-                    return;
-                }
+                if (request == null) return;
 
                 sequence = request.Sequence;
                 if (request.Comment != null) comment = request.Comment;
