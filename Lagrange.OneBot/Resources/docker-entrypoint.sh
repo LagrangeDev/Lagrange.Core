@@ -1,6 +1,6 @@
 #!/bin/sh
 
-USER_ID=${LOCAL_USER_ID:-0}
+USER_ID=${UID:-0}
 
 if [ "$USER_ID" -ne 0 ]; then
     chown -R $USER_ID /app/data
