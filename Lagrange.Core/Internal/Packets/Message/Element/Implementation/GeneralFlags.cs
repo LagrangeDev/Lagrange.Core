@@ -38,7 +38,7 @@ internal class GeneralFlags
     
     [ProtoMember(16)] public int BubbleSubId { get; set; }
     
-    [ProtoMember(17)] public long PendantId { get; set; }
+    [ProtoMember(17)] public ulong PendantId { get; set; }
     
     [ProtoMember(18)] public byte[] RpIndex { get; set; }
     

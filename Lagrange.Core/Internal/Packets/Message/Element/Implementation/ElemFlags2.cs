@@ -7,7 +7,7 @@ namespace Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 [ProtoContract]
 internal partial class ElemFlags2
 {
-    [ProtoMember(1)] public uint ColorTextId { get; set; }
+    [ProtoMember(1)] public ulong ColorTextId { get; set; }
     
     [ProtoMember(2)] public ulong MsgId { get; set; }
     

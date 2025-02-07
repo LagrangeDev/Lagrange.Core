@@ -2,9 +2,9 @@
 
 public class MessageStyle
 {
-    public uint BubbleId { get; set; }
+    public ulong BubbleId { get; set; }
 
-    public long PendantId { get; set; }
+    public ulong PendantId { get; set; }
 
     public ushort FontId { get; set; }
 
