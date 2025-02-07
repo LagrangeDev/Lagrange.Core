@@ -72,6 +72,7 @@ public partial class MessageRecord : IRealmObject
     public static implicit operator MessageRecord(MessageChain chain) => new()
     {
         Id = CalcMessageHash(chain.MessageId, chain.Sequence),
+        Type = chain.Type,
         Sequence = chain.Sequence,
         ClientSequence = chain.ClientSequence,
         MessageId = chain.MessageId,
