@@ -17,6 +17,8 @@ public class OneBotFakeNodeBase
 
     // For onebot 11 compatibility
     [JsonPropertyName("nickname")] public string Nickname { set => Name = value; }
+
+    [JsonPropertyName("message_style")] public OnebotMessageStyle? MessageStyle { get; set; }
 }
 
 [Serializable]

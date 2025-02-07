@@ -62,6 +62,8 @@ public partial class MessageRecord : IRealmObject
     public long ToUinLong { get; set; }
     public ulong ToUin { get => (ulong)ToUinLong; set => ToUinLong = (long)value; }
 
+    public MessageStyleRecord? Style { get; set; }
+
     public byte[] Entities { get; set; }
 
     public static int CalcMessageHash(ulong msgId, uint seq)
