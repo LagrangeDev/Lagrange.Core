@@ -2,7 +2,7 @@
 
 ![Lagrange.Core](https://socialify.git.ci/KonataDev/Lagrange.Core/image?description=1&descriptionEditable=An%20Implementation%20of%20NTQQ%20Protocol%2C%20with%20Pure%20C%23%2CDerived%20from%20Konata.Core&font=Jost&forks=1&issues=1&logo=https%3A%2F%2Fstatic.live.moe%2Flagrange.jpg&name=1&pattern=Diagonal%20Stripes&pulls=1&stargazers=1&theme=Auto)
 [![Core](https://img.shields.io/badge/Lagrange-Core-blue)](https://github.com/LagrangeDev/Lagrange.Core/pkgs/nuget/Lagrange.Core)
-[![OneBot](https://img.shields.io/badge/Lagrange-OneBot-blue)](https://github.com/botuniverse/onebot/blob/main/README.md)
+[![OneBot](https://img.shields.io/badge/Lagrange-OneBot-blue)](https://lagrangedev.github.io/Lagrange.Doc/Lagrange.OneBot/)
 ![C#](https://img.shields.io/badge/Core-%20.NET_6-blue)
 ![C#](https://img.shields.io/badge/OneBot-%20.NET_7-blue)
 
