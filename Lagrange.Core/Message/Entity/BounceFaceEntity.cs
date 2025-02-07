@@ -1,9 +1,7 @@
-﻿using System.Text;
-using Lagrange.Core.Common.Entity;
+﻿using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Internal.Packets.Message.Element;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 using Lagrange.Core.Internal.Packets.Message.Element.Implementation.Extra;
-using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
 
 namespace Lagrange.Core.Message.Entity;

@@ -8,22 +8,24 @@ using Lagrange.OneBot.Core.Entity.Message;
 using Lagrange.OneBot.Core.Operation.Converters;
 using Lagrange.OneBot.Database;
 using Lagrange.OneBot.Message;
-using LiteDB;
+using Lagrange.OneBot.Utility;
 
 namespace Lagrange.OneBot.Core.Operation.Message;
 
 [Operation("get_friend_msg_history")]
-public class GetFriendMessageHistoryOperation(LiteDatabase database, MessageService message) : IOperation
+public class GetFriendMessageHistoryOperation(RealmHelper realm, MessageService message) : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
         if (payload.Deserialize<OneBotFriendMsgHistory>(SerializerOptions.DefaultOptions) is { } history)
         {
-            var collection = database.GetCollection<MessageRecord>();
-            var record = history.MessageId == 0 
-                ? collection.Find(x => x.FriendUin == history.UserId).OrderByDescending(x => x.Time).First() 
-                : collection.FindById(history.MessageId);
-            var chain = (MessageChain)record;
+            var chain = realm.Do<MessageChain>(realm => history.MessageId == 0
+                ? realm.All<MessageRecord>()
+                    .Where(record => record.FromUin == history.UserId)
+                    .OrderByDescending(record => record.Time)
+                    .First()
+                : realm.All<MessageRecord>()
+                    .First(record => record.Id == history.MessageId));
 
             if (await context.GetRoamMessage(chain, history.Count) is { } results)
             {
@@ -33,7 +35,7 @@ public class GetFriendMessageHistoryOperation(LiteDatabase database, MessageServ
                 return new OneBotResult(new OneBotFriendMsgHistoryResponse(messages), 0, "ok");
             }
         }
-        
+
         throw new Exception();
     }
 }

@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Web;
 using Lagrange.Core.Event;
 using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Internal.Context.Attributes;
@@ -62,8 +64,26 @@ internal class MessagingLogic : LogicBase
                 MessageFilter.Filter(push.Chain);
 
                 var chain = push.Chain;
-                Collection.Log.LogVerbose(Tag, chain.ToPreviewString());
 
+                // Intercept group invitation
+                if (chain.Count == 1 && chain[0] is LightAppEntity { AppName: "com.tencent.qun.invite" } app)
+                {
+                    using var document = JsonDocument.Parse(app.Payload);
+                    var root = document.RootElement;
+
+                    string url = root.GetProperty("meta").GetProperty("news").GetProperty("jumpUrl").GetString()
+                        ?? throw new Exception("sb tx! Is this 'com.tencent.qun.invite'?");
+                    var query = HttpUtility.ParseQueryString(new Uri(url).Query);
+                    uint groupUin = uint.Parse(query["groupcode"]
+                        ?? throw new Exception("sb tx! Is this '/group/invite_join'?"));
+                    ulong sequence = ulong.Parse(query["msgseq"]
+                        ?? throw new Exception("sb tx! Is this '/group/invite_join'?"));
+
+                    Collection.Invoker.PostEvent(new GroupInvitationEvent(groupUin, chain.FriendUin, sequence));
+                    break;
+                }
+
+                Collection.Log.LogVerbose(Tag, chain.ToPreviewString());
                 EventBase args = push.Chain.Type switch
                 {
                     MessageChain.MessageType.Friend => new FriendMessageEvent(chain),
@@ -434,7 +454,7 @@ internal class MessagingLogic : LogicBase
                         break;
 
                     string name = (await cache.GetCachedFaceEntity(bounceFace.FaceId))?.QDes ?? string.Empty;
-                    
+
                     // Because the name is used as a preview text, it should not start with '/'
                     // But the QDes of the face may start with '/', so remove it
                     if (name.StartsWith('/'))

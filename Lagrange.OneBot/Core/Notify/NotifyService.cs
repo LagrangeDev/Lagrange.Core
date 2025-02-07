@@ -6,12 +6,13 @@ using Lagrange.Core.Message.Entity;
 using Lagrange.OneBot.Core.Entity.Notify;
 using Lagrange.OneBot.Core.Network;
 using Lagrange.OneBot.Database;
-using LiteDB;
+using Lagrange.OneBot.Utility;
 using Microsoft.Extensions.Logging;
+using static Lagrange.Core.Message.MessageChain;
 
 namespace Lagrange.OneBot.Core.Notify;
 
-public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger, LagrangeWebSvcCollection service, LiteDatabase database)
+public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger, LagrangeWebSvcCollection service, RealmHelper realm)
 {
     public void RegisterEvents()
     {
@@ -50,12 +51,28 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
         {
             logger.LogInformation(@event.ToString());
 
-            var requests = await bot.FetchGroupRequests();
-            if (requests?.FirstOrDefault(x => @event.GroupUin == x.GroupUin && @event.InvitorUin == x.InvitorMemberUin) is { } request)
+            ulong? sequence = @event.Sequence;
+            string comment = string.Empty;
+            uint type = 2;
+            if (sequence == null) // received by msg
             {
-                string flag = $"{request.Sequence}-{request.GroupUin}-{(uint)request.EventType}";
-                await service.SendJsonAsync(new OneBotGroupRequest(bot.BotUin, @event.InvitorUin, @event.GroupUin, "invite", request.Comment, flag));
+                var requests = await bot.FetchGroupRequests();
+                if (requests == null) return;
+
+                var request = requests.FirstOrDefault(r =>
+                {
+                    return r.EventType == BotGroupRequest.Type.SelfInvitation
+                        && r.GroupUin == @event.GroupUin
+                        && r.InvitorMemberUin == @event.InvitorUin;
+                });
+                if (request == null) return;
+
+                sequence = request.Sequence;
+                if (request.Comment != null) comment = request.Comment;
             }
+
+            string flag = $"{sequence}-{@event.GroupUin}-{type}";
+            await service.SendJsonAsync(new OneBotGroupRequest(bot.BotUin, @event.InvitorUin, @event.GroupUin, "invite", comment, flag));
         };
 
         bot.Invoker.OnGroupJoinRequestEvent += async (_, @event) =>
@@ -147,17 +164,22 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
         {
             logger.LogInformation(@event.ToString());
 
-            var collection = database.GetCollection<MessageRecord>();
-            var record = collection.FindOne(Query.And(
-                Query.EQ("FriendUin", new BsonValue(@event.FriendUin)),
-                Query.EQ("ClientSequence", new BsonValue(@event.ClientSequence)),
-                Query.EQ("MessageId", new BsonValue(0x01000000L << 32 | @event.Random))
-            ));
+            var sequence = realm.Do(realm => realm.All<MessageRecord>()
+                .FirstOrDefault(record => record.TypeInt == (int)MessageType.Friend
+                    && record.FromUinLong == @event.FriendUin
+                    && record.ClientSequenceLong == @event.ClientSequence
+                    && record.MessageIdLong == (0x01000000L << 32 | @event.Random)
+                )?
+                .Sequence);
+            if (sequence == null) {
+                logger.LogWarning("Unable to find the {} message sent by {}", @event.ClientSequence, @event.FriendUin);
+                return;
+            }
 
             await service.SendJsonAsync(new OneBotFriendRecall(bot.BotUin)
             {
                 UserId = @event.FriendUin,
-                MessageId = MessageRecord.CalcMessageHash(@event.Random, record.Sequence),
+                MessageId = MessageRecord.CalcMessageHash(@event.Random, (uint)sequence),
                 Tip = @event.Tip
             });
         };
@@ -207,24 +229,27 @@ public sealed class NotifyService(BotContext bot, ILogger<NotifyService> logger,
         {
             logger.LogInformation(@event.ToString());
 
-            var record = database.GetCollection<MessageRecord>().FindOne(Query.And(
-                Query.EQ("GroupUin", new BsonValue(@event.TargetGroupUin)),
-                Query.EQ("Sequence", new BsonValue(@event.TargetSequence))
-            ));
+            var id = realm.Do(realm => realm.All<MessageRecord>()
+                .FirstOrDefault(record => record.TypeInt == (int)MessageType.Group
+                    && record.ToUinLong == @event.TargetGroupUin
+                    && record.SequenceLong == @event.TargetSequence)?
+                .Id);
 
-            if (record == null)
+            if (id == null)
             {
                 logger.LogInformation(
                     "Unable to find the corresponding message using GroupUin: {} and Sequence: {}",
                     @event.TargetGroupUin,
                     @event.TargetSequence
                 );
+
+                return;
             }
 
             await service.SendJsonAsync(new OneBotGroupReaction(
                 bot.BotUin,
                 @event.TargetGroupUin,
-                record?.MessageHash ?? 0,
+                id.Value,
                 @event.OperatorUin,
                 @event.IsAdd ? "add" : "remove",
                 @event.Code,

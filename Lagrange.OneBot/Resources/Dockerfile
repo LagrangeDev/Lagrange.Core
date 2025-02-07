@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0-bookworm-slim AS build-env
 
 WORKDIR /root/build
 ARG TARGETARCH
@@ -9,18 +9,15 @@ RUN dotnet publish -p:DebugType="none" -a $TARGETARCH -f "net9.0" -o "/root/out"
 
 # ===
 
-FROM mcr.microsoft.com/dotnet/runtime:9.0-alpine
+FROM mcr.microsoft.com/dotnet/runtime:9.0-bookworm-slim
 
 WORKDIR /app/data
 
 COPY --from=build-env /root/out /app/bin
 COPY Lagrange.OneBot/Resources/docker-entrypoint.sh /app/bin/docker-entrypoint.sh
 
-ENV UID=100
-ENV GID=100
-
-RUN apk --no-cache add shadow su-exec \
- && adduser -D user \
+RUN apt-get update \
+ && apt-get -y --no-install-recommends install gosu \
  && chmod +x /app/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["/app/bin/docker-entrypoint.sh"]
