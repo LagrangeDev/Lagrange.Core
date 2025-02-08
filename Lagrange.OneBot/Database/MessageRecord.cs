@@ -1,3 +1,4 @@
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Message;
 using MessagePack;
 using MessagePack.Resolvers;
@@ -117,6 +118,7 @@ public partial class MessageRecord : IRealmObject
         chain.AddRange(entities);
 
         chain.Time = record.Time.DateTime;
+        chain.Style = record.Style != null ? (MessageStyle)record.Style : null;
 
         return chain;
     }
