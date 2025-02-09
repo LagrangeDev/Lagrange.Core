@@ -17,9 +17,7 @@ public class OnebotMessageStyle
 
     [JsonPropertyName("bubble_diy_text_id")] public uint BubbleDiyTextId { get; set; }
 
-    public OnebotMessageStyle()
-    {
-    }
+    public OnebotMessageStyle() {}
 
     public OnebotMessageStyle(MessageStyle style)
     {
