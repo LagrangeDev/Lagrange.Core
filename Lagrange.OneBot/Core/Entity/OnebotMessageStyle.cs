@@ -21,7 +21,7 @@ public class OnebotMessageStyle
     {
     }
 
-    public OnebotMessageStyle(OnebotMessageStyle style)
+    public OnebotMessageStyle(MessageStyle style)
     {
         BubbleId = style.BubbleId;
         PendantId = style.PendantId;
