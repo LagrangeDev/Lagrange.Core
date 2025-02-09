@@ -103,7 +103,7 @@ public static class HostApplicationBuilderExtension
 
                 return new RealmConfiguration(path)
                 {
-                    SchemaVersion = 1,
+                    SchemaVersion = 2,
                     MigrationCallback = null,
                 };
             })

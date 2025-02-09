@@ -22,6 +22,8 @@ public sealed class MessageChain : List<IMessageEntity>
 
     public BotGroupMember? GroupMemberInfo { get; internal set; }
 
+    public MessageStyle? Style { get; internal set; }
+
     public uint Sequence { get; } // for C2C message, it's the sequence of the message, for group message, it's the sequence of the group message
 
     public uint ClientSequence { get; } // only for C2C message

@@ -10,6 +10,8 @@ public class OneBotPrivateMessageBase
     [JsonPropertyName("user_id")] public uint UserId { get; set; }
     
     [JsonPropertyName("auto_escape")] public bool? AutoEscape { get; set; }
+
+    [JsonPropertyName("message_style")] public OnebotMessageStyle? MessageStyle { get; set; }
 }
 
 [Serializable]
