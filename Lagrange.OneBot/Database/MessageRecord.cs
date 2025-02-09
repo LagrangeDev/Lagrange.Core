@@ -88,6 +88,7 @@ public partial class MessageRecord : IRealmObject
             MessageType.Friend => chain.TargetUin,
             _ => throw new NotImplementedException(),
         },
+        Style = chain.Style != null ? (MessageStyleRecord)chain.Style : null,
         Entities = MessagePackSerializer.Serialize<List<IMessageEntity>>(chain, OPTIONS)
     };
 
