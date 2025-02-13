@@ -21,7 +21,7 @@ public class GetFriendMessageHistoryOperation(RealmHelper realm, MessageService 
         {
             var chain = realm.Do<MessageChain>(realm => history.MessageId == 0
                 ? realm.All<MessageRecord>()
-                    .Where(record => record.FromUin == history.UserId)
+                    .Where(record => record.FromUinLong == history.UserId)
                     .OrderByDescending(record => record.Time)
                     .First()
                 : realm.All<MessageRecord>()

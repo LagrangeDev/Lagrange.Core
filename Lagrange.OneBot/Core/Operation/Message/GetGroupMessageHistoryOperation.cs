@@ -20,7 +20,7 @@ public class GetGroupMessageHistoryOperation(RealmHelper realm, MessageService m
         {
             var sequence = realm.Do(realm => history.MessageId == 0
                 ? realm.All<MessageRecord>()
-                    .Where(record => record.ToUin == history.GroupId)
+                    .Where(record => record.ToUinLong == history.GroupId)
                     .OrderByDescending(x => x.Time)
                     .First()
                     .Sequence
