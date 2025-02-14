@@ -258,7 +258,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
             {
                 if (Serializer.Deserialize<FriendRequest>(content.AsSpan()).Info is { } info)
                 {
-                    var friendEvent = FriendSysRequestEvent.Result(msg.Message.ResponseHead.FromUin, info.SourceUid, info.Message, info.Source);
+                    var friendEvent = FriendSysRequestEvent.Result(msg.Message.ResponseHead.FromUin, info.SourceUid, info.Message, info.Source ?? info.NewSource);
                     extraEvents.Add(friendEvent);
                 }
                 break;

@@ -10,10 +10,28 @@ internal abstract class Program
 {
     public static void Main(string[] args)
     {
-        string version = Assembly.GetAssembly(typeof(Program))?
+        string? version = Assembly.GetAssembly(typeof(Program))?
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
-            .InformationalVersion ?? "Unknown Lagrange.OneBot Version";
-        Console.WriteLine($"Lagrange.OneBot Version: {version}\n");
+            .InformationalVersion;
+
+        Console.ForegroundColor = ConsoleColor.Magenta;
+        if (Console.BufferWidth >= 45)
+        {
+            Console.WriteLine($$"""
+               __
+              / / ___ ____ ________ ____  ___ ____
+             / /_/ _ `/ _ `/ __/ _ `/ _ \/ _ `/ -_)
+            /____|_,_/\_, /_/  \_,_/_//_/\_, /\__/
+                     /___/   ____       /___/__       __
+                            / __ \___  ___ / _ )___  / /_
+                           / /_/ / _ \/ -_) _  / _ \/ __/
+                           \____/_//_/\__/____/\___/\__/
+            """);
+        }
+        else Console.WriteLine("Lagrange.OneBot");
+        Console.ResetColor();
+
+        Console.WriteLine($"Version: {version?[^40..] ?? "unknown"}\n");
 
         Console.OutputEncoding = Encoding.UTF8;
         Console.InputEncoding = Encoding.UTF8;
