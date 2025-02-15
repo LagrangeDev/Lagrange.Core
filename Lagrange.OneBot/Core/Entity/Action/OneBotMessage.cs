@@ -15,6 +15,8 @@ public class OneBotMessageBase
     [JsonPropertyName("group_id")] public uint? GroupId { get; set; }
     
     [JsonPropertyName("auto_escape")] public bool? AutoEscape { get; set; }
+
+    [JsonPropertyName("message_style")] public OnebotMessageStyle? MessageStyle { get; set; }
 }
 
 // ReSharper disable once ClassNeverInstantiated.Global

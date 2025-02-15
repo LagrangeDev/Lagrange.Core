@@ -22,6 +22,8 @@ public class OneBotPrivateMsg(uint selfId, OneBotSender groupSender, string subT
     [JsonPropertyName("sender")] public OneBotSender GroupSender { get; set; } = groupSender;
 
     [JsonPropertyName("target_id")] public uint TargetId { get; set; }
+
+    [JsonPropertyName("message_style")] public OnebotMessageStyle? MessageStyle { get; set; }
 }
 
 [Serializable]
@@ -44,4 +46,6 @@ public class OneBotPrivateStringMsg(uint selfId, OneBotSender groupSender, strin
     [JsonPropertyName("sender")] public OneBotSender GroupSender { get; set; } = groupSender;
 
     [JsonPropertyName("target_id")] public uint TargetId { get; set; }
+
+    [JsonPropertyName("message_style")] public OnebotMessageStyle? MessageStyle { get; set; }
 }
