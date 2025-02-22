@@ -128,7 +128,13 @@ internal class SocketContext : ContextBase, IClientListener
         var addresses = await Dns.GetHostEntryAsync(dns);
         var result = new Uri[addresses.AddressList.Length];
         
-        for (int i = 0; i < addresses.AddressList.Length; i++) result[i] = new Uri($"http://{addresses.AddressList[i]}:8080");
+        for (int i = 0; i < addresses.AddressList.Length; i++)
+        {
+            string ip = addresses.AddressList[i].AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6
+                ? $"[{addresses.AddressList[i]}]"
+                : addresses.AddressList[i].ToString();
+            result[i] = new Uri($"http://{ip}:8080");
+        }
 
         return result;
     }
