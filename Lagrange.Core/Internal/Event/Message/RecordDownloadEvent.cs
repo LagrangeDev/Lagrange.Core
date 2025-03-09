@@ -2,38 +2,14 @@ using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 
 namespace Lagrange.Core.Internal.Event.Message;
 
-#pragma warning disable CS8618
-
-internal class RecordDownloadEvent : ProtocolEvent
+internal class RecordDownloadEvent : MediaDownloadEvent
 {
-    public string SelfUid { get; }
-    
-    public string FileUuid { get; }
-    
-    public IndexNode? Node { get; }
-    
-    public string AudioUrl { get; }
-    
-    protected RecordDownloadEvent(string selfUid, MsgInfo info) : base(true)
-    {
-        SelfUid = selfUid;
-        Node = info.MsgInfoBody[0].Index;
-    }
+    protected RecordDownloadEvent(IndexNode index) : base(index) { }
 
-    protected RecordDownloadEvent(string selfUid, string fileUuid) : base(true)
-    {
-        SelfUid = selfUid;
-        FileUuid = fileUuid;
-    }
-    
-    protected RecordDownloadEvent(int resultCode, string audioUrl) : base(resultCode)
-    {
-        AudioUrl = audioUrl;
-    }
+    protected RecordDownloadEvent(int code, string message, string url) : base(code, message, url) { }
 
-    public static RecordDownloadEvent Create(string selfUid, MsgInfo info) => new(selfUid, info);
-    
-    public static RecordDownloadEvent Create(string selfUid, string fileUuid) => new(selfUid, fileUuid);
+    public static new RecordDownloadEvent Create(IndexNode index) => new(index);
 
-    public static RecordDownloadEvent Result(int resultCode, string url) => new(resultCode, url);
+    public static new RecordDownloadEvent Result(string url) => new(0, string.Empty, url);
+    public static new RecordDownloadEvent Result(int code, string message) => new(code, message, string.Empty);
 }

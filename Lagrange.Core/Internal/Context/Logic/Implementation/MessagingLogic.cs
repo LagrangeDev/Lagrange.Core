@@ -8,10 +8,13 @@ using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.Notify;
 using Lagrange.Core.Internal.Event.System;
+using Lagrange.Core.Internal.Packets.Misc;
+using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Internal.Service;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Message.Filter;
+using ProtoBuf;
 using FriendPokeEvent = Lagrange.Core.Event.EventArg.FriendPokeEvent;
 using GroupPokeEvent = Lagrange.Core.Event.EventArg.GroupPokeEvent;
 
@@ -371,60 +374,77 @@ internal class MessagingLogic : LogicBase
                 }
                 case RecordEntity { MsgInfo: not null } record:
                 {
-                    var @event = chain.IsGroup
-                        ? RecordGroupDownloadEvent.Create(chain.GroupUin ?? 0, record.MsgInfo)
-                        : RecordDownloadEvent.Create(chain.Uid ?? string.Empty, record.MsgInfo);
+                    MediaDownloadEvent @event = chain.IsGroup
+                        ? RecordGroupDownloadEvent.Create(record.MsgInfo.MsgInfoBody[0].Index)
+                        : RecordDownloadEvent.Create(record.MsgInfo.MsgInfoBody[0].Index);
 
                     var results = await Collection.Business.SendEvent(@event);
                     if (results.Count != 0)
                     {
-                        var result = (RecordDownloadEvent)results[0];
-                        record.AudioUrl = result.AudioUrl;
+                        var result = (MediaDownloadEvent)results[0];
+                        record.AudioUrl = result.Url;
                     }
 
                     break;
                 }
                 case RecordEntity { AudioUuid: not null } record:
                 {
-                    var @event = chain.IsGroup
-                        ? RecordGroupDownloadEvent.Create(chain.GroupUin ?? 0, record.AudioUuid)
-                        : RecordDownloadEvent.Create(chain.Uid ?? string.Empty, record.AudioUuid);
+                    int remainder = record.AudioUuid.Length % 4;
+                    int length = remainder == 0 ? record.AudioUuid.Length : record.AudioUuid.Length + (4 - remainder);
+                    string base64 = record.AudioUuid.Replace('-', '+').Replace('_', '/').PadRight(length, '=');
+                    var info = Serializer.Deserialize<FileId>(Convert.FromBase64String(base64).AsSpan());
 
-                    var results = await Collection.Business.SendEvent(@event);
+                    var index = new IndexNode
+                    {
+                        FileUuid = record.AudioUuid,
+                        StoreId = 1,
+                        UploadTime = 0,
+                        Ttl = info.Ttl,
+                        SubType = 0
+                    };
+
+                    var results = await Collection.Business.SendEvent(info.AppId switch
+                    {
+                        1402 => RecordDownloadEvent.Create(index),
+                        1403 => RecordGroupDownloadEvent.Create(index),
+
+                        _ => throw new NotSupportedException($"Unsupported Record AppId: {info.AppId}"),
+                    });
+
                     if (results.Count != 0)
                     {
-                        var result = (RecordDownloadEvent)results[0];
-                        record.AudioUrl = result.AudioUrl;
+                        var result = (MediaDownloadEvent)results[0];
+                        record.AudioUrl = result.Url;
                     }
 
                     break;
                 }
-                case VideoEntity { VideoUuid: not null } video:
+                case VideoEntity video when !video.VideoUrl.Contains("&rkey=") && video.MsgInfo is not null:
                 {
-                    string uid = (chain.IsGroup
-                        ? await Collection.Business.CachingLogic.ResolveUid(chain.GroupUin, chain.FriendUin)
-                        : chain.Uid) ?? "";
-                    var @event = VideoDownloadEvent.Create(video.VideoUuid, uid, video.FilePath, "", "", chain.IsGroup);
+                    MediaDownloadEvent @event = video.IsGroup
+                        ? VideoGroupDownloadEvent.Create(video.MsgInfo.MsgInfoBody[0].Index)
+                        : VideoDownloadEvent.Create(video.MsgInfo.MsgInfoBody[0].Index);
+
                     var results = await Collection.Business.SendEvent(@event);
                     if (results.Count != 0)
                     {
-                        var result = (VideoDownloadEvent)results[0];
-                        video.VideoUrl = result.AudioUrl;
+                        var result = (MediaDownloadEvent)results[0];
+                        video.VideoUrl = result.Url;
                     }
 
                     break;
                 }
                 case ImageEntity image when !image.ImageUrl.Contains("&rkey=") && image.MsgInfo is not null:
                 {
-                    var @event = image.IsGroup
-                        ? ImageGroupDownloadEvent.Create(chain.GroupUin ?? 0, image.MsgInfo)
-                        : ImageDownloadEvent.Create(chain.Uid ?? string.Empty, image.MsgInfo);
+                    MediaDownloadEvent @event = image.IsGroup
+                        ? ImageGroupDownloadEvent.Create(image.MsgInfo.MsgInfoBody[0].Index)
+                        : ImageDownloadEvent.Create(image.MsgInfo.MsgInfoBody[0].Index);
 
                     var results = await Collection.Business.SendEvent(@event);
                     if (results.Count != 0)
                     {
-                        var result = (ImageDownloadEvent)results[0];
-                        image.ImageUrl = result.ImageUrl;
+                        var result = (MediaDownloadEvent)results[0];
+                        image.ImageUrl = result.Url;
                     }
 
                     break;

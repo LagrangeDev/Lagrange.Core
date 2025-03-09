@@ -299,4 +299,7 @@ public static class OperationExt
 
     public static Task<string> FetchPrivateFSDownload(this BotContext bot, string fileId, string fileHash, uint userId)
         => bot.ContextCollection.Business.OperationLogic.FetchPrivateFSDownload(fileId, fileHash, userId);
+
+    public static Task<(int Code, string Message, string Url)> GetMediaUrl(this BotContext bot, string fileId)
+        => bot.ContextCollection.Business.OperationLogic.GetMediaUrl(fileId);
 }

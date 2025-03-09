@@ -2,18 +2,14 @@ using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 
 namespace Lagrange.Core.Internal.Event.Message;
 
-internal class ImageGroupDownloadEvent : ImageDownloadEvent
+internal class ImageGroupDownloadEvent : MediaDownloadEvent
 {
-    public uint GroupUin { get; }
-    
-    private ImageGroupDownloadEvent(uint groupUin, MsgInfo info) : base("", info)
-    {
-        GroupUin = groupUin;
-    }
+    protected ImageGroupDownloadEvent(IndexNode index) : base(index) { }
 
-    private ImageGroupDownloadEvent(int resultCode, string imageUrl) : base(resultCode, imageUrl) { }
-    
-    public static ImageGroupDownloadEvent Create(uint groupUin, MsgInfo info) => new(groupUin, info);
+    protected ImageGroupDownloadEvent(int code, string message, string url) : base(code, message, url) { }
 
-    public new static ImageGroupDownloadEvent Result(int resultCode, string url) => new(resultCode, url);
+    public static new ImageGroupDownloadEvent Create(IndexNode index) => new(index);
+
+    public static new ImageGroupDownloadEvent Result(string url) => new(0, string.Empty, url);
+    public static new ImageGroupDownloadEvent Result(int code, string message) => new(code, message, string.Empty);
 }

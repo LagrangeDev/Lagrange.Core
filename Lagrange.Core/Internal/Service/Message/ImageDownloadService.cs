@@ -28,43 +28,46 @@ internal class ImageDownloadService : BaseService<ImageDownloadEvent>
                 {
                     RequestType = 2,
                     BusinessType = 1,
+                    Field103 = 0,
                     SceneType = 1,
                     C2C = new C2CUserInfo
                     {
                         AccountType = 2,
-                        TargetUid = input.SelfUid
+                        TargetUid = keystore.Uid ?? throw new Exception("Failed to get Uid")
                     }
                 },
-                Client = new ClientMeta { AgentType = 2 }
+                Client = new ClientMeta
+                {
+                    AgentType = 2
+                }
             },
             Download = new DownloadReq
             {
-                Node = input.Node,
-                Download = new DownloadExt
-                {
-                    Video = new VideoDownloadExt
-                    {
-                        BusiType = 0,
-                        SceneType = 0
-                    }
-                }
+                Node = input.Node
             }
-        }, 0x11c5, 200, false, true);
-        
+        }, 0x11c5, 200);
+
         output = packet.Serialize();
         extraPackets = null;
-        
+
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out ImageDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
+        if (payload.ErrorCode != 0)
+        {
+            output = ImageDownloadEvent.Result((int)payload.ErrorCode, payload.ErrorMsg);
+            extraEvents = null;
+            return true;
+        }
+
         var body = payload.Body.Download;
         string url = $"https://{body.Info.Domain}{body.Info.UrlPath}{body.RKeyParam}";
-        
-        output = ImageDownloadEvent.Result((int)payload.ErrorCode, url);
+
+        output = ImageDownloadEvent.Result(url);
         extraEvents = null;
         return true;
     }

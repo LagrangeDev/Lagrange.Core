@@ -8,11 +8,11 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Message;
 
-[EventSubscribe(typeof(ImageGroupDownloadEvent))]
-[Service("OidbSvcTrpcTcp.0x11c4_200")]
-internal class ImageGroupDownloadService : BaseService<ImageGroupDownloadEvent>
+[EventSubscribe(typeof(VideoGroupDownloadEvent))]
+[Service("OidbSvcTrpcTcp.0x11e9_200")]
+internal class VideoGroupDownloadService : BaseService<VideoGroupDownloadEvent>
 {
-    protected override bool Build(ImageGroupDownloadEvent input, BotKeystore keystore, BotAppInfo appInfo,
+    protected override bool Build(VideoGroupDownloadEvent input, BotKeystore keystore, BotAppInfo appInfo,
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         var packet = new OidbSvcTrpcTcpBase<NTV2RichMediaReq>(new NTV2RichMediaReq
@@ -27,11 +27,10 @@ internal class ImageGroupDownloadService : BaseService<ImageGroupDownloadEvent>
                 Scene = new SceneInfo
                 {
                     RequestType = 2,
-                    BusinessType = 1,
+                    BusinessType = 2,
                     Field103 = 0,
                     SceneType = 2,
-                    Group = new GroupInfo
-                    {
+                    Group = new GroupInfo {
                         GroupUin = 0
                     }
                 },
@@ -44,8 +43,7 @@ internal class ImageGroupDownloadService : BaseService<ImageGroupDownloadEvent>
             {
                 Node = input.Node
             }
-        }, 0x11c4, 200);
-
+        }, 0x11ea, 200);
         output = packet.Serialize();
         extraPackets = null;
 
@@ -53,12 +51,12 @@ internal class ImageGroupDownloadService : BaseService<ImageGroupDownloadEvent>
     }
 
     protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
-        out ImageGroupDownloadEvent output, out List<ProtocolEvent>? extraEvents)
+        out VideoGroupDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
         if (payload.ErrorCode != 0)
         {
-            output = ImageGroupDownloadEvent.Result((int)payload.ErrorCode, payload.ErrorMsg);
+            output = VideoGroupDownloadEvent.Result((int)payload.ErrorCode, payload.ErrorMsg);
             extraEvents = null;
             return true;
         }
@@ -66,7 +64,7 @@ internal class ImageGroupDownloadService : BaseService<ImageGroupDownloadEvent>
         var body = payload.Body.Download;
         string url = $"https://{body.Info.Domain}{body.Info.UrlPath}{body.RKeyParam}";
 
-        output = ImageGroupDownloadEvent.Result(url);
+        output = VideoGroupDownloadEvent.Result(url);
         extraEvents = null;
         return true;
     }

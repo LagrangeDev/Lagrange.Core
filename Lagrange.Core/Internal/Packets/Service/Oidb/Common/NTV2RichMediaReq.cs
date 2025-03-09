@@ -54,6 +54,8 @@ internal class SceneInfo
 
     [ProtoMember(102)] public uint BusinessType { get; set; } // 3
 
+    [ProtoMember(103)] public uint Field103 { get; set; } // 0
+
     [ProtoMember(200)] public uint SceneType { get; set; } // 1
 
     [ProtoMember(201)] public C2CUserInfo? C2C { get; set; }

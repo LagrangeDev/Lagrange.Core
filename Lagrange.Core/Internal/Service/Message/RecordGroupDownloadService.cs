@@ -21,37 +21,33 @@ internal class RecordGroupDownloadService : BaseService<RecordGroupDownloadEvent
             {
                 Common = new CommonHead
                 {
-                    RequestId = 4,
+                    RequestId = 1,
                     Command = 200
                 },
                 Scene = new SceneInfo
                 {
                     RequestType = 1,
                     BusinessType = 3,
+                    Field103 = 0,
                     SceneType = 2,
-                    Group = new GroupInfo { GroupUin = input.GroupUin }
+                    Group = new GroupInfo
+                    {
+                        GroupUin = 0
+                    }
                 },
-                Client = new ClientMeta { AgentType = 2 }
+                Client = new ClientMeta
+                {
+                    AgentType = 2
+                }
             },
             Download = new DownloadReq
             {
-                Node = input.Node ?? new IndexNode
-                {
-                    FileUuid = input.FileUuid
-                },
-                Download = new DownloadExt
-                {
-                    Video = new VideoDownloadExt
-                    {
-                        BusiType = 0,
-                        SceneType = 0
-                    }
-                }
+                Node = input.Node
             }
-        }, 0x126e, 200, false, true);
+        }, 0x126e, 200);
         output = packet.Serialize();
         extraPackets = null;
-        
+
         return true;
     }
 
@@ -59,10 +55,17 @@ internal class RecordGroupDownloadService : BaseService<RecordGroupDownloadEvent
         out RecordGroupDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
+        if (payload.ErrorCode != 0)
+        {
+            output = RecordGroupDownloadEvent.Result((int)payload.ErrorCode, payload.ErrorMsg);
+            extraEvents = null;
+            return true;
+        }
+
         var body = payload.Body.Download;
         string url = $"https://{body.Info.Domain}{body.Info.UrlPath}{body.RKeyParam}";
-        
-        output = RecordGroupDownloadEvent.Result((int)payload.ErrorCode, url);
+
+        output = RecordGroupDownloadEvent.Result(url);
         extraEvents = null;
         return true;
     }
