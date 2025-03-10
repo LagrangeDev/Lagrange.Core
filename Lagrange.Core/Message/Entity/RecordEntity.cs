@@ -28,7 +28,7 @@ public class RecordEntity : IMessageEntity
 
     internal Lazy<Stream>? AudioStream { get; set; }
 
-    internal string? AudioUuid { get; set; }
+    public string? AudioUuid { get; set; }
 
     internal string? FileSha1 { get; set; }
 
