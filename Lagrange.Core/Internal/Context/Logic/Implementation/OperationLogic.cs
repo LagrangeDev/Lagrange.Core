@@ -4,10 +4,13 @@ using Lagrange.Core.Internal.Context.Uploader;
 using Lagrange.Core.Internal.Event.Action;
 using Lagrange.Core.Internal.Event.Message;
 using Lagrange.Core.Internal.Event.System;
+using Lagrange.Core.Internal.Packets.Misc;
 using Lagrange.Core.Internal.Packets.Service.Highway;
+using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
 using Lagrange.Core.Utility.Extension;
+using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 
@@ -754,13 +757,13 @@ internal class OperationLogic : LogicBase
         if (code != 0)
             return (code, errMsg, null);
 
-        var recordGroupDownloadEvent = RecordGroupDownloadEvent.Create(groupUin, record!.MsgInfo!);
+        var recordGroupDownloadEvent = RecordGroupDownloadEvent.Create(record!.MsgInfo!.MsgInfoBody[0].Index);
         var @event = await Collection.Business.SendEvent(recordGroupDownloadEvent);
         if (@event.Count == 0) return (-1, "running event missing!", null);
 
         var finalResult = (RecordGroupDownloadEvent)@event[0];
         return finalResult.ResultCode == 0
-            ? (finalResult.ResultCode, string.Empty, finalResult.AudioUrl)
+            ? (finalResult.ResultCode, string.Empty, finalResult.Url)
             : (finalResult.ResultCode, "Failed to get group ai record", null);
     }
 
@@ -803,12 +806,12 @@ internal class OperationLogic : LogicBase
     public async Task<string> UploadImage(ImageEntity image)
     {
         await Collection.Highway.ManualUploadEntity(image);
-        var msgInfo = image.MsgInfo;
-        if (msgInfo is null) throw new Exception();
-        var downloadEvent = ImageDownloadEvent.Create(Collection.Keystore.Uid ?? "", msgInfo);
+        var msgInfo = image.MsgInfo ?? throw new Exception();
+
+        var downloadEvent = ImageDownloadEvent.Create(msgInfo.MsgInfoBody[0].Index);
         var result = await Collection.Business.SendEvent(downloadEvent);
         var ret = (ImageDownloadEvent)result[0];
-        return ret.ImageUrl;
+        return ret.Url;
     }
 
     public async Task<ImageOcrResult?> ImageOcr(string imageUrl)
@@ -864,5 +867,42 @@ internal class OperationLogic : LogicBase
 
         var result = (SetPinGroupEvent)results[0];
         return (result.ResultCode, result.Message);
+    }
+
+    public async Task<(int Code, string Message, string Url)> GetMediaUrl(string fileId)
+    {
+        int remainder = fileId.Length % 4;
+        int length = remainder == 0 ? fileId.Length : fileId.Length + (4 - remainder);
+        string base64 = fileId.Replace('-', '+').Replace('_', '/').PadRight(length, '=');
+        var info = Serializer.Deserialize<FileId>(Convert.FromBase64String(base64).AsSpan());
+
+        var index = new IndexNode
+        {
+            FileUuid = fileId,
+            StoreId = 1,
+            UploadTime = 0,
+            Ttl = info.Ttl,
+            SubType = 0
+        };
+        // Special processing video cover
+        if (info.AppId == 1414 || info.AppId == 1416) index.SubType = 100;
+
+        var results = await Collection.Business.SendEvent(info.AppId switch
+        {
+            1402 => RecordDownloadEvent.Create(index),
+            1403 => RecordGroupDownloadEvent.Create(index),
+
+            1413 => VideoDownloadEvent.Create(index),
+            1415 => VideoGroupDownloadEvent.Create(index),
+
+            1406 => ImageDownloadEvent.Create(index),
+            1407 => ImageGroupDownloadEvent.Create(index),
+
+            _ => throw new NotSupportedException($"Unsupported AppId: {info.AppId}")
+        });
+        if (results.Count == 0) return (-1, "No Result", string.Empty);
+
+        var result = (MediaDownloadEvent)results[0];
+        return (result.ResultCode, result.Message, result.Url);
     }
 }

@@ -1,40 +1,15 @@
+using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
+
 namespace Lagrange.Core.Internal.Event.Message;
 
-#pragma warning disable CS8618
-
-internal class VideoDownloadEvent : ProtocolEvent
+internal class VideoDownloadEvent : MediaDownloadEvent
 {
-    public string AudioUrl { get; }
-    
-    public string Uuid { get; }
-    
-    public string SelfUid { get; }
-    
-    public string FileName { get; }
-    
-    public string FileMd5 { get; }
-    
-    public string? FileSha1 { get; }
-    
-    public bool IsGroup { get; }
+    protected VideoDownloadEvent(IndexNode index) : base(index) { }
 
-    private VideoDownloadEvent(string uuid, string selfUid, string fileName, string fileMd5, string? fileSha1, bool isGroup) : base(true)
-    {
-        Uuid = uuid;
-        SelfUid = selfUid;
-        FileName = fileName;
-        FileSha1 = fileSha1;
-        IsGroup = isGroup;
-        FileMd5 = fileMd5;
-    }
+    protected VideoDownloadEvent(int code, string message, string url) : base(code, message, url) { }
 
-    private VideoDownloadEvent(int resultCode, string audioUrl) : base(resultCode)
-    {
-        AudioUrl = audioUrl;
-    }
+    public static new VideoDownloadEvent Create(IndexNode index) => new(index);
 
-    public static VideoDownloadEvent Create(string uuid, string selfUid, string fileName, string fileMd5, string? fileSha1 = null, bool isGroup = false) 
-        => new(uuid, selfUid, fileName, fileMd5, fileSha1, isGroup);
-
-    public static VideoDownloadEvent Result(int resultCode, string url) => new(resultCode, url);
+    public static new VideoDownloadEvent Result(string url) => new(0, string.Empty, url);
+    public static new VideoDownloadEvent Result(int code, string message) => new(code, message, string.Empty);
 }

@@ -2,28 +2,14 @@ using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 
 namespace Lagrange.Core.Internal.Event.Message;
 
-#pragma warning disable CS8618
-
-internal class ImageDownloadEvent : ProtocolEvent
+internal class ImageDownloadEvent : MediaDownloadEvent
 {
-    public string SelfUid { get; }
-    
-    public IndexNode Node { get; }
-    
-    public string ImageUrl { get; }
-    
-    protected ImageDownloadEvent(string selfUid, MsgInfo info) : base(true)
-    {
-        SelfUid = selfUid;
-        Node = info.MsgInfoBody[0].Index;
-    }
+    protected ImageDownloadEvent(IndexNode index) : base(index) { }
 
-    protected ImageDownloadEvent(int resultCode, string imageUrl) : base(resultCode)
-    {
-        ImageUrl = imageUrl;
-    }
-    
-    public static ImageDownloadEvent Create(string selfUid, MsgInfo info) => new(selfUid, info);
+    protected ImageDownloadEvent(int code, string message, string url) : base(code, message, url) { }
 
-    public static ImageDownloadEvent Result(int resultCode, string url) => new(resultCode, url);
+    public static new ImageDownloadEvent Create(IndexNode index) => new(index);
+
+    public static new ImageDownloadEvent Result(string url) => new(0, string.Empty, url);
+    public static new ImageDownloadEvent Result(int code, string message) => new(code, message, string.Empty);
 }

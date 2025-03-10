@@ -5,7 +5,6 @@ using Lagrange.Core.Internal.Packets.Service.Oidb;
 using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 using Lagrange.Core.Utility.Extension;
 using ProtoBuf;
-using FileInfo = Lagrange.Core.Internal.Packets.Service.Oidb.Common.FileInfo;
 
 namespace Lagrange.Core.Internal.Service.Message;
 
@@ -22,77 +21,52 @@ internal class VideoDownloadService : BaseService<VideoDownloadEvent>
             {
                 Common = new CommonHead
                 {
-                    RequestId = input.IsGroup ? 3u : 34u,
+                    RequestId = 1,
                     Command = 200
                 },
                 Scene = new SceneInfo
                 {
                     RequestType = 2,
                     BusinessType = 2,
+                    Field103 = 0,
                     SceneType = 1,
                     C2C = new C2CUserInfo
                     {
                         AccountType = 2,
-                        TargetUid = input.SelfUid
+                        TargetUid = keystore.Uid ?? throw new Exception("Failed to get Uid")
                     }
                 },
                 Client = new ClientMeta
                 {
-                    AgentType = 2 
+                    AgentType = 2
                 }
             },
             Download = new DownloadReq
             {
-                Node = new IndexNode
-                {
-                    Info = new FileInfo
-                    {
-                        FileSize = 0,
-                        FileHash = input.FileMd5,
-                        FileSha1 = input.FileSha1 ?? "",
-                        FileName = input.FileName,
-                        Type = new FileType
-                        {
-                            Type = 2,
-                            PicFormat = 0,
-                            VideoFormat = 0,
-                            VoiceFormat = 0
-                        },
-                        Width = 0,
-                        Height = 0,
-                        Time = 0,
-                        Original = 0
-                    },
-                    FileUuid = input.Uuid,
-                    StoreId = 0,
-                    UploadTime = 0,
-                    Ttl = 0,
-                    SubType = 0
-                },
-                Download = new DownloadExt
-                {
-                    Video = new VideoDownloadExt
-                    {
-                        BusiType = 0,
-                        SceneType = 0
-                    }
-                }
+                Node = input.Node
             }
-        }, 0x11e9, 200, false, true);
+        }, 0x11e9, 200);
         output = packet.Serialize();
         extraPackets = null;
-        
+
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out VideoDownloadEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<NTV2RichMediaResp>>(input);
+        if (payload.ErrorCode != 0)
+        {
+            output = VideoDownloadEvent.Result((int)payload.ErrorCode, payload.ErrorMsg);
+            extraEvents = null;
+            return true;
+        }
+
         var body = payload.Body.Download;
         string url = $"https://{body.Info.Domain}{body.Info.UrlPath}{body.RKeyParam}";
-        
-        output = VideoDownloadEvent.Result((int)payload.ErrorCode, url);
+
+        output = VideoDownloadEvent.Result(url);
         extraEvents = null;
         return true;
     }

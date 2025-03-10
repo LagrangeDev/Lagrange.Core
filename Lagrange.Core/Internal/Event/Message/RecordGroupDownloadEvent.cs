@@ -2,25 +2,14 @@ using Lagrange.Core.Internal.Packets.Service.Oidb.Common;
 
 namespace Lagrange.Core.Internal.Event.Message;
 
-internal class RecordGroupDownloadEvent : RecordDownloadEvent
+internal class RecordGroupDownloadEvent : MediaDownloadEvent
 {
-    public uint GroupUin { get; }
-    
-    private RecordGroupDownloadEvent(uint groupUin, MsgInfo info) : base("", info)
-    {
-        GroupUin = groupUin;
-    }
-    
-    private RecordGroupDownloadEvent(uint groupUin, string fileUuid) : base("", fileUuid)
-    {
-        GroupUin = groupUin;
-    }
+    protected RecordGroupDownloadEvent(IndexNode index) : base(index) { }
 
-    private RecordGroupDownloadEvent(int resultCode, string audioUrl) : base(resultCode, audioUrl) { }
-    
-    public static RecordGroupDownloadEvent Create(uint groupUin, MsgInfo info) => new(groupUin, info);
-    
-    public static RecordGroupDownloadEvent Create(uint groupUin, string fileUuid) => new(groupUin, fileUuid);
+    protected RecordGroupDownloadEvent(int code, string message, string url) : base(code, message, url) { }
 
-    public new static RecordGroupDownloadEvent Result(int resultCode, string url) => new(resultCode, url);
+    public static new RecordGroupDownloadEvent Create(IndexNode index) => new(index);
+
+    public static new RecordGroupDownloadEvent Result(string url) => new(0, string.Empty, url);
+    public static new RecordGroupDownloadEvent Result(int code, string message) => new(code, message, string.Empty);
 }
