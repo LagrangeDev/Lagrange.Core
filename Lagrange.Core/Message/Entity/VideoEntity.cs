@@ -32,7 +32,7 @@ public class VideoEntity : IMessageEntity
 
     internal Lazy<Stream>? ThumbnailStream { get; set; }
 
-    internal string? VideoUuid { get; set; }
+    public string? VideoUuid { get; set; }
 
     internal MsgInfo? MsgInfo { get; set; }
 
