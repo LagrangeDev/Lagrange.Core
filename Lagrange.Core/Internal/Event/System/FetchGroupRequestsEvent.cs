@@ -5,17 +5,22 @@ namespace Lagrange.Core.Internal.Event.System;
 internal class FetchGroupRequestsEvent : ProtocolEvent
 {
     public List<RawEvent> Events { get; }
-    
+
+    public string? Message { get; }
+
     private FetchGroupRequestsEvent() : base(true) { }
 
-    private FetchGroupRequestsEvent(int resultCode, List<RawEvent> events) : base(resultCode)
+    private FetchGroupRequestsEvent(int resultCode, string? message, List<RawEvent> events) : base(resultCode)
     {
+        Message = message;
         Events = events;
     }
 
     public static FetchGroupRequestsEvent Create() => new();
-    
-    public static FetchGroupRequestsEvent Result(int resultCode, List<RawEvent> events) => new(resultCode, events);
+
+    public static FetchGroupRequestsEvent Result(List<RawEvent> events) => new(0, null, events);
+
+    public static FetchGroupRequestsEvent Result(int resultCode, string message) => new(resultCode, message, new List<RawEvent>());
 
     public record RawEvent(
         uint GroupUin,

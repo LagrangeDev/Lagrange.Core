@@ -352,11 +352,15 @@ internal class OperationLogic : LogicBase
         return events.Count != 0 && ((RecallFriendMessageEvent)events[0]).ResultCode == 0;
     }
 
-    public async Task<List<BotGroupRequest>?> FetchGroupRequests()
+    public async Task<OperationResult<List<BotGroupRequest>>> FetchGroupRequestsWithResult()
     {
         var fetchRequestsEvent = FetchGroupRequestsEvent.Create();
         var events = await Collection.Business.SendEvent(fetchRequestsEvent);
-        if (events.Count == 0) return null;
+        if (events.Count == 0) return new OperationResult<List<BotGroupRequest>>
+        {
+            Retcode = -1,
+            Message = "No Events"
+        };
 
         var resolved = events.Cast<FetchGroupRequestsEvent>().SelectMany(e => e.Events).ToList();
         var results = new List<BotGroupRequest>();
@@ -385,7 +389,11 @@ internal class OperationLogic : LogicBase
             ));
         }
 
-        return results;
+        return new OperationResult<List<BotGroupRequest>>
+        {
+            Retcode = 0,
+            Data = results
+        };
 
         async Task<uint> ResolveUid(string? uid)
         {
@@ -396,6 +404,8 @@ internal class OperationLogic : LogicBase
             return e.Count == 0 ? 0 : ((FetchUserInfoEvent)e[0]).UserInfo.Uin;
         }
     }
+
+    public async Task<List<BotGroupRequest>?> FetchGroupRequests() => (await FetchGroupRequestsWithResult()).Data;
 
     public async Task<List<BotFriendRequest>?> FetchFriendRequests()
     {

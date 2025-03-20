@@ -107,6 +107,9 @@ public static class OperationExt
     public static Task<List<BotGroupRequest>?> FetchGroupRequests(this BotContext bot)
         => bot.ContextCollection.Business.OperationLogic.FetchGroupRequests();
 
+    public static Task<OperationResult<List<BotGroupRequest>>> FetchGroupRequestsWithResults(this BotContext bot)
+        => bot.ContextCollection.Business.OperationLogic.FetchGroupRequestsWithResult();
+
     /// <summary>
     ///
     /// </summary>

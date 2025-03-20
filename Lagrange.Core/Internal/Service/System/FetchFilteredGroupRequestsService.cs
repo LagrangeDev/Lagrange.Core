@@ -45,8 +45,10 @@ internal class FetchFilteredGroupRequestsService : BaseService<FetchGroupRequest
             x.Comment,
             true
         )).ToList() ?? new List<FetchGroupRequestsEvent.RawEvent>();
-        
-        output = FetchGroupRequestsEvent.Result((int)payload.ErrorCode, events);
+
+        output = payload.ErrorCode == 0
+            ? FetchGroupRequestsEvent.Result(events)
+            : FetchGroupRequestsEvent.Result((int)payload.ErrorCode, payload.ErrorMsg);
         extraEvents = null;
         return true;
     }
