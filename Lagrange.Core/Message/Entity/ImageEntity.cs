@@ -104,7 +104,7 @@ public class ImageEntity : IMessageEntity
                 ImageSize = index.Info.FileSize,
                 MsgInfo = extra,
                 SubType = (int)extra.ExtBizInfo.Pic.BizType,
-                IsGroup = extra.ExtBizInfo.Pic.BytesPbReserveTroop != null,
+                IsGroup = extra.ExtBizInfo.Pic.ToScene == 2,
                 Summary = string.IsNullOrEmpty(extra.ExtBizInfo.Pic.TextSummary) ? "[图片]" : extra.ExtBizInfo.Pic.TextSummary,
                 ImageUuid = index.FileUuid
             };
