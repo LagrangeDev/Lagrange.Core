@@ -107,10 +107,10 @@ public static class GroupExt
 
     public static Task<bool> GroupSetMessageReaction(this BotContext bot, uint groupUin, uint sequence, string code, bool isSet)
         => bot.ContextCollection.Business.OperationLogic.SetMessageReaction(groupUin, sequence, code, isSet);
-    
+
     public static Task<bool> GroupSetAvatar(this BotContext bot, uint groupUin, ImageEntity imageEntity)
         => bot.ContextCollection.Business.OperationLogic.GroupSetAvatar(groupUin, imageEntity);
-    
+
     public static Task<(uint, uint)> GroupRemainAtAll(this BotContext bot, uint groupUin)
         => bot.ContextCollection.Business.OperationLogic.GroupRemainAtAll(groupUin);
 
@@ -143,8 +143,11 @@ public static class GroupExt
     public static Task<(int RetCode, string RetMsg)> GroupFSRenameFolder(this BotContext bot, uint groupUin, string folderId, string newFolderName)
         => bot.ContextCollection.Business.OperationLogic.GroupFSRenameFolder(groupUin, folderId, newFolderName);
 
-    public static Task<bool> GroupFSUpload(this BotContext bot, uint groupUin, FileEntity fileEntity, string targetDirectory = "/")
-        => bot.ContextCollection.Business.OperationLogic.GroupFSUpload(groupUin, fileEntity, targetDirectory);
+    public static async Task<bool> GroupFSUpload(this BotContext bot, uint groupUin, FileEntity fileEntity, string targetDirectory = "/")
+        => (await GroupFSUploadWithResult(bot, groupUin, fileEntity, targetDirectory)).IsSuccess;
+
+    public static Task<OperationResult<object>> GroupFSUploadWithResult(this BotContext bot, uint groupUin, FileEntity fileEntity, string targetDirectory = "/")
+        => bot.ContextCollection.Business.OperationLogic.GroupFSUploadWithResult(groupUin, fileEntity, targetDirectory);
 
     #endregion
 }

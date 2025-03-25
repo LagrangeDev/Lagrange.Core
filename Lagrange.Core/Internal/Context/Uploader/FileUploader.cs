@@ -11,14 +11,16 @@ namespace Lagrange.Core.Internal.Context.Uploader;
 /// </summary>
 internal static class FileUploader
 {
-    public static async Task<bool> UploadPrivate(ContextCollection context, MessageChain chain, IMessageEntity entity)
+    public static async Task<(int Retcode, string Message)> UploadPrivate(ContextCollection context, MessageChain chain, IMessageEntity entity)
     {
-        if (entity is not FileEntity { FileStream: not null } file) return false;
-        
+        if (entity is not FileEntity { FileStream: not null } file) return (-91000, "Not FileEntity");
+
         var uploadEvent = FileUploadEvent.Create(chain.Uid ?? "", file);
         var result = await context.Business.SendEvent(uploadEvent);
+        if (result.Count == 0) return (-90000, "(FileUploadEvent) No Event");
         var uploadResp = (FileUploadEvent)result[0];
-        
+        if (!uploadResp.IsSuccess) return (uploadResp.ResultCode, $"(FileUploadEvent) {uploadResp.Message}");
+
         if (!uploadResp.IsExist)
         {
             var ext = new FileUploadExt
@@ -75,23 +77,27 @@ internal static class FileUploader
             file.FileUuid = uploadResp.FileId;
 
             bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(95, file.FileStream, await Common.GetTicket(context), file.FileMd5, ext.Serialize().ToArray());
-            if (!hwSuccess) return false;
+            if (!hwSuccess) return (-91001, "Highway Failed");
         }
 
         await file.FileStream.DisposeAsync();
         var sendEvent = SendMessageEvent.Create(chain);
         var sendResult = await context.Business.SendEvent(sendEvent);
-        return sendResult.Count != 0 && ((SendMessageEvent)sendResult[0]).MsgResult.Result == 0;
+        if (sendResult.Count == 0) return (-90000, "(SendMessageEvent) No Event");
+        var sendResp = (SendMessageEvent)sendResult[0];
+        if (sendResp.ResultCode != 0) return (sendResp.ResultCode, $"(SendMessageEvent) Failed!");
+        return (0, "ok");
     }
 
-    public static async Task<bool> UploadGroup(ContextCollection context, MessageChain chain, IMessageEntity entity, string targetDirectory)
+    public static async Task<(int Retcode, string Message)> UploadGroup(ContextCollection context, MessageChain chain, IMessageEntity entity, string targetDirectory)
     {
-        if (entity is not FileEntity { FileStream: not null } file) return false;
-        
+        if (entity is not FileEntity { FileStream: not null } file) return (-91000, "Not FileEntity");
+
         var uploadEvent = GroupFSUploadEvent.Create(chain.GroupUin ?? 0, targetDirectory, file);
         var result = await context.Business.SendEvent(uploadEvent);
+        if (result.Count == 0) return (-90000, "(GroupFSUploadEvent) No Event");
         var uploadResp = (GroupFSUploadEvent)result[0];
-        
+        if (!uploadResp.IsSuccess) return (uploadResp.ResultCode, $"(GroupFSUploadEvent) {uploadResp.Message}");
 
         if (!uploadResp.IsExist)
         {
@@ -147,12 +153,16 @@ internal static class FileUploader
             };
 
             bool hwSuccess = await context.Highway.UploadSrcByStreamAsync(71, file.FileStream, await Common.GetTicket(context), file.FileMd5, ext.Serialize().ToArray());
-            if (!hwSuccess) return false;
+            if (!hwSuccess) return (-91001, "Highway Failed");
         }
-        
+
         await file.FileStream.DisposeAsync();
         var sendEvent = GroupSendFileEvent.Create(chain.GroupUin ?? 0, uploadResp.FileId);
         var sendResult = await context.Business.SendEvent(sendEvent);
-        return sendResult.Count != 0 && ((GroupSendFileEvent)sendResult[0]).ResultCode == 0;
+        if (sendResult.Count == 0) return (-90000, "(GroupSendFileEvent) No Event");
+        var sendResp = (GroupSendFileEvent)sendResult[0];
+        if (!sendResp.IsSuccess) return (sendResp.ResultCode, $"(GroupSendFileEvent) {sendResp.Message}");
+
+        return (0, "ok");
     }
 }
