@@ -1,10 +1,17 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Lagrange.Core.Internal.Event.Message;
 
 internal class GroupSendFileEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
-    
+
     public string FileKey { get; } = string.Empty;
+
+    public string? Message { get; }
+
+    [MemberNotNullWhen(false, nameof(Message))]
+    public bool IsSuccess => ResultCode == 0;
 
     private GroupSendFileEvent(uint groupUin, string fileKey) : base(true)
     {

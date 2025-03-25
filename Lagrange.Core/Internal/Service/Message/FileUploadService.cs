@@ -50,7 +50,7 @@ internal class FileUploadService : BaseService<FileUploadEvent>
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xE37Response>>(input);
         var upload = payload.Body.Upload;
 
-        output = FileUploadEvent.Result((int)payload.ErrorCode, upload.BoolFileExist, upload.Uuid, upload.MediaPlatformUploadKey, upload.UploadIp, upload.UploadPort, upload.FileAddon);
+        output = FileUploadEvent.Result((int)payload.ErrorCode, payload.ErrorMsg, upload.BoolFileExist, upload.Uuid, upload.MediaPlatformUploadKey, upload.UploadIp, upload.UploadPort, upload.FileAddon);
         extraEvents = null;
         return true;
     }

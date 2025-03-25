@@ -18,10 +18,10 @@ public class UploadPrivateFile : IOperation
             var entity = new FileEntity(file.File);
             if (file.Name != null) entity.FileName = file.Name;
 
-            bool result = await context.UploadFriendFile(file.UserId, entity);
-            return new OneBotResult(null, result ? 0 : 1, result ? "ok" : "failed");
+            var result = await context.UploadFriendFileWithResult(file.UserId, entity);
+            return new OneBotResult(null, result.Retcode, result.Message ?? "ok");
         }
-        
+
         throw new Exception();
     }
 }
