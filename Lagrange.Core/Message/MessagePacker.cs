@@ -313,6 +313,11 @@ internal static class MessagePacker
 
     private static MessageChain ParseChain(PushMsgBody message)
     {
+        ulong messageId = message.ContentHead.MsgUid ??
+            (message.ContentHead.Random.HasValue
+                ? 0x01000000ul << 32 | (ulong)message.ContentHead.Random.Value
+                : 0);
+
         var chain = message.ResponseHead.Grp == null
             ? new MessageChain(
                 message.ResponseHead.FromUin,
@@ -321,14 +326,14 @@ internal static class MessagePacker
                 message.ResponseHead.ToUin,
                 message.ContentHead.NTMsgSeq ?? 0,
                 message.ContentHead.Sequence ?? 0,
-                message.ContentHead.MsgUid ?? 0,
+                messageId,
                 message.ContentHead.Type == 141 ? MessageChain.MessageType.Temp : MessageChain.MessageType.Friend)
 
             : new MessageChain(
                 message.ResponseHead.Grp.GroupUin,
                 message.ResponseHead.FromUin,
                 message.ContentHead.Sequence ?? 0,
-                message.ContentHead.MsgUid ?? 0);
+                messageId);
 
         if (message.Body?.RichText?.Elems is { } elems) chain.Elements.AddRange(elems);
 
