@@ -54,9 +54,9 @@ public class ForwardEntity : IMessageEntity
         var mentionReserve = new MentionExtra
         {
             Type = TargetUin == 0 ? 1 : 2,
-            Uin = 0,
+            Uin = TargetUin,
             Field5 = 0,
-            Uid = Uid,
+            Uid = Uid!,
         };
         using var mentionStream = new MemoryStream();
         Serializer.Serialize(mentionStream, mentionReserve);
