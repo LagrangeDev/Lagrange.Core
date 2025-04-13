@@ -11,7 +11,7 @@ public partial class AtSegment(uint at, string? name)
     
     public AtSegment(uint at) : this(at, null) { }
     
-    [JsonPropertyName("qq")] [CQProperty] public string At { get; set; } = at.ToString();
+    [JsonPropertyName("qq")] [CQProperty] public string At { get; set; } = at == 0 ? "all" : at.ToString();
     
     [JsonPropertyName("name")] [CQProperty] public string? Name { get; set; } = name;
 }

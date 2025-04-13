@@ -10,18 +10,18 @@ namespace Lagrange.Core.Message.Entity;
 public class MentionEntity : IMessageEntity
 {
     public uint Uin { get; set; }
-    
+
     public string Uid { get; set; }
-    
+
     public string? Name { get; set; }
-    
+
     public MentionEntity()
     {
         Uin = 0;
         Uid = "";
         Name = "";
     }
-    
+
     /// <summary>
     /// Set target to 0 to mention everyone
     /// </summary>
@@ -43,7 +43,7 @@ public class MentionEntity : IMessageEntity
         };
         using var stream = new MemoryStream();
         Serializer.Serialize(stream, reserve);
-        
+
         return new Elem[]
         {
             new()
@@ -56,15 +56,18 @@ public class MentionEntity : IMessageEntity
             }
         };
     }
-    
+
     IMessageEntity? IMessageEntity.UnpackElement(Elem elems)
     {
-        if (elems.Text is { Str: not null, Attr6Buf: { Length: >= 11 } attr })
+        if (elems.Text is { Str: not null, PbReserve: { Length: > 0 } extra })
         {
+            MentionExtra info = Serializer.Deserialize<MentionExtra>(extra.AsSpan());
+            if (info.Type != 2) return null;
+
             return new MentionEntity
             {
                 Name = elems.Text.Str,
-                Uin = BitConverter.ToUInt32(attr.AsSpan()[7..11], false),
+                Uin = info.Uin,
                 Uid = ""
             };
         }
