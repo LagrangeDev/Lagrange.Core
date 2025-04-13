@@ -104,7 +104,7 @@ public class BounceFaceEntity : IMessageEntity
         return new BounceFaceEntity(extra.Face.FaceId, extra.Count, extra.Name);
     }
 
-    public string ToPreviewString() => "$[BounceFace | Name: {Name}({FaceId}) | Count: {Count}]";
+    public string ToPreviewString() => $"[BounceFace | Name: {Name}({FaceId}) | Count: {Count}]";
 
     public string ToPreviewText() => $"[{Name}]x{Count}";
 }
