@@ -16,13 +16,13 @@ internal class GetGroupInfoService : BaseService<GetGroupInfoEvent>
     protected override bool Build(GetGroupInfoEvent input, BotKeystore keystore, BotAppInfo appInfo,
         BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
-        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x88D_0>(new OidbSvcTrpcTcp0x88D_0
+        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x88D>(new OidbSvcTrpcTcp0x88D
         {
-            Field1 = 537099973,
-            Config = new OidbSvcTrpcTcp0x88D_0Config
+            Field1 = (uint)Random.Shared.NextInt64(),
+            Config = new OidbSvcTrpcTcp0x88DConfig
             {
                 Uin = input.Uin,
-                Flags = new OidbSvcTrpcTcp0x88D_0Flags
+                Flags = new OidbSvcTrpcTcp0x88DFlags
                 {
                     OwnerUid = true,
                     CreateTime = true,
@@ -39,7 +39,7 @@ internal class GetGroupInfoService : BaseService<GetGroupInfoEvent>
                     MaxAdminCount = "",
                 }
             }
-        });
+        }, 0x88d, 0);
 
         output = packet.Serialize();
         extraPackets = null;

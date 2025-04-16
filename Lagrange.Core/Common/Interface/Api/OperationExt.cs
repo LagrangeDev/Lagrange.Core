@@ -212,6 +212,9 @@ public static class OperationExt
     public static Task<(int code, string? message, BotGroupInfo info)> FetchGroupInfo(this BotContext bot, ulong uin)
         => bot.ContextCollection.Business.OperationLogic.FetchGroupInfo(uin);
 
+    public static Task<(int code, string? message, BotStrangerGroupInfo info)> FetchStrangerGroupInfo(this BotContext bot, ulong uin)
+        => bot.ContextCollection.Business.OperationLogic.FetchStrangerGroupInfo(uin);
+
     public static Task<List<string>?> FetchCustomFace(this BotContext bot)
         => bot.ContextCollection.Business.OperationLogic.FetchCustomFace();
 
