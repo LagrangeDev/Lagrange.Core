@@ -17,6 +17,8 @@ internal class OidbSvcTrpcTcp0xFE5_2Group
     [ProtoMember(3)] public uint GroupUin { get; set; }
     
     [ProtoMember(4)] public OidbSvcTrpcTcp0xFE5_2GroupInfo Info { get; set; }
+
+    [ProtoMember(5)] public OidbSvcTrpcTcp0xFE5_2CustomInfo CustomInfo { get; set; }
 }
 
 [ProtoContract]
@@ -43,4 +45,10 @@ internal class OidbSvcTrpcTcp0xFE5_2GroupInfo
 internal class OidbSvcTrpcTcp0xFE5_2Member
 {
     [ProtoMember(2)] public string Uid { get; set; }
+}
+
+[ProtoContract]
+internal class OidbSvcTrpcTcp0xFE5_2CustomInfo
+{
+    [ProtoMember(3)] public string? Remark { get; set; }
 }
