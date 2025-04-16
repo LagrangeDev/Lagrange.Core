@@ -9,28 +9,27 @@ namespace Lagrange.Core.Internal.Packets.Service.Oidb.Request;
 /// Get Cookie
 /// </summary>
 [ProtoContract]
-[OidbSvcTrpcTcp(0x88D, 0)]
-internal class OidbSvcTrpcTcp0x88D_0
+internal class OidbSvcTrpcTcp0x88D
 {
     [ProtoMember(1)]
     public uint Field1 { get; set; }
 
     [ProtoMember(2)]
-    public OidbSvcTrpcTcp0x88D_0Config Config { get; set; }
+    public OidbSvcTrpcTcp0x88DConfig Config { get; set; }
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0x88D_0Config
+internal class OidbSvcTrpcTcp0x88DConfig
 {
     [ProtoMember(1)]
     public ulong Uin { get; set; }
 
     [ProtoMember(2)]
-    public OidbSvcTrpcTcp0x88D_0Flags Flags { get; set; }
+    public OidbSvcTrpcTcp0x88DFlags Flags { get; set; }
 }
 
 [ProtoContract]
-internal class OidbSvcTrpcTcp0x88D_0Flags
+internal class OidbSvcTrpcTcp0x88DFlags
 {
     [ProtoMember(1)]
     public bool? OwnerUid { get; set; }

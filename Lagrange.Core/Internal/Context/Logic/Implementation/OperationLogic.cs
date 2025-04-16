@@ -659,6 +659,14 @@ internal class OperationLogic : LogicBase
         return (@event.ResultCode, @event.Message, @event.Info);
     }
 
+    public async Task<(int code, string? message, BotStrangerGroupInfo info)> FetchStrangerGroupInfo(ulong uin)
+    {
+        var events = await Collection.Business.SendEvent(GetStrangerGroupInfoEvent.Create(uin));
+        if (events.Count == 0) return (-1, "No Result", new());
+        var @event = (GetStrangerGroupInfoEvent)events[0];
+        return (@event.ResultCode, @event.Message, @event.Info);
+    }
+
     public async Task<bool> SetMessageReaction(uint groupUin, uint sequence, string code, bool isAdd)
     {
         if (isAdd)
