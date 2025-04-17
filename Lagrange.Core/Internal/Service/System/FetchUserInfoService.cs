@@ -92,6 +92,7 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         var reg = DateTime.UnixEpoch.AddSeconds(numberProperties[20026]);
 
         string? qid = Encoding.UTF8.GetString(bytesProperties[27394]);
+        string? remark = Encoding.UTF8.GetString(bytesProperties[103]);
 
         uint statusId = numberProperties[27372];
         uint mask = 268435455 - statusId;
@@ -125,6 +126,7 @@ internal class FetchUserInfoService : BaseService<FetchUserInfoEvent>
         var info = new BotUserInfo(
             payload.Body.Body.Uin,
             nickname,
+            remark,
             $"{avatars.Url}640",
             birthday,
             city,

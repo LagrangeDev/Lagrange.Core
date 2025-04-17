@@ -3,12 +3,13 @@ namespace Lagrange.Core.Common.Entity;
 [Serializable]
 public class BotUserInfo
 {
-    internal BotUserInfo(uint uin, string nickname, string avatar, DateTime birthday, string city, string country, string school, uint age, DateTime registerTime, GenderInfo gender, string? qid, uint level, string sign, BotStatus status, List<BusinessCustom> business)
+    internal BotUserInfo(uint uin, string nickname, string? remark, string avatar, DateTime birthday, string city, string country, string school, uint age, DateTime registerTime, GenderInfo gender, string? qid, uint level, string sign, BotStatus status, List<BusinessCustom> business)
     {
         Uin = uin;
         Avatar = avatar;
         // Avatar = $"https://q1.qlogo.cn/g?b=qq&nk={Uin}&s=640";
         Nickname = nickname;
+        Remark = remark;
         Birthday = birthday;
         City = city;
         Country = country;
@@ -28,6 +29,8 @@ public class BotUserInfo
     public string Avatar { get; set; }
 
     public string Nickname { get; set; }
+
+    public string? Remark { get; set; }
 
     public DateTime Birthday { get; set; }
 
