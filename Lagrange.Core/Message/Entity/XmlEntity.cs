@@ -11,7 +11,9 @@ public class XmlEntity : IMessageEntity
     public string Xml { get; set; }
 
     public int ServiceId { get; set; } = 35;
-    
+
+    private static ReadOnlySpan<byte> Header => new byte[1] { 0x01 };
+
     public XmlEntity() => Xml = "";
 
     public XmlEntity(string xml) => Xml = xml;
@@ -27,7 +29,7 @@ public class XmlEntity : IMessageEntity
                 RichMsg = new RichMsg
                 {
                     ServiceId = ServiceId,
-                    Template1 = ZCompression.ZCompress(Xml, new byte[] { 0x01 }),
+                    Template1 = ZCompression.ZCompress(Xml, Header),
                 }
             }
         };
@@ -37,7 +39,7 @@ public class XmlEntity : IMessageEntity
     {
         if (elems.RichMsg is { ServiceId: 35, Template1: not null } richMsg)
         {
-            var xml = ZCompression.ZDecompress(richMsg.Template1.Skip(1).ToArray());
+            var xml = ZCompression.ZDecompress(richMsg.Template1.AsSpan(1));
             return new XmlEntity(Encoding.UTF8.GetString(xml));
         }
 

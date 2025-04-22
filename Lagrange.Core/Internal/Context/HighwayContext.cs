@@ -201,7 +201,7 @@ internal class HighwayContext : ContextBase, IDisposable
         {
             int headLength = packet.ReadInt();
             int bodyLength = packet.ReadInt();
-            var head = Serializer.Deserialize<RespDataHighwayHead>(packet.ReadBytes(headLength));
+            var head = Serializer.Deserialize<RespDataHighwayHead>(packet.ReadBytes(headLength).AsSpan());
             var body = packet.ReadPacket(bodyLength);
             
             if (packet.ReadByte() == 0x29) return (head, body);
