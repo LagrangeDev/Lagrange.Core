@@ -46,7 +46,7 @@ public class LightAppEntity : IMessageEntity
     {
         if (elems.LightAppElem is { } lightApp)
         {
-            var payload = ZCompression.ZDecompress(lightApp.Data[1..], false);
+            var payload = ZCompression.ZDecompress(lightApp.Data.AsSpan(1), false);
             string json = Encoding.UTF8.GetString(payload);
             string? app = JsonNode.Parse(json)?["app"]?.ToString();
 

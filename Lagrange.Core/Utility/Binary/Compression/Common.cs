@@ -6,16 +6,16 @@ namespace Lagrange.Core.Utility.Binary.Compression;
 
 internal static class Common
 {
-    public static byte[] Deflate(byte[] data)
+    public static byte[] Deflate(ReadOnlySpan<byte> data)
     {
        using var memoryStream = new MemoryStream();
        using var deflateStream = new DeflateStream(memoryStream, CompressionMode.Compress);
-       deflateStream.Write(data, 0, data.Length);
+       deflateStream.Write(data);
        deflateStream.Close();
        return memoryStream.ToArray();
     }
     
-    public static byte[] Inflate(Span<byte> data)
+    public static byte[] Inflate(ReadOnlySpan<byte> data)
     {
         using var ms = new MemoryStream();
         using var ds = new DeflateStream(ms, CompressionMode.Decompress, true);

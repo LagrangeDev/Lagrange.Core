@@ -12,6 +12,8 @@ public class JsonEntity : IMessageEntity
     public string Json { get; set; }
     
     public string ResId { get; set; }
+
+    private static ReadOnlySpan<byte> Header => new byte[1] { 0x01 };
     
     public JsonEntity()
     {
@@ -44,7 +46,7 @@ public class JsonEntity : IMessageEntity
                 RichMsg = new RichMsg
                 {
                     ServiceId = 1,
-                    Template1 = ZCompression.ZCompress(Json, new byte[] { 0x01 }),
+                    Template1 = ZCompression.ZCompress(Json, Header),
                 }
             }
         };
@@ -54,7 +56,7 @@ public class JsonEntity : IMessageEntity
     {
         if (elems.RichMsg is { ServiceId: 1, Template1: not null } richMsg)
         {
-            var json = ZCompression.ZDecompress(richMsg.Template1[1..]);
+            var json = ZCompression.ZDecompress(richMsg.Template1.AsSpan(1));
             return new XmlEntity(Encoding.UTF8.GetString(json));
         }
 
