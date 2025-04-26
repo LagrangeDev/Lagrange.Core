@@ -71,7 +71,8 @@ namespace Lagrange.OneBot.Updater
         {
             if(Environment.GetEnvironmentVariable("RUNNING_IN_DOCKER") == "true")
             {
-                return new UpdaterConfig();
+                Config = new UpdaterConfig();
+                return;
             }
         
             string configPath = Path.Combine(_executableDirectory, "AutoUpdaterConfig.json");
