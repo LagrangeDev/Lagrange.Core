@@ -138,7 +138,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 _ = packet.ReadUint();  // group uin
                 _ = packet.ReadByte();  // unknown byte
                 var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly); // proto length error
-                var msgBody = Serializer.Deserialize<NotifyMessageBody>(proto);
+                var msgBody = Serializer.Deserialize<NotifyMessageBody>(proto.AsSpan());
                 switch ((Event0x2DCSubType16Field13)(msgBody.Field13 ?? 0))
                 {
                     case Event0x2DCSubType16Field13.GroupMemberSpecialTitleNotice:
@@ -178,7 +178,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 _ = packet.ReadUint();  // group uin
                 _ = packet.ReadByte();  // unknown byte
                 var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
-                var recall = Serializer.Deserialize<NotifyMessageBody>(proto);
+                var recall = Serializer.Deserialize<NotifyMessageBody>(proto.AsSpan());
                 var meta = recall.Recall.RecallMessages[0];
                 var groupRecallEvent = GroupSysRecallEvent.Result(
                     recall.GroupUin,
@@ -213,7 +213,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 _ = packet.ReadUint();  // group uin
                 _ = packet.ReadByte();  // unknown byte
                 var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
-                var essence = Serializer.Deserialize<NotifyMessageBody>(proto);
+                var essence = Serializer.Deserialize<NotifyMessageBody>(proto.AsSpan());
                 var essenceMsg = essence.EssenceMessage;
                 var groupEssenceEvent = GroupSysEssenceEvent.Result(essenceMsg.GroupUin, essenceMsg.MsgSequence,
                     essenceMsg.Random, essenceMsg.SetFlag, essenceMsg.MemberUin, essenceMsg.OperatorUin);
@@ -226,7 +226,7 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 uint groupUin = packet.ReadUint();  // group uin
                 _ = packet.ReadByte();  // unknown byte
                 var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
-                var greyTip = Serializer.Deserialize<NotifyMessageBody>(proto);
+                var greyTip = Serializer.Deserialize<NotifyMessageBody>(proto.AsSpan());
 
                 var templates = greyTip.GeneralGrayTip.MsgTemplParam.ToDictionary(x => x.Name, x => x.Value);
 

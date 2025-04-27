@@ -64,8 +64,8 @@ internal static class SsoPacker
         var msgCookie = headReader.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix);
         int isCompressed = headReader.ReadInt();
         var reserveField = headReader.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix);
-        
-        var body = packet.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix).ToArray();
+
+        var body = packet.ReadBytes(Prefix.Uint32 | Prefix.WithPrefix);
         var raw = isCompressed switch
         {
             0 or 4 => body,

@@ -16,6 +16,8 @@ WORKDIR /app/data
 COPY --from=build-env /root/out /app/bin
 COPY Lagrange.OneBot/Resources/docker-entrypoint.sh /app/bin/docker-entrypoint.sh
 
+ENV RUNNING_IN_DOCKER=true
+
 RUN apt-get update \
  && apt-get -y --no-install-recommends install gosu \
  && chmod +x /app/bin/docker-entrypoint.sh
