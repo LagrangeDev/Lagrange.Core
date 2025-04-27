@@ -64,6 +64,13 @@ public class MentionEntity : IMessageEntity
             MentionExtra info = Serializer.Deserialize<MentionExtra>(extra.AsSpan());
             if (info.Type != 2) return null;
 
+            // shit!
+            if (info.Uin == 0 && elems.Text.Attr6Buf is { Length: > 11 } attr)
+            {
+                info.Uin = BitConverter.ToUInt32(attr.AsSpan()[7..11], false);
+            }
+
+
             return new MentionEntity
             {
                 Name = elems.Text.Str,
