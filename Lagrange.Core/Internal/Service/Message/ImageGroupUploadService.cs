@@ -92,8 +92,15 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
                 {
                     Pic = new PicExtBizInfo
                     {
-                        TextSummary = input.Entity.Summary!,
-                        BytesPbReserveTroop = "0800180020004a00500062009201009a0100aa010c080012001800200028003a00".UnHex()
+                        BizType = (uint)input.Entity.SubType,
+                        // This is very confusing
+                        // so we only implement the default summary for sub type 1
+                        // and Tencent implements the others based on the default values.
+                        TextSummary = input.Entity.Summary ?? (input.Entity.SubType == 1 ? "[\u52a8\u753b\u8868\u60c5]" : null!),
+                        C2c = new PicExtBizInfoC2c
+                        {
+                            SubType = (uint)input.Entity.SubType
+                        }
                     },
                     Video = new VideoExtBizInfo { BytesPbReserve = Array.Empty<byte>() },
                     Ptt = new PttExtBizInfo
