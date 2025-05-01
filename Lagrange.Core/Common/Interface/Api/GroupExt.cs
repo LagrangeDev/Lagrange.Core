@@ -82,10 +82,16 @@ public static class GroupExt
         => bot.ContextCollection.Business.OperationLogic.InviteGroup(groupUin, invitedUins);
 
     public static Task<bool> SetGroupRequest(this BotContext bot, BotGroupRequest request, bool accept = true, string reason = "")
-        => bot.ContextCollection.Business.OperationLogic.SetGroupRequest(request.GroupUin, request.Sequence, (uint)request.EventType, accept, reason);
+        => bot.ContextCollection.Business.OperationLogic.SetGroupRequest(request.GroupUin, request.Sequence, (uint)request.EventType, accept ? GroupRequestOperate.Allow : GroupRequestOperate.Deny, reason);
+
+    public static Task<bool> SetGroupRequest(this BotContext bot, BotGroupRequest request, GroupRequestOperate operate, string reason = "")
+        => bot.ContextCollection.Business.OperationLogic.SetGroupRequest(request.GroupUin, request.Sequence, (uint)request.EventType, operate, reason);
 
     public static Task<bool> SetGroupFilteredRequest(this BotContext bot, BotGroupRequest request, bool accept = true, string reason = "")
-        => bot.ContextCollection.Business.OperationLogic.SetGroupFilteredRequest(request.GroupUin, request.Sequence, (uint)request.EventType, accept, reason);
+        => bot.ContextCollection.Business.OperationLogic.SetGroupFilteredRequest(request.GroupUin, request.Sequence, (uint)request.EventType, accept ? GroupRequestOperate.Allow : GroupRequestOperate.Deny, reason);
+
+    public static Task<bool> SetGroupFilteredRequest(this BotContext bot, BotGroupRequest request, GroupRequestOperate operate, string reason = "")
+        => bot.ContextCollection.Business.OperationLogic.SetGroupFilteredRequest(request.GroupUin, request.Sequence, (uint)request.EventType, operate, reason);
 
     public static Task<bool> SetFriendRequest(this BotContext bot, BotFriendRequest request, bool accept = true)
         => bot.ContextCollection.Business.OperationLogic.SetFriendRequest(request.SourceUid, accept);

@@ -17,7 +17,7 @@ internal class SetGroupFilteredRequestService : BaseService<SetGroupFilteredRequ
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x10C8>(new OidbSvcTrpcTcp0x10C8
         {
-            Accept = Convert.ToUInt32(!input.Accept) + 1,
+            Accept = (uint)input.Operate,
             Body = new OidbSvcTrpcTcp0x10C8Body
             {
                 Sequence = input.Sequence,

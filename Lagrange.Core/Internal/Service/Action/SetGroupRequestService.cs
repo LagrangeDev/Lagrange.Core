@@ -17,7 +17,7 @@ internal class SetGroupRequestService : BaseService<SetGroupRequestEvent>
     {
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0x10C8>(new OidbSvcTrpcTcp0x10C8
         {
-            Accept = Convert.ToUInt32(!input.Accept) + 1,
+            Accept = (uint)input.Operate,
             Body = new OidbSvcTrpcTcp0x10C8Body
             {
                 Sequence = input.Sequence,
@@ -26,17 +26,17 @@ internal class SetGroupRequestService : BaseService<SetGroupRequestEvent>
                 Message = input.Reason
             }
         }, 0x10c8, 1, false, true);
-        
+
         output = packet.Serialize();
         extraPackets = null;
         return true;
     }
-    
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
+
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out SetGroupRequestEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
-        
+
         output = SetGroupRequestEvent.Result((int)payload.ErrorCode);
         extraEvents = null;
         return true;

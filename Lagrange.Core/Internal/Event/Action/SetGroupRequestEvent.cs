@@ -1,30 +1,32 @@
+using Lagrange.Core.Common.Entity;
+
 namespace Lagrange.Core.Internal.Event.Action;
 
-internal class SetGroupRequestEvent : ProtocolEvent
+internal partial class SetGroupRequestEvent : ProtocolEvent
 {
     public ulong Sequence { get; set; }
 
     public uint GroupUin { get; set; }
-    
-    public bool Accept { get; set; }
-    
+
+    public GroupRequestOperate Operate { get; set; }
+
     public uint Type { get; }
-    
+
     public string Reason { get; set; } = string.Empty;
 
-    private SetGroupRequestEvent(bool accept, uint groupUin, ulong sequence, uint type, string? reason) : base(true)
+    private SetGroupRequestEvent(GroupRequestOperate operate, uint groupUin, ulong sequence, uint type, string? reason) : base(true)
     {
-        Accept = accept;
+        Operate = operate;
         GroupUin = groupUin;
         Sequence = sequence;
         Type = type;
         Reason = reason ?? "";
     }
-    
+
     private SetGroupRequestEvent(int resultCode) : base(resultCode) { }
-    
-    public static SetGroupRequestEvent Create(bool accept, uint groupUin, ulong sequence, uint type, string? reason) 
-        => new(accept, groupUin, sequence, type, reason);
-    
+
+    public static SetGroupRequestEvent Create(GroupRequestOperate operate, uint groupUin, ulong sequence, uint type, string? reason)
+        => new(operate, groupUin, sequence, type, reason);
+
     public static SetGroupRequestEvent Result(int resultCode) => new(resultCode);
 }
