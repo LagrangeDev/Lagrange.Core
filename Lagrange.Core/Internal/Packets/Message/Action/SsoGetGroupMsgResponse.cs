@@ -24,5 +24,5 @@ internal class SsoGetGroupMsgResponseBody
 
     [ProtoMember(5)] public uint EndSequence { get; set; }
 
-    [ProtoMember(6)] public List<PushMsgBody> Messages { get; set; }
+    [ProtoMember(6)] public List<PushMsgBody>? Messages { get; set; }
 }

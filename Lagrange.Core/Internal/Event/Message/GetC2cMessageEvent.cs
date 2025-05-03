@@ -19,7 +19,7 @@ internal class GetC2cMessageEvent : ProtocolEvent
         EndSequence = endSequence;
     }
 
-    private GetC2cMessageEvent(List<MessageChain> chains) : base(0)
+    private GetC2cMessageEvent(int retcode, List<MessageChain> chains) : base(retcode)
     {
         Chains = chains;
     }
@@ -27,6 +27,6 @@ internal class GetC2cMessageEvent : ProtocolEvent
     public static GetC2cMessageEvent Create(string friendUid, uint startSequence, uint endSequence)
         => new(friendUid, startSequence, endSequence);
 
-    public static GetC2cMessageEvent Result(List<MessageChain> chains)
-        => new(chains);
+    public static GetC2cMessageEvent Result(int retcode, List<MessageChain> chains)
+        => new(retcode, chains);
 }
