@@ -8,11 +8,11 @@ namespace Lagrange.Core.Internal.Context.Uploader;
 [HighwayUploader(typeof(RecordEntity))]
 internal class PttUploader : IHighwayUploader
 {
-    public async Task UploadPrivate(ContextCollection context, MessageChain chain, IMessageEntity entity)
+    public async Task UploadPrivate(ContextCollection context, string uid, IMessageEntity entity)
     {
         if (entity is RecordEntity { AudioStream: { } stream } record)
         {
-            var uploadEvent = RecordUploadEvent.Create(record, chain.FriendInfo?.Uid ?? "");
+            var uploadEvent = RecordUploadEvent.Create(record, uid);
             var uploadResult = await context.Business.SendEvent(uploadEvent);
             var metaResult = (RecordUploadEvent)uploadResult[0];
 
@@ -33,11 +33,11 @@ internal class PttUploader : IHighwayUploader
         }
     }
 
-    public async Task UploadGroup(ContextCollection context, MessageChain chain, IMessageEntity entity)
+    public async Task UploadGroup(ContextCollection context, uint uin, IMessageEntity entity)
     {
         if (entity is RecordEntity { AudioStream: { } stream } record)
         {
-            var uploadEvent = RecordGroupUploadEvent.Create(record, chain.GroupUin ?? 0);
+            var uploadEvent = RecordGroupUploadEvent.Create(record, uin);
             var uploadResult = await context.Business.SendEvent(uploadEvent);
             var metaResult = (RecordGroupUploadEvent)uploadResult[0];
 
@@ -51,7 +51,7 @@ internal class PttUploader : IHighwayUploader
                     throw new Exception();
                 }
             }
-            
+
             record.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             record.Compat = metaResult.Compat;  // for legacy QQ
             await record.AudioStream.Value.DisposeAsync();

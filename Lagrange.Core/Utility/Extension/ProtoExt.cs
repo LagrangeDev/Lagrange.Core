@@ -12,4 +12,12 @@ internal static class ProtoExt
         Serializer.Serialize(stream, payload);
         return stream.ToArray();
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static byte[] SerializeToBytes<T>(this T payload)
+    {
+        using var stream = new MemoryStream();
+        Serializer.Serialize(stream, payload);
+        return stream.ToArray();
+    }
 }

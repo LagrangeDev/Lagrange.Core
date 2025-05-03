@@ -12,10 +12,17 @@ public interface IMessageEntity
     /// <returns></returns>
     internal IEnumerable<Elem> PackElement(); // abstract method
 
+    /// <summary>
+    /// <inheritdoc cref="PackElement" />
+    /// For <see cref="MessagePacker.BuildFack" />
+    /// </summary>
+    /// <returns></returns>
+    internal IEnumerable<Elem> PackFackElement() => PackElement();
+
     internal object? PackMessageContent() => null; // virtual method
 
     internal IMessageEntity? UnpackElement(Elem elem); // abstract method
-    
+
     internal void SetSelfUid(string selfUid) { } // virtual method
 
     public string ToPreviewString(); // abstract method
