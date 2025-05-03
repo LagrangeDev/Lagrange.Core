@@ -23,9 +23,9 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
         string md5 = input.Entity.ImageStream.Value.Md5(true);
         string sha1 = input.Entity.ImageStream.Value.Sha1(true);
 
-        var buffer = new byte[1024]; // parse image header
-        int _ = input.Entity.ImageStream.Value.Read(buffer.AsSpan());
-        var type = ImageResolver.Resolve(buffer, out var size);
+        // var buffer = new byte[1024]; // parse image header
+        // int _ = input.Entity.ImageStream.Value.Read(buffer.AsSpan());
+        var type = ImageResolver.Resolve(input.Entity.ImageStream.Value, out var size);
         string imageExt = type switch
         {
             ImageFormat.Jpeg => ".jpg",
@@ -33,7 +33,7 @@ internal class ImageUploadService : BaseService<ImageUploadEvent>
             ImageFormat.Gif => ".gif",
             ImageFormat.Webp => ".webp",
             ImageFormat.Bmp => ".bmp",
-            ImageFormat.Tiff => ".tiff",
+            // ImageFormat.Tiff => ".tiff",
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
         input.Entity.ImageStream.Value.Position = 0;

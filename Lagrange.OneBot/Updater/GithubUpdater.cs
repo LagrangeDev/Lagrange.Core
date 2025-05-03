@@ -69,13 +69,13 @@ namespace Lagrange.OneBot.Updater
 
         public async Task GetConfig()
         {
-            if(Environment.GetEnvironmentVariable("RUNNING_IN_DOCKER") == "true")
+            if (Environment.GetEnvironmentVariable("RUNNING_IN_DOCKER") == "true")
             {
                 Config = new UpdaterConfig();
                 return;
             }
-        
-            string configPath = Path.Combine(_executableDirectory, "AutoUpdaterConfig.json");
+
+            string configPath = "AutoUpdaterConfig.json";
 
             if (File.Exists(configPath))
             {
@@ -88,22 +88,14 @@ namespace Lagrange.OneBot.Updater
                 }
                 else
                 {
-                    Console.WriteLine("Failed to parse config file, resetting to default.");
+                    Console.WriteLine("Failed to parse config file, fallback to default config.");
                     var defaultConfig = new UpdaterConfig();
-                    await File.WriteAllTextAsync(
-                        configPath,
-                        JsonSerializer.Serialize(defaultConfig, _jsonSerializerOptions)
-                    );
                     Config = defaultConfig;
                 }
             }
             else
             {
                 var defaultConfig = new UpdaterConfig();
-                await File.WriteAllTextAsync(
-                    configPath,
-                    JsonSerializer.Serialize(defaultConfig, _jsonSerializerOptions)
-                );
                 Config = defaultConfig;
             }
         }
@@ -111,7 +103,7 @@ namespace Lagrange.OneBot.Updater
         private async Task SetLastUpdateTime()
         {
             await File.WriteAllTextAsync(
-                Path.Combine(_executableDirectory, "AutoUpdaterConfig.json"),
+                "AutoUpdaterConfig.json",
                 JsonSerializer.Serialize(Config, _jsonSerializerOptions)
             );
         }
@@ -243,7 +235,7 @@ namespace Lagrange.OneBot.Updater
                     xcopy /y /q ""{sourceDirectory}\\*"" ""{_executableDirectory}\\*"" /s /i
 
                     echo Update completed, starting new process...
-                    start "" "%targetPath%"
+                    cd "{Environment.CurrentDirectory}" && start "" "%targetPath%"
                     
                     """;
                 string batFilePath = Path.Combine(tempDirectory, "update.bat");
@@ -272,7 +264,7 @@ namespace Lagrange.OneBot.Updater
                     cp  "$sourcePath" "$targetPath"
 
                     echo Update completed, starting new process...
-                    exec "$targetPath"
+                    cd {Environment.CurrentDirectory} exec "$targetPath"
                     
                     """;
                 string shellFilePath = Path.Combine(tempDirectory, "update.sh");
@@ -309,7 +301,7 @@ namespace Lagrange.OneBot.Updater
                                       cp "$dylibSourcePath" "$targetDylibPath"
 
                                       echo Update completed, starting new process...
-                                      exec "$targetPath"
+                                      cd "{Environment.CurrentDirectory}" && exec "$targetPath"
 
                                       """;
                 string shellFilePath = Path.Combine(tempDirectory, "update.sh");
