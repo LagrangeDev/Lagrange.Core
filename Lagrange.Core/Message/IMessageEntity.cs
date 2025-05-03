@@ -14,10 +14,10 @@ public interface IMessageEntity
 
     /// <summary>
     /// <inheritdoc cref="PackElement" />
-    /// For <see cref="MessagePacker.BuildFack" />
+    /// For <see cref="MessagePacker.BuildFake" />
     /// </summary>
     /// <returns></returns>
-    internal IEnumerable<Elem> PackFackElement() => PackElement();
+    internal IEnumerable<Elem> PackFakeElement() => PackElement();
 
     internal object? PackMessageContent() => null; // virtual method
 

@@ -40,7 +40,7 @@ public class ForwardEntity : IMessageEntity
 
     IEnumerable<Elem> IMessageEntity.PackElement() => PackElement(true);
 
-    IEnumerable<Elem> IMessageEntity.PackFackElement() => PackElement(false);
+    IEnumerable<Elem> IMessageEntity.PackFakeElement() => PackElement(false);
 
     IEnumerable<Elem> PackElement(bool additional)
     {
