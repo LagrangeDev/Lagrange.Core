@@ -310,6 +310,12 @@ internal class MessagingLogic : LogicBase
                     await ResolveChainMetadata(chain);
                     await ResolveOutgoingChain(chain);
                     await Collection.Highway.UploadResources(chain);
+
+                    foreach (var forward in chain.OfType<ForwardEntity>())
+                    {
+                        if (chain.IsGroup) await Collection.Highway.UploadGroupResources(forward.Chain, chain.GroupUin ?? 0);
+                        else await Collection.Highway.UploadPrivateResources(forward.Chain, chain.FriendInfo?.Uid ?? "");
+                    }
                 }
                 break;
             }
@@ -445,6 +451,41 @@ internal class MessagingLogic : LogicBase
                     {
                         var result = (MediaDownloadEvent)results[0];
                         image.ImageUrl = result.Url;
+                    }
+
+                    break;
+                }
+                case ForwardEntity forward:
+                {
+                    if (chain is { GroupUin: not null })
+                    {
+                        var events = await Collection.Business.SendEvent(GetGroupMessageEvent.Create(
+                            chain.GroupUin.Value,
+                            forward.Sequence,
+                            forward.Sequence
+                        ));
+
+                        if (events.Count < 1) break;
+                        if (events[0] is not GetGroupMessageEvent @event) break;
+                        if (@event.ResultCode != 0) break;
+                        if (@event.Chains.Count < 1) break;
+
+                        forward.Chain = @event.Chains[0];
+                    }
+                    else
+                    {
+                        var events = await Collection.Business.SendEvent(GetC2cMessageEvent.Create(
+                            chain.Uid ?? "",
+                            forward.Sequence,
+                            forward.Sequence
+                        ));
+
+                        if (events.Count < 1) break;
+                        if (events[0] is not GetC2cMessageEvent @event) break;
+                        if (@event.ResultCode != 0) break;
+                        if (@event.Chains.Count < 1) break;
+
+                        forward.Chain = @event.Chains[0];
                     }
 
                     break;

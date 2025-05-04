@@ -87,7 +87,7 @@ internal static class MessagePacker
         foreach (var entity in chain)
         {
             entity.SetSelfUid(selfUid);
-            message.Body?.RichText?.Elems.AddRange(entity.PackElement());
+            message.Body?.RichText?.Elems.AddRange(entity.PackFakeElement());
 
             if (message.Body != null)
             {

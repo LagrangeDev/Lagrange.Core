@@ -8,11 +8,11 @@ namespace Lagrange.Core.Internal.Context.Uploader;
 [HighwayUploader(typeof(ImageEntity))]
 internal class ImageUploader : IHighwayUploader
 {
-    public async Task UploadPrivate(ContextCollection context, MessageChain chain, IMessageEntity entity)
+    public async Task UploadPrivate(ContextCollection context, string uid, IMessageEntity entity)
     {
         if (entity is ImageEntity { ImageStream: { } stream } image)
         {
-            var uploadEvent = ImageUploadEvent.Create(image, chain.FriendInfo?.Uid ?? "");
+            var uploadEvent = ImageUploadEvent.Create(image, uid);
             var uploadResult = await context.Business.SendEvent(uploadEvent);
             var metaResult = (ImageUploadEvent)uploadResult[0];
 
@@ -26,18 +26,18 @@ internal class ImageUploader : IHighwayUploader
                     throw new Exception();
                 }
             }
-            
+
             image.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             image.CompatImage = metaResult.Compat;  // for legacy QQ
             await image.ImageStream.Value.DisposeAsync();
         }
     }
 
-    public async Task UploadGroup(ContextCollection context, MessageChain chain, IMessageEntity entity)
+    public async Task UploadGroup(ContextCollection context, uint uin, IMessageEntity entity)
     {
         if (entity is ImageEntity { ImageStream: { } stream } image)
         {
-            var uploadEvent = ImageGroupUploadEvent.Create(image, chain.GroupUin ?? 0);
+            var uploadEvent = ImageGroupUploadEvent.Create(image, uin);
             var uploadResult = await context.Business.SendEvent(uploadEvent);
             var metaResult = (ImageGroupUploadEvent)uploadResult[0];
 
@@ -51,7 +51,7 @@ internal class ImageUploader : IHighwayUploader
                     throw new Exception();
                 }
             }
-            
+
             image.MsgInfo = metaResult.MsgInfo;  // directly constructed by Tencent's BDH Server
             image.CompatFace = metaResult.Compat;  // for legacy QQ
             await image.ImageStream.Value.DisposeAsync();

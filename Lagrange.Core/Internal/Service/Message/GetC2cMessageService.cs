@@ -33,7 +33,7 @@ internal class GetC2cMessageService : BaseService<GetC2cMessageEvent>
         var payload = Serializer.Deserialize<SsoGetC2cMsgResponse>(input);
         var chains = payload.Messages?.Select(x => MessagePacker.Parse(x)).ToList() ?? new();
 
-        output = GetC2cMessageEvent.Result(chains);
+        output = GetC2cMessageEvent.Result((int)payload.Retcode, chains);
         extraEvents = null;
         return true;
     }
