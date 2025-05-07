@@ -72,7 +72,7 @@ public partial class MessageRecord : IRealmObject
         return ((ushort)seq << 16) | (ushort)msgId;
     }
 
-    public static implicit operator MessageRecord?(MessageChain? chain) => chain == null ? null : new()
+    public static implicit operator MessageRecord(MessageChain chain) => new()
     {
         Id = CalcMessageHash(chain.MessageId, chain.Sequence),
         Type = chain.Type,
@@ -92,10 +92,8 @@ public partial class MessageRecord : IRealmObject
         Entities = MessagePackSerializer.Serialize<List<IMessageEntity>>(chain, OPTIONS)
     };
 
-    public static implicit operator MessageChain?(MessageRecord? record)
+    public static implicit operator MessageChain(MessageRecord record)
     {
-        if (record == null) return null;
-
         var chain = record.Type switch
         {
             MessageType.Group => new MessageChain(
