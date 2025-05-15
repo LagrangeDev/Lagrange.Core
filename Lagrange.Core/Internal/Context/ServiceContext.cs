@@ -16,18 +16,18 @@ namespace Lagrange.Core.Internal.Context;
 internal class ServiceContext : ContextBase
 {
     private const string Tag = nameof(ServiceContext);
-    
+
     private readonly SequenceProvider _sequenceProvider;
     private readonly Dictionary<string, IService> _services;
     private readonly Dictionary<Type, List<(ServiceAttribute Attribute, IService Instance)>> _servicesEventType;
 
-    public ServiceContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device) 
+    public ServiceContext(ContextCollection collection, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device)
         : base(collection, keystore, appInfo, device)
     {
         _sequenceProvider = new SequenceProvider();
         _services = new Dictionary<string, IService>();
         _servicesEventType = new Dictionary<Type, List<(ServiceAttribute, IService)>>();
-        
+
         RegisterServices();
     }
 
@@ -47,7 +47,7 @@ internal class ServiceContext : ContextBase
             {
                 var service = (IService)type.CreateInstance();
                 _services[serviceAttribute.Command] = service;
-                
+
                 foreach (var attribute in type.GetCustomAttributes<EventSubscribeAttribute>())
                 {
                     _servicesEventType[attribute.EventType].Add((serviceAttribute, service));
@@ -71,30 +71,30 @@ internal class ServiceContext : ContextBase
             if (success && binary != null)
             {
                 result.Add(new SsoPacket(attribute.PacketType, attribute.Command, (uint)_sequenceProvider.GetNewSequence(), binary.ToArray()));
-                
+
                 if (extraPackets is { } extra)
                 {
                     var packets = extra.Select(e => new SsoPacket(attribute.PacketType, attribute.Command, (uint)_sequenceProvider.GetNewSequence(), e.ToArray()));
                     result.AddRange(packets);
                 }
-                
+
                 Collection.Log.LogDebug(Tag, $"Outgoing SSOFrame: {attribute.Command}");
             }
         }
 
         return result;
     }
-    
+
     /// <summary>
     /// Resolve the incoming event by the packet
     /// </summary>
     public List<ProtocolEvent> ResolveEventByPacket(SsoPacket packet)
     {
         var result = new List<ProtocolEvent>();
-        
+
         if (!_services.TryGetValue(packet.Command, out var service))
         {
-            Collection.Log.LogWarning(Tag, $"Unsupported SSOFrame Received: {packet.Command}");
+            Collection.Log.LogInfo(Tag, $"Unsupported SSOFrame Received: {packet.Command}");
             Collection.Log.LogDebug(Tag, $"Unsuccessful SSOFrame Payload: {packet.Payload.Hex()}");
             return result; // 没找到 滚蛋吧
         }
@@ -105,19 +105,19 @@ internal class ServiceContext : ContextBase
         {
             if (@event != null) result.Add(@event);
             if (extraEvents != null) result.AddRange(extraEvents);
-            
+
             Collection.Log.LogDebug(Tag, $"Incoming SSOFrame: {packet.Command}");
         }
-        
+
         return result;
     }
-    
+
     public int GetNewSequence() => _sequenceProvider.GetNewSequence();
-    
+
     private class SequenceProvider
     {
         private readonly ConcurrentDictionary<string, int> _sessionSequence = new();
-        
+
         private int _sequence = Random.Shared.Next(5000000, 9900000);
 
         public int GetNewSequence()
@@ -125,7 +125,7 @@ internal class ServiceContext : ContextBase
             Interlocked.CompareExchange(ref _sequence, 5000000, 9900000);
             return Interlocked.Increment(ref _sequence);
         }
-        
+
         public int RegisterSession(string sessionId) => _sessionSequence.GetOrAdd(sessionId, GetNewSequence());
     }
 }
