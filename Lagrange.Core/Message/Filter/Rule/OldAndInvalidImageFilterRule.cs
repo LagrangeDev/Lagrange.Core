@@ -14,7 +14,7 @@ internal class OldAndInvalidImageFilterRule : IMessageFilterRule
         var result = new List<int>();
         var groups = images.GroupBy((image) =>
             {
-                if (!Uri.IsWellFormedUriString(image.ImageUrl, UriKind.RelativeOrAbsolute)) return ImageType.Invalid;
+                if (!Uri.IsWellFormedUriString(image.ImageUrl, UriKind.Absolute)) return ImageType.Invalid;
 
                 Uri uri = new Uri(image.ImageUrl);
 
