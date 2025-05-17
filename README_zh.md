@@ -58,9 +58,9 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 # Lagrange.Core
 
-## 文档
+## 文档 V1
 
-[Lagrange.Core 文档](https://lagrangedev.github.io/Lagrange.Doc/Lagrange.Core/)
+[Lagrange.Core 文档](https://lagrangedev.github.io/Lagrange.Doc/v1/Lagrange.Core/)
 
 ## 功能列表
 
