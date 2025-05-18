@@ -16,7 +16,7 @@ internal static class MessageFilter
     static MessageFilter()
     {
         _rules = new IMessageFilterRule[] {
-            new AtBeforeForwardInOldClient(),
+            new AtBeforeReplyInOldClient(),
             new ForwardTrailingAtAndTextFilterRule(),
             new MultiMsgTrailingXmlFilterRule(),
             new OldAndInvalidImageFilterRule(),

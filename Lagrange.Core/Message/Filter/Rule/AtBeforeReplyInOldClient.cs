@@ -3,7 +3,7 @@ using Lagrange.Core.Message.Entity;
 
 namespace Lagrange.Core.Message.Filter.Rule;
 
-public class AtBeforeForwardInOldClient : IMessageFilterRule
+public class AtBeforeReplyInOldClient : IMessageFilterRule
 {
     public IEnumerable<int> Apply(MessageChain chain)
     {
