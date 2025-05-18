@@ -113,7 +113,7 @@ public class ForwardEntity : IMessageEntity
 
     void IMessageEntity.SetSelfUid(string selfUid) => _selfUid = selfUid;
 
-    string IMessageEntity.ToPreviewString() => $"[Forward] {{ {Chain.ToPreviewString()} }}";
+    string IMessageEntity.ToPreviewString() => $"[Forward] {{ {Chain.Sequence} }}";
 
     string IMessageEntity.ToPreviewText() => "";
 }
