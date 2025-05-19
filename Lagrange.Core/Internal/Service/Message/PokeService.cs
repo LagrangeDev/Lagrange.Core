@@ -8,51 +8,31 @@ using ProtoBuf;
 
 namespace Lagrange.Core.Internal.Service.Message;
 
-[EventSubscribe(typeof(FriendPokeEvent))]
-[EventSubscribe(typeof(GroupPokeEvent))]
+[EventSubscribe(typeof(PokeEvent))]
 [Service("OidbSvcTrpcTcp.0xed3_1")]
-internal class PokeService : BaseService<FriendPokeEvent>
+internal class PokeService : BaseService<PokeEvent>
 {
-    protected override bool Build(FriendPokeEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+    protected override bool Build(PokeEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
-        switch (input)
+        var packet = new OidbSvcTrpcTcp0xED3_1
         {
-            case GroupPokeEvent group:
-            {
-                var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xED3_1>(new OidbSvcTrpcTcp0xED3_1
-                {
-                    Uin = group.FriendUin,
-                    GroupUin = group.GroupUin,
-                    Ext = 0
-                });
-                output = packet.Serialize();
-                break;
-            }
-            case { } friend:
-            {
-                var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xED3_1>(new OidbSvcTrpcTcp0xED3_1
-                {
-                    Uin = friend.FriendUin,
-                    FriendUin = friend.FriendUin,
-                    Ext = 0
-                });
-                output = packet.Serialize();
-                break;
-            }
-            default: throw new InvalidDataException();
-        }
-
+            Uin = input.TargetUin ?? keystore.Uin,
+            GroupUin = input.IsGroup ? input.PeerUin : 0,
+            FriendUin = input.IsGroup ? 0 : input.PeerUin,
+            Ext = 0
+        };
+        output = packet.Serialize();
         extraPackets = null;
         return true;
     }
 
-    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, 
-        out FriendPokeEvent output, out List<ProtocolEvent>? extraEvents)
+    protected override bool Parse(Span<byte> input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
+        out PokeEvent output, out List<ProtocolEvent>? extraEvents)
     {
         var payload = Serializer.Deserialize<OidbSvcTrpcTcpBase<byte[]>>(input);
-        
-        output = FriendPokeEvent.Result((int)payload.ErrorCode);
+
+        output = PokeEvent.Result((int)payload.ErrorCode);
         extraEvents = null;
         return true;
     }
