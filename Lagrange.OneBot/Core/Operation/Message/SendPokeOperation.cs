@@ -14,7 +14,10 @@ public class SendPokeOperation : IOperation
     {
         if (payload.Deserialize<OneBotSendPoke>(SerializerOptions.DefaultOptions) is { } poke)
         {
-            bool result = poke.GroupId.HasValue ? await context.GroupPoke(poke.GroupId.Value, poke.UserId) : await context.FriendPoke(poke.UserId);
+            bool isGroup = poke.GroupId.HasValue;
+            uint targetId = poke.TargetId ?? poke.UserId;
+            uint peerUin = poke.GroupId ?? poke.UserId;
+            bool result = await context.SendPoke(isGroup, peerUin, targetId);
             return new OneBotResult(null, result ? 0 : -1, result ? "ok" : "failed");
         }
 

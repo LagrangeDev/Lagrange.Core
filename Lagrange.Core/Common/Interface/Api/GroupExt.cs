@@ -96,8 +96,8 @@ public static class GroupExt
     public static Task<bool> SetFriendRequest(this BotContext bot, BotFriendRequest request, bool accept = true)
         => bot.ContextCollection.Business.OperationLogic.SetFriendRequest(request.SourceUid, accept);
 
-    public static Task<bool> GroupPoke(this BotContext bot, uint groupUin, uint friendUin)
-        => bot.ContextCollection.Business.OperationLogic.GroupPoke(groupUin, friendUin);
+    public static Task<bool> GroupPoke(this BotContext bot, uint peerUin, uint targetUin)
+        => bot.ContextCollection.Business.OperationLogic.SendPoke(true, peerUin, targetUin);
 
     public static Task<bool> SetEssenceMessage(this BotContext bot, MessageChain chain)
         => bot.ContextCollection.Business.OperationLogic.SetEssenceMessage(chain.GroupUin ?? 0, chain.Sequence, (uint)(chain.MessageId & 0xFFFFFFFF));
