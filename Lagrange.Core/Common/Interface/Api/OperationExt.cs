@@ -313,4 +313,11 @@ public static class OperationExt
 
     public static Task<bool> SendPoke(this BotContext bot, bool isGroup, uint peerUin, uint? targetUin = null)
         => bot.ContextCollection.Business.OperationLogic.SendPoke(isGroup, peerUin, targetUin);
+
+    public static Task<(int Code, string Message)> GroupRecallPoke(this BotContext bot, ulong groupUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId)
+    => bot.ContextCollection.Business.OperationLogic.GroupRecallPoke(groupUin, messageSequence, messageTime, tipsSeqId);
+
+    public static Task<(int Code, string Message)> FriendRecallPoke(this BotContext bot, ulong groupUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId)
+        => bot.ContextCollection.Business.OperationLogic.FriendRecallPoke(groupUin, messageSequence, messageTime, tipsSeqId);
+
 }

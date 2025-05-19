@@ -48,6 +48,8 @@ namespace Lagrange.Core.Internal.Context.Logic.Implementation;
 [EventSubscribe(typeof(SysPinChangedEvent))]
 [EventSubscribe(typeof(FetchPinsEvent))]
 [EventSubscribe(typeof(SetPinFriendEvent))]
+[EventSubscribe(typeof(GroupSysRecallPokeEvent))]
+[EventSubscribe(typeof(FriendSysRecallPokeEvent))]
 [BusinessLogic("MessagingLogic", "Manage the receiving and sending of messages and notifications")]
 internal class MessagingLogic : LogicBase
 {
@@ -160,7 +162,17 @@ internal class MessagingLogic : LogicBase
             }
             case GroupSysPokeEvent poke:
             {
-                var pokeArgs = new GroupPokeEvent(poke.GroupUin, poke.OperatorUin, poke.TargetUin, poke.Action, poke.Suffix, poke.ActionImgUrl);
+                var pokeArgs = new GroupPokeEvent(
+                    poke.GroupUin,
+                    poke.OperatorUin,
+                    poke.TargetUin,
+                    poke.Action,
+                    poke.Suffix,
+                    poke.ActionImgUrl,
+                    poke.MessageSequence,
+                    poke.MessageTime,
+                    poke.TipsSeqId
+                );
                 Collection.Invoker.PostEvent(pokeArgs);
                 break;
             }
@@ -246,7 +258,17 @@ internal class MessagingLogic : LogicBase
             }
             case FriendSysPokeEvent poke:
             {
-                var pokeArgs = new FriendPokeEvent(poke.OperatorUin, poke.TargetUin, poke.Action, poke.Suffix, poke.ActionImgUrl);
+                var pokeArgs = new FriendPokeEvent(
+                    poke.OperatorUin,
+                    poke.TargetUin,
+                    poke.Action,
+                    poke.Suffix,
+                    poke.ActionImgUrl,
+                    poke.PeerUin,
+                    poke.MessageSequence,
+                    poke.MessageTime,
+                    poke.TipsSeqId
+                );
                 Collection.Invoker.PostEvent(pokeArgs);
                 break;
             }
@@ -294,6 +316,21 @@ internal class MessagingLogic : LogicBase
                     pins.FriendUins.Add(await Collection.Business.CachingLogic.ResolveUin(null, friendUid) ?? 0);
                 }
 
+                break;
+            }
+            case GroupSysRecallPokeEvent recall:
+            {
+                uint operatorUin = await Collection.Business.CachingLogic.ResolveUin(null, recall.OperatorUid) ?? 0;
+                var @event = new GroupRecallPokeEvent(recall.GroupUin, operatorUin, recall.TipsSeqId);
+                Collection.Invoker.PostEvent(@event);
+                break;
+            }
+            case FriendSysRecallPokeEvent recall:
+            {
+                uint peerUin = await Collection.Business.CachingLogic.ResolveUin(null, recall.PeerUid) ?? 0;
+                uint operatorUin = await Collection.Business.CachingLogic.ResolveUin(null, recall.OperatorUid) ?? 0;
+                var @event = new FriendRecallPokeEvent(peerUin, operatorUin, recall.TipsSeqId);
+                Collection.Invoker.PostEvent(@event);
                 break;
             }
         }
