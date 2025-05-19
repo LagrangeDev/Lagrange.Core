@@ -233,9 +233,8 @@ public static class OperationExt
 
     public static Task<OperationResult<object>> UploadFriendFileWithResult(this BotContext bot, uint targetUin, FileEntity fileEntity)
         => bot.ContextCollection.Business.OperationLogic.UploadFriendFileWithResult(targetUin, fileEntity);
-
-    public static Task<bool> FriendPoke(this BotContext bot, uint friendUin)
-        => bot.ContextCollection.Business.OperationLogic.FriendPoke(friendUin);
+    public static Task<bool> FriendPoke(this BotContext bot, uint peerUin, uint? targetUin = null)
+        => bot.ContextCollection.Business.OperationLogic.SendPoke(false, peerUin, targetUin);
 
     /// <summary>
     /// Send a special window shake to friend
@@ -311,4 +310,7 @@ public static class OperationExt
 
     public static Task<(int Code, string Message, string Url)> GetMediaUrl(this BotContext bot, string fileId)
         => bot.ContextCollection.Business.OperationLogic.GetMediaUrl(fileId);
+
+    public static Task<bool> SendPoke(this BotContext bot, bool isGroup, uint peerUin, uint? targetUin = null)
+        => bot.ContextCollection.Business.OperationLogic.SendPoke(isGroup, peerUin, targetUin);
 }
