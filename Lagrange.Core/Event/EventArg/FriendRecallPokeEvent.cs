@@ -8,9 +8,9 @@ public class FriendRecallPokeEvent : EventBase
 
     public ulong TipsSeqId { get; set; }
 
-    public FriendRecallPokeEvent(uint groupUin, uint operatorUin, ulong tipsSeqId)
+    public FriendRecallPokeEvent(uint peerUin, uint operatorUin, ulong tipsSeqId)
     {
-        PeerUin = groupUin;
+        PeerUin = peerUin;
         OperatorUin = operatorUin;
         TipsSeqId = tipsSeqId;
 
