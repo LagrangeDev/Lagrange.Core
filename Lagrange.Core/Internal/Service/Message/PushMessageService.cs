@@ -207,20 +207,37 @@ internal class PushMessageService : BaseService<PushMessageEvent>
                 }
                 break;
             }
-            case Event0x2DCSubType.GroupEssenceNotice when msg.Message.Body?.MsgContent is { } content:
+            case Event0x2DCSubType.GroupGreyTipNotice21 when msg.Message.Body?.MsgContent is { } content:
             {
                 using var packet = new BinaryPacket(content);
                 _ = packet.ReadUint();  // group uin
                 _ = packet.ReadByte();  // unknown byte
                 var proto = packet.ReadBytes(Prefix.Uint16 | Prefix.LengthOnly);
-                var essence = Serializer.Deserialize<NotifyMessageBody>(proto.AsSpan());
-                var essenceMsg = essence.EssenceMessage;
-                var groupEssenceEvent = GroupSysEssenceEvent.Result(essenceMsg.GroupUin, essenceMsg.MsgSequence,
-                    essenceMsg.Random, essenceMsg.SetFlag, essenceMsg.MemberUin, essenceMsg.OperatorUin);
-                extraEvents.Add(groupEssenceEvent);
+                var greytip = Serializer.Deserialize<NotifyMessageBody>(proto.AsSpan());
+
+                if (greytip.Type == 27) // essence
+                {
+                    var essenceMsg = greytip.EssenceMessage;
+                    var groupEssenceEvent = GroupSysEssenceEvent.Result(essenceMsg.GroupUin, essenceMsg.MsgSequence,
+                        essenceMsg.Random, essenceMsg.SetFlag, essenceMsg.MemberUin, essenceMsg.OperatorUin);
+                    extraEvents.Add(groupEssenceEvent);
+                    break;
+                }
+
+                if (greytip.Type == 32) // recall poke
+                {
+                    var recallPoke = greytip.GroupRecallPoke;
+                    var @event = GroupSysRecallPokeEvent.Result(
+                        recallPoke.GroupUin,
+                        recallPoke.OperatorUid,
+                        recallPoke.TipsSeqId
+                    );
+                    extraEvents.Add(@event);
+                }
+
                 break;
             }
-            case Event0x2DCSubType.GroupGreyTipNotice when msg.Message.Body?.MsgContent is { } content:
+            case Event0x2DCSubType.GroupGreyTipNotice20 when msg.Message.Body?.MsgContent is { } content:
             {
                 using var packet = new BinaryPacket(content);
                 uint groupUin = packet.ReadUint();  // group uin
@@ -237,7 +254,17 @@ internal class PushMessageService : BaseService<PushMessageEvent>
 
                 if (greyTip.GeneralGrayTip.BusiType == 12)  // poke
                 {
-                    var groupPokeEvent = GroupSysPokeEvent.Result(groupUin, uint.Parse(templates["uin_str1"]), uint.Parse(templates["uin_str2"]), actionStr, templates["suffix_str"], templates["action_img_url"]);
+                    var groupPokeEvent = GroupSysPokeEvent.Result(
+                        groupUin,
+                        uint.Parse(templates["uin_str1"]),
+                        uint.Parse(templates["uin_str2"]),
+                        actionStr,
+                        templates["suffix_str"],
+                        templates["action_img_url"],
+                        greyTip.MsgSequence,
+                        (ulong)msg.Message.ContentHead.Timestamp!.Value,
+                        greyTip.TipsSeqId
+                    );
                     extraEvents.Add(groupPokeEvent);
                 }
                 break;
@@ -324,14 +351,25 @@ internal class PushMessageService : BaseService<PushMessageEvent>
 
                 if (greyTip.BusiType == 12)  // poke
                 {
-                    var friendPokeEvent = FriendSysPokeEvent.Result(uint.Parse(templates["uin_str1"]), uint.Parse(templates["uin_str2"]), actionStr, templates["suffix_str"], templates["action_img_url"]);
+                    var friendPokeEvent = FriendSysPokeEvent.Result(
+                        uint.Parse(templates["uin_str1"]),
+                        uint.Parse(templates["uin_str2"]),
+                        actionStr,
+                        templates["suffix_str"],
+                        templates["action_img_url"],
+                        msg.Message.ResponseHead.FromUin,
+                        greyTip.MsgInfo.Sequence,
+                        (ulong)msg.Message.ContentHead.Timestamp!.Value,
+                        greyTip.TipsSeqId
+                    );
                     extraEvents.Add(friendPokeEvent);
                 }
                 break;
             }
-            case Event0x210SubType.FriendRecallPoke:
+            case Event0x210SubType.FriendRecallPoke when msg.Message.Body?.MsgContent is { } content:
             {
-                // 0AC6010A40088BF5FDC7041218755F37787A33324D66583368634D6A737573337742706D6728E2FBEDF9053218755F667132684B3132624267306F7735637A57685A667267122508900410C10218C10220C1AFAD9F0128B9DAE0A101309DA4A3C10660C1AFAD9F81808080021A5B0A0012570A18755F37787A33324D66583368634D6A737573337742706D6720A5082889A3C9FC041218755F667132684B3132624267306F7735637A57685A6672671A18755F37787A33324D66583368634D6A737573337742706D67180122360A0E33302E3138382E3234372E32333310FE9D011A2010900418B9DAE0A10120C1AFAD9F818080800230C1023801408BF5FDC7044801
+                var recall = Serializer.Deserialize<FriendRecallPokeInfo>(content.AsSpan());
+                extraEvents.Add(FriendSysRecallPokeEvent.Result(recall.PeerUid, recall.OperatorUid, recall.TipsSeqId));
                 break;
             }
             default:
@@ -366,8 +404,8 @@ internal class PushMessageService : BaseService<PushMessageEvent>
         GroupMuteNotice = 12,
         SubType16 = 16,
         GroupRecallNotice = 17,
-        GroupEssenceNotice = 21,
-        GroupGreyTipNotice = 20,
+        GroupGreyTipNotice21 = 21,
+        GroupGreyTipNotice20 = 20,
     }
 
     private enum Event0x2DCSubType16Field13

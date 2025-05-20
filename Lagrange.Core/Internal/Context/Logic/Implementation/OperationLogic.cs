@@ -933,4 +933,24 @@ internal class OperationLogic : LogicBase
         var result = (MediaDownloadEvent)results[0];
         return (result.ResultCode, result.Message, result.Url);
     }
+
+    public async Task<(int Code, string Message)> GroupRecallPoke(ulong groupUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId)
+    {
+        var @event = RecallPokeEvent.Create(isGroup: true, groupUin, messageSequence, messageTime, tipsSeqId);
+        var results = await Collection.Business.SendEvent(@event);
+        if (results.Count == 0) return (-1, "No Result");
+
+        var result = (RecallPokeEvent)results[0];
+        return (result.ResultCode, result.Message);
+    }
+
+    public async Task<(int Code, string Message)> FriendRecallPoke(ulong peerUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId)
+    {
+        var @event = RecallPokeEvent.Create(isGroup: false, peerUin, messageSequence, messageTime, tipsSeqId);
+        var results = await Collection.Business.SendEvent(@event);
+        if (results.Count == 0) return (-1, "No Result");
+
+        var result = (RecallPokeEvent)results[0];
+        return (result.ResultCode, result.Message);
+    }
 }
