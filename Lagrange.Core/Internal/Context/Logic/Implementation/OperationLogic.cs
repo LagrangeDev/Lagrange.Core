@@ -944,9 +944,9 @@ internal class OperationLogic : LogicBase
         return (result.ResultCode, result.Message);
     }
 
-    public async Task<(int Code, string Message)> FriendRecallPoke(ulong groupUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId)
+    public async Task<(int Code, string Message)> FriendRecallPoke(ulong peerUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId)
     {
-        var @event = RecallPokeEvent.Create(isGroup: false, groupUin, messageSequence, messageTime, tipsSeqId);
+        var @event = RecallPokeEvent.Create(isGroup: false, peerUin, messageSequence, messageTime, tipsSeqId);
         var results = await Collection.Business.SendEvent(@event);
         if (results.Count == 0) return (-1, "No Result");
 

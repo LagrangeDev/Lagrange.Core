@@ -317,7 +317,7 @@ public static class OperationExt
     public static Task<(int Code, string Message)> GroupRecallPoke(this BotContext bot, ulong groupUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId)
     => bot.ContextCollection.Business.OperationLogic.GroupRecallPoke(groupUin, messageSequence, messageTime, tipsSeqId);
 
-    public static Task<(int Code, string Message)> FriendRecallPoke(this BotContext bot, ulong groupUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId)
-        => bot.ContextCollection.Business.OperationLogic.FriendRecallPoke(groupUin, messageSequence, messageTime, tipsSeqId);
+    public static Task<(int Code, string Message)> FriendRecallPoke(this BotContext bot, ulong peerUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId)
+        => bot.ContextCollection.Business.OperationLogic.FriendRecallPoke(peerUin, messageSequence, messageTime, tipsSeqId);
 
 }
