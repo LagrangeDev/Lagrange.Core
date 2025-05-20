@@ -15,8 +15,18 @@ public class UploadGroupFileOperation : IOperation
     {
         if (payload.Deserialize<OneBotUploadGroupFile>(SerializerOptions.DefaultOptions) is { } file)
         {
-            var entity = new FileEntity(file.File);
-            if (file.Name != null) entity.FileName = file.Name;
+            FileEntity entity;
+            if (file.File.StartsWith("base64://"))
+            {
+                var base64Data = file.File["base64://".Length..];
+                var fileData = Convert.FromBase64String(base64Data);
+                entity = new FileEntity(fileData, file.Name ?? "file");
+            }
+            else
+            {
+                entity = new FileEntity(file.File);
+                if (file.Name != null) entity.FileName = file.Name;
+            }
 
             var result = await context.GroupFSUploadWithResult(file.GroupId, entity, file.Folder ?? "/");
             return new OneBotResult(null, result.Retcode, result.Message ?? "ok");
