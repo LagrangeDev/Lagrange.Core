@@ -14,7 +14,10 @@ internal class RecallPokeService : BaseService<RecallPokeEvent>
     protected override bool Build(RecallPokeEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device, out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
         // I didn't find out how to get it, but a random number is feasible
-        long random = Random.Shared.NextInt64(7580000000000000000, 7580099999999999999);
+        long random = !input.IsGroup
+            ? Random.Shared.NextInt64(7500000000000000000, 7589999999999999999)
+            : Random.Shared.NextInt64(7580000000000000000, 7580099999999999999);
+
 
         var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xF51_1>(
             new OidbSvcTrpcTcp0xF51_1
