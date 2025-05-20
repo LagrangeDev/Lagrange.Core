@@ -15,7 +15,7 @@ internal class RecallPokeService : BaseService<RecallPokeEvent>
     {
         // I didn't find out how to get it, but a random number is feasible
         long random = !input.IsGroup
-            ? Random.Shared.NextInt64(7500000000000000000, 7589999999999999999)
+            ? Random.Shared.NextInt64(7500000000000000000, 7509999999999999999)
             : Random.Shared.NextInt64(7580000000000000000, 7580099999999999999);
 
 
