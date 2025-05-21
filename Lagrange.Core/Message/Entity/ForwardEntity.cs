@@ -63,7 +63,7 @@ public class ForwardEntity : IMessageEntity
             },
         };
 
-        if (additional && ClientSequence != 0)
+        if (additional && ClientSequence == 0)
         {
             result.Add(new Elem
             {
