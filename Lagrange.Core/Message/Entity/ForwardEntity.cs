@@ -38,13 +38,12 @@ public class ForwardEntity : IMessageEntity
         Chain = chain;
     }
 
-    IEnumerable<Elem> IMessageEntity.PackElement() => PackElement(true);
+    IEnumerable<Elem> IMessageEntity.PackElement() => PackElement(false);
 
-    IEnumerable<Elem> IMessageEntity.PackFakeElement() => PackElement(false);
+    IEnumerable<Elem> IMessageEntity.PackFakeElement() => PackElement(true);
 
-    IEnumerable<Elem> PackElement(bool additional)
+    IEnumerable<Elem> PackElement(bool fake)
     {
-        byte[] bytes = ProtoExt.SerializeToBytes(MessagePacker.BuildFake(Chain, _selfUid));
         var result = new List<Elem> {
             new() {
                 SrcMsg = new SrcMsg {
@@ -57,13 +56,13 @@ public class ForwardEntity : IMessageEntity
                         MessageId = MessageId,
                         SenderUid = Uid,
                     }),
-                    SourceMsg = !additional ? bytes : null,
+                    SourceMsg = fake ? ProtoExt.SerializeToBytes(MessagePacker.BuildFake(Chain, _selfUid)) : null,
                     ToUin = 0
                 }
             },
         };
 
-        if (additional && ClientSequence == 0)
+        if (!fake && ClientSequence == 0)
         {
             result.Add(new Elem
             {
