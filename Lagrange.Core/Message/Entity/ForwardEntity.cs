@@ -71,8 +71,8 @@ public class ForwardEntity : IMessageEntity
                     Str = "not null",
                     PbReserve = ProtoExt.SerializeToBytes(new MentionExtra
                     {
-                        Type = 1,
-                        Uin = TargetUin,
+                        Type = 2,
+                        Uid = Chain.Uid!,
                     })
                 }
             });
