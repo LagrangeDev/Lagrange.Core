@@ -94,7 +94,7 @@ public partial class MessageRecord : IRealmObject
                 MessageType.Group => (ulong)chain.GroupUin!,
                 MessageType.Temp or
                 MessageType.Friend => chain.TargetUin,
-                _ => throw new NotImplementedException(),
+                _ => throw new NotSupportedException(),
             },
             Style = chain.Style != null ? (MessageStyleRecord)chain.Style : null,
             Entities = stream.ToArray(),
@@ -121,7 +121,7 @@ public partial class MessageRecord : IRealmObject
                 (uint)record.ClientSequence,
                 record.MessageId
             ),
-            _ => throw new NotImplementedException(),
+            _ => throw new NotSupportedException(),
         };
 
         var entities = MessagePackSerializer.Deserialize<List<IMessageEntity>>(record.Entities, OPTIONS);
