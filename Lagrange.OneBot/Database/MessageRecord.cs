@@ -72,25 +72,34 @@ public partial class MessageRecord : IRealmObject
         return ((ushort)seq << 16) | (ushort)msgId;
     }
 
-    public static implicit operator MessageRecord(MessageChain chain) => new()
+    public static implicit operator MessageRecord(MessageChain chain)
     {
-        Id = CalcMessageHash(chain.MessageId, chain.Sequence),
-        Type = chain.Type,
-        Sequence = chain.Sequence,
-        ClientSequence = chain.ClientSequence,
-        MessageId = chain.MessageId,
-        Time = chain.Time,
-        FromUin = chain.FriendUin,
-        ToUin = chain.Type switch
+        // The `static byte[] Serialize<T>(T, MessagePackSerializerOptions?, CancellationToken)` method
+        // may have resource reuse issues that could lead to incorrect serialization results. 
+        // Use a separate stream to resolve this problem.
+        using MemoryStream stream = new MemoryStream();
+        MessagePackSerializer.Serialize<List<IMessageEntity>>(stream, chain, OPTIONS);
+
+        return new()
         {
-            MessageType.Group => (ulong)chain.GroupUin!,
-            MessageType.Temp or
-            MessageType.Friend => chain.TargetUin,
-            _ => throw new NotImplementedException(),
-        },
-        Style = chain.Style != null ? (MessageStyleRecord)chain.Style : null,
-        Entities = MessagePackSerializer.Serialize<List<IMessageEntity>>(chain, OPTIONS)
-    };
+            Id = CalcMessageHash(chain.MessageId, chain.Sequence),
+            Type = chain.Type,
+            Sequence = chain.Sequence,
+            ClientSequence = chain.ClientSequence,
+            MessageId = chain.MessageId,
+            Time = chain.Time,
+            FromUin = chain.FriendUin,
+            ToUin = chain.Type switch
+            {
+                MessageType.Group => (ulong)chain.GroupUin!,
+                MessageType.Temp or
+                MessageType.Friend => chain.TargetUin,
+                _ => throw new NotSupportedException(),
+            },
+            Style = chain.Style != null ? (MessageStyleRecord)chain.Style : null,
+            Entities = stream.ToArray(),
+        };
+    }
 
     public static implicit operator MessageChain(MessageRecord record)
     {
@@ -112,7 +121,7 @@ public partial class MessageRecord : IRealmObject
                 (uint)record.ClientSequence,
                 record.MessageId
             ),
-            _ => throw new NotImplementedException(),
+            _ => throw new NotSupportedException(),
         };
 
         var entities = MessagePackSerializer.Deserialize<List<IMessageEntity>>(record.Entities, OPTIONS);
