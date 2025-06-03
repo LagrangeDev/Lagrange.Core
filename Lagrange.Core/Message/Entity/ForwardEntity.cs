@@ -118,7 +118,7 @@ public class ForwardEntity : IMessageEntity
             }, true));
         }
 
-        return new ForwardEntity(new MessageChain(0, 0, src.OrigSeqs?[0] ?? 0, 0));
+        return new ForwardEntity(new MessageChain(0, 0, (src.OrigSeqs != null && src.OrigSeqs.Count > 0 ? src.OrigSeqs[0] : 0), 0));
     }
 
     void IMessageEntity.SetSelfUid(string selfUid) => _selfUid = selfUid;
