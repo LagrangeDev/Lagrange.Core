@@ -85,29 +85,40 @@ public class ForwardEntity : IMessageEntity
     {
         if (elem.SrcMsg is not { } src) return null;
 
-        var reserve = Serializer.Deserialize<SrcMsg.Preserve>(src.PbReserve.AsSpan());
-        return new ForwardEntity(MessagePacker.Parse(new PushMsgBody
+        if (src.SourceMsg != null)
         {
-            ResponseHead = new ResponseHead
+            var chain = MessagePacker.Parse(Serializer.Deserialize<PushMsgBody>(src.SourceMsg.AsSpan()), true);
+            return new ForwardEntity(chain);
+        }
+
+        if (src.PbReserve != null)
+        {
+            var reserve = Serializer.Deserialize<SrcMsg.Preserve>(src.PbReserve.AsSpan());
+            return new ForwardEntity(MessagePacker.Parse(new PushMsgBody
             {
-                FromUin = (uint)src.SenderUin,
-                FromUid = reserve.SenderUid,
-                Grp = reserve.ReceiverUid != null ? null : new ResponseGrp { }
-            },
-            ContentHead = new ContentHead
-            {
-                Random = (long?)(reserve.MessageId & 0xFFFFFFFF),
-                Sequence = src.OrigSeqs?.Count > 0 ? src.OrigSeqs[0] : 0,
-                Timestamp = src.Time,
-            },
-            Body = new MessageBody
-            {
-                RichText = new RichText
+                ResponseHead = new ResponseHead
                 {
-                    Elems = src.Elems ?? new List<Elem>(),
+                    FromUin = (uint)src.SenderUin,
+                    FromUid = reserve.SenderUid,
+                    Grp = reserve.ReceiverUid != null ? null : new ResponseGrp { }
+                },
+                ContentHead = new ContentHead
+                {
+                    Random = (long?)(reserve.MessageId & 0xFFFFFFFF),
+                    Sequence = src.OrigSeqs?[0] ?? 0,
+                    Timestamp = src.Time,
+                },
+                Body = new MessageBody
+                {
+                    RichText = new RichText
+                    {
+                        Elems = src.Elems ?? new List<Elem>(),
+                    }
                 }
-            }
-        }, true));
+            }, true));
+        }
+
+        return new ForwardEntity(new MessageChain(0, 0, src.OrigSeqs?[0] ?? 0, 0));
     }
 
     void IMessageEntity.SetSelfUid(string selfUid) => _selfUid = selfUid;
