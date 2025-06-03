@@ -105,7 +105,7 @@ public class ForwardEntity : IMessageEntity
                 ContentHead = new ContentHead
                 {
                     Random = (long?)(reserve.MessageId & 0xFFFFFFFF),
-                    Sequence = src.OrigSeqs?[0] ?? 0,
+                    Sequence = (src.OrigSeqs != null && src.OrigSeqs.Count > 0) ? src.OrigSeqs[0] : 0,
                     Timestamp = src.Time,
                 },
                 Body = new MessageBody
