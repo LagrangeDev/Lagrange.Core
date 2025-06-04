@@ -9,6 +9,8 @@ internal class MultiMsgDownloadEvent : ProtocolEvent
     public string? ResId { get; }
     
     public List<MessageChain>? Chains { get; }
+    
+    public List<MessageChain>? OtherMessages { get; }
 
     private MultiMsgDownloadEvent(string uid, string resId) : base(true)
     {
@@ -16,12 +18,13 @@ internal class MultiMsgDownloadEvent : ProtocolEvent
         ResId = resId;
     }
     
-    private MultiMsgDownloadEvent(int resultCode, List<MessageChain> chains) : base(resultCode)
+    private MultiMsgDownloadEvent(int resultCode, List<MessageChain> chains, List<MessageChain> otherMessages) : base(resultCode)
     {
         Chains = chains;
+        OtherMessages = otherMessages;
     }
     
     public static MultiMsgDownloadEvent Create(string uid, string resId) => new(uid, resId);
     
-    public static MultiMsgDownloadEvent Result(int resultCode, List<MessageChain> chains) => new(resultCode, chains);
+    public static MultiMsgDownloadEvent Result(int resultCode, List<MessageChain> chains, List<MessageChain> otherMessages) => new(resultCode, chains, otherMessages);
 }

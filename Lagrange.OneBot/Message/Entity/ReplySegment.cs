@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
+using Lagrange.OneBot.Core.Entity.Message;
 using Lagrange.OneBot.Database;
 
 namespace Lagrange.OneBot.Message.Entity;
@@ -10,7 +11,9 @@ public partial class ReplySegment(uint messageId)
 {
     public ReplySegment() : this(0) { }
 
-    [JsonPropertyName("id")][CQProperty] public string MessageId { get; set; } = messageId.ToString();
+    [JsonPropertyName("id")] [CQProperty] public string MessageId { get; set; } = messageId.ToString();
+
+    [JsonPropertyName("elem")] public List<OneBotSegment> Elem { get; set; } = new List<OneBotSegment>();
 }
 
 [SegmentSubscriber(typeof(ForwardEntity), "reply")]
@@ -54,6 +57,7 @@ public partial class ReplySegment : SegmentBase
                 .Id);
         }
 
-        return new ReplySegment { MessageId = (id ?? 0).ToString() };
+
+        return new ReplySegment { MessageId = (id ?? 0).ToString(), Elem = MessageService.Convert(forward.Chain) };
     }
 }

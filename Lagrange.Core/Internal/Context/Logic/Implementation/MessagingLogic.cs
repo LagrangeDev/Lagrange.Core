@@ -373,7 +373,7 @@ internal class MessagingLogic : LogicBase
         }
     }
 
-    private async Task ResolveIncomingChain(MessageChain chain)
+    public async Task ResolveIncomingChain(MessageChain chain)
     {
         foreach (var entity in chain)
         {
@@ -494,35 +494,42 @@ internal class MessagingLogic : LogicBase
                 }
                 case ForwardEntity forward:
                 {
-                    if (chain is { GroupUin: not null })
+                    MessageChain? newChain = null;
+                    if (forward.Sequence != 0)
                     {
-                        var events = await Collection.Business.SendEvent(GetGroupMessageEvent.Create(
-                            chain.GroupUin.Value,
-                            forward.Sequence,
-                            forward.Sequence
-                        ));
+                        if (chain is { GroupUin: not null })
+                        {
+                            var events = await Collection.Business.SendEvent(GetGroupMessageEvent.Create(
+                                chain.GroupUin.Value,
+                                forward.Sequence,
+                                forward.Sequence
+                            ));
+                            if (events.Count != 0 &&
+                                events[0] is GetGroupMessageEvent @event &&
+                                @event.ResultCode == 0)
+                            {
+                                newChain = @event.Chains[0];
+                            }
+                        }
+                        else
+                        {
+                            var events = await Collection.Business.SendEvent(GetC2cMessageEvent.Create(
+                                chain.Uid ?? "",
+                                forward.Sequence,
+                                forward.Sequence
+                            ));
+                            if (events.Count != 0 &&
+                                events[0] is GetC2cMessageEvent @event &&
+                                @event.ResultCode == 0)
+                            {
+                                newChain = @event.Chains[0];
+                            }
 
-                        if (events.Count < 1) break;
-                        if (events[0] is not GetGroupMessageEvent @event) break;
-                        if (@event.ResultCode != 0) break;
-                        if (@event.Chains.Count < 1) break;
-
-                        forward.Chain = @event.Chains[0];
+                        }
                     }
-                    else
+                    if (newChain == null || newChain.Count == 0)
                     {
-                        var events = await Collection.Business.SendEvent(GetC2cMessageEvent.Create(
-                            chain.Uid ?? "",
-                            forward.Sequence,
-                            forward.Sequence
-                        ));
-
-                        if (events.Count < 1) break;
-                        if (events[0] is not GetC2cMessageEvent @event) break;
-                        if (@event.ResultCode != 0) break;
-                        if (@event.Chains.Count < 1) break;
-
-                        forward.Chain = @event.Chains[0];
+                        await ResolveIncomingChain(forward.Chain);
                     }
 
                     break;

@@ -583,6 +583,19 @@ internal class OperationLogic : LogicBase
 
         if (results.Count == 0) return (-9999, null);
         var result = (MultiMsgDownloadEvent)results[0];
+        
+        var tasks = new List<Task>();
+        
+        if (result.Chains != null)
+        {
+            tasks.AddRange(result.Chains.Select(chain => 
+                Collection.Business.MessagingLogic.ResolveIncomingChain(chain)));
+        }
+        
+        if (tasks.Count > 0)
+        {
+            await Task.WhenAll(tasks);
+        }
 
         return (result.ResultCode, result.Chains);
     }

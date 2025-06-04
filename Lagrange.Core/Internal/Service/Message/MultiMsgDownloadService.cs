@@ -44,10 +44,25 @@ internal class MultiMsgDownloadService : BaseService<MultiMsgDownloadEvent>
         var packet = Serializer.Deserialize<RecvLongMsgResp>(input);
         var inflate = GZip.Inflate(packet.Result.Payload);
         var result = Serializer.Deserialize<LongMsgResult>(inflate.AsSpan());
+        var mainChains = new List<MessageChain>();
+        var otherChains = new List<MessageChain>();
 
-        var main = result.Action.First(a => a.ActionCommand == "MultiMsg");
-        var chains = main.ActionData.MsgBody.Select(x => MessagePacker.Parse(x, true)).ToList();
-        output = MultiMsgDownloadEvent.Result(0, chains);
+        foreach (var longMsgAction in result.Action)
+        {
+            if (longMsgAction.ActionCommand == "MultiMsg")
+            {
+                longMsgAction.ActionData.MsgBody.ForEach(x => mainChains.Add(
+                    MessagePacker.Parse(x, true)
+                    ));
+            }
+            else
+            {
+                longMsgAction.ActionData.MsgBody.ForEach(x => otherChains.Add(MessagePacker.Parse(x, true)));
+            }
+        }
+        
+
+        output = MultiMsgDownloadEvent.Result(0, mainChains, otherChains);
         extraEvents = null;
         return true;
     }

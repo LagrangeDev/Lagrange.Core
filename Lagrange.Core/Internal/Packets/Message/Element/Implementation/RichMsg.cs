@@ -17,4 +17,6 @@ internal class RichMsg
 	[ProtoMember(4)] public int? Rand { get; set; }
 	
 	[ProtoMember(5)] public int? Seq { get; set; }
+    
+    // [ProtoMember(13)] public // "13": { "1": 1200, "2": 1200 } 图片尺寸
 }

@@ -57,6 +57,7 @@ public sealed class MessageService
             {
                 var instance = (SegmentBase)type.CreateInstance(false);
                 instance.Realm = _realm;
+                instance.MessageService = this;
 
                 if (_entityToFactory.TryGetValue(attribute.Entity, out var factories)) factories.Add((attribute.Type, instance));
                 else _entityToFactory[attribute.Entity] = [(attribute.Type, instance)];
