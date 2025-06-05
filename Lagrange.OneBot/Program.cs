@@ -42,7 +42,7 @@ internal abstract class Program
         {
         }
 
-        Console.WriteLine($"Version: {version?[^40..] ?? "unknown"}\n");
+        Console.WriteLine($"Version: {(version?.Length > 40 ? version[^40..] : version) ?? "unknown"}\n");
 
         
         // AutoUpdate
