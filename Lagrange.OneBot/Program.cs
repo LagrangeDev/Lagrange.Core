@@ -15,26 +15,32 @@ internal abstract class Program
             ?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
             ?.InformationalVersion;
 
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        if (Console.BufferWidth >= 45)
+        try
         {
-            Console.WriteLine(
-                $$"""
-                   __
-                  / / ___ ____ ________ ____  ___ ____
-                 / /_/ _ `/ _ `/ __/ _ `/ _ \/ _ `/ -_)
-                /____|_,_/\_, /_/  \_,_/_//_/\_, /\__/
-                         /___/   ____       /___/__       __
-                                / __ \___  ___ / _ )___  / /_
-                               / /_/ / _ \/ -_) _  / _ \/ __/
-                               \____/_//_/\__/____/\___/\__/
-                """
-            );
-        }
-        else
-            Console.WriteLine("Lagrange.OneBot");
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            if (Console.BufferWidth >= 45)
+            {
+                Console.WriteLine(
+                    $$"""
+                       __
+                      / / ___ ____ ________ ____  ___ ____
+                     / /_/ _ `/ _ `/ __/ _ `/ _ \/ _ `/ -_)
+                    /____|_,_/\_, /_/  \_,_/_//_/\_, /\__/
+                             /___/   ____       /___/__       __
+                                    / __ \___  ___ / _ )___  / /_
+                                   / /_/ / _ \/ -_) _  / _ \/ __/
+                                   \____/_//_/\__/____/\___/\__/
+                    """
+                );
+            }
+            else
+                Console.WriteLine("Lagrange.OneBot");
 
-        Console.ResetColor();
+            Console.ResetColor();
+        }
+        catch (IOException)
+        {
+        }
 
         Console.WriteLine($"Version: {version?[^40..] ?? "unknown"}\n");
 
