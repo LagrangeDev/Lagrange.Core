@@ -15,26 +15,103 @@ internal abstract class Program
             ?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
             ?.InformationalVersion;
 
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        if (Console.BufferWidth >= 45)
+        try
         {
-            Console.WriteLine(
-                $$"""
-                   __
-                  / / ___ ____ ________ ____  ___ ____
-                 / /_/ _ `/ _ `/ __/ _ `/ _ \/ _ `/ -_)
-                /____|_,_/\_, /_/  \_,_/_//_/\_, /\__/
-                         /___/   ____       /___/__       __
-                                / __ \___  ___ / _ )___  / /_
-                               / /_/ / _ \/ -_) _  / _ \/ __/
-                               \____/_//_/\__/____/\___/\__/
-                """
-            );
-        }
-        else
-            Console.WriteLine("Lagrange.OneBot");
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            if (Console.BufferWidth >= 45)
+            {
+                Console.WriteLine(
+                    $$"""
+                       __
+                      / / ___ ____ ________ ____  ___ ____
+                     / /_/ _ `/ _ `/ __/ _ `/ _ \/ _ `/ -_)
+                    /____|_,_/\_, /_/  \_,_/_//_/\_, /\__/
+                             /___/   ____       /___/__       __
+                                    / __ \___  ___ / _ )___  / /_
+                                   / /_/ / _ \/ -_) _  / _ \/ __/
+                                   \____/_//_/\__/____/\___/\__/
+                    """
+                );
+            }
+            else
+                Console.WriteLine("Lagrange.OneBot");
 
-        Console.ResetColor();
+            Console.ResetColor();
+        }
+        catch (IOException)
+        {
+        }
+
+        Console.WriteLine($"Version: {(version?.Length > 40 ? version[^40..] : version) ?? "unknown"}\n");
+
+        
+        // AutoUpdate
+        var updater = new Updater.GithubUpdater();
+        await updater.GetConfig();
+        if (updater.Config.EnableAutoUpdate)
+        {
+            Console.WriteLine("Auto update enabled, Checking for updates...");
+            try
+            {
+                if (await updater.CheckUpdate())
+                {
+                    Console.WriteLine($"Update available, downloading...");
+                    await updater.Update();
+                }
+                else
+                {
+                    Console.WriteLine("No updates available, continuing...");
+                }
+
+                if (updater.Config.CheckInterval > 0)
+                {
+                    Console.WriteLine(
+                        $"Interval check enabled, Next check in {updater.Config.CheckInterval} seconds."
+                    );
+                    updater.StartIntervalCheck();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(
+                    $"Error checking for updates: {e.Message}, please check your network connection or config file, use proxy if needed."
+                );
+            }
+        }
+
+        Console.OutputEncoding = Encoding.UTF8;
+        Console.InputEncoding = Encoding.UTF8;
+
+        GCSettings.LatencyMode = GCLatencyMode.Batch;
+
+        if (!File.Exists("appsettings.json"))
+        {
+            Console.WriteLine("No exist config file, create it now...");
+
+            var assm = Assembly.GetExecutingAssembly();
+            using var istr = assm.GetManifestResourceStream(
+                "Lagrange.OneBot.Resources.appsettings.json"
+            )!;
+            using var temp = File.Create("appsettings.json");
+            istr.CopyTo(temp);
+
+            istr.Close();
+            temp.Close();
+
+            Console.WriteLine(
+                "Please Edit the appsettings.json to set configs and press any key to continue"
+            );
+            Console.ReadKey(true);
+        }
+
+        await Host.CreateApplicationBuilder()
+            .ConfigureLagrangeCore()
+            .ConfigureOneBot()
+            .Build()
+            .InitializeMusicSigner() // Very ugly (
+            .RunAsync();
+    }
+}        Console.ResetColor();
 
         Console.WriteLine($"Version: {version?[^40..] ?? "unknown"}\n");
 
