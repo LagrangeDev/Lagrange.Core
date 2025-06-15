@@ -15,38 +15,42 @@ internal abstract class Program
             ?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
             ?.InformationalVersion;
 
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        if (Console.BufferWidth >= 45)
+        try
         {
-            Console.WriteLine(
-                $$"""
-                   __
-                  / / ___ ____ ________ ____  ___ ____
-                 / /_/ _ `/ _ `/ __/ _ `/ _ \/ _ `/ -_)
-                /____|_,_/\_, /_/  \_,_/_//_/\_, /\__/
-                         /___/   ____       /___/__       __
-                                / __ \___  ___ / _ )___  / /_
-                               / /_/ / _ \/ -_) _  / _ \/ __/
-                               \____/_//_/\__/____/\___/\__/
-                """
-            );
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            if (Console.BufferWidth >= 45)
+            {
+                Console.WriteLine(
+                    $$"""
+                       __
+                      / / ___ ____ ________ ____  ___ ____
+                     / /_/ _ `/ _ `/ __/ _ `/ _ \/ _ `/ -_)
+                    /____|_,_/\_, /_/  \_,_/_//_/\_, /\__/
+                             /___/   ____       /___/__       __
+                                    / __ \___  ___ / _ )___  / /_
+                                   / /_/ / _ \/ -_) _  / _ \/ __/
+                                   \____/_//_/\__/____/\___/\__/
+                    """
+                );
+            }
+            else
+                Console.WriteLine("Lagrange.OneBot");
+
+            Console.ResetColor();
+            Console.WriteLine($"Version: {version?[^40..] ?? "unknown"}\n");
         }
-        else
-            Console.WriteLine("Lagrange.OneBot");
+        catch (IOException)
+        {
+        }
 
-        Console.ResetColor();
-
-        Console.WriteLine($"Version: {version?[^40..] ?? "unknown"}\n");
-
-        
         // AutoUpdate
         var updater = new Updater.GithubUpdater();
         await updater.GetConfig();
         if (updater.Config.EnableAutoUpdate)
         {
-            Console.WriteLine("Auto update enabled, Checking for updates...");
             try
             {
+                Console.WriteLine("Auto update enabled, Checking for updates...");
                 if (await updater.CheckUpdate())
                 {
                     Console.WriteLine($"Update available, downloading...");
@@ -80,22 +84,28 @@ internal abstract class Program
 
         if (!File.Exists("appsettings.json"))
         {
-            Console.WriteLine("No exist config file, create it now...");
+            try
+            {
+                Console.WriteLine("No exist config file, create it now...");
 
-            var assm = Assembly.GetExecutingAssembly();
-            using var istr = assm.GetManifestResourceStream(
-                "Lagrange.OneBot.Resources.appsettings.json"
-            )!;
-            using var temp = File.Create("appsettings.json");
-            istr.CopyTo(temp);
+                var assm = Assembly.GetExecutingAssembly();
+                using var istr = assm.GetManifestResourceStream(
+                    "Lagrange.OneBot.Resources.appsettings.json"
+                )!;
+                using var temp = File.Create("appsettings.json");
+                istr.CopyTo(temp);
 
-            istr.Close();
-            temp.Close();
+                istr.Close();
+                temp.Close();
 
-            Console.WriteLine(
-                "Please Edit the appsettings.json to set configs and press any key to continue"
-            );
-            Console.ReadKey(true);
+                Console.WriteLine(
+                    "Please Edit the appsettings.json to set configs and press any key to continue"
+                );
+                Console.ReadKey(true);
+            }
+            catch (IOException)
+            {
+            }
         }
 
         await Host.CreateApplicationBuilder()
