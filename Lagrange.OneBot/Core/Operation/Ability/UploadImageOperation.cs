@@ -12,13 +12,17 @@ public class UploadImageOperation : IOperation
 {
     public async Task<OneBotResult> HandleOperation(BotContext context, JsonNode? payload)
     {
-        if (payload?["file"]?.ToString() is { } file && CommonResolver.ResolveStream(file) is { } stream)
+        if (payload?["file"]?.ToString() is { } file)
         {
-            var entity = new ImageEntity(stream);
-            var url = await context.UploadImage(entity);
-            return new OneBotResult(url, 0, "ok");
+            using var stream = await CommonResolver.ResolveStreamAsync(file);
+            if (stream != null)
+            {
+                var entity = new ImageEntity(stream);
+                var url = await context.UploadImage(entity);
+                return new OneBotResult(url, 0, "ok");
+            }
         }
 
-        throw new Exception();
+        throw new Exception("Failed to resolve image file");
     }
 }
