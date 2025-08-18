@@ -71,13 +71,16 @@ internal class MessagingLogic : LogicBase
                 var chain = push.Chain;
 
                 // Intercept group invitation
-                if (chain.Count == 1 && chain[0] is LightAppEntity { AppName: "com.tencent.qun.invite" } app)
+                if (chain.Count == 1 && chain[0] is LightAppEntity
+                    {
+                        AppName: "com.tencent.qun.invite" or "com.tencent.tuwen.lua"
+                    } app)
                 {
                     using var document = JsonDocument.Parse(app.Payload);
                     var root = document.RootElement;
 
                     string url = root.GetProperty("meta").GetProperty("news").GetProperty("jumpUrl").GetString()
-                        ?? throw new Exception("sb tx! Is this 'com.tencent.qun.invite'?");
+                        ?? throw new Exception("sb tx! Is this 'com.tencent.qun.invite' or 'com.tencent.tuwen.lua'?");
                     var query = HttpUtility.ParseQueryString(new Uri(url).Query);
                     uint groupUin = uint.Parse(query["groupcode"]
                         ?? throw new Exception("sb tx! Is this '/group/invite_join'?"));
