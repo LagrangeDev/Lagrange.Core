@@ -15,13 +15,13 @@ internal class PokeService : BaseService<PokeEvent>
     protected override bool Build(PokeEvent input, BotKeystore keystore, BotAppInfo appInfo, BotDeviceInfo device,
         out Span<byte> output, out List<Memory<byte>>? extraPackets)
     {
-        var packet = new OidbSvcTrpcTcp0xED3_1
+        var packet = new OidbSvcTrpcTcpBase<OidbSvcTrpcTcp0xED3_1>(new OidbSvcTrpcTcp0xED3_1
         {
             Uin = input.TargetUin ?? keystore.Uin,
             GroupUin = input.IsGroup ? input.PeerUin : 0,
             FriendUin = input.IsGroup ? 0 : input.PeerUin,
             Ext = 0
-        };
+        });
         output = packet.Serialize();
         extraPackets = null;
         return true;

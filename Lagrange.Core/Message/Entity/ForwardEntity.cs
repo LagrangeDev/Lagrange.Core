@@ -38,13 +38,12 @@ public class ForwardEntity : IMessageEntity
         Chain = chain;
     }
 
-    IEnumerable<Elem> IMessageEntity.PackElement() => PackElement(true);
+    IEnumerable<Elem> IMessageEntity.PackElement() => PackElement(false);
 
-    IEnumerable<Elem> IMessageEntity.PackFakeElement() => PackElement(false);
+    IEnumerable<Elem> IMessageEntity.PackFakeElement() => PackElement(true);
 
-    IEnumerable<Elem> PackElement(bool additional)
+    IEnumerable<Elem> PackElement(bool fake)
     {
-        byte[] bytes = ProtoExt.SerializeToBytes(MessagePacker.BuildFake(Chain, _selfUid));
         var result = new List<Elem> {
             new() {
                 SrcMsg = new SrcMsg {
@@ -57,13 +56,13 @@ public class ForwardEntity : IMessageEntity
                         MessageId = MessageId,
                         SenderUid = Uid,
                     }),
-                    SourceMsg = !additional ? bytes : null,
+                    SourceMsg = fake ? ProtoExt.SerializeToBytes(MessagePacker.BuildFake(Chain, _selfUid)) : null,
                     ToUin = 0
                 }
             },
         };
 
-        if (additional && ClientSequence != 0)
+        if (!fake && ClientSequence == 0)
         {
             result.Add(new Elem
             {
@@ -72,8 +71,8 @@ public class ForwardEntity : IMessageEntity
                     Str = "not null",
                     PbReserve = ProtoExt.SerializeToBytes(new MentionExtra
                     {
-                        Type = 1,
-                        Uin = TargetUin,
+                        Type = 2,
+                        Uid = Chain.Uid!,
                     })
                 }
             });
@@ -86,29 +85,40 @@ public class ForwardEntity : IMessageEntity
     {
         if (elem.SrcMsg is not { } src) return null;
 
-        var reserve = Serializer.Deserialize<SrcMsg.Preserve>(src.PbReserve.AsSpan());
-        return new ForwardEntity(MessagePacker.Parse(new PushMsgBody
+        if (src.SourceMsg != null)
         {
-            ResponseHead = new ResponseHead
+            var chain = MessagePacker.Parse(Serializer.Deserialize<PushMsgBody>(src.SourceMsg.AsSpan()), true);
+            return new ForwardEntity(chain);
+        }
+
+        if (src.PbReserve != null)
+        {
+            var reserve = Serializer.Deserialize<SrcMsg.Preserve>(src.PbReserve.AsSpan());
+            return new ForwardEntity(MessagePacker.Parse(new PushMsgBody
             {
-                FromUin = (uint)src.SenderUin,
-                FromUid = reserve.SenderUid,
-                Grp = reserve.ReceiverUid != null ? null : new ResponseGrp { }
-            },
-            ContentHead = new ContentHead
-            {
-                Random = (long?)(reserve.MessageId & 0xFFFFFFFF),
-                Sequence = src.OrigSeqs?.Count > 0 ? src.OrigSeqs[0] : 0,
-                Timestamp = src.Time,
-            },
-            Body = new MessageBody
-            {
-                RichText = new RichText
+                ResponseHead = new ResponseHead
                 {
-                    Elems = src.Elems ?? new List<Elem>(),
+                    FromUin = (uint)src.SenderUin,
+                    FromUid = reserve.SenderUid,
+                    Grp = reserve.ReceiverUid != null ? null : new ResponseGrp { }
+                },
+                ContentHead = new ContentHead
+                {
+                    Random = (long?)(reserve.MessageId & 0xFFFFFFFF),
+                    Sequence = (src.OrigSeqs != null && src.OrigSeqs.Count > 0) ? src.OrigSeqs[0] : 0,
+                    Timestamp = src.Time,
+                },
+                Body = new MessageBody
+                {
+                    RichText = new RichText
+                    {
+                        Elems = src.Elems ?? new List<Elem>(),
+                    }
                 }
-            }
-        }, true));
+            }, true));
+        }
+
+        return new ForwardEntity(new MessageChain(0, 0, (src.OrigSeqs != null && src.OrigSeqs.Count > 0 ? src.OrigSeqs[0] : 0), 0));
     }
 
     void IMessageEntity.SetSelfUid(string selfUid) => _selfUid = selfUid;

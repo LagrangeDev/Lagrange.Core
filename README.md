@@ -87,7 +87,7 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 ## Document
 
-[Lagrange.OneBot Document](https://lagrangedev.github.io/Lagrange.Doc/Lagrange.OneBot/)
+[Lagrange.OneBot Document](https://lagrangedev.github.io/Lagrange.Doc/v1/Lagrange.OneBot/)
 
 [Docker guide](Docker.md)
 

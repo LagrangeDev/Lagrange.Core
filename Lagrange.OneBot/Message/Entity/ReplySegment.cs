@@ -41,12 +41,19 @@ public partial class ReplySegment : SegmentBase
     {
         if (entity is not ForwardEntity forward || Realm is null) throw new ArgumentException("The entity is not a forward entity.");
 
-        var id = Realm.Do(realm => realm.All<MessageRecord>()
-            .FirstOrDefault(record => record.Id == MessageRecord.CalcMessageHash(forward.MessageId, forward.Sequence))?
-            .Id);
+        int? id;
+        if (chain.IsGroup)
+        {
+            id = MessageRecord.CalcMessageHash(forward.MessageId, forward.Sequence);
+        }
+        else
+        {
+            id = Realm.Do(realm => realm.All<MessageRecord>()
+                .FirstOrDefault(record => record.FromUinLong == chain.FriendUin
+                    && record.ClientSequenceLong == forward.ClientSequence)?
+                .Id);
+        }
 
-        return !id.HasValue
-            ? new ReplySegment { MessageId = 0.ToString() }
-            : new ReplySegment { MessageId = id.Value.ToString() };
+        return new ReplySegment { MessageId = (id ?? 0).ToString() };
     }
 }

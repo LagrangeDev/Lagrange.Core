@@ -18,10 +18,10 @@ public class SetGroupPortraitOperation : IOperation
         {
             var image = CommonResolver.ResolveStream(portrait.File);
             if (image == null) throw new Exception();
-            
+
             var imageEntity = new ImageEntity(image);
             bool result = await context.GroupSetAvatar(portrait.GroupId, imageEntity);
-            return new OneBotResult(null, result ? 0 : 1, "");
+            return new OneBotResult(null, result ? 0 : 1, result ? "ok" : "failed");
         }
 
         throw new Exception();
