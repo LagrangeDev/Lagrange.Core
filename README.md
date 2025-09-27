@@ -1,3 +1,17 @@
+# 呆毛 Fork 版的更改:
+
+ | api                 | about                  |
+ | ------------------- | ---------------------- |
+ | group_poke          | 修复 群聊戳一戳 不可用 |
+ | upload_private_file | 支持 文件 Base64 发送  |
+ | upload_group_file   | 支持 文件 Base64 发送  |
+
+### 下载地址：[呆毛 Fork 版 Lagrange.Onebot](https://github.com/misaka20002/Lagrange.Core/releases/tag/nightly)
+
+ ---
+
+ # 原始 readme.md:
+
 <div align="center">
 
 ![Lagrange.Core](https://socialify.git.ci/KonataDev/Lagrange.Core/image?description=1&descriptionEditable=An%20Implementation%20of%20NTQQ%20Protocol%2C%20with%20Pure%20C%23%2CDerived%20from%20Konata.Core&font=Jost&forks=1&issues=1&logo=https%3A%2F%2Fstatic.live.moe%2Flagrange.jpg&name=1&pattern=Diagonal%20Stripes&pulls=1&stargazers=1&theme=Auto)
@@ -66,20 +80,20 @@ Please use Lagrange.Core responsibly and in accordance with the law.
 
 | Protocol | Support | Login                     | Support | Messages  | Support | Operations        | Support | Events              | Support |
 | -------- | :-----: | ------------------------- | :-----: | :-------- | :-----: | :---------------- | :-----: | :------------------ | :-----: |
-| Windows  |   🟢    | QrCode                    |   🟢    | Images    |   🟢    | Poke              |   🟢    | Captcha             |   🟢    |
-| macOS    |   🟢    | Password                  |   🔴    | Text / At |   🟢    | Recall            |   🟢    | BotOnline           |   🟢    |
-| Linux    |   🟢    | EasyLogin                 |   🟢    | Records   |   🟢    | Leave Group       |   🟢    | BotOffline          |   🟢    |
-|          |         | UnusalDevice<br/>Password |   🔴    | QFace     |   🟢    | Set Special Title |   🟢    | Message             |   🟢    |
-|          |         | UnusalDevice<br/>Easy     |   🟢    | Json      |   🟢    | Kick Member       |   🟢    | Poke                |   🟢    |
-|          |         | NewDeviceVerify           |   🔴    | Xml       |   🟢    | Mute Member       |   🟢    | MessageRecall       |   🟢    |
-|          |         |                           |         | Forward   |   🟢    | Set Admin         |   🟢    | GroupMemberDecrease |   🟢    |
-|          |         |                           |         | Video     |   🟢    | Friend Request    |   🟢    | GroupMemberIncrease |   🟢    |
-|          |         |                           |         | Reply     |   🟢    | Group Request     |   🟢    | GroupPromoteAdmin   |   🟢    |
-|          |         |                           |         | File      |   🟢    | ~~Voice Call~~    |   🔴    | GroupInvite         |   🟢    |
-|          |         |                           |         | Poke      |   🟢    | Client Key        |   🟢    | GroupRequestJoin    |   🟢    |
-|          |         |                           |         | LightApp  |   🟢    | Cookies           |   🟢    | FriendRequest       |   🟢    |
-|          |         |                           |         |           |         | Send Message      |   🟢    | ~~FriendTyping~~    |   🔴    |
-|          |         |                           |         |           |         |                   |         | ~~FriendVoiceCall~~ |   🔴    |
+| Windows  |    🟢    | QrCode                    |    🟢    | Images    |    🟢    | Poke              |    🟢    | Captcha             |    🟢    |
+| macOS    |    🟢    | Password                  |    🔴    | Text / At |    🟢    | Recall            |    🟢    | BotOnline           |    🟢    |
+| Linux    |    🟢    | EasyLogin                 |    🟢    | Records   |    🟢    | Leave Group       |    🟢    | BotOffline          |    🟢    |
+|          |         | UnusalDevice<br/>Password |    🔴    | QFace     |    🟢    | Set Special Title |    🟢    | Message             |    🟢    |
+|          |         | UnusalDevice<br/>Easy     |    🟢    | Json      |    🟢    | Kick Member       |    🟢    | Poke                |    🟢    |
+|          |         | NewDeviceVerify           |    🔴    | Xml       |    🟢    | Mute Member       |    🟢    | MessageRecall       |    🟢    |
+|          |         |                           |         | Forward   |    🟢    | Set Admin         |    🟢    | GroupMemberDecrease |    🟢    |
+|          |         |                           |         | Video     |    🟢    | Friend Request    |    🟢    | GroupMemberIncrease |    🟢    |
+|          |         |                           |         | Reply     |    🟢    | Group Request     |    🟢    | GroupPromoteAdmin   |    🟢    |
+|          |         |                           |         | File      |    🟢    | ~~Voice Call~~    |    🔴    | GroupInvite         |    🟢    |
+|          |         |                           |         | Poke      |    🟢    | Client Key        |    🟢    | GroupRequestJoin    |    🟢    |
+|          |         |                           |         | LightApp  |    🟢    | Cookies           |    🟢    | FriendRequest       |    🟢    |
+|          |         |                           |         |           |         | Send Message      |    🟢    | ~~FriendTyping~~    |    🔴    |
+|          |         |                           |         |           |         |                   |         | ~~FriendVoiceCall~~ |    🔴    |
 
 </Details>
 
