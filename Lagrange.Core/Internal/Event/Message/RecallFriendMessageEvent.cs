@@ -4,15 +4,15 @@ internal class RecallFriendMessageEvent : ProtocolEvent
 {
     public string TargetUid { get; } = string.Empty;
     
-    public uint ClientSeq { get; }
+    public ulong ClientSeq { get; }
     
-    public uint MessageSeq { get; }
+    public ulong MessageSeq { get; }
     
     public uint Random { get; }
     
     public uint Timestamp { get; }
     
-    private RecallFriendMessageEvent(string targetUid, uint clientSeq, uint messageSeq, uint random, uint timestamp) : base(true)
+    private RecallFriendMessageEvent(string targetUid, ulong clientSeq, ulong messageSeq, uint random, uint timestamp) : base(true)
     {
         TargetUid = targetUid;
         MessageSeq = messageSeq;
@@ -23,7 +23,7 @@ internal class RecallFriendMessageEvent : ProtocolEvent
 
     private RecallFriendMessageEvent(int resultCode) : base(resultCode) { }
     
-    public static RecallFriendMessageEvent Create(string targetUid, uint clientSeq, uint messageSeq, uint random, uint timestamp) => 
+    public static RecallFriendMessageEvent Create(string targetUid, ulong clientSeq, ulong messageSeq, uint random, uint timestamp) => 
         new(targetUid, clientSeq, messageSeq, random, timestamp);
     
     public static RecallFriendMessageEvent Result(int resultCode) => new(resultCode);

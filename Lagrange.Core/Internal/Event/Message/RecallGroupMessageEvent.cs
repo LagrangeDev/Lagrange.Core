@@ -4,9 +4,9 @@ internal class RecallGroupMessageEvent : ProtocolEvent
 {
     public uint GroupUin { get; set; }
     
-    public uint Sequence { get; set; }
+    public ulong Sequence { get; set; }
     
-    private RecallGroupMessageEvent(uint sequence, uint groupUin) : base(true)
+    private RecallGroupMessageEvent(ulong sequence, uint groupUin) : base(true)
     {
         Sequence = sequence;
         GroupUin = groupUin;
@@ -14,7 +14,7 @@ internal class RecallGroupMessageEvent : ProtocolEvent
     
     private RecallGroupMessageEvent(int resultCode) : base(resultCode) { }
     
-    public static RecallGroupMessageEvent Create(uint groupUin, uint sequence) =>
+    public static RecallGroupMessageEvent Create(uint groupUin, ulong sequence) =>
             new(sequence, groupUin);
     
     public static RecallGroupMessageEvent Result(int resultCode) => new(resultCode);

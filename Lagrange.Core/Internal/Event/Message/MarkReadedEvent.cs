@@ -6,11 +6,11 @@ internal class MarkReadedEvent : ProtocolEvent
     
     public string? TargetUid { get; }
     
-    public uint StartSequence { get; }
+    public ulong StartSequence { get; }
     
     public uint Time { get; }
 
-    private MarkReadedEvent(uint groupUin, string? targetUid, uint startSequence, uint time) : base(true)
+    private MarkReadedEvent(uint groupUin, string? targetUid, ulong startSequence, uint time) : base(true)
     {
         GroupUin = groupUin;
         TargetUid = targetUid;
@@ -20,7 +20,7 @@ internal class MarkReadedEvent : ProtocolEvent
 
     private MarkReadedEvent(int resultCode) : base(resultCode) { }
     
-    public static MarkReadedEvent Create(uint groupUin, string? targetUid, uint startSequence, uint time) =>
+    public static MarkReadedEvent Create(uint groupUin, string? targetUid, ulong startSequence, uint time) =>
         new(groupUin, targetUid, startSequence, time);
 
     public static MarkReadedEvent Result(int resultCode) => new(resultCode);

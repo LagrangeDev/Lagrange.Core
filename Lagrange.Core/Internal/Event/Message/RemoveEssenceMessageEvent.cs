@@ -4,11 +4,11 @@ internal class RemoveEssenceMessageEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
     
-    public uint Sequence { get; }
+    public ulong Sequence { get; }
     
     public uint Random { get; }
 
-    private RemoveEssenceMessageEvent(uint groupUin, uint sequence, uint random) : base(true)
+    private RemoveEssenceMessageEvent(uint groupUin, ulong sequence, uint random) : base(true)
     {
         GroupUin = groupUin;
         Sequence = sequence;
@@ -17,7 +17,7 @@ internal class RemoveEssenceMessageEvent : ProtocolEvent
 
     private RemoveEssenceMessageEvent(int resultCode) : base(resultCode) { }
 
-    public static RemoveEssenceMessageEvent Create(uint groupUin, uint sequence, uint random)
+    public static RemoveEssenceMessageEvent Create(uint groupUin, ulong sequence, uint random)
         => new(groupUin, sequence, random);
 
     public static RemoveEssenceMessageEvent Result(int resultCode)

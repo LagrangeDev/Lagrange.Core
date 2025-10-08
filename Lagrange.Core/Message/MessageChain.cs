@@ -24,9 +24,9 @@ public sealed class MessageChain : List<IMessageEntity>
 
     public MessageStyle? Style { get; internal set; }
 
-    public uint Sequence { get; } // for C2C message, it's the sequence of the message, for group message, it's the sequence of the group message
+    public ulong Sequence { get; } // for C2C message, it's the sequence of the message, for group message, it's the sequence of the group message
 
-    public uint ClientSequence { get; } // only for C2C message
+    public ulong ClientSequence { get; } // only for C2C message
 
     #region Internal Properties
 
@@ -40,7 +40,7 @@ public sealed class MessageChain : List<IMessageEntity>
 
     #endregion
 
-    internal MessageChain(uint friendUin, string selfUid, string friendUid, uint targetUin = 0, uint sequence = 0, uint clientSequence = 0, ulong? messageId = null,
+    internal MessageChain(uint friendUin, string selfUid, string friendUid, uint targetUin = 0, ulong sequence = 0, ulong clientSequence = 0, ulong? messageId = null,
         MessageType type = MessageType.Friend)
     {
         GroupUin = null;
@@ -65,7 +65,7 @@ public sealed class MessageChain : List<IMessageEntity>
         Elements = new List<Elem>();
     }
 
-    internal MessageChain(uint groupUin, uint friendUin, uint sequence, ulong messageId = 0)
+    internal MessageChain(uint groupUin, uint friendUin, ulong sequence, ulong messageId = 0)
     {
         GroupUin = groupUin;
         FriendUin = friendUin;

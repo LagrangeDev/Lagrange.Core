@@ -14,7 +14,7 @@ internal class Message
     
     [ProtoMember(3)] public MessageBody? Body { get; set; }
     
-    [ProtoMember(4)] public uint? ClientSequence { get; set; }
+    [ProtoMember(4)] public ulong? ClientSequence { get; set; }
     
     [ProtoMember(5)] public uint? Random { get; set; }
     

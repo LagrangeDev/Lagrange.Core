@@ -21,7 +21,7 @@ internal class GroupRecallMsg
 [ProtoContract]
 internal class GroupRecallMsgField3
 {
-    [ProtoMember(1)] public uint Sequence { get; set; }
+    [ProtoMember(1)] public ulong Sequence { get; set; }
     
     [ProtoMember(2)] public uint Random { get; set; }
     

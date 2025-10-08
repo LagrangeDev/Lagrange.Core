@@ -6,13 +6,13 @@ internal class GetGroupMessageEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
     
-    public uint StartSequence { get; }
+    public ulong StartSequence { get; }
     
-    public uint EndSequence { get; }
+    public ulong EndSequence { get; }
 
     public List<MessageChain> Chains { get; } = new();
 
-    private GetGroupMessageEvent(uint groupUin, uint startSequence, uint endSequence) : base(true)
+    private GetGroupMessageEvent(uint groupUin, ulong startSequence, ulong endSequence) : base(true)
     {
         GroupUin = groupUin;
         StartSequence = startSequence;
@@ -24,7 +24,7 @@ internal class GetGroupMessageEvent : ProtocolEvent
         Chains = chains;
     }
 
-    public static GetGroupMessageEvent Create(uint groupUin, uint startSequence, uint endSequence)
+    public static GetGroupMessageEvent Create(uint groupUin, ulong startSequence, ulong endSequence)
         => new(groupUin, startSequence, endSequence);
 
     public static GetGroupMessageEvent Result(int resultCode, List<MessageChain> chains)

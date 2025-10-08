@@ -20,7 +20,7 @@ internal class SsoReadedReportC2C
     
     [ProtoMember(3)] public uint Time { get; set; }
     
-    [ProtoMember(4)] public uint StartSequence { get; set; }
+    [ProtoMember(4)] public ulong StartSequence { get; set; }
 }
 
 [ProtoContract]
@@ -28,5 +28,5 @@ internal class SsoReadedReportGroup
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
     
-    [ProtoMember(2)] public uint StartSequence { get; set; }
+    [ProtoMember(2)] public ulong StartSequence { get; set; }
 }

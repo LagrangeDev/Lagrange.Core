@@ -67,7 +67,7 @@ public partial class MessageRecord : IRealmObject
 
     public byte[] Entities { get; set; }
 
-    public static int CalcMessageHash(ulong msgId, uint seq)
+    public static int CalcMessageHash(ulong msgId, ulong seq)
     {
         return ((ushort)seq << 16) | (ushort)msgId;
     }

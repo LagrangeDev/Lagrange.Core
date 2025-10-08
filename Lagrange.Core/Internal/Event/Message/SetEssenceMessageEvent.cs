@@ -4,11 +4,11 @@ internal class SetEssenceMessageEvent : ProtocolEvent
 {
     public uint GroupUin { get; }
     
-    public uint Sequence { get; }
+    public ulong Sequence { get; }
     
     public uint Random { get; }
 
-    private SetEssenceMessageEvent(uint groupUin, uint sequence, uint random) : base(true)
+    private SetEssenceMessageEvent(uint groupUin, ulong sequence, uint random) : base(true)
     {
         GroupUin = groupUin;
         Sequence = sequence;
@@ -17,7 +17,7 @@ internal class SetEssenceMessageEvent : ProtocolEvent
 
     private SetEssenceMessageEvent(int resultCode) : base(resultCode) { }
 
-    public static SetEssenceMessageEvent Create(uint groupUin, uint sequence, uint random)
+    public static SetEssenceMessageEvent Create(uint groupUin, ulong sequence, uint random)
         => new(groupUin, sequence, random);
 
     public static SetEssenceMessageEvent Result(int resultCode)

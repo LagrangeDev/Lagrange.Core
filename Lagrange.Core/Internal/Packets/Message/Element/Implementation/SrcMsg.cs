@@ -5,7 +5,7 @@ namespace Lagrange.Core.Internal.Packets.Message.Element.Implementation;
 [ProtoContract]
 internal partial class SrcMsg
 {
-	[ProtoMember(1)] public List<uint>? OrigSeqs { get; set; }
+	[ProtoMember(1)] public List<ulong>? OrigSeqs { get; set; }
     
     [ProtoMember(2)] public ulong SenderUin { get; set; }
     

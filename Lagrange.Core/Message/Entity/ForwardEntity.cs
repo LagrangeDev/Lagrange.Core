@@ -16,9 +16,9 @@ public class ForwardEntity : IMessageEntity
 
     public ulong MessageId { get => Chain.MessageId; }
 
-    public uint Sequence { get => Chain.Sequence; }
+    public ulong Sequence { get => Chain.Sequence; }
 
-    public uint ClientSequence { get => Chain.ClientSequence; }
+    public ulong ClientSequence { get => Chain.ClientSequence; }
 
     public string? Uid { get => Chain.Uid; set => Chain.Uid = value; }
 
@@ -47,7 +47,7 @@ public class ForwardEntity : IMessageEntity
         var result = new List<Elem> {
             new() {
                 SrcMsg = new SrcMsg {
-                    OrigSeqs = new List<uint> { ClientSequence != 0 ? ClientSequence : Sequence },
+                    OrigSeqs = new List<ulong> { ClientSequence != 0 ? ClientSequence : Sequence },
                     SenderUin = TargetUin,
                     Time = (int?)new DateTimeOffset(Time).ToUnixTimeSeconds(),
                     Elems = Chain.Elements,

@@ -15,7 +15,7 @@ internal class ContentHead
 
     [ProtoMember(4)] public long? Random { get; set; } 
 
-    [ProtoMember(5)] public uint? Sequence { get; set; }
+    [ProtoMember(5)] public ulong? Sequence { get; set; }
 
     [ProtoMember(6)] public long? Timestamp { get; set; }
 

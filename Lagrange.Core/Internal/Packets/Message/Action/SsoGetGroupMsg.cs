@@ -20,7 +20,7 @@ internal class SsoGetGroupMsgInfo
 {
     [ProtoMember(1)] public uint GroupUin { get; set; }
     
-    [ProtoMember(2)] public uint StartSequence { get; set; }
+    [ProtoMember(2)] public ulong StartSequence { get; set; }
     
-    [ProtoMember(3)] public uint EndSequence { get; set; }
+    [ProtoMember(3)] public ulong EndSequence { get; set; }
 }

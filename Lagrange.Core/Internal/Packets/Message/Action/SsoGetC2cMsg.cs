@@ -10,7 +10,7 @@ internal class SsoGetC2cMsg
 {
     [ProtoMember(2)] public string? FriendUid { get; set; }
 
-    [ProtoMember(3)] public uint StartSequence { get; set; }
+    [ProtoMember(3)] public ulong StartSequence { get; set; }
 
-    [ProtoMember(4)] public uint EndSequence { get; set; }
+    [ProtoMember(4)] public ulong EndSequence { get; set; }
 }

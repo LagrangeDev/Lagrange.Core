@@ -20,7 +20,7 @@ internal class C2CRecallMsg
 [ProtoContract]
 internal class C2CRecallMsgInfo
 {
-    [ProtoMember(1)] public uint ClientSequence { get; set; }
+    [ProtoMember(1)] public ulong ClientSequence { get; set; }
     
     [ProtoMember(2)] public uint Random { get; set; }
     
@@ -30,7 +30,7 @@ internal class C2CRecallMsgInfo
     
     [ProtoMember(5)] public uint Field5 { get; set; } // 0
     
-    [ProtoMember(6)] public uint MessageSequence { get; set; } // 700
+    [ProtoMember(6)] public ulong MessageSequence { get; set; } // 700
 }
 
 [ProtoContract]

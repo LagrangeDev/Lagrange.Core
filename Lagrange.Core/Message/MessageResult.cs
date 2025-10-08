@@ -10,5 +10,5 @@ public class MessageResult
     
     public uint Timestamp { get; internal set; }
     
-    public uint ClientSequence { get; internal set; }
+    public ulong ClientSequence { get; internal set; }
 }
