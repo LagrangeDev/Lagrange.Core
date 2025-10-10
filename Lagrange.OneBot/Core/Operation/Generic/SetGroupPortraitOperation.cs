@@ -14,14 +14,15 @@ public class SetQQAvatar : IOperation
     {
         if (payload?["file"]?.ToString() is { } portrait)
         {
-            var image = CommonResolver.ResolveStream(portrait);
-            if (image == null) throw new Exception();
-            
-            var imageEntity = new ImageEntity(image);
-            bool result = await context.SetAvatar(imageEntity);
-            return new OneBotResult(null, result ? 0 : 1, "");
+            using var image = await CommonResolver.ResolveStreamAsync(portrait);
+            if (image != null)
+            {
+                var imageEntity = new ImageEntity(image);
+                bool result = await context.SetAvatar(imageEntity);
+                return new OneBotResult(null, result ? 0 : 1, result ? "ok" : "failed");
+            }
         }
 
-        throw new Exception();
+        throw new Exception("Failed to resolve avatar image");
     }
 }
