@@ -97,7 +97,7 @@ internal class ImageGroupUploadService : BaseService<ImageGroupUploadEvent>
                         // so we only implement the default summary for sub type 1
                         // and Tencent implements the others based on the default values.
                         TextSummary = input.Entity.Summary ?? (input.Entity.SubType == 1 ? "[\u52a8\u753b\u8868\u60c5]" : null!),
-                        C2c = new PicExtBizInfoC2c
+                        Troop = new PicExtBizInfoTroop
                         {
                             SubType = (uint)input.Entity.SubType
                         }
