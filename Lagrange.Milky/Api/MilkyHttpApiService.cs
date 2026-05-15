@@ -33,7 +33,7 @@ public class MilkyHttpApiService(ILogger<MilkyHttpApiService> logger, IOptions<M
         _listener.Prefixes.Add($"http://{_host}:{_port}{_prefix}/");
         _listener.Start();
 
-        foreach (var prefix in _listener.Prefixes) _logger.LogServerRunning(prefix);
+        foreach (string prefix in _listener.Prefixes) _logger.LogServerRunning(prefix);
 
         _cts = CancellationTokenSource.CreateLinkedTokenSource(token);
         _task = GetHttpContextLoopAsync(_cts.Token);
@@ -65,8 +65,8 @@ public class MilkyHttpApiService(ILogger<MilkyHttpApiService> logger, IOptions<M
         var request = context.Request;
         var identifier = request.RequestTraceIdentifier;
         var remote = request.RemoteEndPoint;
-        var method = request.HttpMethod;
-        var rawUrl = request.RawUrl;
+        string method = request.HttpMethod;
+        string? rawUrl = request.RawUrl;
 
         try
         {
@@ -77,10 +77,10 @@ public class MilkyHttpApiService(ILogger<MilkyHttpApiService> logger, IOptions<M
             var handler = await GetApiHandlerAsync(context, token);
             if (handler == null) return;
 
-            var parameter = await GetParameterAsync(context, handler.ParameterType, token);
+            object? parameter = await GetParameterAsync(context, handler.ParameterType, token);
             if (parameter == null) return;
 
-            var result = await GetResultAsync(context, handler, parameter, token);
+            object? result = await GetResultAsync(context, handler, parameter, token);
             if (result == null) return;
 
             await SendWithLoggerAsync(context, result, token);

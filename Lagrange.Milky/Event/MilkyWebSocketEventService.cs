@@ -22,17 +22,18 @@ public class MilkyWebSocketEventService(ILogger<MilkyWebSocketEventService> logg
 
     private readonly HttpListener _listener = new();
     private readonly ConcurrentDictionary<ConnectionContext, object?> _connections = [];
-    private CancellationTokenSource? _cts;
-    private Task? _task;
 
-    public Task StartAsync(CancellationToken token)
+    private Task? _task;
+    private CancellationTokenSource? _cts;
+
+    public Task StartAsync(CancellationToken ct)
     {
         _listener.Prefixes.Add($"http://{_host}:{_port}{_path}/");
         _listener.Start();
 
-        foreach (var prefix in _listener.Prefixes) _logger.LogServerRunning(prefix);
+        foreach (string prefix in _listener.Prefixes) _logger.LogServerRunning(prefix);
 
-        _cts = CancellationTokenSource.CreateLinkedTokenSource(token);
+        _cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         _task = GetHttpContextLoopAsync(_cts.Token);
 
         _event.Register(HandleEventAsync);
@@ -40,15 +41,26 @@ public class MilkyWebSocketEventService(ILogger<MilkyWebSocketEventService> logg
         return Task.CompletedTask;
     }
 
-    private async Task GetHttpContextLoopAsync(CancellationToken token)
+    public async Task StopAsync(CancellationToken ct)
+    {
+        _event.Unregister(HandleEventAsync);
+
+        _cts?.Cancel();
+        if (_task != null) await _task.WaitAsync(ct).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+        await Task.WhenAll(_connections.Keys.Select(connection => connection.Tcs.Task));
+
+        _listener.Stop();
+    }
+
+    private async Task? GetHttpContextLoopAsync(CancellationToken ct)
     {
         try
         {
             while (true)
             {
-                _ = HandleHttpContextAsync(await _listener.GetContextAsync().WaitAsync(token), token);
+                _ = HandleHttpContextAsync(await _listener.GetContextAsync().WaitAsync(ct), ct);
 
-                token.ThrowIfCancellationRequested();
+                ct.ThrowIfCancellationRequested();
             }
         }
         catch (OperationCanceledException) { throw; }
@@ -59,9 +71,9 @@ public class MilkyWebSocketEventService(ILogger<MilkyWebSocketEventService> logg
         }
     }
 
-    private async Task HandleHttpContextAsync(HttpListenerContext httpContext, CancellationToken token)
+    private async Task HandleHttpContextAsync(HttpListenerContext context, CancellationToken ct)
     {
-        var request = httpContext.Request;
+        var request = context.Request;
         var identifier = request.RequestTraceIdentifier;
         var remote = request.RemoteEndPoint;
         string method = request.HttpMethod;
@@ -71,26 +83,26 @@ public class MilkyWebSocketEventService(ILogger<MilkyWebSocketEventService> logg
         {
             _logger.LogHttpContext(identifier, remote, method, rawUrl);
 
-            if (!await ValidateHttpContextAsync(httpContext, token)) return;
+            if (!await ValidateHttpContextAsync(context, ct)) return;
 
-            var connection = await GetConnectionContextAsync(httpContext, token);
+            var connection = await GetConnectionContextAsync(context, ct);
             if (connection == null) return;
 
             _ = WaitConnectionCloseLoopAsync(connection, connection.Cts.Token);
         }
         catch (OperationCanceledException)
         {
-            await SendWithLoggerAsync(httpContext, HttpStatusCode.InternalServerError, token);
+            await SendWithLoggerAsync(context, HttpStatusCode.InternalServerError, ct);
             throw;
         }
         catch (Exception e)
         {
             _logger.LogHandleHttpContextException(identifier, remote, e);
-            await SendWithLoggerAsync(httpContext, HttpStatusCode.InternalServerError, token);
+            await SendWithLoggerAsync(context, HttpStatusCode.InternalServerError, ct);
         }
     }
 
-    private async Task WaitConnectionCloseLoopAsync(ConnectionContext connection, CancellationToken token)
+    private async Task WaitConnectionCloseLoopAsync(ConnectionContext connection, CancellationToken ct)
     {
         var identifier = connection.HttpContext.Request.RequestTraceIdentifier;
         var remote = connection.HttpContext.Request.RemoteEndPoint;
@@ -100,20 +112,20 @@ public class MilkyWebSocketEventService(ILogger<MilkyWebSocketEventService> logg
             byte[] buffer = new byte[1024];
             while (true)
             {
-                ValueTask<ValueWebSocketReceiveResult> resultTask = connection.WsContext.WebSocket
+                var resultTask = connection.WsContext.WebSocket
                         .ReceiveAsync(buffer.AsMemory(), default);
 
-                ValueWebSocketReceiveResult result = !resultTask.IsCompleted ?
-                    await resultTask.AsTask().WaitAsync(token) :
+                var result = !resultTask.IsCompleted ?
+                    await resultTask.AsTask().WaitAsync(ct) :
                     resultTask.Result;
 
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    await CloseConnectionAsync(connection, WebSocketCloseStatus.NormalClosure, token);
+                    await CloseConnectionAsync(connection, WebSocketCloseStatus.NormalClosure, ct);
                     return;
                 }
 
-                token.ThrowIfCancellationRequested();
+                ct.ThrowIfCancellationRequested();
             }
         }
         catch (OperationCanceledException)
@@ -124,11 +136,11 @@ public class MilkyWebSocketEventService(ILogger<MilkyWebSocketEventService> logg
         {
             _logger.LogWaitWebSocketCloseException(identifier, remote, e);
 
-            await CloseConnectionAsync(connection, WebSocketCloseStatus.InternalServerError, token);
+            await CloseConnectionAsync(connection, WebSocketCloseStatus.InternalServerError, ct);
         }
     }
 
-    private async Task CloseConnectionAsync(ConnectionContext connection, WebSocketCloseStatus status, CancellationToken token)
+    private async Task CloseConnectionAsync(ConnectionContext connection, WebSocketCloseStatus status, CancellationToken ct)
     {
         var identifier = connection.HttpContext.Request.RequestTraceIdentifier;
         var remote = connection.HttpContext.Request.RemoteEndPoint;
@@ -137,7 +149,7 @@ public class MilkyWebSocketEventService(ILogger<MilkyWebSocketEventService> logg
         {
             _connections.Remove(connection, out _);
 
-            await connection.WsContext.WebSocket.CloseAsync(status, null, token);
+            await connection.WsContext.WebSocket.CloseAsync(status, null, ct);
             connection.HttpContext.Response.Close();
 
             _logger.LogWebSocketClosed(identifier, remote);
@@ -149,6 +161,103 @@ public class MilkyWebSocketEventService(ILogger<MilkyWebSocketEventService> logg
         finally
         {
             connection.Tcs.SetResult();
+        }
+    }
+
+    private async Task<bool> ValidateHttpContextAsync(HttpListenerContext context, CancellationToken ct)
+    {
+
+        var request = context.Request;
+        var identifier = request.RequestTraceIdentifier;
+        var remote = request.RemoteEndPoint;
+
+        if (request.Url?.LocalPath != _path)
+        {
+            await SendWithLoggerAsync(context, HttpStatusCode.NotFound, ct);
+        }
+
+        if (!context.Request.HttpMethod.Equals("GET", StringComparison.OrdinalIgnoreCase))
+        {
+            await SendWithLoggerAsync(context, HttpStatusCode.MethodNotAllowed, ct);
+            return false;
+        }
+
+        if (!request.IsWebSocketRequest)
+        {
+            await SendWithLoggerAsync(context, HttpStatusCode.BadRequest, ct);
+            return false;
+        }
+
+        if (!ValidateAccessToken(context))
+        {
+            _logger.LogValidateAccessTokenFailed(identifier, remote);
+            await SendWithLoggerAsync(context, HttpStatusCode.Unauthorized, ct);
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool ValidateAccessToken(HttpListenerContext context)
+    {
+        if (string.IsNullOrEmpty(_token)) return true;
+
+        string? authorization = context.Request.Headers["Authorization"];
+        if (authorization != null)
+        {
+            if (!authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)) return false;
+            return authorization.AsSpan(7..).Equals(_token);
+        }
+
+        string? accessToken = context.Request.QueryString["access_token"];
+        if (accessToken != null)
+        {
+            return accessToken.Equals(_token);
+        }
+
+        return false;
+    }
+
+    private async Task<ConnectionContext?> GetConnectionContextAsync(HttpListenerContext context, CancellationToken ct)
+    {
+        try
+        {
+            var wsContext = await context.AcceptWebSocketAsync(null).WaitAsync(ct);
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            var connection = new ConnectionContext(context, wsContext, cts);
+            _connections.TryAdd(connection, null);
+            return connection;
+        }
+        catch (OperationCanceledException) { throw; }
+        catch (Exception)
+        {
+            await SendWithLoggerAsync(context, HttpStatusCode.InternalServerError, ct);
+            throw;
+        }
+    }
+
+    private async Task SendWithLoggerAsync(HttpListenerContext context, HttpStatusCode status, CancellationToken ct)
+    {
+        var request = context.Request;
+        var identifier = request.RequestTraceIdentifier;
+        var remote = request.RemoteEndPoint;
+
+        var response = context.Response;
+        var output = response.OutputStream;
+
+        try
+        {
+            int code = (int)status;
+
+            response.StatusCode = code;
+            await output.WriteAsync(Encoding.UTF8.GetBytes($"{code} {status}"), ct);
+            response.Close();
+
+            _logger.LogSend(identifier, remote, status);
+        }
+        catch (Exception e)
+        {
+            _logger.LogSendException(identifier, remote, e);
         }
     }
 
@@ -181,109 +290,6 @@ public class MilkyWebSocketEventService(ILogger<MilkyWebSocketEventService> logg
 
                 await CloseConnectionAsync(connection, WebSocketCloseStatus.InternalServerError, connection.Cts.Token);
             }
-        }
-    }
-
-    public async Task StopAsync(CancellationToken token)
-    {
-        _event.Unregister(HandleEventAsync);
-
-        _cts?.Cancel();
-        if (_task != null) await _task.WaitAsync(token).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
-        await Task.WhenAll(_connections.Keys.Select(connection => connection.Tcs.Task));
-
-        _listener.Stop();
-    }
-
-    private async Task<bool> ValidateHttpContextAsync(HttpListenerContext httpContext, CancellationToken token)
-    {
-        var request = httpContext.Request;
-        var identifier = request.RequestTraceIdentifier;
-        var remote = request.RemoteEndPoint;
-
-        if (request.Url?.LocalPath != _path)
-        {
-            await SendWithLoggerAsync(httpContext, HttpStatusCode.NotFound, token);
-        }
-
-        if (!httpContext.Request.HttpMethod.Equals("GET", StringComparison.OrdinalIgnoreCase))
-        {
-            await SendWithLoggerAsync(httpContext, HttpStatusCode.MethodNotAllowed, token);
-            return false;
-        }
-
-        if (!ValidateApiAccessToken(httpContext))
-        {
-            _logger.LogValidateAccessTokenFailed(identifier, remote);
-            await SendWithLoggerAsync(httpContext, HttpStatusCode.Unauthorized, token);
-            return false;
-        }
-
-        if (!request.IsWebSocketRequest)
-        {
-            await SendWithLoggerAsync(httpContext, HttpStatusCode.BadRequest, token);
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool ValidateApiAccessToken(HttpListenerContext httpContext)
-    {
-        if (_token == null) return true;
-
-        string? authorization = httpContext.Request.QueryString["access_token"];
-        if (authorization == null) return false;
-
-        return authorization == _token;
-    }
-
-    private async Task<ConnectionContext?> GetConnectionContextAsync(HttpListenerContext httpContext, CancellationToken token)
-    {
-        var request = httpContext.Request;
-        var identifier = request.RequestTraceIdentifier;
-        var remote = request.RemoteEndPoint;
-
-        try
-        {
-            var wsContext = await httpContext.AcceptWebSocketAsync(null).WaitAsync(token);
-            var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
-            var connection = new ConnectionContext(httpContext, wsContext, cts);
-            _connections.TryAdd(connection, null);
-            return connection;
-        }
-        catch (OperationCanceledException) { throw; }
-        catch (Exception e)
-        {
-            _logger.LogUpgradeWebSocketException(identifier, remote, e);
-            await SendWithLoggerAsync(httpContext, HttpStatusCode.InternalServerError, token);
-        }
-
-        return null;
-    }
-
-    private async Task SendWithLoggerAsync(HttpListenerContext context, HttpStatusCode status, CancellationToken token)
-    {
-        var request = context.Request;
-        var identifier = request.RequestTraceIdentifier;
-        var remote = request.RemoteEndPoint;
-
-        var response = context.Response;
-        var output = response.OutputStream;
-
-        try
-        {
-            int code = (int)status;
-
-            response.StatusCode = code;
-            await output.WriteAsync(Encoding.UTF8.GetBytes($"{code} {status}"), token);
-            response.Close();
-
-            _logger.LogSend(identifier, remote, status);
-        }
-        catch (Exception e)
-        {
-            _logger.LogSendException(identifier, remote, e);
         }
     }
 
@@ -332,9 +338,6 @@ public static partial class MilkyWebSocketEventServiceLoggerExtension
 
     [LoggerMessage(LogLevel.Error, "{identifier} {remote} <!!> Handle http context failed")]
     public static partial void LogHandleHttpContextException(this ILogger<MilkyWebSocketEventService> logger, Guid identifier, IPEndPoint remote, Exception e);
-
-    [LoggerMessage(LogLevel.Error, "{identifier} {remote} <!!> Upgrade websocket failed")]
-    public static partial void LogUpgradeWebSocketException(this ILogger<MilkyWebSocketEventService> logger, Guid identifier, IPEndPoint remote, Exception e);
 
     [LoggerMessage(LogLevel.Error, "{identifier} {remote} <!!> Validate access token failed")]
     public static partial void LogValidateAccessTokenFailed(this ILogger<MilkyWebSocketEventService> logger, Guid identifier, IPEndPoint remote);
