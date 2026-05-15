@@ -126,15 +126,12 @@ public class MilkyHttpApiService(ILogger<MilkyHttpApiService> logger, IOptions<M
 
     private bool ValidateAccessToken(HttpListenerContext context)
     {
-        if (_token == null) return true;
+        if (string.IsNullOrEmpty(_token)) return true;
 
         string? authorization = context.Request.Headers["Authorization"];
         if (authorization == null) return false;
-        if (!authorization.StartsWith("Bearer")) return false;
-
-        if (_token == string.Empty && authorization.Length == 6) return true;
-
-        return authorization[7..] == _token;
+        if (!authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)) return false;
+        return authorization.AsSpan(7..).Equals(_token);
     }
 
     private async Task<IApiHandler?> GetApiHandlerAsync(HttpListenerContext context, CancellationToken token)
