@@ -131,7 +131,7 @@ public class MilkyHttpApiService(ILogger<MilkyHttpApiService> logger, IOptions<M
         string? authorization = context.Request.Headers["Authorization"];
         if (authorization == null) return false;
         if (!authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)) return false;
-        return authorization.AsSpan(7..).Equals(_token);
+        return authorization.AsSpan(7).SequenceEqual(_token);
     }
 
     private async Task<IApiHandler?> GetApiHandlerAsync(HttpListenerContext context, CancellationToken token)

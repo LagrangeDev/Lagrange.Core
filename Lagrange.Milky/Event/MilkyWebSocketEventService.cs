@@ -206,7 +206,7 @@ public class MilkyWebSocketEventService(ILogger<MilkyWebSocketEventService> logg
         if (authorization != null)
         {
             if (!authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)) return false;
-            return authorization.AsSpan(7..).Equals(_token);
+            return authorization.AsSpan(7).SequenceEqual(_token);
         }
 
         string? accessToken = context.Request.QueryString["access_token"];
