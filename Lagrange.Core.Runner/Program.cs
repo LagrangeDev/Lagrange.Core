@@ -7,7 +7,6 @@ using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Events.EventArgs;
 using Lagrange.Core.Internal.Packets.Message;
 using Lagrange.Core.Message;
-using Lagrange.Core.NativeAPI.NativeModel.Common;
 using Lagrange.Core.Utility;
 
 namespace Lagrange.Core.Runner;
@@ -16,7 +15,6 @@ internal static class Program
 {
     private static async Task Main()
     {
-        var sign = new LinuxSignProvider("");
         
         Console.OutputEncoding = Encoding.UTF8;
         Console.InputEncoding = Encoding.UTF8;
@@ -28,7 +26,6 @@ internal static class Program
             context = BotFactory.Create(new BotConfig
             {
                 Protocol = Protocols.Linux,
-                SignProvider = sign,
                 LogLevel = LogLevel.Debug
             }, JsonSerializer.Deserialize<BotKeystore>(await File.ReadAllTextAsync("keystore.json")) ?? throw new InvalidOperationException());
         }
@@ -37,7 +34,6 @@ internal static class Program
             context = BotFactory.Create(new BotConfig
             {
                 Protocol = Protocols.Linux,
-                SignProvider = sign,
                 LogLevel = LogLevel.Debug
             });
         }
