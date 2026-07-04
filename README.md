@@ -2,9 +2,15 @@
 
 ![Lagrange.Core](https://socialify.git.ci/KonataDev/Lagrange.Core/image?description=1&descriptionEditable=An%20Implementation%20of%20NTQQ%20Protocol%2C%20with%20Pure%20C%23%2CDerived%20from%20Konata.Core&font=Jost&forks=1&issues=1&logo=https%3A%2F%2Fstatic.live.moe%2Flagrange.jpg&name=1&pattern=Diagonal%20Stripes&pulls=1&stargazers=1&theme=Auto)
 
-[![Image](https://trendshift.io/api/badge/repositories/3486)](https://trendshift.io/repositories/3486)
+QQ Group: 894446744
 
 </div>
+
+## Notice
+
+The current branch is V2 implementation of Lagrange.Core.
+
+For V1 that has sunset, Please check [v1](https://github.com/LagrangeDev/Lagrange.Core/tree/v1) branch of this Repository
 
 ## Usage
 
