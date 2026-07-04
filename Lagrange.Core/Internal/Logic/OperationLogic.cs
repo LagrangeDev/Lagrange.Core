@@ -87,6 +87,17 @@ internal class OperationLogic(BotContext context) : ILogic
         await context.EventContext.SendEvent<GroupRemoveTodoEventResp>(new GroupRemoveTodoEventReq(groupUin));
     }
 
+    public async Task SetPinFriend(long friendUin, bool isPin)
+    {
+        var friend = await context.CacheContext.ResolveFriend(friendUin) ?? throw new InvalidTargetException(friendUin);
+        await context.EventContext.SendEvent<SetPinFriendEventResp>(new SetPinFriendEventReq(friend.Uid, isPin));
+    }
+
+    public async Task SetPinGroup(long groupUin, bool isPin)
+    {
+        await context.EventContext.SendEvent<SetPinGroupEventResp>(new SetPinGroupEventReq(groupUin, isPin));
+    }
+
     public async Task<string> GroupFSDownload(long groupUin, string fileId)
     {
         var request = new GroupFSDownloadEventReq(groupUin, fileId);

@@ -54,6 +54,12 @@ public static class OperationExt
     public static Task RemoveGroupTodo(this BotContext context, long groupUin) =>
         context.EventContext.GetLogic<OperationLogic>().RemoveGroupTodo(groupUin);
 
+    public static Task SetPinFriend(this BotContext context, long friendUin, bool isPin) =>
+        context.EventContext.GetLogic<OperationLogic>().SetPinFriend(friendUin, isPin);
+
+    public static Task SetPinGroup(this BotContext context, long groupUin, bool isPin) =>
+        context.EventContext.GetLogic<OperationLogic>().SetPinGroup(groupUin, isPin);
+
     public static Task<string> GetNTV2RichMediaUrl(this BotContext context, string fileUuid) =>
         context.EventContext.GetLogic<OperationLogic>().GetNTV2RichMediaUrl(fileUuid);
 
