@@ -35,6 +35,18 @@ public static class MessageExt
     public static Task RecallMessage(this BotContext context, BotMessage message)
         => context.EventContext.GetLogic<MessagingLogic>().RecallMessage(message);
 
+    public static Task SetEssenceMessage(this BotContext context, BotMessage message)
+        => context.EventContext.GetLogic<MessagingLogic>().SetEssenceMessage(message);
+
+    public static Task SetEssenceMessage(this BotContext context, long groupUin, ulong sequence, uint random)
+        => context.EventContext.GetLogic<MessagingLogic>().SetEssenceMessage(groupUin, sequence, random);
+
+    public static Task RemoveEssenceMessage(this BotContext context, BotMessage message)
+        => context.EventContext.GetLogic<MessagingLogic>().RemoveEssenceMessage(message);
+
+    public static Task RemoveEssenceMessage(this BotContext context, long groupUin, ulong sequence, uint random)
+        => context.EventContext.GetLogic<MessagingLogic>().RemoveEssenceMessage(groupUin, sequence, random);
+
     public static Task<string> GroupFSDownload(this BotContext context, long groupUin, string fileId)
         => context.EventContext.GetLogic<OperationLogic>().GroupFSDownload(groupUin, fileId);
 

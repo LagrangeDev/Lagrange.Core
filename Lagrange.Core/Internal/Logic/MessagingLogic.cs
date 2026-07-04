@@ -92,6 +92,30 @@ internal class MessagingLogic(BotContext context) : ILogic
         };
     }
 
+    public Task SetEssenceMessage(BotMessage message)
+    {
+        if (message.Contact is not BotGroupMember member) throw new ArgumentException("Only group messages can be set as essence messages.", nameof(message));
+
+        return SetEssenceMessage(member.Group.GroupUin, message.Sequence, message.Random);
+    }
+
+    public Task RemoveEssenceMessage(BotMessage message)
+    {
+        if (message.Contact is not BotGroupMember member) throw new ArgumentException("Only group messages can be removed from essence messages.", nameof(message));
+
+        return RemoveEssenceMessage(member.Group.GroupUin, message.Sequence, message.Random);
+    }
+
+    public Task SetEssenceMessage(long groupUin, ulong sequence, uint random)
+    {
+        return context.EventContext.SendEvent<SetEssenceMessageEventResp>(new SetEssenceMessageEventReq(groupUin, sequence, random)).AsTask();
+    }
+
+    public Task RemoveEssenceMessage(long groupUin, ulong sequence, uint random)
+    {
+        return context.EventContext.SendEvent<RemoveEssenceMessageEventResp>(new RemoveEssenceMessageEventReq(groupUin, sequence, random)).AsTask();
+    }
+
     private async Task<BotMessage> BuildMessage(MessageChain chain, BotContact contact, BotContact receiver)
     {
         uint random = (uint)Random.Shared.Next();
