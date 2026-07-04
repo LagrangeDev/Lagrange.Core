@@ -56,6 +56,15 @@ public static class MessageExt
     public static Task GroupFSMove(this BotContext context, long groupUin, string fileId, string targetDirectory, string parentDirectory)
         => context.EventContext.GetLogic<OperationLogic>().GroupFSMove(groupUin, fileId, targetDirectory, parentDirectory);
 
+    public static Task GroupFSCreateFolder(this BotContext context, long groupUin, string name, string parentFolderId = "/")
+        => context.EventContext.GetLogic<OperationLogic>().GroupFSCreateFolder(groupUin, name, parentFolderId);
+
+    public static Task GroupFSDeleteFolder(this BotContext context, long groupUin, string folderId)
+        => context.EventContext.GetLogic<OperationLogic>().GroupFSDeleteFolder(groupUin, folderId);
+
+    public static Task GroupFSRenameFolder(this BotContext context, long groupUin, string folderId, string newFolderName)
+        => context.EventContext.GetLogic<OperationLogic>().GroupFSRenameFolder(groupUin, folderId, newFolderName);
+
     public static Task SendFriendNudge(this BotContext context, long peerUin, long? targetUin = null)
         => context.EventContext.GetLogic<OperationLogic>().SendNudge(false, peerUin, targetUin ?? context.BotUin);
 

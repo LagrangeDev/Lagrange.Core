@@ -98,6 +98,21 @@ internal class OperationLogic(BotContext context) : ILogic
 
     public async Task GroupFSDelete(long groupUin, string fileId) => await context.EventContext.SendEvent<GroupFSDeleteEventResp>(new GroupFSDeleteEventReq(groupUin, fileId));
 
+    public async Task GroupFSCreateFolder(long groupUin, string name, string parentFolderId = "/")
+    {
+        await context.EventContext.SendEvent<GroupFSCreateFolderEventResp>(new GroupFSCreateFolderEventReq(groupUin, name, parentFolderId));
+    }
+
+    public async Task GroupFSDeleteFolder(long groupUin, string folderId)
+    {
+        await context.EventContext.SendEvent<GroupFSDeleteFolderEventResp>(new GroupFSDeleteFolderEventReq(groupUin, folderId));
+    }
+
+    public async Task GroupFSRenameFolder(long groupUin, string folderId, string newFolderName)
+    {
+        await context.EventContext.SendEvent<GroupFSRenameFolderEventResp>(new GroupFSRenameFolderEventReq(groupUin, folderId, newFolderName));
+    }
+
     public async Task<(ulong, DateTime)> SendFriendFile(long targetUin, Stream fileStream, string? fileName)
     {
         fileName = ResolveFileName(fileStream, fileName);

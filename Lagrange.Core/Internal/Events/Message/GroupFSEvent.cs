@@ -38,6 +38,31 @@ internal class GroupFSDeleteEventReq(long groupUin, string fileId) : ProtocolEve
     public string FileId { get; } = fileId;
 }
 
+internal class GroupFSCreateFolderEventReq(long groupUin, string name, string parentFolderId) : ProtocolEvent
+{
+    public long GroupUin { get; } = groupUin;
+
+    public string Name { get; } = name;
+
+    public string ParentFolderId { get; } = parentFolderId;
+}
+
+internal class GroupFSDeleteFolderEventReq(long groupUin, string folderId) : ProtocolEvent
+{
+    public long GroupUin { get; } = groupUin;
+
+    public string FolderId { get; } = folderId;
+}
+
+internal class GroupFSRenameFolderEventReq(long groupUin, string folderId, string newFolderName) : ProtocolEvent
+{
+    public long GroupUin { get; } = groupUin;
+
+    public string FolderId { get; } = folderId;
+
+    public string NewFolderName { get; } = newFolderName;
+}
+
 internal class GroupFSUploadEventResp(bool fileExist, string fileId, byte[] fileKey, byte[] checkKey, (string ip, uint uploadPort) addr) : ProtocolEvent
 {
     public bool FileExist { get; } = fileExist;
@@ -59,3 +84,9 @@ internal class GroupFSDownloadEventResp(string fileUrl) : ProtocolEvent
 internal class GroupFSMoveEventResp : ProtocolEvent;
 
 internal class GroupFSDeleteEventResp : ProtocolEvent;
+
+internal class GroupFSCreateFolderEventResp : ProtocolEvent;
+
+internal class GroupFSDeleteFolderEventResp : ProtocolEvent;
+
+internal class GroupFSRenameFolderEventResp : ProtocolEvent;

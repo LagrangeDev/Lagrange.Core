@@ -142,3 +142,95 @@ internal class GroupFSMoveService : OidbService<GroupFSMoveEventReq, GroupFSMove
         return Task.FromResult(new GroupFSMoveEventResp());
     }
 }
+
+[EventSubscribe<GroupFSCreateFolderEventReq>(Protocols.All)]
+[Service("OidbSvcTrpcTcp.0x6d7_0")]
+internal class GroupFSCreateFolderService : OidbService<GroupFSCreateFolderEventReq, GroupFSCreateFolderEventResp, D6D7ReqBody, D6D7RspBody>
+{
+    private protected override uint Command => 0x6d7;
+
+    private protected override uint Service => 0;
+
+    private protected override Task<D6D7ReqBody> ProcessRequest(GroupFSCreateFolderEventReq request, BotContext context)
+    {
+        return Task.FromResult(new D6D7ReqBody
+        {
+            CreateFolderReq = new CreateFolderReqBody
+            {
+                Uint64GroupCode = (ulong)request.GroupUin,
+                Uint32AppId = 7,
+                StrParentFolderId = request.ParentFolderId,
+                StrFolderName = request.Name
+            }
+        });
+    }
+
+    private protected override Task<GroupFSCreateFolderEventResp> ProcessResponse(D6D7RspBody response, BotContext context)
+    {
+        var create = response.CreateFolderRsp;
+        if (create.Int32RetCode != 0) throw new OperationException((int)create.Int32RetCode, create.StrRetMsg);
+
+        return Task.FromResult(new GroupFSCreateFolderEventResp());
+    }
+}
+
+[EventSubscribe<GroupFSDeleteFolderEventReq>(Protocols.All)]
+[Service("OidbSvcTrpcTcp.0x6d7_1")]
+internal class GroupFSDeleteFolderService : OidbService<GroupFSDeleteFolderEventReq, GroupFSDeleteFolderEventResp, D6D7ReqBody, D6D7RspBody>
+{
+    private protected override uint Command => 0x6d7;
+
+    private protected override uint Service => 1;
+
+    private protected override Task<D6D7ReqBody> ProcessRequest(GroupFSDeleteFolderEventReq request, BotContext context)
+    {
+        return Task.FromResult(new D6D7ReqBody
+        {
+            DeleteFolderReq = new DeleteFolderReqBody
+            {
+                Uint64GroupCode = (ulong)request.GroupUin,
+                Uint32AppId = 7,
+                StrFolderId = request.FolderId
+            }
+        });
+    }
+
+    private protected override Task<GroupFSDeleteFolderEventResp> ProcessResponse(D6D7RspBody response, BotContext context)
+    {
+        var delete = response.DeleteFolderRsp;
+        if (delete.Int32RetCode != 0) throw new OperationException((int)delete.Int32RetCode, delete.StrRetMsg);
+
+        return Task.FromResult(new GroupFSDeleteFolderEventResp());
+    }
+}
+
+[EventSubscribe<GroupFSRenameFolderEventReq>(Protocols.All)]
+[Service("OidbSvcTrpcTcp.0x6d7_2")]
+internal class GroupFSRenameFolderService : OidbService<GroupFSRenameFolderEventReq, GroupFSRenameFolderEventResp, D6D7ReqBody, D6D7RspBody>
+{
+    private protected override uint Command => 0x6d7;
+
+    private protected override uint Service => 2;
+
+    private protected override Task<D6D7ReqBody> ProcessRequest(GroupFSRenameFolderEventReq request, BotContext context)
+    {
+        return Task.FromResult(new D6D7ReqBody
+        {
+            RenameFolderReq = new RenameFolderReqBody
+            {
+                Uint64GroupCode = (ulong)request.GroupUin,
+                Uint32AppId = 7,
+                StrFolderId = request.FolderId,
+                StrNewFolderName = request.NewFolderName
+            }
+        });
+    }
+
+    private protected override Task<GroupFSRenameFolderEventResp> ProcessResponse(D6D7RspBody response, BotContext context)
+    {
+        var rename = response.RenameFolderRsp;
+        if (rename.Int32RetCode != 0) throw new OperationException((int)rename.Int32RetCode, rename.StrRetMsg);
+
+        return Task.FromResult(new GroupFSRenameFolderEventResp());
+    }
+}
