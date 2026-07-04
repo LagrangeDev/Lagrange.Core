@@ -72,6 +72,21 @@ internal class OperationLogic(BotContext context) : ILogic
         await context.EventContext.SendEvent<GroupQuitEventResp>(new GroupQuitEventReq(groupUin));
     }
 
+    public async Task SetGroupTodo(long groupUin, ulong sequence)
+    {
+        await context.EventContext.SendEvent<GroupSetTodoEventResp>(new GroupSetTodoEventReq(groupUin, sequence));
+    }
+
+    public async Task FinishGroupTodo(long groupUin)
+    {
+        await context.EventContext.SendEvent<GroupFinishTodoEventResp>(new GroupFinishTodoEventReq(groupUin));
+    }
+
+    public async Task RemoveGroupTodo(long groupUin)
+    {
+        await context.EventContext.SendEvent<GroupRemoveTodoEventResp>(new GroupRemoveTodoEventReq(groupUin));
+    }
+
     public async Task<string> GroupFSDownload(long groupUin, string fileId)
     {
         var request = new GroupFSDownloadEventReq(groupUin, fileId);

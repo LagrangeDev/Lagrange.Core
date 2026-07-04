@@ -45,6 +45,15 @@ public static class OperationExt
     public static Task SetGroupReaction(this BotContext context, long groupUin, ulong sequence, string code, bool isAdd) =>
         context.EventContext.GetLogic<OperationLogic>().SetGroupReaction(groupUin, sequence, code, isAdd);
 
+    public static Task SetGroupTodo(this BotContext context, long groupUin, ulong sequence) =>
+        context.EventContext.GetLogic<OperationLogic>().SetGroupTodo(groupUin, sequence);
+
+    public static Task FinishGroupTodo(this BotContext context, long groupUin) =>
+        context.EventContext.GetLogic<OperationLogic>().FinishGroupTodo(groupUin);
+
+    public static Task RemoveGroupTodo(this BotContext context, long groupUin) =>
+        context.EventContext.GetLogic<OperationLogic>().RemoveGroupTodo(groupUin);
+
     public static Task<string> GetNTV2RichMediaUrl(this BotContext context, string fileUuid) =>
         context.EventContext.GetLogic<OperationLogic>().GetNTV2RichMediaUrl(fileUuid);
 
