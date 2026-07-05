@@ -42,6 +42,20 @@ internal class OperationLogic(BotContext context) : ILogic
         return true;
     }
 
+    public async Task<bool> SetStatus(uint status)
+    {
+        if (status > int.MaxValue) throw new ArgumentOutOfRangeException(nameof(status));
+
+        var result = await context.EventContext.SendEvent<SetStatusEventResp>(new SetStatusEventReq((int)status, 0, 0));
+        return result.Success;
+    }
+
+    public async Task<bool> SetCustomStatus(uint faceId, string text)
+    {
+        var result = await context.EventContext.SendEvent<SetStatusEventResp>(new SetStatusEventReq(10, 2000, 0, new SetStatusCustomExtEvent(faceId, text, 1)));
+        return result.Success;
+    }
+
     public async Task GroupRename(long groupUin, string name)
     {
         await context.EventContext.SendEvent<GroupRenameEventResp>(new GroupRenameEventReq(groupUin, name));

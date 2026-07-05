@@ -537,6 +537,7 @@ internal class DefaultAndroidBotSignProvider : AndroidBotSignProvider, IDisposab
         "trpc.qpay.red_pack_skin.Skin.SsoAddSkin",
         "trpc.qpay.sso.web.Do",
         "trpc.qq_new_tech.status_svc.StatusService.Register",
+        "trpc.qq_new_tech.status_svc.StatusService.SetStatus",
         "trpc.qq_new_tech.status_svc.StatusService.SsoHeartBeat",
         "trpc.qq_new_tech.status_svc.StatusService.UnRegister",
         "trpc.qqhb.qqhb_proxy.Handler.sso_handle",

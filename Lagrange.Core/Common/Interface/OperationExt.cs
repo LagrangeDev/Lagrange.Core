@@ -18,6 +18,12 @@ public static class OperationExt
     public static Task<(string Key, uint Expiration)> FetchClientKey(this BotContext context) =>
         context.EventContext.GetLogic<OperationLogic>().FetchClientKey();
 
+    public static Task<bool> SetStatus(this BotContext context, uint status) =>
+        context.EventContext.GetLogic<OperationLogic>().SetStatus(status);
+
+    public static Task<bool> SetCustomStatus(this BotContext context, uint faceId, string text) =>
+        context.EventContext.GetLogic<OperationLogic>().SetCustomStatus(faceId, text);
+
     public static Task<List<BotFriend>> FetchFriends(this BotContext context, bool refresh = false) =>
         context.CacheContext.GetFriendList(refresh);
 
