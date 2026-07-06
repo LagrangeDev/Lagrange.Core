@@ -21,6 +21,7 @@ public static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true
     );
+
     public static DiagnosticDescriptor NotImplementIEmptyResultApiHandler = new(
         id: "MA003",
         title: "Please implement IEmptyResultApiHandler<TResult> for {0}",
