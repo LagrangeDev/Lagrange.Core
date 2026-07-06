@@ -7,7 +7,7 @@ using Lagrange.Core.Internal.Packets.Service;
 namespace Lagrange.Core.Internal.Services.System;
 
 [EventSubscribe<GroupSetSpecialTitleEventReq>(Protocols.All)]
-[Service("OidbSvcTrpcTcp.0x8fc")]
+[Service("OidbSvcTrpcTcp.0x8fc_2")]
 internal class GroupSetSpecialTitleService : OidbService<GroupSetSpecialTitleEventReq, GroupSetSpecialTitleEventResp, D8FCReqBody, D8FCRspBody>
 {
     private protected override uint Command => 0x8fc;
