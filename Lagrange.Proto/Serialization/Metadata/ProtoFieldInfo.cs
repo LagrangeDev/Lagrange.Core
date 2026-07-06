@@ -326,7 +326,7 @@ public class ProtoMapFieldInfo<TMap, TKey, TValue>(int field, WireType keyWireTy
             if ((tag = reader.DecodeVarInt<int>() >> 3) != Field) break;
         }
 
-        reader.Rewind(-ProtoHelper.GetVarIntLength(tag << 3));
+        reader.Rewind(-ProtoHelper.GetVarIntLength(ProtoHelper.GetTag(tag, WireType.VarInt)));
         
         _typedSet(target, map);
     }
@@ -336,7 +336,7 @@ public class ProtoMapFieldInfo<TMap, TKey, TValue>(int field, WireType keyWireTy
         Debug.Assert(_typedGet != null && KeyEffectiveConverter != null && ValueEffectiveConverter != null);
         
         var map = _typedGet(target);
-        int tag = (Field << 3) | (byte)WireType;
+        uint tag = ProtoHelper.GetTag(Field, WireType);
         bool first = true;
         
         foreach (var (key, value) in map)
@@ -346,11 +346,11 @@ public class ProtoMapFieldInfo<TMap, TKey, TValue>(int field, WireType keyWireTy
 
             writer.EncodeVarInt(KeyEffectiveConverter.Measure(1, KeyWireType, key) + ValueEffectiveConverter.Measure(2, ValueWireType, value) + 2); // 2 for the tag of key and value
             
-            writer.WriteRawByte((byte)(8 | (byte)KeyWireType));
+            writer.WriteRawByte((byte)ProtoHelper.GetTag(1, KeyWireType));
             if (NumberHandling == ProtoNumberHandling.Default) KeyEffectiveConverter.Write(1, KeyWireType, writer, key);
             else KeyEffectiveConverter.WriteWithNumberHandling(1, KeyWireType, writer, key, NumberHandling);
             
-            writer.WriteRawByte((byte)(16 | (byte)ValueWireType));
+            writer.WriteRawByte((byte)ProtoHelper.GetTag(2, ValueWireType));
             if (ValueNumberHandling == ProtoNumberHandling.Default) ValueEffectiveConverter.Write(2, ValueWireType, writer, value);
             else ValueEffectiveConverter.WriteWithNumberHandling(2, ValueWireType, writer, value, ValueNumberHandling);
         }
@@ -361,7 +361,7 @@ public class ProtoMapFieldInfo<TMap, TKey, TValue>(int field, WireType keyWireTy
         Debug.Assert(_typedGet != null);
         
         var map = _typedGet(target);
-        int tag = (Field << 3) | (byte)WireType;
+        uint tag = ProtoHelper.GetTag(Field, WireType);
         
         int size = ProtoHelper.GetVarIntLength(tag) * (map.Count - 1) + 2 * map.Count; // the length of the first item is not counted as it would be added by the caller
         foreach (var (key, value) in map)

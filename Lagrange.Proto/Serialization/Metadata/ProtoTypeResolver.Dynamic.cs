@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Lagrange.Proto.Nodes;
+using Lagrange.Proto.Utility;
 
 namespace Lagrange.Proto.Serialization.Metadata;
 
@@ -74,7 +75,7 @@ public static partial class ProtoTypeResolver
             var fieldInfo = CreateFieldInfo(typeof(T), field);
             if (fieldInfo == null) continue;
 
-            uint tag = ((uint)fieldInfo.Field << 3) | (byte)fieldInfo.WireType;
+            uint tag = ProtoHelper.GetTag(fieldInfo.Field, fieldInfo.WireType);
             if (fields.ContainsKey(tag)) ThrowHelper.ThrowInvalidOperationException_DuplicateField(typeof(T), fieldInfo.Field);
             fields[tag] = fieldInfo;
         }
@@ -84,7 +85,7 @@ public static partial class ProtoTypeResolver
             var fieldInfo = CreateFieldInfo(typeof(T), field);
             if (fieldInfo == null) continue;
             
-            uint tag = ((uint)fieldInfo.Field << 3) | (byte)fieldInfo.WireType;
+            uint tag = ProtoHelper.GetTag(fieldInfo.Field, fieldInfo.WireType);
             if (fields.ContainsKey(tag)) ThrowHelper.ThrowInvalidOperationException_DuplicateField(typeof(T), fieldInfo.Field);
             fields[tag] = fieldInfo;
         }

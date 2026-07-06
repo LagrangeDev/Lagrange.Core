@@ -14,7 +14,7 @@ public partial class ProtoObject() : ProtoNode(WireType.LengthDelimited)
         
         foreach (var (f, node) in _fields)
         {
-            writer.EncodeVarInt((uint)f << 3 | (uint)node.WireType);
+            writer.EncodeVarInt(ProtoHelper.GetTag(f, node.WireType));
             node.WriteTo(f, writer);
         }
     }
@@ -26,7 +26,7 @@ public partial class ProtoObject() : ProtoNode(WireType.LengthDelimited)
         {
             if (node is ProtoArray { Count: 0 }) continue;
             
-            size += ProtoHelper.GetVarIntLength((uint)f << 3 | (uint)node.WireType);
+            size += ProtoHelper.GetVarIntLength(ProtoHelper.GetTag(f, node.WireType));
             size += node.Measure(f);
         }
         return size;
@@ -89,7 +89,7 @@ public partial class ProtoObject() : ProtoNode(WireType.LengthDelimited)
             {
                 if (node is ProtoArray { Count: 0 }) continue;
                 
-                writer.EncodeVarInt((uint)f << 3 | (uint)node.WireType);
+                writer.EncodeVarInt(ProtoHelper.GetTag(f, node.WireType));
                 node.WriteTo(f, writer);
             }
             writer.Flush();
@@ -109,7 +109,7 @@ public partial class ProtoObject() : ProtoNode(WireType.LengthDelimited)
         {
             foreach (var (f, node) in _fields)
             {
-                writer.EncodeVarInt((uint)f << 3 | (uint)node.WireType);
+                writer.EncodeVarInt(ProtoHelper.GetTag(f, node.WireType));
                 node.WriteTo(f, writer);
             } 
             writer.Flush();

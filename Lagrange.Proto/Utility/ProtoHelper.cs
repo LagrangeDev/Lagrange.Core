@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using Lagrange.Proto.Primitives;
+using Lagrange.Proto.Serialization;
 
 namespace Lagrange.Proto.Utility;
 
@@ -28,6 +29,9 @@ public static class ProtoHelper
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static int GetVarIntMax(int length) => VarIntBoundaries[length] - 1;
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static uint GetTag(int field, WireType wireType) => ((uint)field << 3) | (byte)wireType;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe int GetVarIntLength<T>(T value) where T : unmanaged, INumberBase<T>

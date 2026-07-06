@@ -12,7 +12,7 @@ public abstract class ProtoRepeatedConverter<TCollection, TElement> : ProtoConve
 
     public override void Write(int field, WireType wireType, ProtoWriter writer, TCollection value)
     {
-        int tag = (field << 3) | (byte)wireType;
+        uint tag = ProtoHelper.GetTag(field, wireType);
         bool first = true;
         
         foreach (var item in value)
@@ -25,7 +25,7 @@ public abstract class ProtoRepeatedConverter<TCollection, TElement> : ProtoConve
 
     public override void WriteWithNumberHandling(int field, WireType wireType, ProtoWriter writer, TCollection value, ProtoNumberHandling numberHandling)
     {
-        int tag = (field << 3) | (byte)wireType;
+        uint tag = ProtoHelper.GetTag(field, wireType);
         bool first = true;
         
         foreach (var item in value)
@@ -38,7 +38,7 @@ public abstract class ProtoRepeatedConverter<TCollection, TElement> : ProtoConve
 
     public override int Measure(int field, WireType wireType, TCollection value)
     {
-        int tag = (field << 3) | (byte)wireType;
+        uint tag = ProtoHelper.GetTag(field, wireType);
         int size = ProtoHelper.GetVarIntLength(tag) * (value.Count - 1); // the length of the first item is not counted as it would be added by the caller
         
         foreach (var item in value)
@@ -63,7 +63,7 @@ public abstract class ProtoRepeatedConverter<TCollection, TElement> : ProtoConve
             if ((tag = reader.DecodeVarInt<int>() >> 3) != field) break;
         }
 
-        reader.Rewind(-ProtoHelper.GetVarIntLength(tag << 3));
+        reader.Rewind(-ProtoHelper.GetVarIntLength(ProtoHelper.GetTag(tag, WireType.VarInt)));
 
         return Finalize(collection, state);
     }
@@ -81,7 +81,7 @@ public abstract class ProtoRepeatedConverter<TCollection, TElement> : ProtoConve
             if ((tag = reader.DecodeVarInt<int>() >> 3) != field) break;
         }
 
-        reader.Rewind(-ProtoHelper.GetVarIntLength(tag << 3));
+        reader.Rewind(-ProtoHelper.GetVarIntLength(ProtoHelper.GetTag(tag, WireType.VarInt)));
 
         return Finalize(collection, state);
     }

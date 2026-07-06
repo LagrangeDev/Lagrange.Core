@@ -37,7 +37,7 @@ public sealed partial class ProtoArray : ProtoNode
         foreach (var node in _list)
         {
             if (first) first = false;
-            else writer.EncodeVarInt(field << 3 | (int)node.WireType);
+            else writer.EncodeVarInt(ProtoHelper.GetTag(field, node.WireType));
 
             node.WriteTo(field, writer);
         }
@@ -47,7 +47,7 @@ public sealed partial class ProtoArray : ProtoNode
     {
         if (_list.Count == 0) return 0;
         
-        int size = ProtoHelper.GetVarIntLength(field << 3 | (int)WireType) * (_list.Count - 1);
+        int size = ProtoHelper.GetVarIntLength(ProtoHelper.GetTag(field, WireType)) * (_list.Count - 1);
         foreach (var node in _list)
         {
             size += node.Measure(field);
