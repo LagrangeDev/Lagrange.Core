@@ -38,6 +38,22 @@ internal partial class D8FCReqBody
     }
 
     [ProtoPackable]
+    internal partial class RichCardNameElem
+    {
+        [ProtoMember(1)] public byte[] Ctrl { get; set; }
+
+        [ProtoMember(2)] public byte[] Text { get; set; }
+    }
+
+    [ProtoPackable]
+    internal partial class CommCardNameBuf
+    {
+        [ProtoMember(1)] public List<RichCardNameElem> RichCardName { get; set; }
+
+        [ProtoMember(2)] public uint CoolId { get; set; }
+    }
+
+    [ProtoPackable]
     internal partial class MemberInfo
     {
         [ProtoMember(1)] public string Uid { get; set; }
@@ -73,6 +89,14 @@ internal partial class D8FCReqBody
         [ProtoMember(16)] public List<CardNameElem> RichCardName { get; set; }
 
         [ProtoMember(17)] public byte[] CommRichCardName { get; set; }
+
+        [ProtoMember(18)] public uint? RingtoneId { get; set; }
+
+        [ProtoMember(19)] public byte[] GroupHonor { get; set; }
+
+        [ProtoMember(20)] public uint? CmduinFlagEx3Grocery { get; set; }
+
+        [ProtoMember(21)] public uint? CmduinFlagEx3Mask { get; set; }
     }
 
     [ProtoMember(1)] public long? GroupCode { get; set; }
@@ -92,6 +116,8 @@ internal partial class D8FCReqBody
     [ProtoMember(8)] public ClientInfo? Client { get; set; }
 
     [ProtoMember(9)] public byte[]? AuthKey { get; set; }
+
+    [ProtoMember(10)] public List<LevelName> LevelNamesNew { get; set; }
 }
 
 [ProtoPackable]
@@ -100,4 +126,6 @@ internal partial class D8FCRspBody
     [ProtoMember(1)] public long GroupCode { get; set; }
 
     [ProtoMember(2)] public string ErrInfo { get; set; }
+
+    [ProtoMember(3)] public byte[] CoolGroupCardRsp { get; set; }
 }
