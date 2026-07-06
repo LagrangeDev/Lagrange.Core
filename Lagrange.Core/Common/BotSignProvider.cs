@@ -267,6 +267,7 @@ internal class DefaultBotSignProvider : BotSignProvider, IDisposable
         "OidbSvcTrpcTcp.0x644_1",
         "OidbSvcTrpcTcp.0x6d6_2",
         "OidbSvcTrpcTcp.0x6d6_3",
+        "OidbSvcTrpcTcp.0x6d8_1",
         "OidbSvcTrpcTcp.0x6d9_2",
         "OidbSvcTrpcTcp.0x6d9_4",
         "OidbSvcTrpcTcp.0x758_1", // create group
@@ -281,6 +282,7 @@ internal class DefaultBotSignProvider : BotSignProvider, IDisposable
         "OidbSvcTrpcTcp.0x899_9",
         "OidbSvcTrpcTcp.0x89a_0",
         "OidbSvcTrpcTcp.0x89a_15",
+        "OidbSvcTrpcTcp.0x8a0_1",
         "OidbSvcTrpcTcp.0x8a1_7", // request group
         "OidbSvcTrpcTcp.0x8f9_14",
         "OidbSvcTrpcTcp.0x8fc_3",

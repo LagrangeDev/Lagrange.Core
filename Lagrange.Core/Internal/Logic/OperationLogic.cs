@@ -134,6 +134,42 @@ internal class OperationLogic(BotContext context) : ILogic
         return response.FileUrl;
     }
 
+    public async Task<ulong> FetchGroupFSSpace(long groupUin)
+    {
+        var response = await context.EventContext.SendEvent<GroupFSSpaceEventResp>(new GroupFSSpaceEventReq(groupUin));
+        if (response.ResultCode != 0) throw new OperationException(response.ResultCode, response.RetMsg);
+
+        return response.TotalSpace - response.UsedSpace;
+    }
+
+    public async Task<uint> FetchGroupFSCount(long groupUin)
+    {
+        var response = await context.EventContext.SendEvent<GroupFSCountEventResp>(new GroupFSCountEventReq(groupUin));
+        if (response.ResultCode != 0) throw new OperationException(response.ResultCode, response.RetMsg);
+
+        return response.FileCount;
+    }
+
+    public async Task<List<IBotFSEntry>> FetchGroupFSList(long groupUin, string targetDirectory)
+    {
+        const uint fileCount = 20;
+        uint startIndex = 0;
+        var entries = new List<IBotFSEntry>();
+
+        while (true)
+        {
+            var response = await context.EventContext.SendEvent<GroupFSListEventResp>(new GroupFSListEventReq(groupUin, targetDirectory, startIndex, fileCount));
+
+            if (response.ResultCode != 0) throw new OperationException(response.ResultCode, response.RetMsg);
+
+            entries.AddRange(response.FileEntries);
+            if (response.IsEnd) break;
+            startIndex += fileCount;
+        }
+
+        return entries;
+    }
+
     public async Task GroupFSMove(long groupUin, string fileId, string parentDirectory, string targetDirectory) => await context.EventContext.SendEvent<GroupFSMoveEventResp>(new GroupFSMoveEventReq(groupUin, fileId, parentDirectory, targetDirectory));
 
     public async Task GroupFSDelete(long groupUin, string fileId) => await context.EventContext.SendEvent<GroupFSDeleteEventResp>(new GroupFSDeleteEventReq(groupUin, fileId));

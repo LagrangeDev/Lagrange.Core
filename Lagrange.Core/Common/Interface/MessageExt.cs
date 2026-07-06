@@ -1,3 +1,4 @@
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Internal.Logic;
 using Lagrange.Core.Message;
 
@@ -50,6 +51,15 @@ public static class MessageExt
     public static Task<string> GroupFSDownload(this BotContext context, long groupUin, string fileId)
         => context.EventContext.GetLogic<OperationLogic>().GroupFSDownload(groupUin, fileId);
 
+    public static Task<ulong> FetchGroupFSSpace(this BotContext context, long groupUin)
+        => context.EventContext.GetLogic<OperationLogic>().FetchGroupFSSpace(groupUin);
+
+    public static Task<uint> FetchGroupFSCount(this BotContext context, long groupUin)
+        => context.EventContext.GetLogic<OperationLogic>().FetchGroupFSCount(groupUin);
+
+    public static Task<List<IBotFSEntry>> FetchGroupFSList(this BotContext context, long groupUin, string targetDirectory = "/")
+        => context.EventContext.GetLogic<OperationLogic>().FetchGroupFSList(groupUin, targetDirectory);
+
     public static Task GroupFSDelete(this BotContext context, long groupUin, string fileId)
         => context.EventContext.GetLogic<OperationLogic>().GroupFSDelete(groupUin, fileId);
 
@@ -76,6 +86,9 @@ public static class MessageExt
 
     public static Task GroupMemberRename(this BotContext context, long groupUin, long targetUin, string name)
         => context.EventContext.GetLogic<OperationLogic>().GroupMemberRename(groupUin, targetUin, name);
+
+    public static Task<bool> KickGroupMember(this BotContext context, long groupUin, long targetUin, bool rejectAddRequest, string reason = "")
+        => context.EventContext.GetLogic<OperationLogic>().KickGroupMember(groupUin, targetUin, rejectAddRequest, reason);
 
     public static Task GroupRename(this BotContext context, long groupUin, string name)
         => context.EventContext.GetLogic<OperationLogic>().GroupRename(groupUin, name);
