@@ -1,8 +1,8 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Entity;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.System;
 using Lagrange.Core.Internal.Packets.Service;
+using Lagrange.Core.Services;
 
 namespace Lagrange.Core.Internal.Services.System;
 
@@ -10,11 +10,11 @@ namespace Lagrange.Core.Internal.Services.System;
 [Service("OidbSvcTrpcTcp.0xfe5_2")]
 internal class FetchGroupsService : OidbService<FetchGroupsEventReq, FetchGroupsEventResp, FetchGroupsRequest, FetchGroupsResponse>
 {
-    private protected override uint Command => 0xfe5;
+    protected override uint Command => 0xfe5;
 
-    private protected override uint Service => 2;
+    protected override uint Service => 2;
 
-    private protected override Task<FetchGroupsRequest> ProcessRequest(FetchGroupsEventReq request, BotContext context)
+    protected override Task<FetchGroupsRequest> ProcessRequest(FetchGroupsEventReq request, BotContext context)
     {
         return Task.FromResult(new FetchGroupsRequest
         {
@@ -27,7 +27,7 @@ internal class FetchGroupsService : OidbService<FetchGroupsEventReq, FetchGroups
         });
     }
 
-    private protected override Task<FetchGroupsEventResp> ProcessResponse(FetchGroupsResponse response, BotContext context)
+    protected override Task<FetchGroupsEventResp> ProcessResponse(FetchGroupsResponse response, BotContext context)
     {
         return Task.FromResult(new FetchGroupsEventResp([.. response.Groups
             .Select(raw => new BotGroup(

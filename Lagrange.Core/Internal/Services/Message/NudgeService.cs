@@ -1,7 +1,7 @@
 ﻿using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.Message;
 using Lagrange.Core.Internal.Packets.Service;
+using Lagrange.Core.Services;
 
 namespace Lagrange.Core.Internal.Services.Message;
 
@@ -9,11 +9,11 @@ namespace Lagrange.Core.Internal.Services.Message;
 [Service("OidbSvcTrpcTcp.0xed3_1")]
 internal class NudgeService : OidbService<NudgeEventReq, NudgeEventResp, DED3ReqBody, DED3RspBody>
 {
-    private protected override uint Command => 0xed3;
+    protected override uint Command => 0xed3;
 
-    private protected override uint Service => 1;
+    protected override uint Service => 1;
     
-    private protected override Task<DED3ReqBody> ProcessRequest(NudgeEventReq request, BotContext context)
+    protected override Task<DED3ReqBody> ProcessRequest(NudgeEventReq request, BotContext context)
     {
         return Task.FromResult(new DED3ReqBody
         {
@@ -23,7 +23,7 @@ internal class NudgeService : OidbService<NudgeEventReq, NudgeEventResp, DED3Req
         });
     }
 
-    private protected override Task<NudgeEventResp> ProcessResponse(DED3RspBody response, BotContext context)
+    protected override Task<NudgeEventResp> ProcessResponse(DED3RspBody response, BotContext context)
     {
         return Task.FromResult(new NudgeEventResp());
     }

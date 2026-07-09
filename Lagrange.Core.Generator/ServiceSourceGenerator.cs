@@ -10,9 +10,9 @@ namespace Lagrange.Core.Generator;
 [Generator(LanguageNames.CSharp)]
 public sealed class ServiceSourceGenerator : IIncrementalGenerator
 {
-    private const string ServiceAttributeFullName = "Lagrange.Core.Internal.Services.ServiceAttribute";
-    private const string ServiceInterfaceFullName = "Lagrange.Core.Internal.Services.IService";
-    private const string EventSubscribeAttributeNamespace = "Lagrange.Core.Internal.Events";
+    private const string ServiceAttributeFullName = "Lagrange.Core.Services.ServiceAttribute";
+    private const string ServiceInterfaceFullName = "Lagrange.Core.Services.IService";
+    private const string EventSubscribeAttributeNamespace = "Lagrange.Core.Services";
     private const string EventSubscribeAttributeName = "EventSubscribeAttribute";
     private const long DefaultRequestType = 0x0C;
     private const long DefaultEncryptType = 0x01;
@@ -37,7 +37,8 @@ public sealed class ServiceSourceGenerator : IIncrementalGenerator
         if (context.TargetSymbol is not INamedTypeSymbol { TypeKind: TypeKind.Class } typeSymbol || typeSymbol.IsAbstract)  return null;
 
         var serviceInterface = context.SemanticModel.Compilation.GetTypeByMetadataName(ServiceInterfaceFullName);
-        if (serviceInterface is null || !typeSymbol.AllInterfaces.Any(type => SymbolEqualityComparer.Default.Equals(type, serviceInterface)))  return null;
+        if (serviceInterface is null || !typeSymbol.AllInterfaces.Any(type =>
+                SymbolEqualityComparer.Default.Equals(type, serviceInterface))) return null;
 
         var serviceAttribute = context.Attributes[0];
         if (serviceAttribute.ConstructorArguments.Length == 0 || serviceAttribute.ConstructorArguments[0].Value is not string command)  return null;
@@ -120,10 +121,10 @@ public sealed class ServiceSourceGenerator : IIncrementalGenerator
         source.AppendLine();
         source.AppendLine("internal static class ServiceRegistry");
         source.AppendLine("{");
-        source.AppendLine("    internal static (global::System.Collections.Frozen.FrozenDictionary<string, global::Lagrange.Core.Internal.Services.IService> Services, global::System.Collections.Frozen.FrozenDictionary<global::System.Type, (global::Lagrange.Core.Internal.Services.ServiceAttribute Attribute, global::Lagrange.Core.Internal.Services.IService Instance)> ServicesEventType) Create(global::Lagrange.Core.Common.Protocols protocol, global::System.Collections.Generic.HashSet<string> disabledLog)");
+        source.AppendLine("    internal static (global::System.Collections.Frozen.FrozenDictionary<string, global::Lagrange.Core.Services.IService> Services, global::System.Collections.Frozen.FrozenDictionary<global::System.Type, (global::Lagrange.Core.Services.ServiceAttribute Attribute, global::Lagrange.Core.Services.IService Instance)> ServicesEventType) Create(global::Lagrange.Core.Common.Protocols protocol, global::System.Collections.Generic.HashSet<string> disabledLog)");
         source.AppendLine("    {");
-        source.AppendLine("        var services = new global::System.Collections.Generic.Dictionary<string, global::Lagrange.Core.Internal.Services.IService>();");
-        source.AppendLine("        var servicesEventType = new global::System.Collections.Generic.Dictionary<global::System.Type, (global::Lagrange.Core.Internal.Services.ServiceAttribute Attribute, global::Lagrange.Core.Internal.Services.IService Instance)>();");
+        source.AppendLine("        var services = new global::System.Collections.Generic.Dictionary<string, global::Lagrange.Core.Services.IService>();");
+        source.AppendLine("        var servicesEventType = new global::System.Collections.Generic.Dictionary<global::System.Type, (global::Lagrange.Core.Services.ServiceAttribute Attribute, global::Lagrange.Core.Services.IService Instance)>();");
         source.AppendLine();
 
         for (int i = 0; i < orderedServices.Count; i++)
@@ -135,11 +136,11 @@ public sealed class ServiceSourceGenerator : IIncrementalGenerator
         source.AppendLine("        return (services.ToFrozenDictionary(), servicesEventType.ToFrozenDictionary());");
         source.AppendLine("    }");
         source.AppendLine();
-        source.AppendLine("    private static void AddEvent(global::System.Type eventType, global::Lagrange.Core.Internal.Services.ServiceAttribute attribute, global::Lagrange.Core.Internal.Services.IService service, global::System.Collections.Generic.Dictionary<global::System.Type, (global::Lagrange.Core.Internal.Services.ServiceAttribute Attribute, global::Lagrange.Core.Internal.Services.IService Instance)> servicesEventType)");
+        source.AppendLine("    private static void AddEvent(global::System.Type eventType, global::Lagrange.Core.Services.ServiceAttribute attribute, global::Lagrange.Core.Services.IService service, global::System.Collections.Generic.Dictionary<global::System.Type, (global::Lagrange.Core.Services.ServiceAttribute Attribute, global::Lagrange.Core.Services.IService Instance)> servicesEventType)");
         source.AppendLine("    {");
         source.AppendLine("        if (servicesEventType.ContainsKey(eventType))");
         source.AppendLine("        {");
-        source.AppendLine("            throw new global::System.InvalidOperationException($\"Multiple services for event type: {eventType}\");");
+        source.AppendLine("            throw new global::Lagrange.Core.Exceptions.ServiceRegistrationException($\"Multiple protocol services are registered for event type '{eventType}'.\");");
         source.AppendLine("        }");
         source.AppendLine();
         source.AppendLine("        servicesEventType[eventType] = (attribute, service);");
@@ -158,15 +159,15 @@ public sealed class ServiceSourceGenerator : IIncrementalGenerator
     private static void AppendRegisterMethod(StringBuilder source, int index, ServiceInfo service)
     {
         source.AppendLine();
-        source.Append("    private static void Register").Append(index).AppendLine("(global::Lagrange.Core.Common.Protocols protocol, global::System.Collections.Generic.HashSet<string> disabledLog, global::System.Collections.Generic.Dictionary<string, global::Lagrange.Core.Internal.Services.IService> services, global::System.Collections.Generic.Dictionary<global::System.Type, (global::Lagrange.Core.Internal.Services.ServiceAttribute Attribute, global::Lagrange.Core.Internal.Services.IService Instance)> servicesEventType)");
+        source.Append("    private static void Register").Append(index).AppendLine("(global::Lagrange.Core.Common.Protocols protocol, global::System.Collections.Generic.HashSet<string> disabledLog, global::System.Collections.Generic.Dictionary<string, global::Lagrange.Core.Services.IService> services, global::System.Collections.Generic.Dictionary<global::System.Type, (global::Lagrange.Core.Services.ServiceAttribute Attribute, global::Lagrange.Core.Services.IService Instance)> servicesEventType)");
         source.AppendLine("    {");
-        source.AppendLine("        global::Lagrange.Core.Internal.Services.IService? service = null;");
+        source.AppendLine("        global::Lagrange.Core.Services.IService? service = null;");
 
         foreach (var subscription in service.Subscriptions)
         {
             source.Append("        if ((~(global::Lagrange.Core.Common.Protocols)").Append(subscription.Protocol).AppendLine(" & protocol) == global::Lagrange.Core.Common.Protocols.None)");
             source.AppendLine("        {");
-            source.Append("            var attribute = new global::Lagrange.Core.Internal.Services.ServiceAttribute(")
+            source.Append("            var attribute = new global::Lagrange.Core.Services.ServiceAttribute(")
                 .Append(ToLiteral(service.Command))
                 .Append(", (global::Lagrange.Core.Common.Entity.RequestType)")
                 .Append(service.RequestType)
@@ -179,8 +180,13 @@ public sealed class ServiceSourceGenerator : IIncrementalGenerator
             }
 
             source.AppendLine(";");
-            source.AppendLine("            if (!services.TryGetValue(attribute.Command, out service))");
+            source.AppendLine("            if (service is null)");
             source.AppendLine("            {");
+            source.AppendLine("                if (services.ContainsKey(attribute.Command))");
+            source.AppendLine("                {");
+            source.AppendLine("                    throw new global::Lagrange.Core.Exceptions.ServiceRegistrationException($\"Multiple protocol services are registered for command '{attribute.Command}'.\");");
+            source.AppendLine("                }");
+            source.AppendLine();
             source.Append("                service = new ").Append(service.ServiceType).AppendLine("();");
             source.AppendLine("                services[attribute.Command] = service;");
             source.AppendLine("                if (attribute.DisableLog) disabledLog.Add(attribute.Command);");

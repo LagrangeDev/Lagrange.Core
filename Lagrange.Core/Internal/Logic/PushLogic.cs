@@ -1,7 +1,8 @@
 using System.Collections.Frozen;
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Events;
+using Lagrange.Core.Events;
 using Lagrange.Core.Internal.Events.Message;
+using Lagrange.Core.Services;
 
 namespace Lagrange.Core.Internal.Logic;
 

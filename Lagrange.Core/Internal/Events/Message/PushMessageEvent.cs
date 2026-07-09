@@ -1,3 +1,4 @@
+using Lagrange.Core.Events;
 using Lagrange.Core.Internal.Packets.Message;
 
 namespace Lagrange.Core.Internal.Events.Message;

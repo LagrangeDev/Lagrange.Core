@@ -11,7 +11,7 @@ namespace Lagrange.Core.Generator;
 public sealed class EventLogicSourceGenerator : IIncrementalGenerator
 {
     private const string LogicInterfaceFullName = "Lagrange.Core.Internal.Logic.ILogic";
-    private const string EventSubscribeAttributeNamespace = "Lagrange.Core.Internal.Events";
+    private const string EventSubscribeAttributeNamespace = "Lagrange.Core.Services";
     private const string EventSubscribeAttributeName = "EventSubscribeAttribute";
 
     private static readonly SymbolDisplayFormat TypeDisplayFormat = SymbolDisplayFormat.FullyQualifiedFormat;

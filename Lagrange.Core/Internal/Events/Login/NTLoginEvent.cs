@@ -1,4 +1,5 @@
-﻿using Lagrange.Core.Internal.Packets.Login;
+﻿using Lagrange.Core.Events;
+using Lagrange.Core.Internal.Packets.Login;
 
 namespace Lagrange.Core.Internal.Events.Login;
 

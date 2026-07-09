@@ -1,7 +1,7 @@
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.Message;
 using Lagrange.Core.Internal.Packets.Service;
+using Lagrange.Core.Services;
 
 namespace Lagrange.Core.Internal.Services.Message;
 
@@ -14,16 +14,16 @@ file static class Common
 [EventSubscribe<ImageDownloadEventReq>(Protocols.All)]
 internal class ImageDownloadService : OidbService<ImageDownloadEventReq, ImageDownloadEventResp, NTV2RichMediaReq, NTV2RichMediaResp>
 {
-    private protected override uint Command => 0x11c5;
+    protected override uint Command => 0x11c5;
 
-    private protected override uint Service => 200;
+    protected override uint Service => 200;
 
-    private protected override Task<NTV2RichMediaReq> ProcessRequest(ImageDownloadEventReq request, BotContext context)
+    protected override Task<NTV2RichMediaReq> ProcessRequest(ImageDownloadEventReq request, BotContext context)
     {
         return Task.FromResult(NTV2RichMedia.BuildDownloadReq(request.Message, request.Entity, new DownloadExt()));
     }
 
-    private protected override Task<ImageDownloadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
+    protected override Task<ImageDownloadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
     {
         return Task.FromResult(new ImageDownloadEventResp(response.ParseUrl()));
     }
@@ -33,16 +33,16 @@ internal class ImageDownloadService : OidbService<ImageDownloadEventReq, ImageDo
 [EventSubscribe<ImageGroupDownloadEventReq>(Protocols.All)]
 internal class ImageGroupDownloadService : OidbService<ImageGroupDownloadEventReq, ImageGroupDownloadEventResp, NTV2RichMediaReq, NTV2RichMediaResp>
 {
-    private protected override uint Command => 0x11c4;
+    protected override uint Command => 0x11c4;
 
-    private protected override uint Service => 200;
+    protected override uint Service => 200;
 
-    private protected override Task<NTV2RichMediaReq> ProcessRequest(ImageGroupDownloadEventReq request, BotContext context)
+    protected override Task<NTV2RichMediaReq> ProcessRequest(ImageGroupDownloadEventReq request, BotContext context)
     {
         return Task.FromResult(NTV2RichMedia.BuildDownloadReq(request.Message, request.Entity, new DownloadExt()));
     }
 
-    private protected override Task<ImageGroupDownloadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
+    protected override Task<ImageGroupDownloadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
     {
         return Task.FromResult(new ImageGroupDownloadEventResp(response.ParseUrl()));
     }
@@ -52,16 +52,16 @@ internal class ImageGroupDownloadService : OidbService<ImageGroupDownloadEventRe
 [EventSubscribe<RecordDownloadEventReq>(Protocols.All)]
 internal class RecordDownloadService : OidbService<RecordDownloadEventReq, RecordDownloadEventResp, NTV2RichMediaReq, NTV2RichMediaResp>
 {
-    private protected override uint Command => 0x126d;
+    protected override uint Command => 0x126d;
     
-    private protected override uint Service => 200;
+    protected override uint Service => 200;
     
-    private protected override Task<NTV2RichMediaReq> ProcessRequest(RecordDownloadEventReq request, BotContext context)
+    protected override Task<NTV2RichMediaReq> ProcessRequest(RecordDownloadEventReq request, BotContext context)
     {
         return Task.FromResult(NTV2RichMedia.BuildDownloadReq(request.Message, request.Entity, new DownloadExt()));
     }
 
-    private protected override Task<RecordDownloadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
+    protected override Task<RecordDownloadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
     {
         return Task.FromResult(new RecordDownloadEventResp(response.ParseUrl()));
     }
@@ -71,16 +71,16 @@ internal class RecordDownloadService : OidbService<RecordDownloadEventReq, Recor
 [EventSubscribe<RecordGroupDownloadEventReq>(Protocols.All)]
 internal class RecordGroupDownloadService : OidbService<RecordGroupDownloadEventReq, RecordGroupDownloadEventResp, NTV2RichMediaReq, NTV2RichMediaResp>
 {
-    private protected override uint Command => 0x126e;
+    protected override uint Command => 0x126e;
     
-    private protected override uint Service => 200;
+    protected override uint Service => 200;
     
-    private protected override Task<NTV2RichMediaReq> ProcessRequest(RecordGroupDownloadEventReq request, BotContext context)
+    protected override Task<NTV2RichMediaReq> ProcessRequest(RecordGroupDownloadEventReq request, BotContext context)
     {
         return Task.FromResult(NTV2RichMedia.BuildDownloadReq(request.Message, request.Entity, new DownloadExt()));
     }
 
-    private protected override Task<RecordGroupDownloadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
+    protected override Task<RecordGroupDownloadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
     {
         return Task.FromResult(new RecordGroupDownloadEventResp(response.ParseUrl()));
     }
@@ -90,16 +90,16 @@ internal class RecordGroupDownloadService : OidbService<RecordGroupDownloadEvent
 [EventSubscribe<VideoDownloadEventReq>(Protocols.All)]
 internal class VideoDownloadService : OidbService<VideoDownloadEventReq, VideoDownloadEventResp, NTV2RichMediaReq, NTV2RichMediaResp>
 {
-    private protected override uint Command => 0x11e9;
+    protected override uint Command => 0x11e9;
     
-    private protected override uint Service => 200;
+    protected override uint Service => 200;
     
-    private protected override Task<NTV2RichMediaReq> ProcessRequest(VideoDownloadEventReq request, BotContext context)
+    protected override Task<NTV2RichMediaReq> ProcessRequest(VideoDownloadEventReq request, BotContext context)
     {
         return Task.FromResult(NTV2RichMedia.BuildDownloadReq(request.Message, request.Entity, new DownloadExt()));
     }
 
-    private protected override Task<VideoDownloadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
+    protected override Task<VideoDownloadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
     {
         return Task.FromResult(new VideoDownloadEventResp(response.ParseUrl()));
     }
@@ -109,16 +109,16 @@ internal class VideoDownloadService : OidbService<VideoDownloadEventReq, VideoDo
 [EventSubscribe<VideoGroupDownloadEventReq>(Protocols.All)]
 internal class VideoGroupDownloadService : OidbService<VideoGroupDownloadEventReq, VideoGroupDownloadEventResp, NTV2RichMediaReq, NTV2RichMediaResp>
 {
-    private protected override uint Command => 0x11ea;
+    protected override uint Command => 0x11ea;
     
-    private protected override uint Service => 200;
+    protected override uint Service => 200;
     
-    private protected override Task<NTV2RichMediaReq> ProcessRequest(VideoGroupDownloadEventReq request, BotContext context)
+    protected override Task<NTV2RichMediaReq> ProcessRequest(VideoGroupDownloadEventReq request, BotContext context)
     {
         return Task.FromResult(NTV2RichMedia.BuildDownloadReq(request.Message, request.Entity, new DownloadExt()));
     }
 
-    private protected override Task<VideoGroupDownloadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
+    protected override Task<VideoGroupDownloadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
     {
         return Task.FromResult(new VideoGroupDownloadEventResp(response.ParseUrl()));
     }

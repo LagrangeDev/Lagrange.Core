@@ -1,4 +1,6 @@
-﻿namespace Lagrange.Core.Internal.Events.Message;
+﻿using Lagrange.Core.Events;
+
+namespace Lagrange.Core.Internal.Events.Message;
 
 internal class GroupFileSendEventReq(long groupUin, string fileId, uint random) : ProtocolEvent
 {

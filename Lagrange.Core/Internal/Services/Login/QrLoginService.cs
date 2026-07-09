@@ -1,8 +1,9 @@
 ﻿using System.Text;
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Events;
+using Lagrange.Core.Events;
 using Lagrange.Core.Internal.Events.Login;
 using Lagrange.Core.Internal.Packets.Login;
+using Lagrange.Core.Services;
 using Lagrange.Core.Utility;
 using Lagrange.Core.Utility.Binary;
 

@@ -1,8 +1,8 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Entity;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.System;
 using Lagrange.Core.Internal.Packets.Service;
+using Lagrange.Core.Services;
 
 namespace Lagrange.Core.Internal.Services.System;
 
@@ -10,11 +10,11 @@ namespace Lagrange.Core.Internal.Services.System;
 [Service("OidbSvcTrpcTcp.0xfd4_1")]
 internal class FetchFriendsService : OidbService<FetchFriendsEventReq, FetchFriendsEventResp, IncPullRequest, IncPullResponse>
 {
-    private protected override uint Command => 0xfd4;
+    protected override uint Command => 0xfd4;
 
-    private protected override uint Service => 1;
+    protected override uint Service => 1;
 
-    private protected override Task<IncPullRequest> ProcessRequest(FetchFriendsEventReq request, BotContext context)
+    protected override Task<IncPullRequest> ProcessRequest(FetchFriendsEventReq request, BotContext context)
     {
         return Task.FromResult(new IncPullRequest
         {
@@ -33,7 +33,7 @@ internal class FetchFriendsService : OidbService<FetchFriendsEventReq, FetchFrie
         });
     }
 
-    private protected override Task<FetchFriendsEventResp> ProcessResponse(IncPullResponse response, BotContext context)
+    protected override Task<FetchFriendsEventResp> ProcessResponse(IncPullResponse response, BotContext context)
     {
         var friends = new List<BotFriend>();
         var categories = response.Category.Select(t => new BotFriendCategory(t.CategoryId, t.CategoryName, t.CategoryMemberCount, t.CatogorySortId)).ToList();

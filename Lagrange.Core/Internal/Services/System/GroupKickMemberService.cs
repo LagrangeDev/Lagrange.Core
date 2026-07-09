@@ -1,7 +1,7 @@
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.System;
 using Lagrange.Core.Internal.Packets.Service;
+using Lagrange.Core.Services;
 using Lagrange.Core.Utility;
 
 namespace Lagrange.Core.Internal.Services.System;

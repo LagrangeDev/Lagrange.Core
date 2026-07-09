@@ -3,9 +3,9 @@ using System.Text;
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Exceptions;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.System;
 using Lagrange.Core.Internal.Packets.Service;
+using Lagrange.Core.Services;
 using Lagrange.Core.Utility;
 
 namespace Lagrange.Core.Internal.Services.System;

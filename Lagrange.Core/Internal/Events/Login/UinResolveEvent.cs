@@ -1,3 +1,5 @@
+using Lagrange.Core.Events;
+
 namespace Lagrange.Core.Internal.Events.Login;
 
 internal class UinResolveEventReq(string qid) : ProtocolEvent

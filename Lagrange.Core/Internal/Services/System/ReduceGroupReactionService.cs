@@ -1,7 +1,7 @@
 ﻿using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.System;
 using Lagrange.Core.Internal.Packets.Service;
+using Lagrange.Core.Services;
 
 namespace Lagrange.Core.Internal.Services.System;
 
@@ -9,11 +9,11 @@ namespace Lagrange.Core.Internal.Services.System;
 [Service("OidbSvcTrpcTcp.0x9082_2")]
 internal class ReduceGroupReactionService : OidbService<ReduceGroupReactionEventReq, ReduceGroupReactionEventResp, SetGroupReactionRequest, SetGroupReactionResponse>
 {
-    private protected override uint Command => 0x9082;
+    protected override uint Command => 0x9082;
 
-    private protected override uint Service => 2;
+    protected override uint Service => 2;
 
-    private protected override Task<SetGroupReactionRequest> ProcessRequest(ReduceGroupReactionEventReq request, BotContext context)
+    protected override Task<SetGroupReactionRequest> ProcessRequest(ReduceGroupReactionEventReq request, BotContext context)
     {
         return Task.FromResult(new SetGroupReactionRequest
         {
@@ -24,7 +24,7 @@ internal class ReduceGroupReactionService : OidbService<ReduceGroupReactionEvent
         });
     }
 
-    private protected override Task<ReduceGroupReactionEventResp> ProcessResponse(SetGroupReactionResponse response, BotContext context)
+    protected override Task<ReduceGroupReactionEventResp> ProcessResponse(SetGroupReactionResponse response, BotContext context)
     {
         return Task.FromResult(ReduceGroupReactionEventResp.Default);
     }

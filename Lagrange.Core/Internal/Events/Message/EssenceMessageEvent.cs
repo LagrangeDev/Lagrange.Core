@@ -1,3 +1,5 @@
+using Lagrange.Core.Events;
+
 namespace Lagrange.Core.Internal.Events.Message;
 
 internal class SetEssenceMessageEventReq(long groupUin, ulong sequence, uint random) : ProtocolEvent

@@ -1,8 +1,8 @@
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.Message;
 using Lagrange.Core.Internal.Packets.Service;
 using Lagrange.Core.Message.Entities;
+using Lagrange.Core.Services;
 using Lagrange.Core.Utility;
 
 namespace Lagrange.Core.Internal.Services.Message;
@@ -57,11 +57,11 @@ file class Common
 [Service("OidbSvcTrpcTcp.0x11c5_100")]
 internal class ImageUploadService : OidbService<ImageUploadEventReq, ImageUploadEventResp, NTV2RichMediaReq, NTV2RichMediaResp>
 {
-    private protected override uint Command => 0x11c5;
+    protected override uint Command => 0x11c5;
 
-    private protected override uint Service => 100;
+    protected override uint Service => 100;
     
-    private protected override Task<NTV2RichMediaReq> ProcessRequest(ImageUploadEventReq request, BotContext context)
+    protected override Task<NTV2RichMediaReq> ProcessRequest(ImageUploadEventReq request, BotContext context)
     {
         var ext = new ExtBizInfo
         {
@@ -76,7 +76,7 @@ internal class ImageUploadService : OidbService<ImageUploadEventReq, ImageUpload
         return Task.FromResult(NTV2RichMedia.BuildUploadReq(request.Message, request.Entity, ext));
     }
 
-    private protected override Task<ImageUploadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
+    protected override Task<ImageUploadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
     {
         return Task.FromResult(new ImageUploadEventResp(response.Upload.MsgInfo, response.Upload.CompatQMsg, Common.GenerateExt(response.Upload)));
     }
@@ -86,11 +86,11 @@ internal class ImageUploadService : OidbService<ImageUploadEventReq, ImageUpload
 [Service("OidbSvcTrpcTcp.0x11c4_100")]
 internal class ImageGroupUploadService : OidbService<ImageGroupUploadEventReq, ImageGroupUploadEventResp, NTV2RichMediaReq, NTV2RichMediaResp>
 {
-    private protected override uint Command => 0x11c4;
+    protected override uint Command => 0x11c4;
 
-    private protected override uint Service => 100;
+    protected override uint Service => 100;
     
-    private protected override Task<NTV2RichMediaReq> ProcessRequest(ImageGroupUploadEventReq request, BotContext context)
+    protected override Task<NTV2RichMediaReq> ProcessRequest(ImageGroupUploadEventReq request, BotContext context)
     {
         var ext = new ExtBizInfo
         {
@@ -105,7 +105,7 @@ internal class ImageGroupUploadService : OidbService<ImageGroupUploadEventReq, I
         return Task.FromResult(NTV2RichMedia.BuildUploadReq(request.Message, request.Entity, ext));
     }
 
-    private protected override Task<ImageGroupUploadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
+    protected override Task<ImageGroupUploadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
     {
         return Task.FromResult(new ImageGroupUploadEventResp(response.Upload.MsgInfo, response.Upload.CompatQMsg, Common.GenerateExt(response.Upload)));
     }
@@ -115,11 +115,11 @@ internal class ImageGroupUploadService : OidbService<ImageGroupUploadEventReq, I
 [Service("OidbSvcTrpcTcp.0x126d_100")]
 internal class RecordUploadService : OidbService<RecordUploadEventReq, RecordUploadEventResp, NTV2RichMediaReq, NTV2RichMediaResp>
 {
-    private protected override uint Command => 0x126d;
+    protected override uint Command => 0x126d;
 
-    private protected override uint Service => 100;
+    protected override uint Service => 100;
     
-    private protected override Task<NTV2RichMediaReq> ProcessRequest(RecordUploadEventReq request, BotContext context)
+    protected override Task<NTV2RichMediaReq> ProcessRequest(RecordUploadEventReq request, BotContext context)
     {
         var ext = new ExtBizInfo
         {
@@ -135,7 +135,7 @@ internal class RecordUploadService : OidbService<RecordUploadEventReq, RecordUpl
         return Task.FromResult(NTV2RichMedia.BuildUploadReq(request.Message, request.Entity, ext));
     }
 
-    private protected override Task<RecordUploadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
+    protected override Task<RecordUploadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
     {
         return Task.FromResult(new RecordUploadEventResp(response.Upload.MsgInfo, response.Upload.CompatQMsg, Common.GenerateExt(response.Upload)));
     }
@@ -145,11 +145,11 @@ internal class RecordUploadService : OidbService<RecordUploadEventReq, RecordUpl
 [Service("OidbSvcTrpcTcp.0x126e_100")]
 internal class RecordGroupUploadService : OidbService<RecordGroupUploadEventReq, RecordGroupUploadEventResp, NTV2RichMediaReq, NTV2RichMediaResp>
 {
-    private protected override uint Command => 0x126e;
+    protected override uint Command => 0x126e;
 
-    private protected override uint Service => 100;
+    protected override uint Service => 100;
     
-    private protected override Task<NTV2RichMediaReq> ProcessRequest(RecordGroupUploadEventReq request, BotContext context)
+    protected override Task<NTV2RichMediaReq> ProcessRequest(RecordGroupUploadEventReq request, BotContext context)
     {
         var ext = new ExtBizInfo
         {
@@ -165,7 +165,7 @@ internal class RecordGroupUploadService : OidbService<RecordGroupUploadEventReq,
         return Task.FromResult(NTV2RichMedia.BuildUploadReq(request.Message, request.Entity, ext));
     }
 
-    private protected override Task<RecordGroupUploadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
+    protected override Task<RecordGroupUploadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
     {
         return Task.FromResult(new RecordGroupUploadEventResp(response.Upload.MsgInfo, response.Upload.CompatQMsg, Common.GenerateExt(response.Upload)));
     }
@@ -175,11 +175,11 @@ internal class RecordGroupUploadService : OidbService<RecordGroupUploadEventReq,
 [Service("OidbSvcTrpcTcp.0x11e9_100")]
 internal class VideoUploadService : OidbService<VideoUploadEventReq, VideoUploadEventResp, NTV2RichMediaReq, NTV2RichMediaResp>
 {
-    private protected override uint Command => 0x11e9;
+    protected override uint Command => 0x11e9;
 
-    private protected override uint Service => 100;
+    protected override uint Service => 100;
     
-    private protected override Task<NTV2RichMediaReq> ProcessRequest(VideoUploadEventReq request, BotContext context)
+    protected override Task<NTV2RichMediaReq> ProcessRequest(VideoUploadEventReq request, BotContext context)
     {
         var ext = new ExtBizInfo
         {
@@ -192,7 +192,7 @@ internal class VideoUploadService : OidbService<VideoUploadEventReq, VideoUpload
         return Task.FromResult(NTV2RichMedia.BuildUploadReq(request.Message, request.Entity, ext, (100, entity.ThumbnailEntity)));
     }
 
-    private protected override Task<VideoUploadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
+    protected override Task<VideoUploadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
     {
         return Task.FromResult(new VideoUploadEventResp(response.Upload.MsgInfo, response.Upload.CompatQMsg, Common.GenerateExt(response.Upload), Common.GenerateExt(response.Upload, response.Upload.SubFileInfos[0])));
     }
@@ -202,11 +202,11 @@ internal class VideoUploadService : OidbService<VideoUploadEventReq, VideoUpload
 [Service("OidbSvcTrpcTcp.0x11ea_100")]
 internal class VideoGroupUploadService : OidbService<VideoGroupUploadEventReq, VideoGroupUploadEventResp, NTV2RichMediaReq, NTV2RichMediaResp>
 {
-    private protected override uint Command => 0x11ea;
+    protected override uint Command => 0x11ea;
 
-    private protected override uint Service => 100;
+    protected override uint Service => 100;
     
-    private protected override Task<NTV2RichMediaReq> ProcessRequest(VideoGroupUploadEventReq request, BotContext context)
+    protected override Task<NTV2RichMediaReq> ProcessRequest(VideoGroupUploadEventReq request, BotContext context)
     {
         var ext = new ExtBizInfo
         {
@@ -219,7 +219,7 @@ internal class VideoGroupUploadService : OidbService<VideoGroupUploadEventReq, V
         return Task.FromResult(NTV2RichMedia.BuildUploadReq(request.Message, request.Entity, ext, (100, entity.ThumbnailEntity)));
     }
 
-    private protected override Task<VideoGroupUploadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
+    protected override Task<VideoGroupUploadEventResp> ProcessResponse(NTV2RichMediaResp response, BotContext context)
     {
         return Task.FromResult(new VideoGroupUploadEventResp(response.Upload.MsgInfo, response.Upload.CompatQMsg, Common.GenerateExt(response.Upload), Common.GenerateExt(response.Upload, response.Upload.SubFileInfos[0])));
     }

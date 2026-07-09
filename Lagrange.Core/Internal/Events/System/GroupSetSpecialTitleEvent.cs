@@ -1,4 +1,6 @@
-﻿namespace Lagrange.Core.Internal.Events.System;
+﻿using Lagrange.Core.Events;
+
+namespace Lagrange.Core.Internal.Events.System;
 
 internal class GroupSetSpecialTitleEventReq(long groupUin, string targetUid, string title) : ProtocolEvent
 {

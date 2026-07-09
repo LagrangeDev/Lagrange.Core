@@ -2,7 +2,6 @@
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Events;
 using Lagrange.Core.Exceptions;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Logic;
 
 namespace Lagrange.Core.Internal.Context;
@@ -29,19 +28,12 @@ internal class EventContext : IDisposable
         {
             await HandleOutgoingEvent(@event);
             var (frame, attribute) = await _context.ServiceContext.Resolve(@event);
-            if (frame.Sequence == 0) throw new LagrangeException("The sequence number is 0 for the SSOFrame");
-
-
             var @return = await _context.PacketContext.SendPacket(frame, attribute);
             var resolved = await _context.ServiceContext.Resolve(@return);
 
-            if (resolved is T result)
-            {
-                await HandleIncomingEvent(result);
-                return result;
-            }
-
-            throw new LagrangeException($"The event type is not the same as the expected type. Expected: {typeof(T)}, Actual: {resolved.GetType()}");
+            var result = resolved as T ?? throw new LagrangeException($"The event type is not the same as the expected type. Expected: {typeof(T)}, Actual: {resolved.GetType()}");
+            await HandleIncomingEvent(result);
+            return result;
         }
         catch (Exception e) when (e is not LagrangeException)
         {
@@ -112,7 +104,7 @@ internal class EventContext : IDisposable
         }
         catch (ServiceNotFoundException e)
         {
-            _context.LogDebug(Tag, "Service not found for command: {0}", e, e.Command);
+            _context.LogDebug(Tag, "Service not found for command: {0}", e.Command);
         }
         catch (Exception e)
         {

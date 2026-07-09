@@ -1,9 +1,7 @@
-using System.Buffers;
-using System.Security.Cryptography;
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.System;
 using Lagrange.Core.Internal.Packets.Service;
+using Lagrange.Core.Services;
 using Lagrange.Core.Utility;
 using Lagrange.Core.Utility.Cryptography;
 
@@ -13,11 +11,11 @@ namespace Lagrange.Core.Internal.Services.System;
 [Service("OidbSvcTrpcTcp.0xe37_1700")]
 internal class FileUploadService : OidbService<FileUploadEventReq, FileUploadEventResp, OfflineFileUploadRequest, OfflineFileUploadResponse>
 {
-    private protected override uint Command => 0xe37;
+    protected override uint Command => 0xe37;
 
-    private protected override uint Service => 1700;
+    protected override uint Service => 1700;
     
-    private protected override Task<OfflineFileUploadRequest> ProcessRequest(FileUploadEventReq request, BotContext context)
+    protected override Task<OfflineFileUploadRequest> ProcessRequest(FileUploadEventReq request, BotContext context)
     {
         return Task.FromResult(new OfflineFileUploadRequest
         {
@@ -41,7 +39,7 @@ internal class FileUploadService : OidbService<FileUploadEventReq, FileUploadEve
         });
     }
 
-    private protected override Task<FileUploadEventResp> ProcessResponse(OfflineFileUploadResponse response, BotContext context)
+    protected override Task<FileUploadEventResp> ProcessResponse(OfflineFileUploadResponse response, BotContext context)
     {
         var upload = response.Upload;
         var addrs = upload.RtpMediaPlatformUploadAddress.Select(addr => (ProtocolHelper.UInt32ToIPV4Addr(addr.InnerIp), addr.InnerPort)).ToList();

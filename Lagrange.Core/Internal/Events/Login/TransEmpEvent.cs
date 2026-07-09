@@ -1,4 +1,6 @@
-﻿namespace Lagrange.Core.Internal.Events.Login;
+﻿using Lagrange.Core.Events;
+
+namespace Lagrange.Core.Internal.Events.Login;
 
 internal class TransEmp31EventReq(byte[]? unusualSig) : ProtocolEvent
 {

@@ -1,8 +1,8 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Entity;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.System;
 using Lagrange.Core.Internal.Packets.Service;
+using Lagrange.Core.Services;
 
 namespace Lagrange.Core.Internal.Services.System;
 
@@ -10,11 +10,11 @@ namespace Lagrange.Core.Internal.Services.System;
 [Service("OidbSvcTrpcTcp.0x10c0_2")]
 internal class FetchFilteredGroupNotificationsService : OidbService<FetchFilteredGroupNotificationsEventReq, FetchFilteredGroupNotificationsEventResp, FetchGroupNotificationsRequest, FetchGroupNotificationsResponse>
 {
-    private protected override uint Command => 0x10c0;
+    protected override uint Command => 0x10c0;
 
-    private protected override uint Service => 2;
+    protected override uint Service => 2;
 
-    private protected override Task<FetchGroupNotificationsRequest> ProcessRequest(FetchFilteredGroupNotificationsEventReq request, BotContext context)
+    protected override Task<FetchGroupNotificationsRequest> ProcessRequest(FetchFilteredGroupNotificationsEventReq request, BotContext context)
     {
         return Task.FromResult(new FetchGroupNotificationsRequest
         {
@@ -23,7 +23,7 @@ internal class FetchFilteredGroupNotificationsService : OidbService<FetchFiltere
         });
     }
 
-    private protected override Task<FetchFilteredGroupNotificationsEventResp> ProcessResponse(FetchGroupNotificationsResponse response, BotContext context)
+    protected override Task<FetchFilteredGroupNotificationsEventResp> ProcessResponse(FetchGroupNotificationsResponse response, BotContext context)
     {
         if (response.GroupNotifications == null)
         {

@@ -1,3 +1,4 @@
+using Lagrange.Core.Events;
 using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Internal.Events.System;

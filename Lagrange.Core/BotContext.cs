@@ -33,6 +33,12 @@ public class BotContext : IDisposable
     
     public bool IsOnline { get; internal set; }
     public EventInvoker EventInvoker { get; }
+
+    /// <summary>
+    /// Sends a protocol event and parses its typed response.
+    /// </summary>
+    public ValueTask<TResponse> SendEvent<TResponse>(ProtocolEvent request) where TResponse : ProtocolEvent =>
+        EventContext.SendEvent<TResponse>(request);
     
     internal CacheContext CacheContext { get; }
     internal PacketContext PacketContext { get; }

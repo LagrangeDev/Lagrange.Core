@@ -1,4 +1,6 @@
-﻿using Lagrange.Core.Events.EventArgs;
+﻿using System.Text.Json.Serialization;
+using Lagrange.Core.Events.EventArgs;
+using Lagrange.Core.Services;
 
 namespace Lagrange.Core.Common;
 
@@ -50,6 +52,12 @@ public class BotConfig
     /// The Sign Provider for the bot, if null, the bot will use the default sign provider
     /// </summary>
     public BotSignProvider? SignProvider { get; set; }
+
+    /// <summary>
+    /// Custom protocol services loaded when the bot context is created.
+    /// </summary>
+    [JsonIgnore]
+    public IReadOnlyList<IService> CustomServices { get; init; } = [];
 }
 
 /// <summary>

@@ -2,7 +2,7 @@
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Internal.Packets.Struct;
-using Lagrange.Core.Internal.Services;
+using Lagrange.Core.Services;
 
 namespace Lagrange.Core.Internal.Context;
 

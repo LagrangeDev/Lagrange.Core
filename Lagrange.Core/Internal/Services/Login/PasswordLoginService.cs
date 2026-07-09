@@ -2,9 +2,9 @@
 using System.Text;
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Entity;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.Login;
 using Lagrange.Core.Internal.Packets.Login;
+using Lagrange.Core.Services;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Cryptography;
 

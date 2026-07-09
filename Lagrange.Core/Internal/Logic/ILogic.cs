@@ -1,5 +1,4 @@
 using Lagrange.Core.Events;
-using Lagrange.Core.Internal.Events;
 
 namespace Lagrange.Core.Internal.Logic;
 

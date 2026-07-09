@@ -1,7 +1,7 @@
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.System;
 using Lagrange.Core.Internal.Packets.Service;
+using Lagrange.Core.Services;
 
 namespace Lagrange.Core.Internal.Services.System;
 
@@ -9,11 +9,11 @@ namespace Lagrange.Core.Internal.Services.System;
 [Service("OidbSvcTrpcTcp.0xf90_1")]
 internal class GroupSetTodoService : OidbService<GroupSetTodoEventReq, GroupSetTodoEventResp, F90ReqBody, F90RspBody>
 {
-    private protected override uint Command => 0xf90;
+    protected override uint Command => 0xf90;
 
-    private protected override uint Service => 1;
+    protected override uint Service => 1;
 
-    private protected override Task<F90ReqBody> ProcessRequest(GroupSetTodoEventReq request, BotContext context)
+    protected override Task<F90ReqBody> ProcessRequest(GroupSetTodoEventReq request, BotContext context)
     {
         return Task.FromResult(new F90ReqBody
         {
@@ -22,7 +22,7 @@ internal class GroupSetTodoService : OidbService<GroupSetTodoEventReq, GroupSetT
         });
     }
 
-    private protected override Task<GroupSetTodoEventResp> ProcessResponse(F90RspBody response, BotContext context)
+    protected override Task<GroupSetTodoEventResp> ProcessResponse(F90RspBody response, BotContext context)
     {
         return Task.FromResult(GroupSetTodoEventResp.Default);
     }
@@ -32,11 +32,11 @@ internal class GroupSetTodoService : OidbService<GroupSetTodoEventReq, GroupSetT
 [Service("OidbSvcTrpcTcp.0xf90_2")]
 internal class GroupFinishTodoService : OidbService<GroupFinishTodoEventReq, GroupFinishTodoEventResp, F90ReqBody, F90RspBody>
 {
-    private protected override uint Command => 0xf90;
+    protected override uint Command => 0xf90;
 
-    private protected override uint Service => 2;
+    protected override uint Service => 2;
 
-    private protected override Task<F90ReqBody> ProcessRequest(GroupFinishTodoEventReq request, BotContext context)
+    protected override Task<F90ReqBody> ProcessRequest(GroupFinishTodoEventReq request, BotContext context)
     {
         return Task.FromResult(new F90ReqBody
         {
@@ -44,7 +44,7 @@ internal class GroupFinishTodoService : OidbService<GroupFinishTodoEventReq, Gro
         });
     }
 
-    private protected override Task<GroupFinishTodoEventResp> ProcessResponse(F90RspBody response, BotContext context)
+    protected override Task<GroupFinishTodoEventResp> ProcessResponse(F90RspBody response, BotContext context)
     {
         return Task.FromResult(GroupFinishTodoEventResp.Default);
     }
@@ -54,11 +54,11 @@ internal class GroupFinishTodoService : OidbService<GroupFinishTodoEventReq, Gro
 [Service("OidbSvcTrpcTcp.0xf90_3")]
 internal class GroupRemoveTodoService : OidbService<GroupRemoveTodoEventReq, GroupRemoveTodoEventResp, F90ReqBody, F90RspBody>
 {
-    private protected override uint Command => 0xf90;
+    protected override uint Command => 0xf90;
 
-    private protected override uint Service => 3;
+    protected override uint Service => 3;
 
-    private protected override Task<F90ReqBody> ProcessRequest(GroupRemoveTodoEventReq request, BotContext context)
+    protected override Task<F90ReqBody> ProcessRequest(GroupRemoveTodoEventReq request, BotContext context)
     {
         return Task.FromResult(new F90ReqBody
         {
@@ -66,7 +66,7 @@ internal class GroupRemoveTodoService : OidbService<GroupRemoveTodoEventReq, Gro
         });
     }
 
-    private protected override Task<GroupRemoveTodoEventResp> ProcessResponse(F90RspBody response, BotContext context)
+    protected override Task<GroupRemoveTodoEventResp> ProcessResponse(F90RspBody response, BotContext context)
     {
         return Task.FromResult(GroupRemoveTodoEventResp.Default);
     }

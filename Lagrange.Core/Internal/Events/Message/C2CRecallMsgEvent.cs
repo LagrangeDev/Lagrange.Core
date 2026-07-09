@@ -1,3 +1,5 @@
+using Lagrange.Core.Events;
+
 namespace Lagrange.Core.Internal.Events.Message;
 
 internal class C2CRecallMsgEventReq(string targetUid, ulong sequence, ulong clientSequence, uint random, uint timestamp) : ProtocolEvent

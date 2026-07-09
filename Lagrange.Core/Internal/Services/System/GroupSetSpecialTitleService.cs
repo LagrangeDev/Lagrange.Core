@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.System;
 using Lagrange.Core.Internal.Packets.Service;
+using Lagrange.Core.Services;
 
 namespace Lagrange.Core.Internal.Services.System;
 
@@ -10,11 +10,11 @@ namespace Lagrange.Core.Internal.Services.System;
 [Service("OidbSvcTrpcTcp.0x8fc_2")]
 internal class GroupSetSpecialTitleService : OidbService<GroupSetSpecialTitleEventReq, GroupSetSpecialTitleEventResp, D8FCReqBody, D8FCRspBody>
 {
-    private protected override uint Command => 0x8fc;
+    protected override uint Command => 0x8fc;
 
-    private protected override uint Service => 2;
+    protected override uint Service => 2;
 
-    private protected override Task<D8FCReqBody> ProcessRequest(GroupSetSpecialTitleEventReq request, BotContext context)
+    protected override Task<D8FCReqBody> ProcessRequest(GroupSetSpecialTitleEventReq request, BotContext context)
     {
         return Task.FromResult(new D8FCReqBody
         {
@@ -29,7 +29,7 @@ internal class GroupSetSpecialTitleService : OidbService<GroupSetSpecialTitleEve
         });
     }
 
-    private protected override Task<GroupSetSpecialTitleEventResp> ProcessResponse(D8FCRspBody response, BotContext context)
+    protected override Task<GroupSetSpecialTitleEventResp> ProcessResponse(D8FCRspBody response, BotContext context)
     {
         return Task.FromResult(GroupSetSpecialTitleEventResp.Default);
     }

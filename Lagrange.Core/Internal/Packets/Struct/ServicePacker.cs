@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 using Lagrange.Core.Common.Entity;
-using Lagrange.Core.Internal.Services;
+using Lagrange.Core.Services;
 using Lagrange.Core.Utility.Binary;
 using Lagrange.Core.Utility.Cryptography;
 

@@ -1,8 +1,8 @@
 ﻿using Lagrange.Core.Common;
-using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.Message;
 using Lagrange.Core.Internal.Packets.Message;
 using Lagrange.Core.Internal.Packets.Service;
+using Lagrange.Core.Services;
 
 namespace Lagrange.Core.Internal.Services.Message;
 
@@ -10,11 +10,11 @@ namespace Lagrange.Core.Internal.Services.Message;
 [Service("OidbSvcTrpcTcp.0x6d9_4")]
 internal class GroupFileSendService : OidbService<GroupFileSendEventReq, GroupFileSendEventResp, D6D9ReqBody, D6D9RspBody>
 {
-    private protected override uint Command => 0x6d9;
+    protected override uint Command => 0x6d9;
 
-    private protected override uint Service => 4;
+    protected override uint Service => 4;
     
-    private protected override Task<D6D9ReqBody> ProcessRequest(GroupFileSendEventReq request, BotContext context)
+    protected override Task<D6D9ReqBody> ProcessRequest(GroupFileSendEventReq request, BotContext context)
     {
         return Task.FromResult(new D6D9ReqBody
         {
@@ -27,7 +27,7 @@ internal class GroupFileSendService : OidbService<GroupFileSendEventReq, GroupFi
         });
     }
 
-    private protected override Task<GroupFileSendEventResp> ProcessResponse(D6D9RspBody response, BotContext context)
+    protected override Task<GroupFileSendEventResp> ProcessResponse(D6D9RspBody response, BotContext context)
     {
         return Task.FromResult(new GroupFileSendEventResp((int)response.FeedsInfoRsp.RetCode, response.FeedsInfoRsp.RetMsg));
     }
