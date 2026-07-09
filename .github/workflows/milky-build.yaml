@@ -2,7 +2,9 @@ name: Build Lagrange.Milky
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - master
     paths:
       - .github/workflows/milky-build.yaml
       - Lagrange.Codec/**
