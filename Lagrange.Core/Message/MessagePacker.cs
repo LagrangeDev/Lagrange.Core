@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Formats.Asn1;
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Internal.Events.System;
@@ -6,33 +5,13 @@ using Lagrange.Core.Internal.Packets.Message;
 using Lagrange.Core.Message.Entities;
 using Lagrange.Core.Utility;
 using Lagrange.Core.Utility.Binary;
-using Lagrange.Core.Utility.Extension;
 
 
 namespace Lagrange.Core.Message;
 
-internal class MessagePacker
+internal class MessagePacker(BotContext context)
 {
-    private readonly BotContext _context;
-    
-    private readonly List<IMessageEntity> _factory;
-    
-    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "All the types are preserved in the csproj by using the TrimmerRootAssembly attribute")]
-    [UnconditionalSuppressMessage("Trimming", "IL2062", Justification = "All the types are preserved in the csproj by using the TrimmerRootAssembly attribute")]
-    [UnconditionalSuppressMessage("Trimming", "IL2072", Justification = "All the types are preserved in the csproj by using the TrimmerRootAssembly attribute")]
-    public MessagePacker(BotContext context)
-    {
-        _context = context;
-        _factory = [];
-
-        foreach (var type in typeof(MessagePacker).Assembly.GetTypes())
-        {
-            if (type.HasImplemented<IMessageEntity>())
-            {
-                _factory.Add((IMessageEntity?)Activator.CreateInstance(type) ?? throw new InvalidOperationException());
-            }
-        }
-    }
+    private readonly List<IMessageEntity> _factory = MessageEntityRegistry.Create();
 
     public async Task<BotMessage> Parse(CommonMessage msg)
     {
@@ -74,7 +53,7 @@ internal class MessagePacker
 
         foreach (var entity in message.Entities)
         {
-            await entity.Postprocess(_context, message);
+            await entity.Postprocess(context, message);
         }
 
         return message;
@@ -85,13 +64,13 @@ internal class MessagePacker
         switch (type)
         {
             case 166:
-                var friend = await _context.CacheContext.ResolveFriend(routingHead.FromUin);
+                var friend = await context.CacheContext.ResolveFriend(routingHead.FromUin);
                 return friend ?? new BotFriend(routingHead.FromUin, routingHead.FromUid, string.Empty, string.Empty, string.Empty, string.Empty, null!);
 
             case 141:
-                return (await _context.CacheContext.ResolveStranger(routingHead.ToUid)).CloneWithSource(routingHead.CommonC2C.FromTinyId);
+                return (await context.CacheContext.ResolveStranger(routingHead.ToUid)).CloneWithSource(routingHead.CommonC2C.FromTinyId);
             case 82:
-                var items = await _context.CacheContext.ResolveMember(routingHead.Group.GroupCode, routingHead.FromUin);
+                var items = await context.CacheContext.ResolveMember(routingHead.Group.GroupCode, routingHead.FromUin);
                 if (items != null) return items.Value.Item2;
 
                 var dummyGroup = new BotGroup(routingHead.Group.GroupCode, routingHead.Group.GroupName, 0, 0, 0, null, null, null);
@@ -107,7 +86,7 @@ internal class MessagePacker
         switch (type)
         {
             case 166:
-                var friend = await _context.CacheContext.ResolveFriend(routingHead.ToUin);
+                var friend = await context.CacheContext.ResolveFriend(routingHead.ToUin);
                 if (friend == null)
                 {
                     return new BotFriend(routingHead.ToUin, routingHead.ToUid, string.Empty, string.Empty, string.Empty, string.Empty, null!);
@@ -115,9 +94,9 @@ internal class MessagePacker
 
                 return friend;
             case 141:
-                return (await _context.CacheContext.ResolveStranger(routingHead.ToUid)).CloneWithSource(routingHead.CommonC2C.FromTinyId);
+                return (await context.CacheContext.ResolveStranger(routingHead.ToUid)).CloneWithSource(routingHead.CommonC2C.FromTinyId);
             case 82:
-                var items = await _context.CacheContext.ResolveMember(routingHead.Group.GroupCode, routingHead.ToUin);
+                var items = await context.CacheContext.ResolveMember(routingHead.Group.GroupCode, routingHead.ToUin);
                 if (items == null)
                 {
                     var dummyGroup = new BotGroup(routingHead.Group.GroupCode, routingHead.Group.GroupName, 0, 0, 0, null, null, null);
@@ -256,11 +235,11 @@ internal class MessagePacker
         };
         
         proto.RoutingHead.FromUin = msg.Contact.Uin;
-        proto.RoutingHead.FromUid = _context.CacheContext.ResolveCachedUid(msg.Contact.Uin) ?? "";
+        proto.RoutingHead.FromUid = context.CacheContext.ResolveCachedUid(msg.Contact.Uin) ?? "";
         if (msg.Receiver is BotFriend f)
         {
             proto.RoutingHead.ToUin = f.Uin;
-            proto.RoutingHead.ToUid = _context.CacheContext.ResolveCachedUid(f.Uin) ?? "";
+            proto.RoutingHead.ToUid = context.CacheContext.ResolveCachedUid(f.Uin) ?? "";
         }
 
         foreach (var entity in msg.Entities)
@@ -289,7 +268,7 @@ internal class MessagePacker
         inner.PushSequence();
         inner.WriteInteger(1);
         inner.WriteInteger(0);
-        inner.WriteInteger((int)(_context.BotUin < 0x8000_0000 ? _context.BotUin : _context.BotUin - 0x1_0000_0000));
+        inner.WriteInteger((int)(context.BotUin < 0x8000_0000 ? context.BotUin : context.BotUin - 0x1_0000_0000));
         inner.WriteOctetString(ptt.GroupFileKey ?? ptt.FileUuid ?? ReadOnlySpan<byte>.Empty);
         inner.WriteInteger(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
         inner.WriteOctetString(kv.CreateReadOnlySpan());

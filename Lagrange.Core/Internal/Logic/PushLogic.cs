@@ -1,51 +1,14 @@
 using System.Collections.Frozen;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using Lagrange.Core.Common;
 using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Events.Message;
-using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Internal.Logic;
 
 [EventSubscribe<PushMessageEvent>(Protocols.All)]
-internal class PushLogic : ILogic
+internal class PushLogic(BotContext ctx) : ILogic
 {
-
-    private readonly BotContext _context;
-
-    private readonly FrozenDictionary<MsgMatchKey, List<MsgPushProcessorBase>> _processors;
-
-    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "All the types are preserved in the csproj by using the TrimmerRootAssembly attribute")]
-    [UnconditionalSuppressMessage("Trimming", "IL2062", Justification = "All the types are preserved in the csproj by using the TrimmerRootAssembly attribute")]
-    [UnconditionalSuppressMessage("Trimming", "IL2072", Justification = "All the types are preserved in the csproj by using the TrimmerRootAssembly attribute")]
-    public PushLogic(BotContext ctx)
-    {
-        _context = ctx;
-
-        var handlers = new Dictionary<MsgMatchKey, List<MsgPushProcessorBase>>();
-        foreach (var type in typeof(MsgPushProcessorBase).Assembly.GetTypes())
-        {
-            if (!type.HasImplemented<MsgPushProcessorBase>() ||
-                Activator.CreateInstance(type) is not MsgPushProcessorBase instance)
-                continue;
-
-            var attributes = type.GetCustomAttributes<MsgPushProcessorAttribute>();
-
-            foreach (var attribute in attributes)
-            {
-                var msgType = new MsgMatchKey(attribute.MsgType, attribute.SubType, attribute.RequireContent);
-                if (!handlers.TryGetValue(msgType, out var set))
-                {
-                    set = [];
-                    handlers[msgType] = set;
-                }
-
-                set.Add(instance);
-            }
-        }
-        _processors = handlers.ToFrozenDictionary();
-    }
+    private readonly FrozenDictionary<MsgMatchKey, List<MsgPushProcessorBase>> _processors = MsgPushProcessorRegistry.Create();
 
     public async ValueTask Incoming(ProtocolEvent e)
     {
@@ -59,7 +22,7 @@ internal class PushLogic : ILogic
         {
             foreach (var handler in handlers)
             {
-                if (await handler.Handle(_context, msgType, subType, msgEvt, content))
+                if (await handler.Handle(ctx, msgType, subType, msgEvt, content))
                     return;
             }
         }
@@ -68,7 +31,7 @@ internal class PushLogic : ILogic
         {
             foreach (var handler in handlers)
             {
-                if (await handler.Handle(_context, msgType, subType, msgEvt, content))
+                if (await handler.Handle(ctx, msgType, subType, msgEvt, content))
                     return;
             }
         }

@@ -1,12 +1,9 @@
 ﻿using System.Collections.Frozen;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Events;
 using Lagrange.Core.Exceptions;
 using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Logic;
-using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Internal.Context;
 
@@ -20,36 +17,10 @@ internal class EventContext : IDisposable
 
     private readonly FrozenDictionary<Type, ILogic> _logics;
 
-    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "All the types are preserved in the csproj by using the TrimmerRootAssembly attribute")]
-    [UnconditionalSuppressMessage("Trimming", "IL2062", Justification = "All the types are preserved in the csproj by using the TrimmerRootAssembly attribute")]
-    [UnconditionalSuppressMessage("Trimming", "IL2072", Justification = "All the types are preserved in the csproj by using the TrimmerRootAssembly attribute")]
     public EventContext(BotContext context)
     {
-        var events = new Dictionary<Type, List<ILogic>>();
-        var logics = new Dictionary<Type, ILogic>();
-
-        foreach (var type in typeof(ILogic).Assembly.GetTypes())
-        {
-            if (type.HasImplemented<ILogic>() && Activator.CreateInstance(type, context) is ILogic instance)
-            {
-                foreach (var @event in type.GetCustomAttributes<EventSubscribeAttribute>())
-                {
-                    if (!events.TryGetValue(@event.EventType, out var list))
-                    {
-                        list = [];
-                        events.Add(@event.EventType, list);
-                    }
-
-                    list.Add(instance);
-                }
-
-                logics[type] = instance;
-            }
-        }
-
         _context = context;
-        _events = events.ToFrozenDictionary();
-        _logics = logics.ToFrozenDictionary();
+        (_events, _logics) = EventLogicRegistry.Create(context);
     }
 
     public async ValueTask<T> SendEvent<T>(ProtocolEvent @event) where T : ProtocolEvent

@@ -11,7 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Lagrange.Core.Generator\Lagrange.Core.Generator.csproj" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\Lagrange.Proto.Generator\Lagrange.Proto.Generator.csproj" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\Lagrange.Proto\Lagrange.Proto.csproj" />
+    <None Include="..\Lagrange.Core.Generator\bin\$(Configuration)\netstandard2.0\Lagrange.Core.Generator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 </Project>

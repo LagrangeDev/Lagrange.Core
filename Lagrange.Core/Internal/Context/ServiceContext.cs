@@ -1,12 +1,9 @@
 using System.Collections.Frozen;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Exceptions;
 using Lagrange.Core.Internal.Events;
 using Lagrange.Core.Internal.Services;
-using Lagrange.Core.Utility.Extension;
 
 namespace Lagrange.Core.Internal.Context;
 
@@ -22,40 +19,11 @@ internal class ServiceContext
 
     private readonly BotContext _context;
 
-    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "All the types are preserved in the csproj by using the TrimmerRootAssembly attribute")]
-    [UnconditionalSuppressMessage("Trimming", "IL2062", Justification = "All the types are preserved in the csproj by using the TrimmerRootAssembly attribute")]
-    [UnconditionalSuppressMessage("Trimming", "IL2072", Justification = "All the types are preserved in the csproj by using the TrimmerRootAssembly attribute")]
     public ServiceContext(BotContext context)
     {
         _context = context;
 
-        var services = new Dictionary<string, IService>();
-        var servicesEventType = new Dictionary<Type, (ServiceAttribute, IService)>();
-
-        foreach (var type in typeof(IService).Assembly.GetTypes())
-        {
-            foreach (var attribute in type.GetCustomAttributes<EventSubscribeAttribute>())
-            {
-                if ((~attribute.Protocol & context.Config.Protocol) != Protocols.None) continue; // skip if not supported
-
-                if (type.GetCustomAttribute<ServiceAttribute>() is { } attr && type.HasImplemented<IService>())
-                {
-                    if (!services.TryGetValue(attr.Command, out var service))
-                    {
-                        service = (IService?)Activator.CreateInstance(type) ?? throw new InvalidOperationException("Failed to create service instance");
-                        services[attr.Command] = service;
-                        if (attr.DisableLog) _disabledLog.Add(attr.Command);
-                    }
-
-                    servicesEventType[attribute.EventType] = !servicesEventType.ContainsKey(attribute.EventType)
-                        ? (attr, service)
-                        : throw new InvalidOperationException($"Multiple services for event type: {attribute.EventType}");
-                }
-            }
-        }
-
-        _services = services.ToFrozenDictionary();
-        _servicesEventType = servicesEventType.ToFrozenDictionary();
+        (_services, _servicesEventType) = ServiceRegistry.Create(context.Config.Protocol, _disabledLog);
     }
 
     public ValueTask<ProtocolEvent> Resolve(BotSsoPacket ssoPacket)
