@@ -277,7 +277,7 @@ public class ProtoWriter : IDisposable
             );
             var d = Sse2.Or(c, Sse2.ShiftRightLogical128BitLane(c, 8));
             x = Sse41.X64.Extract(d, 0);
-            y = (v & 0x7f00000000000000) >> 56 | (v & 0x8000000000000000) >> 55;
+            y = ((v & 0x7f00000000000000) >> 56) | ((v & 0x8000000000000000) >> 55);
         }
         else if (AdvSimd.Arm64.IsSupported)
         {
@@ -285,7 +285,7 @@ public class ProtoWriter : IDisposable
             var c = (AdvSimd.ShiftLogical(b & Vector128.Create(0x00000007f0000000ul, 0x000003f800000000ul), Vector128.Create(4L, 5L)) | AdvSimd.ShiftLogical(b & Vector128.Create(0x0001fc0000000000ul, 0x00fe000000000000ul), Vector128.Create(6L, 7L))) | (AdvSimd.ShiftLogical(b & Vector128.Create(0x000000000000007ful, 0x0000000000003f80ul), Vector128.Create(0L, 1L)) | AdvSimd.ShiftLogical(b & Vector128.Create(0x00000000001fc000ul, 0x000000000fe00000ul), Vector128.Create(2L, 3L)));
             var d = c | Vector128.Create(c.GetElement(1), 0ul);
             x = d.ToScalar();
-            y = (v & 0x7f00000000000000) >> 56 | (v & 0x8000000000000000) >> 55;
+            y = ((v & 0x7f00000000000000) >> 56) | ((v & 0x8000000000000000) >> 55);
         }
         else
         {

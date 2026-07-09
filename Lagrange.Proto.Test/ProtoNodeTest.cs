@@ -107,6 +107,17 @@ public class ProtoNodeTest
         
         bufferWriter.Dispose();
     }
+
+    [Test]
+    public void TestProtoReader_DecodeVarIntUInt32_FiveByteValue()
+    {
+        byte[] bytes = [0xBB, 0x8C, 0x85, 0xBF, 0x06, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var reader = new ProtoReader(bytes);
+
+        uint decodedValue = reader.DecodeVarInt<uint>();
+
+        Assert.That(decodedValue, Is.EqualTo(1742816827u));
+    }
     
     #endregion
     

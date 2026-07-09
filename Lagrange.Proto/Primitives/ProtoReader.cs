@@ -135,7 +135,7 @@ public ref struct ProtoReader
                 {
                     sizeof(byte) => T.CreateTruncating((varintPart & 0x000000000000007f) | ((varintPart & 0x0000000000000100) >> 1)),
                     sizeof(ushort) => T.CreateTruncating((varintPart & 0x000000000000007f) | ((varintPart & 0x0000000000030000) >> 2) | ((varintPart & 0x0000000000007f00) >> 1)),
-                    sizeof(uint) => T.CreateTruncating((varintPart & 0x000000000000007f) | (varintPart & 0x0000000f00000000 >> 4) | ((varintPart & 0x000000007f000000) >> 3) | ((varintPart & 0x00000000007f0000) >> 2) | ((varintPart & 0x0000000000007f00) >> 1)),
+                    sizeof(uint) => T.CreateTruncating((varintPart & 0x000000000000007f) | ((varintPart & 0x0000000f00000000) >> 4) | ((varintPart & 0x000000007f000000) >> 3) | ((varintPart & 0x00000000007f0000) >> 2) | ((varintPart & 0x0000000000007f00) >> 1)),
                     _ => throw new NotSupportedException()
                 };
             }
@@ -192,7 +192,7 @@ public ref struct ProtoReader
             var e = Sse2.Or(d, Sse2.ShiftRightLogical128BitLane(d, 8));
             ulong pt1 = Sse41.X64.Extract(e, 0);
                 
-            return T.CreateTruncating(pt1 | (varintPart1 & 0x0000000000000100) << 56 | (varintPart1 & 0x000000000000007f) << 56);
+            return T.CreateTruncating(pt1 | ((varintPart1 & 0x0000000000000100) << 55) | ((varintPart1 & 0x000000000000007f) << 56));
         }
         else if (AdvSimd.Arm64.IsSupported)
         {
@@ -356,7 +356,7 @@ public ref struct ProtoReader
         ulong b1 = Unsafe.As<byte, ulong>(ref Unsafe.Add(ref _first, _offset + 8));
         ulong msbs0 = ~b0 & ~0x7f7f7f7f7f7f7f7ful;
         ulong msbs1 = ~b1 & ~0x7f7f7f7f7f7f7f7ful;
-        _offset += msbs0 == 0 ? (BitOperations.TrailingZeroCount(msbs1) + 1 + 64) >> 3 : BitOperations.TrailingZeroCount(msbs0) + 1 >> 3;
+        _offset += msbs0 == 0 ? (BitOperations.TrailingZeroCount(msbs1) + 1 + 64) >> 3 : (BitOperations.TrailingZeroCount(msbs0) + 1) >> 3;
     }
     
     private void SkipFixed32()

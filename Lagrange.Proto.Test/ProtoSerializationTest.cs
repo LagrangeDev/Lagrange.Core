@@ -197,7 +197,7 @@ public class ProtoSerializationTest
         {
             SignedInt = -123456,
             SignedLong = -9876543210L,
-            UnsignedInt = 123456,
+            UnsignedInt = 1742816827,
             UnsignedLong = 9876543210L,
             Fixed32Value = -42,
             Fixed64Value = -999999999999L

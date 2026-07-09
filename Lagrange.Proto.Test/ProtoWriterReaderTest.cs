@@ -11,6 +11,41 @@ namespace Lagrange.Proto.Test;
 [TestFixture]
 public class ProtoWriterReaderTest
 {
+    private static readonly ulong[] VarInt64Values =
+    [
+        0,
+        1,
+        127,
+        128,
+        1UL << 28,
+        1UL << 32,
+        1UL << 56,
+        1UL << 63,
+        0x0102030405060708,
+        0xFEDCBA9876543210,
+        ulong.MaxValue
+    ];
+
+    private static readonly uint[] VarInt32Values =
+    [
+        0,
+        1,
+        127,
+        128,
+        16_383,
+        16_384,
+        2_097_151,
+        2_097_152,
+        268_435_455,
+        268_435_456,
+        1_742_816_827,
+        uint.MaxValue
+    ];
+
+    private static readonly byte[] VarInt8Values = [0, 1, 127, 128, byte.MaxValue];
+
+    private static readonly ushort[] VarInt16Values = [0, 1, 127, 128, 16_383, 16_384, ushort.MaxValue];
+
     #region VarInt Tests
     
     [Test]
@@ -85,6 +120,136 @@ public class ProtoWriterReaderTest
             Assert.That(ushortVal, Is.EqualTo(ushort.MaxValue));
             Assert.That(uintVal, Is.EqualTo(uint.MaxValue));
             Assert.That(ulongVal, Is.EqualTo(ulong.MaxValue));
+        });
+    }
+
+    [Test]
+    public void TestEncodeVarInt_UInt8AndUInt16MatchReference()
+    {
+        foreach (byte value in VarInt8Values)
+        {
+            AssertEncodedVarIntMatchesReference(value, value);
+        }
+
+        foreach (ushort value in VarInt16Values)
+        {
+            AssertEncodedVarIntMatchesReference(value, value);
+        }
+    }
+
+    [Test]
+    public void TestDecodeVarIntUInt8AndUInt16_UnsafePathMatchesReference()
+    {
+        foreach (byte value in VarInt8Values)
+        {
+            var reader = new ProtoReader(PadForUnsafePath(EncodeVarIntReference(value)));
+            Assert.That(reader.DecodeVarInt<byte>(), Is.EqualTo(value));
+        }
+
+        foreach (ushort value in VarInt16Values)
+        {
+            var reader = new ProtoReader(PadForUnsafePath(EncodeVarIntReference(value)));
+            Assert.That(reader.DecodeVarInt<ushort>(), Is.EqualTo(value));
+        }
+    }
+
+    [TestCaseSource(nameof(VarInt32Values))]
+    public void TestEncodeVarInt_UInt32MatchesReference(uint value)
+    {
+        var buffer = new ArrayBufferWriter<byte>();
+        var writer = new ProtoWriter(buffer);
+
+        writer.WriteRawByte(0xAA);
+        writer.EncodeVarInt(value);
+        writer.Flush();
+
+        byte[] expected = [0xAA, .. EncodeVarIntReference(value)];
+        Assert.That(buffer.WrittenMemory.ToArray(), Is.EqualTo(expected));
+    }
+
+    [TestCaseSource(nameof(VarInt32Values))]
+    public void TestDecodeVarIntUInt32_UnsafePathMatchesReference(uint value)
+    {
+        byte[] encoded = EncodeVarIntReference(value);
+        byte[] padded = PadForUnsafePath(encoded);
+        var reader = new ProtoReader(padded);
+
+        uint decoded = reader.DecodeVarInt<uint>();
+
+        Assert.That(decoded, Is.EqualTo(value));
+    }
+
+    [TestCaseSource(nameof(VarInt32Values))]
+    public void TestDecodeVarIntUnsafePair_UInt32MatchesReference(uint value)
+    {
+        if (!Ssse3.X64.IsSupported && !AdvSimd.Arm64.IsSupported)
+        {
+            Assert.Ignore("SSSE3/NEON is not supported on this platform.");
+        }
+
+        byte[] first = EncodeVarIntReference(value);
+        byte[] second = EncodeVarIntReference(42);
+        byte[] padded = new byte[first.Length + second.Length + 16];
+        first.CopyTo(padded, 0);
+        second.CopyTo(padded, first.Length);
+        var reader = new ProtoReader(padded);
+
+        var (decodedFirst, decodedSecond) = reader.DecodeVarIntUnsafe<uint, uint>(padded);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(decodedFirst, Is.EqualTo(value));
+            Assert.That(decodedSecond, Is.EqualTo(42u));
+        });
+    }
+
+    [TestCaseSource(nameof(VarInt64Values))]
+    public void TestEncodeVarInt_UInt64MatchesReference(ulong value)
+    {
+        var buffer = new ArrayBufferWriter<byte>();
+        var writer = new ProtoWriter(buffer);
+
+        writer.WriteRawByte(0xAA);
+        writer.EncodeVarInt(value);
+        writer.Flush();
+
+        byte[] expected = [0xAA, .. EncodeVarIntReference(value)];
+        Assert.That(buffer.WrittenMemory.ToArray(), Is.EqualTo(expected));
+    }
+
+    [TestCaseSource(nameof(VarInt64Values))]
+    public void TestDecodeVarIntUInt64_UnsafePathMatchesReference(ulong value)
+    {
+        byte[] encoded = EncodeVarIntReference(value);
+        byte[] padded = PadForUnsafePath(encoded);
+        var reader = new ProtoReader(padded);
+
+        ulong decoded = reader.DecodeVarInt<ulong>();
+
+        Assert.That(decoded, Is.EqualTo(value));
+    }
+
+    [TestCaseSource(nameof(VarInt64Values))]
+    public void TestDecodeVarIntUnsafePair_UInt64MatchesReference(ulong value)
+    {
+        if (!Ssse3.X64.IsSupported && !AdvSimd.Arm64.IsSupported)
+        {
+            Assert.Ignore("SSSE3/NEON is not supported on this platform.");
+        }
+
+        byte[] first = EncodeVarIntReference(value);
+        byte[] second = EncodeVarIntReference(42);
+        byte[] padded = new byte[first.Length + second.Length + 16];
+        first.CopyTo(padded, 0);
+        second.CopyTo(padded, first.Length);
+        var reader = new ProtoReader(padded);
+
+        var (decodedFirst, decodedSecond) = reader.DecodeVarIntUnsafe<ulong, uint>(padded);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(decodedFirst, Is.EqualTo(value));
+            Assert.That(decodedSecond, Is.EqualTo(42u));
         });
     }
     
@@ -1002,4 +1167,40 @@ public class ProtoWriterReaderTest
     }
     
     #endregion
+
+    private static byte[] EncodeVarIntReference(ulong value)
+    {
+        var bytes = new List<byte>();
+
+        do
+        {
+            byte next = (byte)(value & 0x7F);
+            value >>= 7;
+            if (value != 0) next |= 0x80;
+            bytes.Add(next);
+        }
+        while (value != 0);
+
+        return bytes.ToArray();
+    }
+
+    private static byte[] PadForUnsafePath(byte[] encoded)
+    {
+        byte[] padded = new byte[encoded.Length + 16];
+        encoded.CopyTo(padded, 0);
+        return padded;
+    }
+
+    private static void AssertEncodedVarIntMatchesReference<T>(T value, ulong expectedValue) where T : unmanaged, System.Numerics.INumber<T>
+    {
+        var buffer = new ArrayBufferWriter<byte>();
+        var writer = new ProtoWriter(buffer);
+
+        writer.WriteRawByte(0xAA);
+        writer.EncodeVarInt(value);
+        writer.Flush();
+
+        byte[] expected = [0xAA, .. EncodeVarIntReference(expectedValue)];
+        Assert.That(buffer.WrittenMemory.ToArray(), Is.EqualTo(expected));
+    }
 }
