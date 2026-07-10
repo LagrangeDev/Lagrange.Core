@@ -7,7 +7,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>13</LangVersion>
         <IsPackable>true</IsPackable>
-        <Version>1.0.9</Version>
+        <Version>1.0.10</Version>
         <Authors>Linwenxuan04</Authors>
         <Description>The Blazing-fast Code-first C# Google Protocol Buffer Serializer</Description>
         <RepositoryType>git</RepositoryType>
