@@ -14,7 +14,9 @@ on:
       - Lagrange.Proto/**
       - Lagrange.Proto.Generator/**
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+      - master
     paths:
       - .github/workflows/milky-build.yaml
       - Lagrange.Codec/**

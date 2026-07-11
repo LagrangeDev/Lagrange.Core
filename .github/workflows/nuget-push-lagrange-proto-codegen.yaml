@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - master
     paths:
       - "Lagrange.Proto.Generator/Lagrange.Proto.Generator.csproj"
   workflow_dispatch:
@@ -13,45 +14,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: Linwenxuan04
+
       - uses: actions/checkout@v4
 
-      # Check Version
-      - shell: pwsh
-        run: |
-          $lversion = ([xml](Get-Content .\Lagrange.Proto.Generator\Lagrange.Proto.Generator.csproj)).Project.PropertyGroup.Version
-          echo "Local version: $lversion"
-
-          try {
-            $response = Invoke-WebRequest -Uri "https://api.nuget.org/v3-flatcontainer/lagrange.proto.generator/index.json"
-          } catch {
-            if ($_.Exception.Response.StatusCode.value__ -eq 404) {
-              echo "No remote version"
-              echo "continued=true" >> $env:GITHUB_ENV
-              exit 0
-            } else {
-              throw
-            }
-          }
-
-          $rversions = ($response.Content | ConvertFrom-Json).versions
-          echo "Remote version: $rversions"
-          if ($lversion -in $rversions) {
-            echo "Version($lversion) already exists"
-            echo "continued=false" >> $env:GITHUB_ENV
-            exit 0
-          }
-
-          echo "Version($lversion) does not exist"
-          echo "continued=true" >> $env:GITHUB_ENV
-          exit 0
-
-      - if: env.continued == 'true'
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10'
       
-      - if: env.continued == 'true'
-        run: dotnet pack -c Release -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg Lagrange.Proto.Generator
+      - run: dotnet pack -c Release -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg Lagrange.Proto.Generator
 
-      - if: env.continued == 'true'
-        run: dotnet nuget push ./Lagrange.Proto.Generator/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_TOKEN }}
+      - run: dotnet nuget push ./Lagrange.Proto.Generator/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
