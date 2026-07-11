@@ -12,6 +12,8 @@ on:
 jobs:
   nuget-push:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
 
     steps:
       - id: nuget-login
