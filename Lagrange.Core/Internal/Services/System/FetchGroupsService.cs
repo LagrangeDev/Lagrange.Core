@@ -38,7 +38,8 @@ internal class FetchGroupsService : OidbService<FetchGroupsEventReq, FetchGroups
                 raw.Info.CreatedTime,
                 raw.Info.Description,
                 raw.Info.Question,
-                raw.Info.Announcement
+                raw.Info.Announcement,
+                raw.CustomInfo.Remark
             ))]));
     }
 }

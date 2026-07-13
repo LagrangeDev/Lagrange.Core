@@ -30,7 +30,7 @@ public partial class EntityConvert
         group.GroupName,
         group.MemberCount,
         group.MaxMember,
-        string.Empty, // TODO: Core BotGroup has no Remark field
+        group.GroupRemark ?? string.Empty,
         group.CreateTime,
         group.Description ?? string.Empty,
         group.Question ?? string.Empty,

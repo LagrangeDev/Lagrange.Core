@@ -16,7 +16,6 @@ public class Group(long groupId, string groupName, long memberCount, long maxMem
     [JsonPropertyName("max_member_count")]
     public long MaxMemberCount { get; } = maxMemberCount;
 
-    // TODO: Core BotGroup has no Remark field
     [JsonPropertyName("remark")]
     public string? Remark { get; } = remark;
 

@@ -156,6 +156,8 @@ internal partial class FetchGroupsResponseGroupInfo
 internal partial class FetchGroupsResponseCustomInfo
 {
     [ProtoMember(1)] public long LastSpeakTime { get; set; }
+
+    [ProtoMember(3)] public string? Remark { get; set; }
     
     [ProtoMember(5)] public uint LastestSeq { get; set; }
 }
@@ -163,5 +165,5 @@ internal partial class FetchGroupsResponseCustomInfo
 [ProtoPackable]
 internal partial class FetchGroupsResponseMember
 {
-    [ProtoMember(3)] public string? Remark { get; set; }
+    [ProtoMember(2)] public string Uid { get; set; }
 }

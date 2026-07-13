@@ -8,11 +8,14 @@ public class BotGroup(
     long createTime,
     string? description,
     string? question,
-    string? announcement) : BotContact
+    string? announcement,
+    string? groupRemark = null) : BotContact
 {
     public long GroupUin { get; } = groupUin;
 
     public string GroupName { get; } = groupName ?? string.Empty;
+
+    public string? GroupRemark { get; } = groupRemark;
 
     public int MemberCount { get; } = memberCount;
 
