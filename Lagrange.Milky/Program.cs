@@ -1,53 +1,114 @@
-﻿using System.Text;
-using Lagrange.Milky.Extension;
-using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using Lagrange.Milky.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace Lagrange.Milky;
 
-internal static class Program
+public static class Program
 {
     public static async Task Main(string[] args)
     {
-        Console.InputEncoding = Encoding.UTF8;
-        Console.OutputEncoding = Encoding.UTF8;
+        bool isNoStdin = false;
+        bool isNoStdout = false;
+        foreach (string arg in args)
+        {
+            switch (arg)
+            {
+                case "--no-stdin":
+                {
+                    isNoStdin = true;
+                    break;
+                }
+                case "--no-stdout":
+                {
+                    isNoStdout = true;
+                    break;
+                }
+            }
+        }
 
-        ShowApplicationInfo();
+        SetConsoleEncoding(isNoStdin, isNoStdout);
+        ShowApplicationInfo(isNoStdout);
+        CheckConfigurationFile(isNoStdin, isNoStdout);
 
-        CheckConfigurationFile();
+        var builder = Host.CreateApplicationBuilder(args);
+        builder.ConfigureLagrange();
+        builder.ConfigureMilky();
 
-        await Host.CreateApplicationBuilder(args)
-            .ConfigureConfiguration(configuration => configuration
-                .AddJsonFile(Path.GetFullPath(Constants.ConfigFileName), false, true)
-            )
-            .ConfigureCore()
-            .ConfigureMilky()
-            .Build()
-            .RunAsync();
+        var host = builder.Build();
+
+        await host.RunAsync();
     }
 
-    private static void CheckConfigurationFile()
+    private static void SetConsoleEncoding(bool isNoStdin, bool isNoStdout)
     {
-        if (!File.Exists(Constants.ConfigFileName))
-        {
-            {
-                Console.WriteLine($"{Constants.ConfigFileName} not found. Generating...");
-                using var input = typeof(Program).Assembly.GetManifestResourceStream(Constants.ConfigResourceName);
-                if (input == null) throw new Exception("Default configuration file not found");
-                using var output = File.OpenWrite(Constants.ConfigFileName);
-                input.CopyTo(output);
-            }
+        if (!isNoStdin) Console.InputEncoding = Encoding.UTF8;
+        if (!isNoStdout) Console.OutputEncoding = Encoding.UTF8;
+    }
 
+    private static void ShowApplicationInfo(bool isNoStdout)
+    {
+        if (isNoStdout) return;
+
+        string hash = GetGitHash(9);
+        Console.WriteLine($"""
+        ╭─────────────────────────────────────────╮
+        │  _                                      │
+        │ | |   __ _ __ _ _ _ __ _ _ _  __ _ ___  │
+        │ | |__/ _` / _` | '_/ _` | ' \/ _` / -_) │
+        │ |____\__,_\__, |_| \__,_|_||_\__, \___| │
+        │           |___/              |___/      │
+        │                    __  __ _ _ _         │
+        │                   |  \/  (_) | |___  _  │
+        │                   | |\/| | | | / / || | │
+        ├─────────╮         |_|  |_|_|_|_\_\\_, | │
+        │{hash,-9}│                          |__/ │
+        ╰─────────┴───────────────────────────────╯
+        """);
+    }
+
+    private static string GetGitHash(int length)
+    {
+        var assembly = Assembly.GetAssembly(typeof(Program));
+        if (assembly == null) return "unknown";
+
+        var attribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+        if (attribute == null) return "unknown";
+
+        string version = attribute.InformationalVersion;
+
+        int plusIndex = version.LastIndexOf('+');
+        if (plusIndex < 0) return "unknown";
+
+        return version.Substring(plusIndex + 1, length);
+    }
+
+    private static void CheckConfigurationFile(bool isNoStdin, bool isNoStdout)
+    {
+        if (File.Exists("appsettings.json")) return;
+
+        if (!isNoStdout)
+        {
+            Console.WriteLine($"appsettings.json not found. Create a default configuration file...");
+        }
+
+        using var input = typeof(Program).Assembly.GetManifestResourceStream("Lagrange.Milky.Resources.appsettings.json");
+        if (input == null) throw new Exception("Default configuration file not found");
+
+        using (var output = File.OpenWrite("appsettings.json")) input.CopyTo(output);
+
+        if (!isNoStdout)
+        {
             Console.WriteLine("Please edit the configuration file");
             Console.WriteLine("and press any key to continue starting the application.");
-            Console.ReadKey();
+            if (!isNoStdin)
+            {
+                Console.ReadKey();
+            }
         }
-    }
-
-    private static void ShowApplicationInfo()
-    {
-        Console.WriteLine(Constants.Banner);
-
-        Console.WriteLine($"Version: {Constants.ImplementationVersion}");
     }
 }

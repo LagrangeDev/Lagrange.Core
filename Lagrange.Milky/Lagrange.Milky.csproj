@@ -1,34 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net10.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <PublishAot>true</PublishAot>
-        <InvariantGlobalization>true</InvariantGlobalization>
-        <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug'">
-        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.3" />
-        <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.0.6" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\Lagrange.Codec\Lagrange.Codec.csproj" />
-        <ProjectReference Include="..\Lagrange.Core\Lagrange.Core.csproj" />
-        <ProjectReference Include="..\Lagrange.Milky.Implementation.Api.Generator\Lagrange.Milky.Implementation.Api.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <TrimmerRootAssembly Include="Lagrange.Core" />
-        <TrimmerRootAssembly Include="Lagrange.Milky" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <EmbeddedResource Include="Resources\appsettings.jsonc" />
-    </ItemGroup>
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
+  </PropertyGroup>
+  <ItemGroup>
+    <TrimmerRootAssembly Include="Lagrange.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\appsettings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.9" />
+    <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="3.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lagrange.Core\Lagrange.Core.csproj" />
+    <ProjectReference Include="..\Lagrange.Milky.Generator\Lagrange.Milky.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
 </Project>
