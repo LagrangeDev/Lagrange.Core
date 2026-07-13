@@ -42,6 +42,15 @@ internal class OperationLogic(BotContext context) : ILogic
         return true;
     }
 
+    public Task GroupRecallPoke(ulong groupUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId) => 
+        RecallPoke(true, groupUin, messageSequence, messageTime, tipsSeqId);
+
+    public Task FriendRecallPoke(ulong peerUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId) => 
+        RecallPoke(false, peerUin, messageSequence, messageTime, tipsSeqId);
+
+    private async Task RecallPoke(bool isGroup, ulong peerUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId) => 
+        await context.EventContext.SendEvent<RecallPokeEventResp>(new RecallPokeEventReq(isGroup, peerUin, messageSequence, messageTime, tipsSeqId));
+
     public async Task<bool> SetStatus(uint status)
     {
         if (status > int.MaxValue) throw new ArgumentOutOfRangeException(nameof(status));
@@ -59,6 +68,11 @@ internal class OperationLogic(BotContext context) : ILogic
     public async Task GroupRename(long groupUin, string name)
     {
         await context.EventContext.SendEvent<GroupRenameEventResp>(new GroupRenameEventReq(groupUin, name));
+    }
+
+    public async Task RemarkGroup(long groupUin, string remark)
+    {
+        await context.EventContext.SendEvent<GroupRemarkEventResp>(new GroupRemarkEventReq(groupUin, remark));
     }
 
     public async Task<bool> MuteGroupGlobal(long groupUin, bool isMute)

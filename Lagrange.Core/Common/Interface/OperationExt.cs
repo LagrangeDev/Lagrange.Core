@@ -24,6 +24,12 @@ public static class OperationExt
     public static Task<bool> SetCustomStatus(this BotContext context, uint faceId, string text) =>
         context.EventContext.GetLogic<OperationLogic>().SetCustomStatus(faceId, text);
 
+    public static Task GroupRecallPoke(this BotContext context, ulong groupUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId) => 
+        context.EventContext.GetLogic<OperationLogic>().GroupRecallPoke(groupUin, messageSequence, messageTime, tipsSeqId);
+
+    public static Task FriendRecallPoke(this BotContext context, ulong peerUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId) => 
+        context.EventContext.GetLogic<OperationLogic>().FriendRecallPoke(peerUin, messageSequence, messageTime, tipsSeqId);
+
     public static Task<List<BotFriend>> FetchFriends(this BotContext context, bool refresh = false) =>
         context.CacheContext.GetFriendList(refresh);
 
