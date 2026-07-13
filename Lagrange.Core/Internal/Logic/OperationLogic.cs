@@ -61,6 +61,24 @@ internal class OperationLogic(BotContext context) : ILogic
         await context.EventContext.SendEvent<GroupRenameEventResp>(new GroupRenameEventReq(groupUin, name));
     }
 
+    public async Task<bool> MuteGroupGlobal(long groupUin, bool isMute)
+    { 
+        await context.EventContext.SendEvent<GroupMuteGlobalEventResp>(new GroupMuteGlobalEventReq(groupUin, isMute));
+        return true;
+    }
+
+    public async Task<bool> GroupTransfer(long groupUin, long targetUin)
+    {
+        await context.EventContext.SendEvent<GroupTransferEventResp>(new GroupTransferEventReq(groupUin, targetUin));
+        return true;
+    }
+
+    public async Task<(uint RemainAtAllCountForUin, uint RemainAtAllCountForGroup)> GroupRemainAtAll(long groupUin)
+    {
+        var response = await context.EventContext.SendEvent<FetchGroupAtAllRemainEventResp>(new FetchGroupAtAllRemainEventReq(groupUin));
+        return (response.RemainAtAllCountForUin, response.RemainAtAllCountForGroup);
+    }
+
     public async Task GroupSetSpecialTitle(long groupUin, long targetUin, string title)
     {
         if (context.CacheContext.ResolveCachedUid(targetUin) is not { } uid)
@@ -352,6 +370,12 @@ internal class OperationLogic(BotContext context) : ILogic
         var req = new FetchGroupExtraEventReq(groupUin);
         var resp = await context.EventContext.SendEvent<FetchGroupExtraEventResp>(req);
         return resp.Extra;
+    }
+
+    public async Task<BotStrangerGroupInfo> FetchStrangerGroupInfo(ulong groupUin)
+    {
+        var response = await context.EventContext.SendEvent<FetchStrangerGroupInfoEventResp>(new FetchStrangerGroupInfoEventReq(groupUin));
+        return response.Info;
     }
 
     public async Task<List<BotGroupNotificationBase>> FetchGroupNotifications(ulong count, ulong start)

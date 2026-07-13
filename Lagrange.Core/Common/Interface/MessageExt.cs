@@ -93,6 +93,15 @@ public static class MessageExt
     public static Task GroupRename(this BotContext context, long groupUin, string name)
         => context.EventContext.GetLogic<OperationLogic>().GroupRename(groupUin, name);
 
+    public static Task<bool> MuteGroupGlobal(this BotContext context, long groupUin, bool isMute)
+        => context.EventContext.GetLogic<OperationLogic>().MuteGroupGlobal(groupUin, isMute);
+
+    public static Task<bool> GroupTransfer(this BotContext context, long groupUin, long targetUin)
+        => context.EventContext.GetLogic<OperationLogic>().GroupTransfer(groupUin, targetUin);
+
+    public static Task<(uint RemainAtAllCountForUin, uint RemainAtAllCountForGroup)> GroupRemainAtAll(this BotContext context, long groupUin)
+        => context.EventContext.GetLogic<OperationLogic>().GroupRemainAtAll(groupUin);
+
     public static Task GroupQuit(this BotContext context, long groupUin)
         => context.EventContext.GetLogic<OperationLogic>().GroupQuit(groupUin);
 }
