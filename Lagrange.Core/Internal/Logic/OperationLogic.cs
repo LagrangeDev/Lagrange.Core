@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Security.Cryptography;
 using Lagrange.Core.Common.Entity;
+using Lagrange.Core.Common.Response;
 using Lagrange.Core.Exceptions;
 using Lagrange.Core.Internal.Events.Message;
 using Lagrange.Core.Internal.Events.System;
@@ -75,6 +76,12 @@ internal class OperationLogic(BotContext context) : ILogic
         await context.EventContext.SendEvent<GroupRemarkEventResp>(new GroupRemarkEventReq(groupUin, remark));
     }
 
+    public async Task<BotGroupClockInResult> GroupClockIn(long groupUin)
+    {
+        var response = await context.EventContext.SendEvent<GroupClockInEventResp>(new GroupClockInEventReq(groupUin));
+        return response.Result;
+    }
+
     public async Task<bool> MuteGroupGlobal(long groupUin, bool isMute)
     { 
         await context.EventContext.SendEvent<GroupMuteGlobalEventResp>(new GroupMuteGlobalEventReq(groupUin, isMute));
@@ -136,6 +143,12 @@ internal class OperationLogic(BotContext context) : ILogic
     public async Task SetGroupTodo(long groupUin, ulong sequence)
     {
         await context.EventContext.SendEvent<GroupSetTodoEventResp>(new GroupSetTodoEventReq(groupUin, sequence));
+    }
+
+    public async Task<BotGetGroupTodoResult> GetGroupTodo(long groupUin)
+    {
+        var response = await context.EventContext.SendEvent<GroupGetTodoEventResp>(new GroupGetTodoEventReq(groupUin));
+        return response.Result;
     }
 
     public async Task FinishGroupTodo(long groupUin)
@@ -404,6 +417,12 @@ internal class OperationLogic(BotContext context) : ILogic
         var req = new FetchFilteredGroupNotificationsEventReq(count, start);
         var resp = await context.EventContext.SendEvent<FetchFilteredGroupNotificationsEventResp>(req);
         return resp.GroupNotifications;
+    }
+
+    public async Task<List<BotFriendRequest>> FetchFriendRequests()
+    {
+        var response = await context.EventContext.SendEvent<FetchFriendRequestsEventResp>(new FetchFriendRequestsEventReq());
+        return response.Requests;
     }
 
     public async Task<BotStranger> FetchStranger(long uid)
