@@ -19,9 +19,10 @@ public class MilkyHttpConfiguration(string host, ushort port, MilkyHttpApiConfig
     public MilkySSEConfiguration? SSE { get; } = sse;
 }
 
-public class MilkyHttpApiConfiguration(bool enabled)
+public class MilkyHttpApiConfiguration(bool enabled, string path = "/api")
 {
     public bool Enabled { get; } = enabled;
+    public string Path { get; } = path;
 }
 
 public class MilkyWSConfiguration(MilkyWSEventConfiguration? event_)
@@ -44,7 +45,8 @@ public class MilkySSEConfiguration(MilkySSEEventConfiguration? event_)
     public MilkySSEEventConfiguration? Event => Event_;
 }
 
-public class MilkySSEEventConfiguration(bool enabled)
+public class MilkySSEEventConfiguration(bool enabled, string path = "/event")
 {
     public bool Enabled { get; } = enabled;
+    public string Path { get; } = path;
 }

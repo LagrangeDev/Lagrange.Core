@@ -9,7 +9,7 @@ namespace Lagrange.Milky.Events.Converters;
 [EventConverter]
 public class GroupNudgeEventConverter : IEventConverter<BotGroupNudgeEvent, GroupNudgeEventData>
 {
-    public string Name => "bot_offline";
+    public string Name => "group_nudge";
 
     public bool CanConvert(BotGroupNudgeEvent @event) => true;
 

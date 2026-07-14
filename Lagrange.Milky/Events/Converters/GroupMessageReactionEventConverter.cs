@@ -9,7 +9,7 @@ namespace Lagrange.Milky.Events.Converters;
 [EventConverter]
 public class GroupMessageReactionEventConverter : IEventConverter<BotGroupReactionEvent, GroupMessageReactionEventData>
 {
-    public string Name => "bot_offline";
+    public string Name => "group_message_reaction";
 
     public bool CanConvert(BotGroupReactionEvent @event) => true;
 
