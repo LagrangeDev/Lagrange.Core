@@ -28,7 +28,6 @@ public sealed class WebSocketEventHandler : IHttpHandler, IGenericEventHandler, 
 
     private readonly BotContext _lagrange;
 
-    private readonly string _path;
     private readonly string? _token;
 
     private readonly ConcurrentDictionary<Guid, (WebSocket WS, SemaphoreSlim SendLock)> _wss = new();
@@ -36,14 +35,13 @@ public sealed class WebSocketEventHandler : IHttpHandler, IGenericEventHandler, 
 
     private int _disposed = 0;
 
-    public WebSocketEventHandler(IServiceScopeFactory scopeFactory, ILogger<WebSocketEventHandler> logger, MilkyConfiguration configuration, MilkyWSEventConfiguration wsConfiguration, BotContext lagrange)
+    public WebSocketEventHandler(IServiceScopeFactory scopeFactory, ILogger<WebSocketEventHandler> logger, MilkyConfiguration configuration, MilkyWebSocketEventConfiguration wsConfiguration, BotContext lagrange)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
 
         _lagrange = lagrange;
 
-        _path = wsConfiguration.Path;
         _token = configuration.AccessToken;
 
         _lagrange.RegisterConvertibleEvents(this);
@@ -51,7 +49,7 @@ public sealed class WebSocketEventHandler : IHttpHandler, IGenericEventHandler, 
 
     public bool CanHandle(HttpListenerContext context)
         => context.Request.Url != null
-        && context.Request.Url.AbsolutePath.Equals(_path)
+        && context.Request.Url.AbsolutePath.Equals("/event")
         && context.Request.IsWebSocketRequest;
 
     public async Task HandleAsync(HttpListenerContext httpContext, CancellationToken ct)

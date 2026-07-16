@@ -26,7 +26,7 @@ public static class HostApplicationBuilderExtension
     public static HostApplicationBuilder ConfigureLagrange(this HostApplicationBuilder builder)
     {
         var configuration = builder.Configuration.GetRequiredSection("Lagrange").Get<LagrangeConfiguration>()
-            ?? throw new Exception();
+            ?? throw new Exception("Failed to load 'Lagrange' configuration");
         builder.Services.AddSingleton(configuration);
 
         builder.Services.TryAddSingleton<BotSignProvider, HttpSigner>();
@@ -48,7 +48,7 @@ public static class HostApplicationBuilderExtension
             string ksPath = Path.Combine(environment.ContentRootPath, $"{configuration.Login.Uin}.ks");
             var ks = File.Exists(ksPath)
                 ? Serializer.JsonDeserialize<BotKeystore>(File.ReadAllText(ksPath))
-                    ?? throw new Exception()
+                    ?? throw new Exception("Failed to deserialize BotKeystore")
                 : BotKeystore.CreateEmpty();
 
             var appInfo = configuration.Protocol.AppInfo
@@ -71,7 +71,8 @@ public static class HostApplicationBuilderExtension
 
     public static HostApplicationBuilder ConfigureMilky(this HostApplicationBuilder builder)
     {
-        var configuration = builder.Configuration.GetRequiredSection("Milky").Get<MilkyConfiguration>() ?? new();
+        var configuration = builder.Configuration.GetRequiredSection("Milky").Get<MilkyConfiguration>()
+            ?? throw new Exception("Failed to load 'Milky' configuration");
         builder.Services.AddSingleton(configuration);
 
         builder.Services.AddSingleton<MessageCache>();
@@ -80,25 +81,24 @@ public static class HostApplicationBuilderExtension
         builder.Services.AddSingleton<MilkyConverter>();
         builder.Services.AddEventConverters();
 
-        if (configuration.Http != null)
+        builder.Services.AddHostedService<HttpService>();
+        if (configuration.Event.WebSocket?.Enabled ?? false)
+        {
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IHttpHandler, WebSocketEventHandler>(sp
+                => ActivatorUtilities.CreateInstance<WebSocketEventHandler>(sp, configuration.Event.WebSocket)
+            ));
+        }
+        if (configuration.Event.SSE?.Enabled ?? false)
+        {
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IHttpHandler, SSEEventHandler>(sp
+                => ActivatorUtilities.CreateInstance<SSEEventHandler>(sp, configuration.Event.SSE)
+            ));
+        }
+        if (configuration.Event.WebHook?.Enabled ?? false)
         {
             builder.Services.AddHostedService(sp
-                => ActivatorUtilities.CreateInstance<HttpService>(sp, configuration.Http)
+                => ActivatorUtilities.CreateInstance<WebHookEventHandler>(sp, configuration.Event.WebHook)
             );
-
-            if (configuration.Http.WS?.Event != null)
-            {
-                builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IHttpHandler, WebSocketEventHandler>(sp
-                    => ActivatorUtilities.CreateInstance<WebSocketEventHandler>(sp, configuration.Http.WS.Event)
-                ));
-            }
-
-            if (configuration.Http.SSE?.Event != null)
-            {
-                builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IHttpHandler, SSEEventHandler>(sp
-                    => ActivatorUtilities.CreateInstance<SSEEventHandler>(sp, configuration.Http.SSE.Event)
-                ));
-            }
         }
 
         return builder;

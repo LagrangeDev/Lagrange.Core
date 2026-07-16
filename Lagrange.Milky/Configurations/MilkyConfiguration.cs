@@ -2,53 +2,47 @@ using Microsoft.Extensions.Configuration;
 
 namespace Lagrange.Milky.Configurations;
 
-public class MilkyConfiguration(string? accessToken = null, MilkyHttpConfiguration? http = null)
+public class MilkyConfiguration(MilkyHttpServerConfiguration httpServer, string? accessToken = null, MilkyApiConfiguration? api = null, MilkyEventConfiguration? event_ = null)
 {
     public string? AccessToken { get; } = accessToken;
-
-    public MilkyHttpConfiguration? Http { get; } = http;
+    public MilkyHttpServerConfiguration HttpServer { get; } = httpServer;
+    public MilkyApiConfiguration Api { get; } = api ?? new();
+    [ConfigurationKeyName("Event")]
+    private MilkyEventConfiguration Event_ { get; } = event_ ?? new();
+    public MilkyEventConfiguration Event => Event_;
 }
 
-public class MilkyHttpConfiguration(string host, ushort port, MilkyHttpApiConfiguration? api = null, MilkyWSConfiguration? ws = null, MilkySSEConfiguration? sse = null)
+public class MilkyEventConfiguration(MilkyWebSocketEventConfiguration? webSocket = null, MilkySSEEventConfiguration? sse = null, MilkyWebHookEventConfiguration? webHook = null)
+{
+    public MilkyWebSocketEventConfiguration? WebSocket { get; } = webSocket;
+    public MilkySSEEventConfiguration? SSE { get; } = sse;
+    public MilkyWebHookEventConfiguration? WebHook { get; } = webHook;
+}
+
+public class MilkyWebHookEventConfiguration(bool enabled, string[] targetUrls)
+{
+    public bool Enabled { get; } = enabled;
+    public string[] TargetUrls { get; } = targetUrls;
+}
+
+public class MilkySSEEventConfiguration(bool enabled, string? allowCorsOrigins = null, ulong heartbeatIntervalSeconds = 60)
+{
+    public bool Enabled { get; } = enabled;
+    public string? AllowCorsOrigins { get; } = allowCorsOrigins;
+    public ulong HeartbeatIntervalSeconds { get; } = heartbeatIntervalSeconds;
+}
+
+public class MilkyWebSocketEventConfiguration(bool enabled)
+{
+    public bool Enabled { get; init; } = enabled;
+}
+
+public class MilkyApiConfiguration
+{
+}
+
+public class MilkyHttpServerConfiguration(string host, ushort port)
 {
     public string Host { get; } = host;
     public ushort Port { get; } = port;
-
-    public MilkyHttpApiConfiguration? Api { get; } = api;
-    public MilkyWSConfiguration? WS { get; } = ws;
-    public MilkySSEConfiguration? SSE { get; } = sse;
-}
-
-public class MilkyHttpApiConfiguration(bool enabled, string path = "/api")
-{
-    public bool Enabled { get; } = enabled;
-    public string Path { get; } = path;
-}
-
-public class MilkyWSConfiguration(MilkyWSEventConfiguration? event_)
-{
-    [ConfigurationKeyName("Event")]
-    private MilkyWSEventConfiguration? Event_ { get; } = event_; // dotnet/runtime#130433
-    public MilkyWSEventConfiguration? Event => Event_;
-}
-
-public class MilkyWSEventConfiguration(bool enabled, string path = "/event")
-{
-    public bool Enabled { get; } = enabled;
-    public string Path { get; } = path;
-}
-
-public class MilkySSEConfiguration(MilkySSEEventConfiguration? event_)
-{
-    [ConfigurationKeyName("Event")]
-    public MilkySSEEventConfiguration? Event_ { get; } = event_; // dotnet/runtime#130433
-    public MilkySSEEventConfiguration? Event => Event_;
-}
-
-public class MilkySSEEventConfiguration(bool enabled, string path = "/event", string? allowCorsOrigins = null, ulong heartbeatIntervalSeconds = 60)
-{
-    public bool Enabled { get; } = enabled;
-    public string Path { get; } = path;
-    public string? AllowCorsOrigins { get; } = allowCorsOrigins;
-    public ulong HeartbeatIntervalSeconds { get; } = heartbeatIntervalSeconds;
 }

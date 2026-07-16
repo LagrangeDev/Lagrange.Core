@@ -31,7 +31,6 @@ public sealed class SSEEventHandler : IHttpHandler, IGenericEventHandler, IDispo
 
     private readonly BotContext _lagrange;
 
-    private readonly string _path;
     private readonly string? _token;
     private readonly string? _allowCorsOrigins;
     private readonly ulong _heartbeatIntervalSeconds;
@@ -48,7 +47,6 @@ public sealed class SSEEventHandler : IHttpHandler, IGenericEventHandler, IDispo
 
         _lagrange = lagrange;
 
-        _path = sseConfiguration.Path;
         _token = configuration.AccessToken;
         _allowCorsOrigins = sseConfiguration.AllowCorsOrigins;
         _heartbeatIntervalSeconds = sseConfiguration.HeartbeatIntervalSeconds;
@@ -59,7 +57,7 @@ public sealed class SSEEventHandler : IHttpHandler, IGenericEventHandler, IDispo
     public bool CanHandle(HttpListenerContext context)
         => context.Request.HttpMethod.Equals("GET", StringComparison.OrdinalIgnoreCase)
         && context.Request.Url != null
-        && context.Request.Url.AbsolutePath.Equals(_path);
+        && context.Request.Url.AbsolutePath.Equals("/event");
 
     public async Task HandleAsync(HttpListenerContext context, CancellationToken ct)
     {

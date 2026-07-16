@@ -24,7 +24,7 @@ public sealed class HttpService : IHostedService, IDisposable
 
     private int _disposed = 0;
 
-    public HttpService(IServiceScopeFactory sf, ILogger<HttpService> logger, MilkyConfiguration configuration, MilkyHttpConfiguration httpConfiguration)
+    public HttpService(IServiceScopeFactory sf, ILogger<HttpService> logger, MilkyConfiguration configuration)
     {
         _sf = sf;
         _logger = logger;
@@ -33,7 +33,7 @@ public sealed class HttpService : IHostedService, IDisposable
         {
             Prefixes =
             {
-                $"http://{httpConfiguration.Host}:{httpConfiguration.Port}/"
+                $"http://{configuration.HttpServer.Host}:{configuration.HttpServer.Port}/"
             }
         };
 
