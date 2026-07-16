@@ -45,8 +45,10 @@ public class MilkySSEConfiguration(MilkySSEEventConfiguration? event_)
     public MilkySSEEventConfiguration? Event => Event_;
 }
 
-public class MilkySSEEventConfiguration(bool enabled, string path = "/event")
+public class MilkySSEEventConfiguration(bool enabled, string path = "/event", string? allowCorsOrigins = null, ulong heartbeatIntervalSeconds = 60)
 {
     public bool Enabled { get; } = enabled;
     public string Path { get; } = path;
+    public string? AllowCorsOrigins { get; } = allowCorsOrigins;
+    public ulong HeartbeatIntervalSeconds { get; } = heartbeatIntervalSeconds;
 }

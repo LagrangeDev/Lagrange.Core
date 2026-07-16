@@ -80,9 +80,12 @@ public static class HostApplicationBuilderExtension
         builder.Services.AddSingleton<MilkyConverter>();
         builder.Services.AddEventConverters();
 
-
         if (configuration.Http != null)
         {
+            builder.Services.AddHostedService(sp
+                => ActivatorUtilities.CreateInstance<HttpService>(sp, configuration.Http)
+            );
+
             if (configuration.Http.WS?.Event != null)
             {
                 builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IHttpHandler, WebSocketEventHandler>(sp
@@ -90,9 +93,12 @@ public static class HostApplicationBuilderExtension
                 ));
             }
 
-            builder.Services.AddHostedService(sp
-                => ActivatorUtilities.CreateInstance<HttpService>(sp, configuration.Http)
-            );
+            if (configuration.Http.SSE?.Event != null)
+            {
+                builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IHttpHandler, SSEEventHandler>(sp
+                    => ActivatorUtilities.CreateInstance<SSEEventHandler>(sp, configuration.Http.SSE.Event)
+                ));
+            }
         }
 
         return builder;

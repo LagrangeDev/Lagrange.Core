@@ -27,9 +27,7 @@ No APIs have been implemented.
 
 - [x] bot_offline
 - [x] message_receive
-  - [imcoming segment](#imcoming-segment)
 - [x] message_recall
-  - [imcoming segment](#imcoming-segment)
 - [ ] peer_pin_change
 - [x] friend_request
 - [x] group_join_request
