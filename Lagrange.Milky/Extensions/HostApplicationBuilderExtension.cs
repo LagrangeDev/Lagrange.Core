@@ -3,6 +3,9 @@ using System.IO;
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Events.EventArgs;
+using Lagrange.Milky.Api;
+using Lagrange.Milky.Api.Handlers;
+using Lagrange.Milky.Api.Handlers.System;
 using Lagrange.Milky.Caching;
 using Lagrange.Milky.Captcha;
 using Lagrange.Milky.Configurations;
@@ -79,9 +82,18 @@ public static class HostApplicationBuilderExtension
         builder.Services.AddHostedService<CacheService>();
 
         builder.Services.AddSingleton<MilkyConverter>();
+        builder.Services.AddKeyedSingleton<IApiHandler, GetLoginInfoHandler>("get_login_info");
         builder.Services.AddEventConverters();
 
         builder.Services.AddHostedService<HttpService>();
+
+        if (configuration.Api.Http != null)
+        {
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IHttpHandler, HttpApiHandler>(sp
+                => ActivatorUtilities.CreateInstance<HttpApiHandler>(sp, configuration.Api.Http)
+            ));
+        }
+
         if (configuration.Event.WebSocket?.Enabled ?? false)
         {
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IHttpHandler, WebSocketEventHandler>(sp

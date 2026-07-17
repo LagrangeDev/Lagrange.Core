@@ -34,11 +34,18 @@ public class MilkySSEEventConfiguration(bool enabled, string? allowCorsOrigins =
 
 public class MilkyWebSocketEventConfiguration(bool enabled)
 {
-    public bool Enabled { get; init; } = enabled;
+    public bool Enabled { get; } = enabled;
 }
 
-public class MilkyApiConfiguration
+public class MilkyApiConfiguration(MilkyHttpApiConfiguration? http = null)
 {
+    public MilkyHttpApiConfiguration? Http { get; } = http;
+}
+
+public class MilkyHttpApiConfiguration(bool enabled, string? allowCorsOrigins = null)
+{
+    public bool Enabled { get; } = enabled;
+    public string? AllowCorsOrigins { get; } = allowCorsOrigins;
 }
 
 public class MilkyHttpServerConfiguration(string host, ushort port)
