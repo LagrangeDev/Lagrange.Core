@@ -15,12 +15,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Lagrange.Milky.Api;
 
-public class HttpApiHandler(IServiceScopeFactory scopeFactory, ILogger<HttpApiHandler> logger, BotContext lagrange, MilkyConfiguration configuration, MilkyHttpApiConfiguration httpConfiguration) : IHttpHandler
+public class HttpApiHandler(IServiceScopeFactory scopeFactory, ILogger<HttpApiHandler> logger, MilkyConfiguration configuration, MilkyHttpApiConfiguration httpConfiguration) : IHttpHandler
 {
     private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
     private readonly ILogger<HttpApiHandler> _logger = logger;
-
-    private readonly BotContext _lagrange = lagrange;
 
     private readonly string? _token = configuration.AccessToken;
     private readonly string? _allowCorsOrigins = httpConfiguration.AllowCorsOrigins;
