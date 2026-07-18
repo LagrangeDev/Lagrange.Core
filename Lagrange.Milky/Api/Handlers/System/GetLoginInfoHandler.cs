@@ -3,9 +3,11 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Lagrange.Core;
+using Lagrange.Milky.Api.Attributes;
 
 namespace Lagrange.Milky.Api.Handlers.System;
 
+[ApiHandler("get_login_info")]
 public class GetLoginInfoHandler(BotContext lagrange) : INoRequestApiHandler<GetLoginInfoHandler.Response>
 {
     private readonly BotContext _lagrange = lagrange;

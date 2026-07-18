@@ -11,29 +11,29 @@ public interface IApiHandler
     ValueTask<MilkyApiResponse> HandleAsync(object request, CancellationToken ct);
 }
 
-public interface IApiHandler<TRequest, TData> : IApiHandler where TRequest : notnull where TData : notnull
+public interface IApiHandler<TRequest, TResult> : IApiHandler where TRequest : notnull where TResult : notnull
 {
     Type IApiHandler.RequestType => typeof(TRequest);
 
-    ValueTask<MilkyApiResponse<TData>> HandleAsync(TRequest request, CancellationToken ct);
+    ValueTask<MilkyApiResponse<TResult>> HandleAsync(TRequest request, CancellationToken ct);
     async ValueTask<MilkyApiResponse> IApiHandler.HandleAsync(object request, CancellationToken ct)
     {
         return await HandleAsync((TRequest)request, ct);
     }
 }
 
-public interface INoRequestApiHandler<TData> : IApiHandler where TData : notnull
+public interface INoRequestApiHandler<TResult> : IApiHandler where TResult : notnull
 {
     Type IApiHandler.RequestType => typeof(object);
 
-    ValueTask<MilkyApiResponse<TData>> HandleAsync(CancellationToken ct);
+    ValueTask<MilkyApiResponse<TResult>> HandleAsync(CancellationToken ct);
     async ValueTask<MilkyApiResponse> IApiHandler.HandleAsync(object request, CancellationToken ct)
     {
         return await HandleAsync(ct);
     }
 }
 
-public interface INoResponseApiHandler<TRequest> : IApiHandler
+public interface INoResultApiHandler<TRequest> : IApiHandler
 {
     Type IApiHandler.RequestType => typeof(TRequest);
 
