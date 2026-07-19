@@ -12,3 +12,10 @@ public class ImageIncomingSegmentData
     [JsonPropertyName("summary")] public required string Summary { get; init; }
     [JsonPropertyName("sub_type")] public required string SubType { get; init; }
 }
+
+public sealed class ImageOutgoingSegment : OutgoingSegmentBase<ImageOutgoingSegmentData>;
+public sealed class ImageOutgoingSegmentData(string uri, string? summary, string subType = "normal") {
+    [JsonPropertyName("uri")] public required string Uri { get; init; } = uri;
+    [JsonPropertyName("sub_type")] public string SubType { get; init; } = subType;
+    [JsonPropertyName("summary")] public required string? Summary { get; init; } = summary;
+}

@@ -7,3 +7,10 @@ public class TextIncomingSegmentData
 {
     [JsonPropertyName("text")] public required string Text { get; init; }
 }
+
+
+public sealed class TextOutgoingSegment : OutgoingSegmentBase<TextOutgoingSegmentData>;
+public sealed class TextOutgoingSegmentData(string text)
+{
+    [JsonPropertyName("text")] public required string Text { get; init; } = text;
+}

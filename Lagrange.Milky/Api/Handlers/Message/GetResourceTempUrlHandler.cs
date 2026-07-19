@@ -1,16 +1,24 @@
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Lagrange.Core;
+using Lagrange.Core.Common.Interface;
 using Lagrange.Milky.Api.Attributes;
 
 namespace Lagrange.Milky.Api.Handlers.Message;
 
 [ApiHandler("get_resource_temp_url")]
-public sealed class GetResourceTempUrlHandler : IApiHandler<GetResourceTempUrlHandler.Request, GetResourceTempUrlHandler.Result>
+public sealed class GetResourceTempUrlHandler(BotContext lagrange) : IApiHandler<GetResourceTempUrlHandler.Request, GetResourceTempUrlHandler.Result>
 {
-    public ValueTask<MilkyApiResponse<Result>> HandleAsync(Request request, CancellationToken ct)
+    private readonly BotContext _lagrange = lagrange;
+
+    public async ValueTask<MilkyApiResponse<Result>> HandleAsync(Request request, CancellationToken ct)
     {
-        throw new global::System.NotImplementedException(); // TODO: api: get_resource_temp_url
+        string url = await _lagrange.GetNTV2RichMediaUrl(request.ResourceId).WaitAsync(ct);
+        return new MilkyApiResponse<Result>(new Result
+        {
+            Url = url,
+        });
     }
 
     public sealed class Request(string resourceId)

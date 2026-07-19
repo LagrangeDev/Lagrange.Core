@@ -12,3 +12,9 @@ public class ReplyIncomingSegmentData
     [JsonPropertyName("time")] public required long Time { get; init; }
     [JsonPropertyName("segments")] public required IReadOnlyList<IncomingSegmentBase> Segments { get; init; }
 }
+
+public sealed class ReplyOutgoingSegment : OutgoingSegmentBase<ReplyOutgoingSegmentData>;
+public sealed class ReplyOutgoingSegmentData(long messageSeq)
+{
+    [JsonPropertyName("message_seq")] public required long MessageSeq { get; init; } = messageSeq;
+}

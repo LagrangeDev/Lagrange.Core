@@ -6,6 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Lagrange.Core.Common;
 using Lagrange.Milky.Api;
+using Lagrange.Milky.Api.Handlers.File;
+using Lagrange.Milky.Api.Handlers.Friend;
+using Lagrange.Milky.Api.Handlers.Group;
+using Lagrange.Milky.Api.Handlers.Message;
 using Lagrange.Milky.Api.Handlers.System;
 using Lagrange.Milky.Events;
 using Lagrange.Milky.Events.Converters;
@@ -46,7 +50,6 @@ public static partial class Serializer
         return JsonSerializer.DeserializeAsync(stream, type, JsonContext.Default, ct);
     }
 
-    [JsonSourceGenerationOptions(PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate)]
     // Signer
     [JsonSerializable(typeof(BotKeystore))]
     [JsonSerializable(typeof(SecSignRequest))]
@@ -61,6 +64,60 @@ public static partial class Serializer
     [JsonSerializable(typeof(GetFriendListHandler.Result), TypeInfoPropertyName = "GetFriendListResult")]
     [JsonSerializable(typeof(GetFriendInfoHandler.Request), TypeInfoPropertyName = "GetFriendInfoRequest")]
     [JsonSerializable(typeof(GetFriendInfoHandler.Result), TypeInfoPropertyName = "GetFriendInfoResult")]
+    [JsonSerializable(typeof(GetGroupListHandler.Request), TypeInfoPropertyName = "GetGroupListRequest")]
+    [JsonSerializable(typeof(GetGroupListHandler.Result), TypeInfoPropertyName = "GetGroupListResult")]
+    [JsonSerializable(typeof(GetGroupInfoHandler.Request), TypeInfoPropertyName = "GetGroupInfoRequest")]
+    [JsonSerializable(typeof(GetGroupInfoHandler.Result), TypeInfoPropertyName = "GetGroupInfoResult")]
+    [JsonSerializable(typeof(GetGroupMemberListHandler.Request), TypeInfoPropertyName = "GetGroupMemberListRequest")]
+    [JsonSerializable(typeof(GetGroupMemberListHandler.Result), TypeInfoPropertyName = "GetGroupMemberListResult")]
+    [JsonSerializable(typeof(GetGroupMemberInfoHandler.Request), TypeInfoPropertyName = "GetGroupMemberInfoRequest")]
+    [JsonSerializable(typeof(GetGroupMemberInfoHandler.Result), TypeInfoPropertyName = "GetGroupMemberInfoResult")]
+    [JsonSerializable(typeof(SetPeerPinHandler.Request), TypeInfoPropertyName = "SetPeerPinRequest")]
+    [JsonSerializable(typeof(SetAvatarHandler.Request), TypeInfoPropertyName = "SetAvatarRequest")]
+    [JsonSerializable(typeof(GetCookiesHandler.Request), TypeInfoPropertyName = "GetCookiesRequest")]
+    [JsonSerializable(typeof(GetCookiesHandler.Result), TypeInfoPropertyName = "GetCookiesResult")]
+    [JsonSerializable(typeof(SendPrivateMessageHandler.Request), TypeInfoPropertyName = "SendPrivateMessageRequest")]
+    [JsonSerializable(typeof(SendPrivateMessageHandler.Result), TypeInfoPropertyName = "SendPrivateMessageResult")]
+    [JsonSerializable(typeof(SendGroupMessageHandler.Request), TypeInfoPropertyName = "SendGroupMessageRequest")]
+    [JsonSerializable(typeof(SendGroupMessageHandler.Result), TypeInfoPropertyName = "SendGroupMessageResult")]
+    [JsonSerializable(typeof(RecallPrivateMessageHandler.Request), TypeInfoPropertyName = "RecallPrivateMessageRequest")]
+    [JsonSerializable(typeof(RecallGroupMessageHandler.Request), TypeInfoPropertyName = "RecallGroupMessageRequest")]
+    [JsonSerializable(typeof(GetMessageHandler.Request), TypeInfoPropertyName = "GetMessageRequest")]
+    [JsonSerializable(typeof(GetMessageHandler.Result), TypeInfoPropertyName = "GetMessageResult")]
+    [JsonSerializable(typeof(GetHistoryMessagesHandler.Request), TypeInfoPropertyName = "GetHistoryMessagesRequest")]
+    [JsonSerializable(typeof(GetHistoryMessagesHandler.Result), TypeInfoPropertyName = "GetHistoryMessagesResult")]
+    [JsonSerializable(typeof(GetResourceTempUrlHandler.Request), TypeInfoPropertyName = "GetResourceTempUrlRequest")]
+    [JsonSerializable(typeof(GetResourceTempUrlHandler.Result), TypeInfoPropertyName = "GetResourceTempUrlResult")]
+    [JsonSerializable(typeof(SendFriendNudgeHandler.Request), TypeInfoPropertyName = "SendFriendNudgeRequest")]
+    [JsonSerializable(typeof(SetGroupNameHandler.Request), TypeInfoPropertyName = "SetGroupNameRequest")]
+    [JsonSerializable(typeof(SetGroupMemberCardHandler.Request), TypeInfoPropertyName = "SetGroupMemberCardRequest")]
+    [JsonSerializable(typeof(SetGroupMemberSpecialTitleHandler.Request), TypeInfoPropertyName = "SetGroupMemberSpecialTitleRequest")]
+    [JsonSerializable(typeof(SetGroupWholeMuteHandler.Request), TypeInfoPropertyName = "SetGroupWholeMuteRequest")]
+    [JsonSerializable(typeof(KickGroupMemberHandler.Request), TypeInfoPropertyName = "KickGroupMemberRequest")]
+    [JsonSerializable(typeof(SetGroupEssenceMessageHandler.Request), TypeInfoPropertyName = "SetGroupEssenceMessageRequest")]
+    [JsonSerializable(typeof(QuitGroupHandler.Request), TypeInfoPropertyName = "QuitGroupRequest")]
+    [JsonSerializable(typeof(SendGroupMessageReactionHandler.Request), TypeInfoPropertyName = "SendGroupMessageReactionRequest")]
+    [JsonSerializable(typeof(SendGroupNudgeHandler.Request), TypeInfoPropertyName = "SendGroupNudgeRequest")]
+    [JsonSerializable(typeof(GetGroupNotificationsHandler.Request), TypeInfoPropertyName = "GetGroupNotificationsRequest")]
+    [JsonSerializable(typeof(GetGroupNotificationsHandler.Result), TypeInfoPropertyName = "GetGroupNotificationsResult")]
+    [JsonSerializable(typeof(AcceptGroupRequestHandler.Request), TypeInfoPropertyName = "AcceptGroupRequestRequest")]
+    [JsonSerializable(typeof(RejectGroupRequestHandler.Request), TypeInfoPropertyName = "RejectGroupRequestRequest")]
+    [JsonSerializable(typeof(AcceptGroupInvitationHandler.Request), TypeInfoPropertyName = "AcceptGroupInvitationRequest")]
+    [JsonSerializable(typeof(RejectGroupInvitationHandler.Request), TypeInfoPropertyName = "RejectGroupInvitationRequest")]
+    [JsonSerializable(typeof(UploadPrivateFileHandler.Request), TypeInfoPropertyName = "UploadPrivateFileRequest")]
+    [JsonSerializable(typeof(UploadPrivateFileHandler.Result), TypeInfoPropertyName = "UploadPrivateFileResult")]
+    [JsonSerializable(typeof(UploadGroupFileHandler.Request), TypeInfoPropertyName = "UploadGroupFileRequest")]
+    [JsonSerializable(typeof(UploadGroupFileHandler.Result), TypeInfoPropertyName = "UploadGroupFileResult")]
+    [JsonSerializable(typeof(GetGroupFileDownloadUrlHandler.Request), TypeInfoPropertyName = "GetGroupFileDownloadUrlRequest")]
+    [JsonSerializable(typeof(GetGroupFileDownloadUrlHandler.Result), TypeInfoPropertyName = "GetGroupFileDownloadUrlResult")]
+    [JsonSerializable(typeof(GetGroupFilesHandler.Request), TypeInfoPropertyName = "GetGroupFilesRequest")]
+    [JsonSerializable(typeof(GetGroupFilesHandler.Result), TypeInfoPropertyName = "GetGroupFilesResult")]
+    [JsonSerializable(typeof(MoveGroupFileHandler.Request), TypeInfoPropertyName = "MoveGroupFileRequest")]
+    [JsonSerializable(typeof(DeleteGroupFileHandler.Request), TypeInfoPropertyName = "DeleteGroupFileRequest")]
+    [JsonSerializable(typeof(CreateGroupFolderHandler.Request), TypeInfoPropertyName = "CreateGroupFolderRequest")]
+    [JsonSerializable(typeof(CreateGroupFolderHandler.Result), TypeInfoPropertyName = "CreateGroupFolderResult")]
+    [JsonSerializable(typeof(RenameGroupFolderHandler.Request), TypeInfoPropertyName = "RenameGroupFolderRequest")]
+    [JsonSerializable(typeof(DeleteGroupFolderHandler.Request), TypeInfoPropertyName = "DeleteGroupFolderRequest")]
     // Event
     [JsonSerializable(typeof(MilkyEvent))]
     [JsonSerializable(typeof(BotOfflineEventConverter.Data), TypeInfoPropertyName = "BotOfflineEventData")]
@@ -73,12 +130,5 @@ public static partial class Serializer
     [JsonSerializable(typeof(GroupMemberDecreaseEventConverter.Data), TypeInfoPropertyName = "GroupMemberDecreaseEventData")]
     [JsonSerializable(typeof(GroupMessageReactionEventConverter.Data), TypeInfoPropertyName = "GroupMessageReactionEventData")]
     [JsonSerializable(typeof(GroupNudgeEventConverter.Data), TypeInfoPropertyName = "GroupNudgeEventData")]
-    // Message
-    [JsonSerializable(typeof(FriendIncomingMessage))]
-    [JsonSerializable(typeof(GroupIncomingMessage))]
-    [JsonSerializable(typeof(TempIncomingMessage))]
-    // Segment
-    [JsonSerializable(typeof(TextIncomingSegmentData))]
-    [JsonSerializable(typeof(MentionIncomingSegment))]
     private sealed partial class JsonContext : JsonSerializerContext;
 }

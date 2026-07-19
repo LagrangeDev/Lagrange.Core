@@ -10,7 +10,6 @@ namespace Lagrange.Milky.Models.Messages;
 [JsonDerivedType(typeof(TempIncomingMessage), "temp")]
 public abstract class IncomingMessageBase
 {
-    // [JsonPropertyName("message_scene")] public abstract string MessageScene { get; }
     [JsonPropertyName("peer_id")] public required long PeerId { get; init; }
     [JsonPropertyName("message_seq")] public required long MessageSeq { get; init; }
     [JsonPropertyName("sender_id")] public required long SenderId { get; init; }

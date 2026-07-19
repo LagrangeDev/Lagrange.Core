@@ -8,6 +8,7 @@ using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entities;
 using Lagrange.Milky.Extensions;
+using Lagrange.Milky.Models.Messages;
 using Lagrange.Milky.Models.Segments;
 
 namespace Lagrange.Milky.Converters;
@@ -140,4 +141,128 @@ public partial class MilkyConverter
             }
         };
     }
+
+    public async Task<MessageChain> FromOutgoingSegmentsAsync(IReadOnlyList<OutgoingSegmentBase> segments, MessageType type, long ownerPeerUin, CancellationToken ct = default)
+    {
+        MessageChain result = [];
+        foreach (var segment in segments)
+        {
+            result.Add(await FromOutgoingSegmentAsync(segment, type, ownerPeerUin, ct));
+        }
+        return result;
+    }
+
+    private async Task<IMessageEntity> FromOutgoingSegmentAsync(OutgoingSegmentBase segment, MessageType type, long ownerPeerUin, CancellationToken ct) => segment switch
+    {
+        TextOutgoingSegment text => new TextEntity(text.Data.Text),
+        MentionOutgoingSegment mention => new MentionEntity(mention.Data.UserId, null),
+        MentionAllOutgoingSegment => new MentionEntity(0, null),
+        ReplyOutgoingSegment reply => await FromReplyOutgoingSegmentAsync(reply, type, ownerPeerUin, ct),
+        ImageOutgoingSegment image => new ImageEntity(
+            await _resourceConverter.UriToStreamAsync(image.Data.Uri, ct),
+            image.Data.Summary,
+            image.Data.SubType switch
+            {
+                "sticker" => 1,
+                _ => 0,
+            },
+            disposeOnCompletion: true
+        ),
+        RecordOutgoingSegment record => new RecordEntity(
+            await _resourceConverter.UriToStreamAsync(record.Data.Uri, ct),
+            disposeOnCompletion: true
+        ),
+        VideoOutgoingSegment video => new VideoEntity(
+            await _resourceConverter.UriToStreamAsync(video.Data.Uri, ct),
+            video.Data.ThumbUri == null ? null : await _resourceConverter.UriToStreamAsync(video.Data.ThumbUri, ct),
+            disposeOnCompletion: true
+        ),
+        ForwardOutgoingSegment forward => new MultiMsgEntity(await FromOutgoingForwardedMessagesAsync(
+            forward.Data.Messages,
+            ct
+        )), // TODO: The core does not provide methods for setting title, preview, summary, prompt
+        LightAppOutgoingSegment lightApp => new LightAppEntity(lightApp.Data.JsonPayload),
+        _ => throw new NotSupportedException(),
+    };
+
+    private async Task<ReplyEntity> FromReplyOutgoingSegmentAsync(ReplyOutgoingSegment reply, MessageType type, long ownerPeerUin, CancellationToken ct)
+    {
+        var message = _cache.Get(type, ownerPeerUin, (ulong)reply.Data.MessageSeq)
+            ?? (type switch
+            {
+                MessageType.Private => await _lagrange.GetC2CMessage(
+                    ownerPeerUin,
+                    (ulong)reply.Data.MessageSeq,
+                    (ulong)reply.Data.MessageSeq
+                ).WaitAsync(ct),
+                MessageType.Group => await _lagrange.GetGroupMessage(
+                    ownerPeerUin,
+                    (ulong)reply.Data.MessageSeq,
+                    (ulong)reply.Data.MessageSeq
+                ).WaitAsync(ct),
+                _ => throw new NotSupportedException(),
+            }).First();
+
+        return new ReplyEntity(message);
+    }
+
+    private async Task<List<BotMessage>> FromOutgoingForwardedMessagesAsync(IReadOnlyList<OutgoingForwardedMessage> messages, CancellationToken ct)
+    {
+        List<BotMessage> result = [];
+        foreach (var message in messages)
+        {
+            result.Add(BotMessage.CreateCustomFriend(
+                message.UserId,
+                message.SenderName,
+                0,
+                string.Empty,
+                DateTime.Now,
+                await FromForwardOutgoingSegmentsAsync(message.Segments, ct)
+            ));
+        }
+        return result;
+    }
+
+    private async Task<MessageChain> FromForwardOutgoingSegmentsAsync(IReadOnlyList<OutgoingSegmentBase> segments, CancellationToken ct)
+    {
+        MessageChain chain = [];
+        foreach (var segment in segments)
+        {
+            chain.Add(await FromForwardOutgoingSegmentAsync(segment, ct));
+        }
+        return chain;
+    }
+
+    private async Task<IMessageEntity> FromForwardOutgoingSegmentAsync(OutgoingSegmentBase segment, CancellationToken ct) => segment switch
+    {
+        TextOutgoingSegment text => new TextEntity(text.Data.Text),
+        MentionOutgoingSegment mention => new MentionEntity(mention.Data.UserId, null),
+        MentionAllOutgoingSegment => new MentionEntity(0, null),
+        ReplyOutgoingSegment => new ReplyEntity(), // No information
+        ImageOutgoingSegment image => new ImageEntity(
+            await _resourceConverter.UriToStreamAsync(image.Data.Uri, ct),
+            image.Data.Summary,
+            image.Data.SubType switch
+            {
+                "sticker" => 1,
+                _ => 0,
+            },
+            disposeOnCompletion: true
+        ), // TODO: Unable to upload due to a bug in the core.
+        RecordOutgoingSegment record => new RecordEntity(
+            await _resourceConverter.UriToStreamAsync(record.Data.Uri, ct),
+            disposeOnCompletion: true
+        ), // TODO: Unable to upload due to a bug in the core.
+        VideoOutgoingSegment video => new VideoEntity(
+            await _resourceConverter.UriToStreamAsync(video.Data.Uri, ct),
+            video.Data.ThumbUri == null ? null : await _resourceConverter.UriToStreamAsync(video.Data.ThumbUri, ct),
+            disposeOnCompletion: true
+        ), // TODO: Unable to upload due to a bug in the core.
+        ForwardOutgoingSegment forward => new MultiMsgEntity(await FromOutgoingForwardedMessagesAsync(
+            forward.Data.Messages,
+            ct
+        )), // TODO: Unable to upload due to a bug in the core.
+        LightAppOutgoingSegment lightApp => new LightAppEntity(lightApp.Data.JsonPayload),
+        _ => throw new NotSupportedException(),
+    };
 }

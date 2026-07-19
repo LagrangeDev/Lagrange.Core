@@ -11,3 +11,9 @@ public class VideoIncomingSegmentData
     [JsonPropertyName("height")] public required int Height { get; init; }
     [JsonPropertyName("duration")] public required int Duration { get; init; }
 }
+
+public sealed class VideoOutgoingSegment : OutgoingSegmentBase<VideoOutgoingSegmentData>;
+public sealed class VideoOutgoingSegmentData(string uri, string? thumbUri) {
+    [JsonPropertyName("uri")] public required string Uri { get; init; } = uri;
+    [JsonPropertyName("thumb_uri")] public required string? ThumbUri { get; init; } = thumbUri;
+}
