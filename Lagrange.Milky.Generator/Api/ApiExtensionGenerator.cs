@@ -115,9 +115,9 @@ public class ApiExtensionGenerator : IIncrementalGenerator
         builder.AppendLine("{");
         builder.AppendLine("    public static partial Microsoft.Extensions.DependencyInjection.IServiceCollection AddApiHandlers(this Microsoft.Extensions.DependencyInjection.IServiceCollection services)");
         builder.AppendLine("    {");
-        foreach (var (handlerName, eventName, lifetime) in handlerInfos)
+        foreach (var (handlerName, apiName, lifetime) in handlerInfos)
         {
-            builder.AppendLine($"        services.Add(new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(typeof(Lagrange.Milky.Api.Handlers.IApiHandler), typeof({handlerName}), (Microsoft.Extensions.DependencyInjection.ServiceLifetime){lifetime}));");
+            builder.AppendLine($"        services.Add(new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(typeof(Lagrange.Milky.Api.Handlers.IApiHandler), \"{apiName}\", typeof({handlerName}), (Microsoft.Extensions.DependencyInjection.ServiceLifetime){lifetime}));");
         }
         builder.AppendLine("        return services;");
         builder.AppendLine("    }");

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Lagrange.Milky.Models;
+namespace Lagrange.Milky.Events;
 
 public class MilkyEvent
 {

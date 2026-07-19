@@ -4,8 +4,7 @@ using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Events.EventArgs;
 using Lagrange.Milky.Api;
-using Lagrange.Milky.Api.Handlers;
-using Lagrange.Milky.Api.Handlers.System;
+using Lagrange.Milky.Api.Extensions;
 using Lagrange.Milky.Caching;
 using Lagrange.Milky.Captcha;
 using Lagrange.Milky.Configurations;
@@ -82,7 +81,7 @@ public static class HostApplicationBuilderExtension
         builder.Services.AddHostedService<CacheService>();
 
         builder.Services.AddSingleton<MilkyConverter>();
-        builder.Services.AddKeyedSingleton<IApiHandler, GetLoginInfoHandler>("get_login_info");
+        builder.Services.AddApiHandlers();
         builder.Services.AddEventConverters();
 
         builder.Services.AddHostedService<HttpService>();

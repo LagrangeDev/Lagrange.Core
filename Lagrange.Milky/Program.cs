@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Lagrange.Milky.Extensions;
@@ -54,7 +53,7 @@ public static class Program
     {
         if (isNoStdout) return;
 
-        string hash = GetGitHash(9);
+        string hash = Constants.GitHash;
         Console.WriteLine($"""
         ╭─────────────────────────────────────────╮
         │  _                                      │
@@ -69,22 +68,6 @@ public static class Program
         │{hash,-9}│                          |__/ │
         ╰─────────┴───────────────────────────────╯
         """);
-    }
-
-    private static string GetGitHash(int length)
-    {
-        var assembly = Assembly.GetAssembly(typeof(Program));
-        if (assembly == null) return "unknown";
-
-        var attribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-        if (attribute == null) return "unknown";
-
-        string version = attribute.InformationalVersion;
-
-        int plusIndex = version.LastIndexOf('+');
-        if (plusIndex < 0) return "unknown";
-
-        return version.Substring(plusIndex + 1, length);
     }
 
     private static void CheckConfigurationFile(bool isNoStdin, bool isNoStdout)

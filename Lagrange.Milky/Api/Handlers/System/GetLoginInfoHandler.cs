@@ -8,17 +8,17 @@ using Lagrange.Milky.Api.Attributes;
 namespace Lagrange.Milky.Api.Handlers.System;
 
 [ApiHandler("get_login_info")]
-public class GetLoginInfoHandler(BotContext lagrange) : INoRequestApiHandler<GetLoginInfoHandler.Response>
+public class GetLoginInfoHandler(BotContext lagrange) : INoRequestApiHandler<GetLoginInfoHandler.Result>
 {
     private readonly BotContext _lagrange = lagrange;
 
-    public ValueTask<MilkyApiResponse<Response>> HandleAsync(CancellationToken ct) => ValueTask.FromResult(MilkyApiResponse<Response>.Ok(new Response
+    public ValueTask<MilkyApiResponse<Result>> HandleAsync(CancellationToken ct) => ValueTask.FromResult(MilkyApiResponse<Result>.Ok(new Result
     {
         Uin = _lagrange.BotUin,
         Nickname = _lagrange.BotInfo?.Name ?? throw new InvalidOperationException("Bot account info is unavailable")
     }));
 
-    public class Response
+    public class Result
     {
         [JsonPropertyName("uin")] public required long Uin { get; init; }
         [JsonPropertyName("nickname")] public required string Nickname { get; init; }

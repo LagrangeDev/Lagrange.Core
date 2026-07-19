@@ -15,7 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using Lagrange.Milky.Serialization;
-using Lagrange.Milky.Models;
 
 namespace Lagrange.Milky.Events;
 

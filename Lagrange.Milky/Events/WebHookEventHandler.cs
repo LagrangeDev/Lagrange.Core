@@ -9,7 +9,6 @@ using Lagrange.Core.Events;
 using Lagrange.Milky.Configurations;
 using Lagrange.Milky.Events.Converters;
 using Lagrange.Milky.Events.Extensions;
-using Lagrange.Milky.Models;
 using Lagrange.Milky.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

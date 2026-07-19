@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using Lagrange.Core.Common;
 using Lagrange.Milky.Api;
 using Lagrange.Milky.Api.Handlers.System;
-using Lagrange.Milky.Models;
-using Lagrange.Milky.Models.Events;
+using Lagrange.Milky.Events;
+using Lagrange.Milky.Events.Converters;
 using Lagrange.Milky.Models.Messages;
 using Lagrange.Milky.Models.Segments;
 using Lagrange.Milky.Signing;
@@ -46,27 +46,31 @@ public static partial class Serializer
         return JsonSerializer.DeserializeAsync(stream, type, JsonContext.Default, ct);
     }
 
+    [JsonSourceGenerationOptions(PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate)]
     // Signer
     [JsonSerializable(typeof(BotKeystore))]
     [JsonSerializable(typeof(SecSignRequest))]
     [JsonSerializable(typeof(SignerResponse<SecSignResult>))]
     // Api
     [JsonSerializable(typeof(MilkyApiResponse))]
-    [JsonSerializable(typeof(GetLoginInfoHandler.Response))]
+    [JsonSerializable(typeof(GetLoginInfoHandler.Result), TypeInfoPropertyName = "GetLoginInfoResult")]
+    [JsonSerializable(typeof(GetImplInfoHandler.Result), TypeInfoPropertyName = "GetImplInfoResult")]
+    [JsonSerializable(typeof(GetUserProfileHandler.Request), TypeInfoPropertyName = "GetUserProfileRequest")]
+    [JsonSerializable(typeof(GetUserProfileHandler.Result), TypeInfoPropertyName = "GetUserProfileResult")]
+    [JsonSerializable(typeof(GetFriendListHandler.Request), TypeInfoPropertyName = "GetFriendListRequest")]
+    [JsonSerializable(typeof(GetFriendListHandler.Result), TypeInfoPropertyName = "GetFriendListResult")]
     // Event
     [JsonSerializable(typeof(MilkyEvent))]
-    [JsonSerializable(typeof(BotOfflineEventData))]
-    [JsonSerializable(typeof(MessageRecallEventData))]
-    [JsonSerializable(typeof(FriendRequestEventData))]
-    [JsonSerializable(typeof(GroupJoinRequestEventData))]
-    [JsonSerializable(typeof(GroupInvitedJoinRequestEventData))]
-    [JsonSerializable(typeof(GroupInvitationEventData))]
-    [JsonSerializable(typeof(FriendNudgeEventData))]
-    [JsonSerializable(typeof(GroupMemberIncreaseEventData))]
-    [JsonSerializable(typeof(GroupMemberDecreaseEventData))]
-    [JsonSerializable(typeof(GroupMessageReactionEventData))]
-    [JsonSerializable(typeof(GroupMuteEventData))]
-    [JsonSerializable(typeof(GroupNudgeEventData))]
+    [JsonSerializable(typeof(BotOfflineEventConverter.Data), TypeInfoPropertyName = "BotOfflineEventData")]
+    [JsonSerializable(typeof(MessageRecallEventConverter.Data), TypeInfoPropertyName = "MessageRecallEventData")]
+    [JsonSerializable(typeof(FriendRequestEventConverter.Data), TypeInfoPropertyName = "FriendRequestEventData")]
+    [JsonSerializable(typeof(GroupJoinRequestEventConverter.Data), TypeInfoPropertyName = "GroupJoinRequestEventData")]
+    [JsonSerializable(typeof(GroupInvitedJoinRequestEventConverter.Data), TypeInfoPropertyName = "GroupInvitedJoinRequestEventData")]
+    [JsonSerializable(typeof(GroupInvitationEventConverter.Data), TypeInfoPropertyName = "GroupInvitationEventData")]
+    [JsonSerializable(typeof(GroupMemberIncreaseEventConverter.Data), TypeInfoPropertyName = "GroupMemberIncreaseEventData")]
+    [JsonSerializable(typeof(GroupMemberDecreaseEventConverter.Data), TypeInfoPropertyName = "GroupMemberDecreaseEventData")]
+    [JsonSerializable(typeof(GroupMessageReactionEventConverter.Data), TypeInfoPropertyName = "GroupMessageReactionEventData")]
+    [JsonSerializable(typeof(GroupNudgeEventConverter.Data), TypeInfoPropertyName = "GroupNudgeEventData")]
     // Message
     [JsonSerializable(typeof(FriendIncomingMessage))]
     [JsonSerializable(typeof(GroupIncomingMessage))]

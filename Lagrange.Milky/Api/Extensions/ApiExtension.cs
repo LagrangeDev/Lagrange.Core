@@ -1,4 +1,3 @@
-using Lagrange.Core;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Lagrange.Milky.Api.Extensions;
