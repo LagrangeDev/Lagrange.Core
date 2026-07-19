@@ -24,7 +24,7 @@ public sealed class GetHistoryMessagesHandler(BotContext lagrange, MilkyConverte
     {
         long endSequence = request.StartMessageSeq ?? request.MessageScene switch
         {
-            "friend" => throw new NotSupportedException(), // TODO: core cannot retrieve the latest sequence in a friend scene.
+            "friend" => throw new NotSupportedException(), // TODO: core will be unable to retrieve the latest sequence of friend.
             "group" => (await _lagrange.FetchGroupExtra(request.PeerId).WaitAsync(ct)).LatestMessageSequence,
             _ => throw new NotSupportedException(),
         };

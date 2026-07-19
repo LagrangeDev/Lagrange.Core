@@ -28,7 +28,7 @@ public sealed class SendGroupMessageReactionHandler(BotContext lagrange) : INoRe
         [JsonPropertyName("group_id")] public required long GroupId { get; init; } = groupId;
         [JsonPropertyName("message_seq")] public required long MessageSeq { get; init; } = messageSeq;
         [JsonPropertyName("reaction")] public required string Reaction { get; init; } = reaction;
-        [JsonPropertyName("reaction_type")] public string ReactionType { get; init; } = reactionType; // TODO: reaction type not impl in core
+        [JsonPropertyName("reaction_type")] public string ReactionType { get; init; } = reactionType; // TODO: core does not implement reaction type
         [JsonPropertyName("is_add")] public bool IsAdd { get; init; } = isAdd;
     }
 }

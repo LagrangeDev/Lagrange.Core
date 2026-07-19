@@ -74,8 +74,6 @@ public static partial class Serializer
     [JsonSerializable(typeof(GetGroupMemberInfoHandler.Result), TypeInfoPropertyName = "GetGroupMemberInfoResult")]
     [JsonSerializable(typeof(SetPeerPinHandler.Request), TypeInfoPropertyName = "SetPeerPinRequest")]
     [JsonSerializable(typeof(SetAvatarHandler.Request), TypeInfoPropertyName = "SetAvatarRequest")]
-    [JsonSerializable(typeof(GetCookiesHandler.Request), TypeInfoPropertyName = "GetCookiesRequest")]
-    [JsonSerializable(typeof(GetCookiesHandler.Result), TypeInfoPropertyName = "GetCookiesResult")]
     [JsonSerializable(typeof(SendPrivateMessageHandler.Request), TypeInfoPropertyName = "SendPrivateMessageRequest")]
     [JsonSerializable(typeof(SendPrivateMessageHandler.Result), TypeInfoPropertyName = "SendPrivateMessageResult")]
     [JsonSerializable(typeof(SendGroupMessageHandler.Request), TypeInfoPropertyName = "SendGroupMessageRequest")]

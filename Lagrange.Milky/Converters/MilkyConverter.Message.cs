@@ -14,7 +14,6 @@ public partial class MilkyConverter
     {
         MessageType.Private => await ToFriendMessageAsync(message, ct),
         MessageType.Group => await ToGroupMessageAsync(message, ct),
-        MessageType.Temp => await ToTempMessageAsync(message, ct),
         _ => throw new NotSupportedException(),
     };
 
@@ -46,20 +45,6 @@ public partial class MilkyConverter
             Segments = await ToIncomingSegmentsAsync(message.Entities, message.Type, group.Uin, ct),
             Group = ToGroup(group),
             GroupMember = ToGroupMember(member),
-        };
-    }
-
-    private async Task<TempIncomingMessage> ToTempMessageAsync(BotMessage message, CancellationToken ct = default)
-    {
-        long peerUin = message.Contact.Uin == _lagrange.BotUin ? message.Receiver.Uin : message.Contact.Uin;
-        return new TempIncomingMessage()
-        {
-            PeerId = peerUin,
-            MessageSeq = (long)message.Sequence,
-            SenderId = message.Contact.Uin,
-            Time = message.Time.ToUnixTimeSeconds(),
-            Segments = await ToIncomingSegmentsAsync(message.Entities, message.Type, peerUin, ct),
-            Group = null,
         };
     }
 }

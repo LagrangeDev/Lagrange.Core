@@ -7,7 +7,6 @@ namespace Lagrange.Milky.Models.Messages;
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "message_scene")]
 [JsonDerivedType(typeof(FriendIncomingMessage), "friend")]
 [JsonDerivedType(typeof(GroupIncomingMessage), "group")]
-[JsonDerivedType(typeof(TempIncomingMessage), "temp")]
 public abstract class IncomingMessageBase
 {
     [JsonPropertyName("peer_id")] public required long PeerId { get; init; }

@@ -17,7 +17,7 @@ public sealed class CreateGroupFolderHandler(BotContext lagrange) : IApiHandler<
         await _lagrange.GroupFSCreateFolder(request.GroupId, request.FolderName);
         return new MilkyApiResponse<Result>(new Result
         {
-            FolderId = "" // TODO: core no provide folder id
+            FolderId = "" // TODO: core did not provide a folder id
         });
     }
 

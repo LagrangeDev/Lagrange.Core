@@ -25,7 +25,7 @@ public sealed class UploadGroupFileHandler(BotContext lagrange, ResourceConverte
         ).WaitAsync(ct);
         return new MilkyApiResponse<Result>(new Result
         {
-            FileId = "" // TODO: core no provide file id
+            FileId = "" // TODO: core did not provide a folder id
         });
     }
 
