@@ -2,26 +2,24 @@ using System.Reflection;
 
 namespace Lagrange.Milky;
 
-internal static class Constants
+public static class Constants
 {
-    public const string Banner = """
-        __  ___  _   __  __
-       /  |/  / (_) / / / /__  __  __
-      / /|_/ / / / / / / //_/ / / / /
-     / /  / / / / / / / ,<   / /_/ /
-    /_/  /_/ /_/ /_/ /_/|_|  \__, /
-    Powered by Lagrange.Core/____/
-    """;
+    public static readonly string GitHash = GetGitHash(9);
+    public static readonly string MilkyVersion = "1.2";
 
-    public const string ConfigFileName = "appsettings.jsonc";
-    public const string ConfigResourceName = $"Lagrange.Milky.Resources.{ConfigFileName}";
+    private static string GetGitHash(int length)
+    {
+        var assembly = Assembly.GetAssembly(typeof(Program));
+        if (assembly == null) return "unknown";
 
-    public static string ImplementationName = "Lagrange.Milky";
+        var attribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+        if (attribute == null) return "unknown";
 
-    public static string ImplementationVersion = typeof(Constants).Assembly
-        .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-        ?.InformationalVersion?[6..]
-        ?? "Unknown";
+        string version = attribute.InformationalVersion;
 
-    public static string MilkyVersion = "1.2";
+        int plusIndex = version.LastIndexOf('+');
+        if (plusIndex < 0) return "unknown";
+
+        return version.Substring(plusIndex + 1, length);
+    }
 }

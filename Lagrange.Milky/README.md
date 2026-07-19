@@ -12,122 +12,69 @@ https://lagrangedev.github.io/Lagrange.Milky.Document
 
 ## Feature List
 
-### communication
-
-- [ ] SSE (wontimpl)
-- [x] WebSocket
-- [x] WebHook
+- Api
+  - [ ] Http
+- Event
+  - [ ] SSE
+  - [x] WebSocket
+  - [ ] WebHook
 
 ### api
 
-#### system
-
-- [x] /get_login_info
-- [x] /get_impl_info
-- [x] /get_user_profile
-- [x] /get_friend_list
-- [x] /get_friend_info
-- [x] /get_group_list
-- [x] /get_group_info
-  - [ ] remark
-- [x] /get_group_member_list
-- [x] /get_group_member_info
-- [ ] /set_avatar
-- [ ] /set_nickname
-- [ ] /set_bio
-- [ ] /get_custom_face_url_list
-- [x] /get_cookies
-- [ ] /get_csrf_token
-
-#### message
-
-- [x] /send_private_message
-- [x] /send_group_message
-- [x] /recall_private_message
-- [x] /recall_group_message
-- [x] /get_message
-  - [ ] temp (wontimpl)
-- [x] /get_history_messages
-  - [x] friend
-    - [ ] start_message_seq
-  - [ ] temp (wontimpl)
-- [x] /get_resource_temp_url
-- [ ] /get_forwarded_messages
-- [ ] /mark_message_as_read
-
-#### friend
-
-- [x] /send_friend_nudge
-- [ ] /send_profile_like
-- [ ] /get_friend_requests
-- [ ] /accept_friend_request
-- [ ] /reject_friend_request
-
-#### group
-
-- [x] /set_group_name
-- [ ] /set_group_avatar
-- [x] /set_group_member_card
-- [x] /set_group_member_special_title
-- [ ] /set_group_member_admin
-- [ ] /set_group_member_mute
-- [ ] /set_group_whole_mute
-- [ ] /kick_group_member
-- [ ] /get_group_announcement_list
-- [ ] /send_group_announcement
-- [ ] /delete_group_announcement
-- [ ] /get_group_essence_messages
-- [ ] /set_group_essence_message
-- [x] /quit_group
-- [x] /send_group_message_reaction
-- [x] /send_group_nudge
-- [x] /get_group_notifications
-  - [ ] reaction_type=emoji
-- [ ] /accept_group_request
-- [ ] /reject_group_request
-- [ ] /accept_group_invitation
-- [ ] /reject_group_invitation
-
-#### file
-
-- [x] /upload_private_file - No return value
-- [x] /upload_group_file
-- [ ] /get_private_file_download_url
-- [x] /get_group_file_download_url
-- [ ] /get_group_files
-- [ ] /move_group_file
-- [ ] /rename_group_file
-- [x] /delete_group_file
-- [ ] /create_group_folder
-- [ ] /rename_group_folder
-- [ ] /delete_group_folder
+No APIs have been implemented.
 
 ### event
 
 - [x] bot_offline
 - [x] message_receive
 - [x] message_recall
-  - [ ] temp (wontimpl)
+- [ ] peer_pin_change
 - [x] friend_request
-- [ ] group_join_request
-- [ ] group_invited_join_request
-- [ ] group_invitation
+- [x] group_join_request
+- [x] group_invited_join_request
+- [x] group_invitation
 - [ ] friend_nudge
 - [ ] friend_file_upload
 - [ ] group_admin_change
 - [ ] group_essence_message_change
-- [ ] group_member_increase
+- [x] group_member_increase
 - [x] group_member_decrease
 - [ ] group_name_change
-- [ ] group_message_reaction
+- [x] group_message_reaction
+  - [ ] reaction_type - It will only return "face"
 - [ ] group_mute
 - [ ] group_whole_mute
 - [x] group_nudge
 - [ ] group_file_upload
 
-### segment
+### models
 
-#### incoming
+- [x] Friend
+- [x] FriendCategory
+- [x] Group
+- [x] GroupMember
+- [ ] GroupAnnouncement
+- [ ] GroupFile
+- [ ] GroupFolder
+- [ ] FriendRequest
+- [ ] GroupNotification
+  - [ ] join_request
+  - [ ] admin_change
+  - [ ] kick
+  - [ ] quit
+  - [ ] invited_join_request
+- [x] IncomingMessage
+  - [x] friend
+  - [x] group
+  - [x] temp
+    - [ ] group - It will only return null
+- [ ] IncomingForwardedMessage
+- [ ] GroupEssenceMessage
+- [x] [IncomingSegment](#imcoming-segment)
+- [ ] OutgoingForwardedMessage
+- [ ] [OutgoingSegment](#outgoing-segment)
+
+### imcoming segment
 
 - [x] text
 - [x] mention
@@ -139,30 +86,13 @@ https://lagrangedev.github.io/Lagrange.Milky.Document
 - [x] video
 - [ ] file
 - [x] forward
+  - [ ] title
+  - [ ] preview
+  - [ ] summary
 - [ ] market_face
-- [ ] light_app
+- [x] light_app
 - [ ] xml
 
-#### outgoing
+### imcoming forward segment
 
-- [x] text
-- [x] mention
-- [x] mention_all
-- [ ] face
-- [x] reply
-- [x] image
-- [x] record
-- [ ] video
-- [x] forward
-
-#### forward
-
-- [x] text
-- [ ] mention - (wontimpl) forward not supported
-- [ ] mention_all - (wontimpl) forward not supported
-- [ ] face
-- [ ] reply
-- [ ] image
-- [ ] record
-- [ ] video
-- [ ] forward
+### outgoing segment
