@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,17 +7,20 @@ using Lagrange.Milky.Api.Attributes;
 namespace Lagrange.Milky.Api.Handlers.System;
 
 [ApiHandler("get_login_info")]
-public class GetLoginInfoHandler(BotContext lagrange) : INoRequestApiHandler<GetLoginInfoHandler.Result>
+public sealed class GetLoginInfoHandler(BotContext lagrange) : INoRequestApiHandler<GetLoginInfoHandler.Result>
 {
     private readonly BotContext _lagrange = lagrange;
 
-    public ValueTask<MilkyApiResponse<Result>> HandleAsync(CancellationToken ct) => ValueTask.FromResult(MilkyApiResponse<Result>.Ok(new Result
+    public ValueTask<MilkyApiResponse<Result>> HandleAsync(CancellationToken ct)
     {
-        Uin = _lagrange.BotUin,
-        Nickname = _lagrange.BotInfo?.Name ?? throw new InvalidOperationException("Bot account info is unavailable")
-    }));
+        return ValueTask.FromResult(new MilkyApiResponse<Result>(new Result
+        {
+            Uin = _lagrange.BotUin,
+            Nickname = _lagrange.BotInfo?.Name ?? string.Empty,
+        }));
+    }
 
-    public class Result
+    public sealed class Result
     {
         [JsonPropertyName("uin")] public required long Uin { get; init; }
         [JsonPropertyName("nickname")] public required string Nickname { get; init; }

@@ -59,6 +59,8 @@ public static partial class Serializer
     [JsonSerializable(typeof(GetUserProfileHandler.Result), TypeInfoPropertyName = "GetUserProfileResult")]
     [JsonSerializable(typeof(GetFriendListHandler.Request), TypeInfoPropertyName = "GetFriendListRequest")]
     [JsonSerializable(typeof(GetFriendListHandler.Result), TypeInfoPropertyName = "GetFriendListResult")]
+    [JsonSerializable(typeof(GetFriendInfoHandler.Request), TypeInfoPropertyName = "GetFriendInfoRequest")]
+    [JsonSerializable(typeof(GetFriendInfoHandler.Result), TypeInfoPropertyName = "GetFriendInfoResult")]
     // Event
     [JsonSerializable(typeof(MilkyEvent))]
     [JsonSerializable(typeof(BotOfflineEventConverter.Data), TypeInfoPropertyName = "BotOfflineEventData")]

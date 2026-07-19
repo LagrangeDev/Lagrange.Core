@@ -9,23 +9,24 @@ using Lagrange.Milky.Api.Attributes;
 namespace Lagrange.Milky.Api.Handlers.System;
 
 [ApiHandler("get_user_profile")]
-public class GetUserProfileHandler(BotContext lagrange) : IApiHandler<GetUserProfileHandler.Request, GetUserProfileHandler.Result>
+public sealed class GetUserProfileHandler(BotContext lagrange) : IApiHandler<GetUserProfileHandler.Request, GetUserProfileHandler.Result>
 {
     private readonly BotContext _lagrange = lagrange;
 
     public async ValueTask<MilkyApiResponse<Result>> HandleAsync(Request request, CancellationToken ct)
     {
-        var stranger = await _lagrange.FetchStranger(request.UserId);
-        return MilkyApiResponse<Result>.Ok(new Result
+        var stranger = await _lagrange.FetchStranger(request.UserId).WaitAsync(ct);
+        return new MilkyApiResponse<Result>(new Result
         {
             Nickname = stranger.Nickname,
-            Qia = stranger.QID,
+            Qid = stranger.QID,
             Age = (int)stranger.Age,
             Sex = stranger.Gender switch
             {
                 BotGender.Male => "male",
                 BotGender.Female => "female",
                 _ => "unknown",
+
             },
             Remark = stranger.Remark,
             Bio = stranger.PersonalSign,
@@ -36,15 +37,15 @@ public class GetUserProfileHandler(BotContext lagrange) : IApiHandler<GetUserPro
         });
     }
 
-    public class Request
+    public sealed class Request(long userId)
     {
-        [JsonPropertyName("user_id")] public required long UserId { get; init; }
+        [JsonPropertyName("user_id")] public required long UserId { get; init; } = userId;
     }
 
-    public class Result
+    public sealed class Result
     {
         [JsonPropertyName("nickname")] public required string Nickname { get; init; }
-        [JsonPropertyName("qia")] public required string Qia { get; init; }
+        [JsonPropertyName("qid")] public required string Qid { get; init; }
         [JsonPropertyName("age")] public required int Age { get; init; }
         [JsonPropertyName("sex")] public required string Sex { get; init; }
         [JsonPropertyName("remark")] public required string Remark { get; init; }

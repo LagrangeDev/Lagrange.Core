@@ -10,18 +10,18 @@ using Lagrange.Milky.Converters;
 
 namespace Lagrange.Milky.Api.Handlers.System;
 
-[ApiHandler("get_friend_list")]
-public sealed class GetFriendListHandler(BotContext lagrange, MilkyConverter converter) : IApiHandler<GetFriendListHandler.Request, GetFriendListHandler.Result>
+[ApiHandler("get_group_list")]
+public sealed class GetGroupListHandler(BotContext lagrange, MilkyConverter converter) : IApiHandler<GetGroupListHandler.Request, GetGroupListHandler.Result>
 {
     private readonly BotContext _lagrange = lagrange;
     private readonly MilkyConverter _converter = converter;
 
     public async ValueTask<MilkyApiResponse<Result>> HandleAsync(Request request, CancellationToken ct)
     {
-        var friends = await _lagrange.FetchFriends(request.NoCache).WaitAsync(ct);
+        var groups = await _lagrange.FetchGroups(request.NoCache).WaitAsync(ct);
         return new MilkyApiResponse<Result>(new Result
         {
-            Friends = [.. friends.Select(_converter.ToFriend)]
+            Groups = [.. groups.Select(_converter.ToGroup)]
         });
     }
 
@@ -32,6 +32,6 @@ public sealed class GetFriendListHandler(BotContext lagrange, MilkyConverter con
 
     public sealed class Result
     {
-        [JsonPropertyName("friends")] public required IReadOnlyList<Models.Friend> Friends { get; init; }
+        [JsonPropertyName("groups")] public required IReadOnlyList<Models.Group> Groups { get; init; }
     }
 }

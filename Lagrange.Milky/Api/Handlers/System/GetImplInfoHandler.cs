@@ -9,26 +9,30 @@ using Lagrange.Milky.Api.Attributes;
 namespace Lagrange.Milky.Api.Handlers.System;
 
 [ApiHandler("get_impl_info")]
-public class GetImplInfoHandler(BotContext lagrange) : INoRequestApiHandler<GetImplInfoHandler.Result>
+public sealed class GetImplInfoHandler(BotContext lagrange) : INoRequestApiHandler<GetImplInfoHandler.Result>
 {
     private readonly BotContext _lagrange = lagrange;
 
-    public ValueTask<MilkyApiResponse<Result>> HandleAsync(CancellationToken ct) => ValueTask.FromResult(MilkyApiResponse<Result>.Ok(new Result
+    public ValueTask<MilkyApiResponse<Result>> HandleAsync(CancellationToken ct)
     {
-        ImplName = "Lagrange.Core",
-        ImplVersion = Constants.GitHash,
-        QqProtocolVersion = _lagrange.AppInfo.CurrentVersion,
-        QqProtocolType = _lagrange.Config.Protocol switch
+        return ValueTask.FromResult(new MilkyApiResponse<Result>(new Result
         {
-            Protocols.Windows => "windows",
-            Protocols.MacOs => "macos",
-            Protocols.Linux => "linux",
-            _ => throw new NotSupportedException(),
-        },
-        MilkyVersion = Constants.MilkyVersion,
-    }));
+            ImplName = "Lagrange.Core",
+            ImplVersion = Constants.GitHash,
+            QqProtocolVersion = _lagrange.AppInfo.CurrentVersion,
+            QqProtocolType = _lagrange.Config.Protocol switch
+            {
+                Protocols.Windows => "windows",
+                Protocols.MacOs => "macos",
+                Protocols.Linux => "linux",
+                _ => throw new NotSupportedException(),
 
-    public class Result
+            },
+            MilkyVersion = Constants.MilkyVersion
+        }));
+    }
+
+    public sealed class Result
     {
         [JsonPropertyName("impl_name")] public required string ImplName { get; init; }
         [JsonPropertyName("impl_version")] public required string ImplVersion { get; init; }

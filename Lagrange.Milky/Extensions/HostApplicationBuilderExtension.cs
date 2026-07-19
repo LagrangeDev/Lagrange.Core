@@ -81,6 +81,8 @@ public static class HostApplicationBuilderExtension
         builder.Services.AddHostedService<CacheService>();
 
         builder.Services.AddSingleton<MilkyConverter>();
+        builder.Services.AddSingleton<ResourceConverter>();
+
         builder.Services.AddApiHandlers();
         builder.Services.AddEventConverters();
 

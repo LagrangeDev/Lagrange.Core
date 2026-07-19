@@ -4,27 +4,38 @@ namespace Lagrange.Milky.Api;
 
 public class MilkyApiResponse
 {
-    [JsonPropertyName("status")] public required string Status { get; init; }
-    [JsonPropertyName("retcode")] public required long Retcode { get; init; }
-    [JsonPropertyName("message")] public required string? Message { get; init; }
-    [JsonPropertyName("data")] public required object? Data { get; init; }
+    [JsonPropertyName("status")] public string Status { get; }
+    [JsonPropertyName("retcode")] public long Retcode { get; }
+    [JsonPropertyName("message")] public string? Message { get; }
+    [JsonPropertyName("data")] public object? Data { get; }
+
+    protected MilkyApiResponse(object data)
+    {
+        Status = "ok";
+        Retcode = 0;
+        Message = null;
+        Data = data;
+    }
+
+    public MilkyApiResponse()
+    {
+        Status = "ok";
+        Retcode = 0;
+        Message = null;
+        Data = new();
+    }
+
+    public MilkyApiResponse(long retcode, string message)
+    {
+        Status = "failed";
+        Retcode = retcode;
+        Message = message;
+        Data = null;
+    }
 }
 
-public class MilkyApiResponse<TData> : MilkyApiResponse where TData : notnull
+public sealed class MilkyApiResponse<TData> : MilkyApiResponse where TData : notnull
 {
-    public static MilkyApiResponse<TData> Ok(TData data) => new()
-    {
-        Status = "ok",
-        Retcode = 0,
-        Message = null,
-        Data = data,
-    };
-
-    public static MilkyApiResponse<TData> Failed(long retcode, string message) => new()
-    {
-        Status = "failed",
-        Retcode = retcode,
-        Message = message,
-        Data = null,
-    };
+    public MilkyApiResponse(TData data) : base(data) { }
+    public MilkyApiResponse(long retcode, string message) : base(retcode, message) { }
 }

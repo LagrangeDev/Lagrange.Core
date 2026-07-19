@@ -37,10 +37,9 @@ public interface INoResultApiHandler<TRequest> : IApiHandler
 {
     Type IApiHandler.RequestType => typeof(TRequest);
 
-    ValueTask HandleAsync(TRequest request, CancellationToken ct);
+    ValueTask<MilkyApiResponse> HandleAsync(TRequest request, CancellationToken ct);
     async ValueTask<MilkyApiResponse> IApiHandler.HandleAsync(object request, CancellationToken ct)
     {
-        await HandleAsync((TRequest)request, ct);
-        return MilkyApiResponse<object>.Ok(new object());
+        return await HandleAsync((TRequest)request, ct);
     }
 }
