@@ -93,7 +93,13 @@ public class MessageBuilder
         _entities.Add(new VideoEntity(video, thumbnail, disposeOnCompletion));
         return this;
     }
-    
+
+    public MessageBuilder LightApp(string json)
+    {
+        _entities.Add(new LightAppEntity(json));
+        return this;
+    }
+
     public static MessageBuilder operator +(MessageBuilder builder, IMessageEntity entity)
     {
         builder._entities.Add(entity);
