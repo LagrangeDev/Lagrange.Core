@@ -111,6 +111,9 @@ public sealed class WebSocketEventHandler : IHttpHandler, IGenericEventHandler, 
         catch (Exception e)
         {
             _logger.LogKeepAliveError(id, e);
+
+            if (_wss.Remove(id, out var connectContext)) connectContext.SendLock.Dispose();
+            ws.Dispose();
         }
     }
 
@@ -196,7 +199,7 @@ public static partial class WebSocketEventHandlerLoggerExtension
     [LoggerMessage(LogLevel.Information, "{Id} closed due to server shutdown")]
     public static partial void LogClosedByServerShutdown(this ILogger<WebSocketEventHandler> logger, Guid id);
 
-    [LoggerMessage(LogLevel.Warning, "{Id} keep-alive loop error")]
+    [LoggerMessage(LogLevel.Warning, "{Id} keep-alive loop error, removing ws from maintenance links")]
     public static partial void LogKeepAliveError(this ILogger<WebSocketEventHandler> logger, Guid id, Exception ex);
 
     [LoggerMessage(LogLevel.Error, "{Id} send error")]
