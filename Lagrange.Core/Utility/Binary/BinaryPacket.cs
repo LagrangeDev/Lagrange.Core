@@ -292,12 +292,17 @@ internal ref struct BinaryPacket
     [MethodImpl(MethodImplOptions.NoInlining)] // NoInlining is used to prevent the method from being inlined as it is not used frequently
     private void GrowSize(int additional)
     {
-        while (_offset + additional > _capacity) _capacity *= 2;
-        _bytesToReturnToPool = ArrayPool<byte>.Shared.Rent(_capacity);
+        int requested = _offset + additional;
+        int desired = (int)BitOperations.RoundUpToPowerOf2((uint)requested);
+        int capacity = desired > requested ? desired : requested;
 
-        _span[.._offset].CopyTo(_bytesToReturnToPool.AsSpan());
+        var rent = ArrayPool<byte>.Shared.Rent(capacity);
+        _span[.._offset].CopyTo(rent.AsSpan());
+        if (_bytesToReturnToPool != null) ArrayPool<byte>.Shared.Return(_bytesToReturnToPool);
+        _capacity = capacity;
+        _bytesToReturnToPool = rent;
 
-        _span = _bytesToReturnToPool.AsSpan();
+        _span = rent.AsSpan();
         _buffer = ref Unsafe.Add(ref MemoryMarshal.GetReference(_span), _offset);
     }
     
