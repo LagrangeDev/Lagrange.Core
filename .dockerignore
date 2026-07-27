@@ -1,12 +1,4 @@
 *
 
-!.git/
-!Lagrange.Codec/
-!Lagrange.Core/
-!Lagrange.Milky/
-!Lagrange.Milky.Implementation.Api.Generator/
-!Lagrange.Proto/
-!Lagrange.Proto.Generator/
-
 */bin/
 */obj/
