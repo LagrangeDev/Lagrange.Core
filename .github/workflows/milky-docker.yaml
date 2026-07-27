@@ -7,24 +7,24 @@ on:
       - master
     paths:
       - .github/workflows/milky-docker.yaml
-      - Lagrange.Codec/**
-      - Lagrange.Core/**
       - Lagrange.Milky/**
-      - Lagrange.Milky.Implementation.Api.Generator/**
-      - Lagrange.Proto/**
+      - Lagrange.Core/**
+      - Lagrange.Core.Generator/**
       - Lagrange.Proto.Generator/**
+      - Lagrange.Proto/**
+      - Lagrange.Milky.Generator/**
   pull_request:
     branches:
       - main
       - master
     paths:
       - .github/workflows/milky-docker.yaml
-      - Lagrange.Codec/**
-      - Lagrange.Core/**
       - Lagrange.Milky/**
-      - Lagrange.Milky.Implementation.Api.Generator/**
-      - Lagrange.Proto/**
+      - Lagrange.Core/**
+      - Lagrange.Core.Generator/**
       - Lagrange.Proto.Generator/**
+      - Lagrange.Proto/**
+      - Lagrange.Milky.Generator/**
   workflow_dispatch:
 
 jobs:
