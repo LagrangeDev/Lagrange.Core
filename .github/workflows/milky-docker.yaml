@@ -27,6 +27,9 @@ on:
       - Lagrange.Milky.Generator/**
   workflow_dispatch:
 
+permissions:
+  packages: write
+
 jobs:
   build:
     strategy:
