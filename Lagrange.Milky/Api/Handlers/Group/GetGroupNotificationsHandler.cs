@@ -30,7 +30,7 @@ public sealed class GetGroupNotificationsHandler(BotContext lagrange, MilkyConve
                 (ulong?)request.StartNotificationSeq ?? 0
             ).WaitAsync(ct),
         });
-        
+
         return new MilkyApiResponse<Result>(new Result
         {
             Notifications = [.. notifications.Select(_converter.ToGroupNotification)],
@@ -38,7 +38,7 @@ public sealed class GetGroupNotificationsHandler(BotContext lagrange, MilkyConve
         });
     }
 
-    public sealed class Request(long? startNotificationSeq, bool isFiltered = false, int limit = 20)
+    public sealed class Request(long? startNotificationSeq = null, bool isFiltered = false, int limit = 20)
     {
         [JsonPropertyName("start_notification_seq")] public long? StartNotificationSeq { get; init; } = startNotificationSeq;
         [JsonPropertyName("is_filtered")] public bool IsFiltered { get; init; } = isFiltered;

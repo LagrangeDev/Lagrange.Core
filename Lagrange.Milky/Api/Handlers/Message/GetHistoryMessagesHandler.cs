@@ -60,7 +60,7 @@ public sealed class GetHistoryMessagesHandler(BotContext lagrange, MilkyConverte
         });
     }
 
-    public sealed class Request(string messageScene, long peerId, long? startMessageSeq, int limit = 20)
+    public sealed class Request(string messageScene, long peerId, long? startMessageSeq = null, int limit = 20)
     {
         [JsonPropertyName("message_scene")] public required string MessageScene { get; init; } = messageScene;
         [JsonPropertyName("peer_id")] public required long PeerId { get; init; } = peerId;

@@ -18,8 +18,8 @@ public sealed class ForwardOutgoingSegment : OutgoingSegmentBase<ForwardOutgoing
 public sealed class ForwardOutgoingSegmentData(IReadOnlyList<OutgoingForwardedMessage> messages, string? title, IReadOnlyList<string>? preview, string? summary, string? prompt)
 {
     [JsonPropertyName("messages")] public required IReadOnlyList<OutgoingForwardedMessage> Messages { get; init; } = messages;
-    [JsonPropertyName("title")] public required string? Title { get; init; } = title;
-    [JsonPropertyName("preview")] public required IReadOnlyList<string>? Preview { get; init; } = preview;
-    [JsonPropertyName("summary")] public required string? Summary { get; init; } = summary;
-    [JsonPropertyName("prompt")] public required string? Prompt { get; init; } = prompt;
+    [JsonPropertyName("title")] public string? Title { get; init; } = title;
+    [JsonPropertyName("preview")] public IReadOnlyList<string>? Preview { get; init; } = preview;
+    [JsonPropertyName("summary")] public string? Summary { get; init; } = summary;
+    [JsonPropertyName("prompt")] public string? Prompt { get; init; } = prompt;
 }
