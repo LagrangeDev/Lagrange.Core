@@ -11,7 +11,7 @@ COPY --link Lagrange.Milky.Generator/*.csproj   Lagrange.Milky.Generator/
 RUN dotnet restore Lagrange.Milky
 
 COPY --link . .
-RUN dotnet publish Lagrange.Milky -c Release -p:DebugType=none -p:PublishAot=true -o /app/bin
+RUN dotnet publish Lagrange.Milky -c Release -p:DebugType=none -o /app/bin
 
 
 FROM alpine
