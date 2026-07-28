@@ -99,6 +99,9 @@ public static class MessageExt
     public static Task<bool> MuteGroupGlobal(this BotContext context, long groupUin, bool isMute)
         => context.EventContext.GetLogic<OperationLogic>().MuteGroupGlobal(groupUin, isMute);
 
+    public static Task<bool> MuteGroupMember(this BotContext context, long groupUin, long targetUin, uint duration)
+        => context.EventContext.GetLogic<OperationLogic>().MuteGroupMember(groupUin, targetUin, duration);
+
     public static Task<bool> GroupTransfer(this BotContext context, long groupUin, long targetUin)
         => context.EventContext.GetLogic<OperationLogic>().GroupTransfer(groupUin, targetUin);
 
