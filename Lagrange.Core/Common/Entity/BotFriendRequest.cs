@@ -1,35 +1,19 @@
 namespace Lagrange.Core.Common.Entity;
 
 [Serializable]
-public class BotFriendRequest
+public class BotFriendRequest(long targetUin, long sourceUin, uint eventState, string comment, string source, uint time)
 {
-    public BotFriendRequest(
-        long targetUin,
-        long sourceUin,
-        uint eventState,
-        string comment,
-        string source,
-        uint time)
-    {
-        TargetUin = targetUin;
-        SourceUin = sourceUin;
-        EventState = (State)eventState;
-        Comment = comment;
-        Source = source;
-        Time = DateTime.UnixEpoch.AddSeconds(time);
-    }
+    public long TargetUin { get; set; } = targetUin;
 
-    public long TargetUin { get; set; }
+    public long SourceUin { get; set; } = sourceUin;
 
-    public long SourceUin { get; set; }
+    public State EventState { get; set; } = (State)eventState;
 
-    public State EventState { get; set; }
+    public string Comment { get; set; } = comment;
 
-    public string Comment { get; set; }
+    public string Source { get; set; } = source;
 
-    public string Source { get; set; }
-
-    public DateTime Time { get; set; }
+    public long Time { get; set; } = time;
 
     public enum State
     {

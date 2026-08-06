@@ -136,7 +136,7 @@ public partial class MilkyConverter
                     BotStranger stranger => stranger.Nickname,
                     _ => throw new NotSupportedException(),
                 },
-                Time = message.Time.ToUnixTimeSeconds(),
+                Time = message.Time,
                 Segments = await ToIncomingSegmentsAsync(message.Entities, type, ownerPeerUin, ct),
             }
         };
@@ -216,7 +216,7 @@ public partial class MilkyConverter
                 message.SenderName,
                 0,
                 string.Empty,
-                DateTime.Now,
+                DateTimeOffset.Now.ToUnixTimeSeconds(),
                 await FromForwardOutgoingSegmentsAsync(message.Segments, ct)
             ));
         }

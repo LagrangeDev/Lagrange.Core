@@ -3,6 +3,7 @@ using Lagrange.Core.Exceptions;
 using Lagrange.Core.Internal.Events.Message;
 using Lagrange.Core.Internal.Packets.Message;
 using Lagrange.Core.Message;
+using Lagrange.Core.Utility;
 
 namespace Lagrange.Core.Internal.Logic;
 
@@ -51,7 +52,7 @@ internal class MessagingLogic(BotContext context) : ILogic
         if (result.Result != 0) throw new OperationException(result.Result);
 
         message.Sequence = result.Sequence;
-        message.Time = DateTimeOffset.FromUnixTimeSeconds(result.SendTime).DateTime;
+        message.Time = result.SendTime;
 
         return message;
     }
@@ -66,7 +67,7 @@ internal class MessagingLogic(BotContext context) : ILogic
         if (result.Result != 0) throw new OperationException(result.Result);
 
         message.Sequence = result.Sequence;
-        message.Time = DateTimeOffset.FromUnixTimeSeconds(result.SendTime).DateTime;
+        message.Time = result.SendTime;
 
         return message;
     }
@@ -86,7 +87,7 @@ internal class MessagingLogic(BotContext context) : ILogic
                 message.Sequence,
                 message.ClientSequence,
                 message.Random,
-                (uint)new DateTimeOffset(message.Time).ToUnixTimeSeconds()
+                (uint)message.Time
             )).AsTask(),
             _ => throw new NotImplementedException(),
         };
@@ -119,7 +120,7 @@ internal class MessagingLogic(BotContext context) : ILogic
     private async Task<BotMessage> BuildMessage(MessageChain chain, BotContact contact, BotContact receiver)
     {
         uint random = (uint)Random.Shared.Next();
-        var message = new BotMessage(chain, contact, receiver, DateTime.Now)
+        var message = new BotMessage(chain, contact, receiver, DateTimeOffset.Now.ToUnixTimeSeconds())
         {
             Random = random,
             MessageId = (0x10000000ul << 32) | random

@@ -4,14 +4,14 @@ namespace Lagrange.Core.Message;
 
 public partial class BotMessage
 {
-    internal BotMessage(BotContact contact, BotContact receiver, DateTime time)
+    internal BotMessage(BotContact contact, BotContact receiver, long time)
     {
         Contact = contact;
         Receiver = receiver;
         Time = time;
     }
 
-    internal BotMessage(MessageChain chain, BotContact contact, BotContact receiver, DateTime time)
+    internal BotMessage(MessageChain chain, BotContact contact, BotContact receiver, long time)
     {
         Entities = chain;
         Contact = contact;
@@ -31,7 +31,7 @@ public partial class BotMessage
         _ => throw new ArgumentOutOfRangeException(nameof(Contact))
     };
 
-    public DateTime Time { get; set; }
+    public long Time { get; set; }
 
     public MessageChain Entities { get; } = [];
 

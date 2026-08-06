@@ -4,6 +4,7 @@ using Lagrange.Core.Exceptions;
 using Lagrange.Core.Internal.Events.System;
 using Lagrange.Core.Internal.Packets.Service;
 using Lagrange.Core.Services;
+using Lagrange.Core.Utility;
 
 namespace Lagrange.Core.Internal.Services.System;
 
@@ -52,9 +53,9 @@ internal class FetchGroupMembersService : OidbService<FetchGroupMembersEventReq,
                 (int)(raw.Level?.Level ?? 0),
                 raw.MemberCard.MemberCard,
                 raw.SpecialTitle,
-                DateTimeOffset.FromUnixTimeSeconds(raw.JoinTimestamp).DateTime,
-                DateTimeOffset.FromUnixTimeSeconds(raw.LastMsgTimestamp).DateTime,
-                DateTimeOffset.FromUnixTimeSeconds(raw.ShutUpTimestamp).DateTime
+                raw.JoinTimestamp,
+                raw.LastMsgTimestamp,
+                raw.ShutUpTimestamp
             ))],
             response.Cookie
         );

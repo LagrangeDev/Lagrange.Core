@@ -1,6 +1,6 @@
 namespace Lagrange.Core.Common.Entity;
 
-public class BotStranger(long uin, string nickname, string uid, string personalSign, string remark, ulong level, BotGender gender, DateTime registrationTime, DateTime? birthday, ulong age, string qID, string country, string city, string? school) : BotContact
+public class BotStranger(long uin, string nickname, string uid, string personalSign, string remark, ulong level, BotGender gender, long registrationTime, long? birthday, ulong age, string qID, string country, string city, string? school) : BotContact
 {
     public override long Uin { get; } = uin;
 
@@ -16,9 +16,9 @@ public class BotStranger(long uin, string nickname, string uid, string personalS
 
     public BotGender Gender { get; } = gender;
 
-    public DateTime RegistrationTime { get; } = registrationTime;
+    public long RegistrationTime { get; } = registrationTime;
 
-    public DateTime? Birthday { get; } = birthday;
+    public long? Birthday { get; } = birthday;
 
     public ulong Age { get; } = age;
 

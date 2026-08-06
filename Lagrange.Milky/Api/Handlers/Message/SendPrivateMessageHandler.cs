@@ -26,7 +26,7 @@ public sealed class SendPrivateMessageHandler(BotContext lagrange, MilkyConverte
         return new MilkyApiResponse<Result>(new Result
         {
             MessageSeq = (long)message.ClientSequence,
-            Time = message.Time.ToUnixTimeSeconds(),
+            Time = message.Time,
         });
     }
 

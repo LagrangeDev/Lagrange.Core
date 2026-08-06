@@ -1,6 +1,7 @@
 using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Internal.Logic;
 using Lagrange.Core.Message;
+using Lagrange.Core.Utility;
 
 namespace Lagrange.Core.Common.Interface;
 
@@ -20,14 +21,13 @@ public static class MessageExt
 
     public static Task<List<BotMessage>> GetRoamMessage(this BotContext context, BotMessage target, uint count)
     {
-        uint timestamp = (uint)new DateTimeOffset(target.Time).ToUnixTimeSeconds();
-        return context.EventContext.GetLogic<MessagingLogic>().GetRoamMessage(target.Contact.Uin, timestamp, count);
+        return context.EventContext.GetLogic<MessagingLogic>().GetRoamMessage(target.Contact.Uin, (uint)target.Time, count);
     }
 
     public static Task<List<BotMessage>> GetC2CMessage(this BotContext context, long peerUin, ulong startSequence, ulong endSequence)
         => context.EventContext.GetLogic<MessagingLogic>().GetC2CMessage(peerUin, startSequence, endSequence);
 
-    public static Task<(ulong Sequence, DateTime Time)> SendFriendFile(this BotContext context, long targetUin, Stream fileStream, string? fileName = null)
+    public static Task<(ulong Sequence, long Time)> SendFriendFile(this BotContext context, long targetUin, Stream fileStream, string? fileName = null)
         => context.EventContext.GetLogic<OperationLogic>().SendFriendFile(targetUin, fileStream, fileName);
 
     public static Task<string> SendGroupFile(this BotContext context, long groupUin, Stream fileStream, string? fileName = null, string parentDirectory = "/")

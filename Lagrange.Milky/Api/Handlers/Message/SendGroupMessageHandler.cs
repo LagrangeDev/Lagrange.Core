@@ -26,7 +26,7 @@ public sealed class SendGroupMessageHandler(BotContext lagrange, MilkyConverter 
         return new MilkyApiResponse<Result>(new Result
         {
             MessageSeq = (long)message.Sequence,
-            Time = message.Time.ToUnixTimeSeconds(),
+            Time = message.Time,
         });
     }
 

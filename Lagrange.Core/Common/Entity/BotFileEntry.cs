@@ -16,17 +16,17 @@ public class BotFileEntry : IBotFSEntry
 
     public ulong FileSize { get; }
 
-    public DateTime ExpireTime { get; }
+    public long ExpireTime { get; }
 
-    public DateTime ModifiedTime { get; }
+    public long ModifiedTime { get; }
 
     public long UploaderUin { get; }
 
-    public DateTime UploadedTime { get; }
+    public long UploadedTime { get; }
 
     public uint DownloadedTimes { get; }
 
-    internal BotFileEntry(string fileId, string fileName, string parentDirectory, ulong fileSize, DateTime expireTime, DateTime modifiedTime, long uploaderUin, DateTime uploadedTime, uint downloadedTimes)
+    internal BotFileEntry(string fileId, string fileName, string parentDirectory, ulong fileSize, long expireTime, long modifiedTime, long uploaderUin, long uploadedTime, uint downloadedTimes)
     {
         FileId = fileId;
         FileName = fileName;
@@ -49,15 +49,15 @@ public class BotFolderEntry : IBotFSEntry
 
     public string FolderName { get; }
 
-    public DateTime CreateTime { get; }
+    public long CreateTime { get; }
 
-    public DateTime ModifiedTime { get; }
+    public long ModifiedTime { get; }
 
     public long CreatorUin { get; }
 
     public uint TotalFileCount { get; }
 
-    internal BotFolderEntry(string folderId, string parentFolderId, string folderName, DateTime createTime, DateTime modifiedTime, long creatorUin, uint totalFileCount)
+    internal BotFolderEntry(string folderId, string parentFolderId, string folderName, long createTime, long modifiedTime, long creatorUin, uint totalFileCount)
     {
         FolderId = folderId;
         ParentFolderId = parentFolderId;

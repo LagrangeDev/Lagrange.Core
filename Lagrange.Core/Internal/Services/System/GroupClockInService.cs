@@ -5,6 +5,7 @@ using Lagrange.Core.Exceptions;
 using Lagrange.Core.Internal.Events.System;
 using Lagrange.Core.Internal.Packets.Service;
 using Lagrange.Core.Services;
+using Lagrange.Core.Utility;
 
 namespace Lagrange.Core.Internal.Services.System;
 
@@ -45,7 +46,7 @@ internal class GroupClockInService : OidbService<GroupClockInEventReq, GroupCloc
             Title = doneInfo.LeftTitleWord ?? string.Empty,
             KeepDayText = doneInfo.RightDescWord ?? string.Empty,
             GroupRankText = doneInfo.BelowPortraitWords?.FirstOrDefault() ?? string.Empty,
-            ClockInUtcTime = DateTime.UnixEpoch + TimeSpan.FromSeconds(clockInTimestamp),
+            ClockInTime = clockInTimestamp,
             DetailUrl = doneInfo.RecordUrl ?? string.Empty
         };
 

@@ -26,7 +26,7 @@ public partial class MilkyConverter
             PeerId = peerUin,
             MessageSeq = (long)message.ClientSequence,
             SenderId = message.Contact.Uin,
-            Time = message.Time.ToUnixTimeSeconds(),
+            Time = message.Time,
             Segments = await ToIncomingSegmentsAsync(message.Entities, message.Type, peerUin, ct),
             Friend = ToFriend(sender),
         };
@@ -41,7 +41,7 @@ public partial class MilkyConverter
             PeerId = group.Uin,
             MessageSeq = (long)message.Sequence,
             SenderId = message.Contact.Uin,
-            Time = message.Time.ToUnixTimeSeconds(),
+            Time = message.Time,
             Segments = await ToIncomingSegmentsAsync(message.Entities, message.Type, group.Uin, ct),
             Group = ToGroup(group),
             GroupMember = ToGroupMember(member),

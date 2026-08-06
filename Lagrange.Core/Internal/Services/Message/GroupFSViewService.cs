@@ -106,10 +106,10 @@ internal class GroupFSViewService : BaseService<GroupFSViewEventReq, GroupFSView
             file.FileName,
             file.ParentFolderId,
             file.FileSize,
-            FromUnixTime(file.DeadTime),
-            FromUnixTime(file.ModifyTime),
+            file.DeadTime,
+            file.ModifyTime,
             (long)file.UploaderUin,
-            FromUnixTime(file.UploadTime),
+            file.UploadTime,
             file.DownloadTimes
         );
     }
@@ -120,12 +120,10 @@ internal class GroupFSViewService : BaseService<GroupFSViewEventReq, GroupFSView
             folder.FolderId,
             folder.ParentFolderId,
             folder.FolderName,
-            FromUnixTime(folder.CreateTime),
-            FromUnixTime(folder.ModifyTime),
+            folder.CreateTime,
+            folder.ModifyTime,
             (long)folder.CreateUin,
             folder.TotalFileCount
         );
     }
-
-    private static DateTime FromUnixTime(uint seconds) => DateTimeOffset.FromUnixTimeSeconds(seconds).UtcDateTime;
 }

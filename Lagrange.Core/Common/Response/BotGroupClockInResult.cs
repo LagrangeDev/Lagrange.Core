@@ -18,7 +18,7 @@ public class BotGroupClockInResult
 
     public string GroupRankText { get; set; } = string.Empty;
 
-    public DateTime ClockInUtcTime { get; set; } = DateTime.UnixEpoch;
+    public long ClockInTime { get; set; } = 0;
 
     public string DetailUrl { get; set; } = string.Empty;
 

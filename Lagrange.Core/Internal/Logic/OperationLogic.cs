@@ -43,13 +43,13 @@ internal class OperationLogic(BotContext context) : ILogic
         return true;
     }
 
-    public Task GroupRecallPoke(ulong groupUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId) => 
+    public Task GroupRecallPoke(ulong groupUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId) =>
         RecallPoke(true, groupUin, messageSequence, messageTime, tipsSeqId);
 
-    public Task FriendRecallPoke(ulong peerUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId) => 
+    public Task FriendRecallPoke(ulong peerUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId) =>
         RecallPoke(false, peerUin, messageSequence, messageTime, tipsSeqId);
 
-    private async Task RecallPoke(bool isGroup, ulong peerUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId) => 
+    private async Task RecallPoke(bool isGroup, ulong peerUin, ulong messageSequence, ulong messageTime, ulong tipsSeqId) =>
         await context.EventContext.SendEvent<RecallPokeEventResp>(new RecallPokeEventReq(isGroup, peerUin, messageSequence, messageTime, tipsSeqId));
 
     public async Task<bool> SetStatus(uint status)
@@ -83,7 +83,7 @@ internal class OperationLogic(BotContext context) : ILogic
     }
 
     public async Task<bool> MuteGroupGlobal(long groupUin, bool isMute)
-    { 
+    {
         await context.EventContext.SendEvent<GroupMuteGlobalEventResp>(new GroupMuteGlobalEventReq(groupUin, isMute));
         return true;
     }
@@ -234,7 +234,7 @@ internal class OperationLogic(BotContext context) : ILogic
         await context.EventContext.SendEvent<GroupFSRenameFolderEventResp>(new GroupFSRenameFolderEventReq(groupUin, folderId, newFolderName));
     }
 
-    public async Task<(ulong, DateTime)> SendFriendFile(long targetUin, Stream fileStream, string? fileName)
+    public async Task<(ulong, long)> SendFriendFile(long targetUin, Stream fileStream, string? fileName)
     {
         fileName = ResolveFileName(fileStream, fileName);
 
@@ -299,7 +299,7 @@ internal class OperationLogic(BotContext context) : ILogic
         var sendResult = await context.EventContext.SendEvent<SendMessageEventResp>(new SendFriendFileEventReq(friend, request, result, sequence, random));
         if (sendResult.Result != 0) throw new OperationException(sendResult.Result);
 
-        return (sequence, DateTimeOffset.FromUnixTimeSeconds(sendResult.SendTime).UtcDateTime);
+        return (sequence, sendResult.SendTime);
     }
 
     private static string ResolveFileName(Stream fileStream, string? fileName)
@@ -536,8 +536,8 @@ internal class OperationLogic(BotContext context) : ILogic
 
         return response.Url;
 
-        static BotMessage CreateFakeFriendMessage(long uin) => BotMessage.CreateCustomFriend(uin, string.Empty, uin, string.Empty, DateTime.Now, []);
-        static BotMessage CreateFakeGroupMessage(long uin) => BotMessage.CreateCustomGroup(uin, 0, string.Empty, DateTime.Now, []);
+        static BotMessage CreateFakeFriendMessage(long uin) => BotMessage.CreateCustomFriend(uin, string.Empty, uin, string.Empty, DateTimeOffset.Now.ToUnixTimeSeconds(), []);
+        static BotMessage CreateFakeGroupMessage(long uin) => BotMessage.CreateCustomGroup(uin, 0, string.Empty, DateTimeOffset.Now.ToUnixTimeSeconds(), []);
         static RichMediaEntityBase CreateFakeEntity<T>(string fileUuid, uint ttl) where T : RichMediaEntityBase, new()
         {
             return new T

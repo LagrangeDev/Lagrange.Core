@@ -58,9 +58,9 @@ public partial class MilkyConverter
             GroupMemberPermission.Member => "member",
             _ => throw new NotSupportedException(),
         },
-        JoinTime = member.JoinTime.ToUnixTimeSeconds(),
-        LastSentTime = member.LastMsgTime.ToUnixTimeSeconds(),
-        ShutUpEndTime = member.ShutUpTimestamp.ToUnixTimeSeconds()
+        JoinTime = member.JoinTime,
+        LastSentTime = member.LastMsgTime,
+        ShutUpEndTime = member.ShutUpTimestamp
     };
 
     private FriendCategory ToFriendCategory(BotFriendCategory category) => new()
@@ -143,8 +143,8 @@ public partial class MilkyConverter
         FileName = entry.FileName,
         ParentFolderId = entry.ParentDirectory,
         FileSize = (long)entry.FileSize,
-        UploadedTime = entry.UploadedTime.ToUnixTimeSeconds(),
-        ExpireTime = entry.ExpireTime.ToUnixTimeSeconds(),
+        UploadedTime = entry.UploadedTime,
+        ExpireTime = entry.ExpireTime,
         UploaderId = entry.UploaderUin,
         DownloadedTimes = (int)entry.DownloadedTimes,
     };
@@ -155,8 +155,8 @@ public partial class MilkyConverter
         FolderId = entry.FolderId,
         ParentFolderId = entry.ParentFolderId,
         FolderName = entry.FolderName,
-        CreatedTime = entry.CreateTime.ToUnixTimeSeconds(),
-        LastModifiedTime = entry.ModifiedTime.ToUnixTimeSeconds(),
+        CreatedTime = entry.CreateTime,
+        LastModifiedTime = entry.ModifiedTime,
         CreatorId = entry.CreatorUin,
         FileCount = (int)entry.TotalFileCount,
     };
