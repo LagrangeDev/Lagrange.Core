@@ -88,6 +88,20 @@ internal class OperationLogic(BotContext context) : ILogic
         return true;
     }
 
+    public async Task<bool> MuteGroupMember(long groupUin, long targetUin, uint duration)
+    {
+        if (context.CacheContext.ResolveCachedUid(targetUin) is not { } uid)
+        {
+            await context.CacheContext.GetMemberList(groupUin, true);
+            uid = context.CacheContext.ResolveCachedUid(targetUin);
+        }
+
+        if (uid == null) return false;
+
+        await context.EventContext.SendEvent<GroupMuteMemberEventResp>(new GroupMuteMemberEventReq(groupUin, uid, duration));
+        return true;
+    }
+
     public async Task<bool> GroupTransfer(long groupUin, long targetUin)
     {
         await context.EventContext.SendEvent<GroupTransferEventResp>(new GroupTransferEventReq(groupUin, targetUin));
