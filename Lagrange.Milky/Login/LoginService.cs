@@ -73,8 +73,7 @@ public class LoginService(IHostEnvironment environment, ILogger<LoginService> lo
             FileMode.Create,
             FileAccess.Write,
             FileShare.ReadWrite,
-            4096,
-            FileOptions.DeleteOnClose
+            4096
         );
         await stream.WriteAsync(@event.Image, StoppingToken);
 
