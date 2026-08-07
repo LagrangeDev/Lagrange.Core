@@ -72,9 +72,7 @@ public class LoginService(IHostEnvironment environment, ILogger<LoginService> lo
             "qrcode.png",
             FileMode.Create,
             FileAccess.Write,
-            FileShare.ReadWrite,
-            4096,
-            FileOptions.DeleteOnClose
+            FileShare.ReadWrite
         );
         await stream.WriteAsync(@event.Image, StoppingToken);
 
