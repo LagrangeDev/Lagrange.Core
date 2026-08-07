@@ -90,6 +90,7 @@ public static partial class Serializer
     [JsonSerializable(typeof(SetGroupNameHandler.Request), TypeInfoPropertyName = "SetGroupNameRequest")]
     [JsonSerializable(typeof(SetGroupMemberCardHandler.Request), TypeInfoPropertyName = "SetGroupMemberCardRequest")]
     [JsonSerializable(typeof(SetGroupMemberSpecialTitleHandler.Request), TypeInfoPropertyName = "SetGroupMemberSpecialTitleRequest")]
+    [JsonSerializable(typeof(SetGroupMemberMute.Request), TypeInfoPropertyName = "SetGroupMemberMuteRequest")]
     [JsonSerializable(typeof(SetGroupWholeMuteHandler.Request), TypeInfoPropertyName = "SetGroupWholeMuteRequest")]
     [JsonSerializable(typeof(KickGroupMemberHandler.Request), TypeInfoPropertyName = "KickGroupMemberRequest")]
     [JsonSerializable(typeof(SetGroupEssenceMessageHandler.Request), TypeInfoPropertyName = "SetGroupEssenceMessageRequest")]

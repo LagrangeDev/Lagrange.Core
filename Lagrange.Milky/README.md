@@ -81,7 +81,7 @@ Write an implementation of `IEventConverter<TEvent, TData>` in `Lagrange.Milky\E
 [x] set_group_member_card
 [x] set_group_member_special_title
 [ ] set_group_member_admin
-[ ] set_group_member_mute
+[x] set_group_member_mute
 [x] set_group_whole_mute
 [x] kick_group_member
 [ ] get_group_announcements
