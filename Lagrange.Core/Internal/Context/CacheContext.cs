@@ -60,7 +60,7 @@ internal class CacheContext(BotContext context)
 
         if (friend == null)
         {
-            _friends = Interlocked.Exchange(ref _friends, await FetchFriends());
+            Interlocked.Exchange(ref _friends, await FetchFriends());
             friend = _friends?.FirstOrDefault(f => f.Uin == uin);
         }
 
@@ -87,7 +87,7 @@ internal class CacheContext(BotContext context)
 
         if (group == null)
         {
-            _groups = Interlocked.Exchange(ref _groups, await FetchGroups());
+            Interlocked.Exchange(ref _groups, await FetchGroups());
             group = _groups?.FirstOrDefault(f => f.GroupUin == groupUin);
         }
 
