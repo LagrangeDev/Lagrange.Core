@@ -97,7 +97,7 @@ public class ProtoWriter : IDisposable
     {
         if (_memory.Length - BytesPending >= 10)
         {
-            if (value < T.CreateTruncating(0x80))
+            if (ulong.CreateTruncating(value) < 0x80) // signed negative values must not take the single-byte path
             {
                 Unsafe.Add(ref MemoryMarshal.GetReference(_memory.Span), BytesPending++) = byte.CreateTruncating(value);
                 return;

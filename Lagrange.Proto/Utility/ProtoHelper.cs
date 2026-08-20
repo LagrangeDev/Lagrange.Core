@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Lagrange.Proto.Primitives;
@@ -40,12 +40,12 @@ public static class ProtoHelper
         
         if (sizeof(T) <= 4)
         {
-            int leadingZeros = BitOperations.LeadingZeroCount(uint.CreateSaturating(value));
+            int leadingZeros = BitOperations.LeadingZeroCount(uint.CreateTruncating(value));
             return VarIntLengths32[leadingZeros];
         }
         else
         {
-            int leadingZeros = BitOperations.LeadingZeroCount(ulong.CreateSaturating(value));
+            int leadingZeros = BitOperations.LeadingZeroCount(ulong.CreateTruncating(value));
             return VarIntLengths64[leadingZeros];
         }
     }
