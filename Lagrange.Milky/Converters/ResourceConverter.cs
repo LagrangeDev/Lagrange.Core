@@ -35,11 +35,12 @@ public class ResourceConverter
     private ValueTask<Stream> Base64ToStreamAsync(string uri)
     {
         var base64 = uri.AsSpan("base64://".Length);
-        byte[] bytes = new byte[(int)(4 * Math.Ceiling((decimal)(base64.Length / 3)))];
-        if (!Convert.TryFromBase64Chars(base64, bytes, out _))
+        byte[] bytes = new byte[base64.Length / 4 * 3];
+        if (!Convert.TryFromBase64Chars(base64, bytes, out int bytesWritten))
         {
             throw new FormatException("The 'base64://' URI does not contain valid Base64 data.");
         }
-        return ValueTask.FromResult<Stream>(new MemoryStream(bytes, writable: false));
+
+        return ValueTask.FromResult<Stream>(new MemoryStream(bytes, 0, bytesWritten, writable: false));
     }
 }
