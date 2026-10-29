@@ -88,7 +88,17 @@ public partial class MilkyConverter
                 Summary = string.Empty, // TODO: field is not implemented in core
             }
         },
-        // TODO: market_face is not implemented in core
+        MarketFaceEntity marketFace => new MarketFaceIncomingSegment
+        {
+            Data = new MarketFaceIncomingSegmentData
+            {
+                EmojiPackageId = marketFace.EmojiPackageId,
+                EmojiId = marketFace.EmojiId,
+                Key = marketFace.Key,
+                Summary = marketFace.Summary,
+                Url = marketFace.Url,
+            }
+        },
         LightAppEntity lightApp => new LightAppIncomingSegment
         {
             Data = new LightAppIncomingSegmentData

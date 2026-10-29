@@ -12,6 +12,8 @@ internal partial class Elem
 
     [ProtoMember(5)] public TransElem? TransElemInfo { get; set; }
     
+    [ProtoMember(6)] public MarketFace? MarketFace { get; set; }
+    
     [ProtoMember(8)] public CustomFace? CustomFace { get; set; }
     
     [ProtoMember(12)] public RichMsg? RichMsg { get; set; }
@@ -109,6 +111,28 @@ internal partial class TransElem
     [ProtoMember(1)] public uint ElemType { get; set; }
 
     [ProtoMember(2)] public byte[] ElemValue { get; set; }
+}
+
+[ProtoPackable]
+internal partial class MarketFace
+{
+    [ProtoMember(1)] public string Summary { get; set; }
+
+    [ProtoMember(2)] public uint ItemType { get; set; }
+
+    [ProtoMember(3)] public uint Info { get; set; }
+
+    [ProtoMember(4)] public byte[] FaceId { get; set; }
+
+    [ProtoMember(5)] public uint TabId { get; set; }
+
+    [ProtoMember(6)] public uint SubType { get; set; }
+
+    [ProtoMember(7)] public string Key { get; set; }
+
+    [ProtoMember(10)] public uint Width { get; set; }
+
+    [ProtoMember(11)] public uint Height { get; set; }
 }
 
 [ProtoPackable]
