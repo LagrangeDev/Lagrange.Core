@@ -69,7 +69,7 @@ internal class LongMsgRecvService : BaseService<LongMsgRecvEventReq, LongMsgRecv
         var messages = new List<BotMessage>(multiMsg.Count);
         foreach (var msg in multiMsg)
         {
-            var message = await logic.Parse(msg);
+            var message = await logic.Parse(msg, true);
             messages.Add(message);
         }
 

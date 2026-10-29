@@ -62,7 +62,7 @@ Write an implementation of `IEventConverter<TEvent, TData>` in `Lagrange.Milky\E
   - request
     - [ ] start_message_seq - When message_scene is friend, start_message_seq cannot be null, otherwise the core will be unable to retrieve the latest sequence of friend.
 - [x] get_resource_temp_url
-- [ ] get_forwarded_messages
+- [x] get_forwarded_messages
 - [ ] mark_message_as_read
 
 #### friend
@@ -158,7 +158,7 @@ Write an implementation of `IEventConverter<TEvent, TData>` in `Lagrange.Milky\E
 - [x] IncomingMessage
   - [x] friend
   - [x] group
-- [ ] IncomingForwardedMessage
+- [x] IncomingForwardedMessage
 - [ ] GroupEssenceMessage
 - [x] [IncomingSegment](#imcoming-segment)
 - [x] OutgoingForwardedMessage
@@ -176,9 +176,9 @@ Write an implementation of `IEventConverter<TEvent, TData>` in `Lagrange.Milky\E
 - [x] video
 - [ ] file
 - [x] forward
-  - [ ] title
-  - [ ] preview
-  - [ ] summary
+  - [x] title
+  - [x] preview
+  - [x] summary
 - [ ] market_face
 - [x] light_app
 - [ ] xml

@@ -11,22 +11,26 @@ namespace Lagrange.Core.Message;
 
 internal class MessagePacker(BotContext context)
 {
+    private const string Tag = nameof(MessagePacker);
+
     private readonly List<IMessageEntity> _factory = MessageEntityRegistry.Create();
 
-    public async Task<BotMessage> Parse(CommonMessage msg)
+    public async Task<BotMessage> Parse(CommonMessage msg, bool isForwarded = false)
     {
         var contentHead = msg.ContentHead;
         var routingHead = msg.RoutingHead;
 
-        var contact = await ResolveContact(contentHead.Type, routingHead);
-        var receiver = await ResolveReceiver(contentHead.Type, routingHead);
+        var (contact, receiver) = isForwarded
+            ? ResolveForwarded(contentHead.Type, routingHead)
+            : (await ResolveContact(contentHead.Type, routingHead), await ResolveReceiver(contentHead.Type, routingHead));
         var message = new BotMessage(contact, receiver, DateTimeOffset.Now.ToUnixTimeSeconds())
         {
             MessageId = contentHead.MsgUid, // MsgUid & 0xFFFFFFFF are the same to random
             Time = contentHead.Time,
             Sequence = contentHead.Sequence,
             ClientSequence = contentHead.ClientSequence,
-            Random = contentHead.Random
+            Random = contentHead.Random,
+            IsForwarded = isForwarded
         };
 
         if (msg.MessageBody is null)
@@ -38,25 +42,58 @@ internal class MessagePacker(BotContext context)
         }
         else
         {
-            var elems = msg.MessageBody.RichText.Elems;
-            foreach (var elem in elems)
-            {
-                foreach (var factory in _factory)
-                {
-                    if (factory.Parse(elems, elem) is not { } entity) continue;
-
-                    message.Entities.Add(entity);
-                    break;
-                }
-            }
+            ParseEntities(msg.MessageBody.RichText.Elems, message.Entities);
         }
 
         foreach (var entity in message.Entities)
         {
-            await entity.Postprocess(context, message);
+            // a failed entity (e.g. media of a forwarded message) should not drop the whole message
+            try
+            {
+                await entity.Postprocess(context, message);
+            }
+            catch (Exception e)
+            {
+                context.LogWarning(Tag, "Failed to postprocess {0}", e, entity.GetType().Name);
+            }
         }
 
         return message;
+    }
+
+    private void ParseEntities(List<Elem> elems, MessageChain chain)
+    {
+        foreach (var elem in elems)
+        {
+            foreach (var factory in _factory)
+            {
+                if (factory.Parse(elems, elem) is not { } entity) continue;
+
+                if (entity is ReplyEntity reply) ParseEntities(reply.Elems, reply.SourceEntities);
+
+                chain.Add(entity);
+                break;
+            }
+        }
+    }
+
+    // senders of forwarded messages are not necessarily contacts of the bot, use the names carried by the forward
+    private static (BotContact Contact, BotContact Receiver) ResolveForwarded(int type, RoutingHead routingHead)
+    {
+        if (type == 82)
+        {
+            long now = DateTimeOffset.Now.ToUnixTimeSeconds();
+            var group = new BotGroup(routingHead.Group.GroupCode, routingHead.Group.GroupName, 0, 0, 0, null, null, null);
+            return (
+                new BotGroupMember(group, routingHead.FromUin, routingHead.FromUid, routingHead.Group.GroupCard, GroupMemberPermission.Member, 0, routingHead.Group.GroupCard, null, now, now, now),
+                new BotGroupMember(group, routingHead.ToUin, routingHead.ToUid, string.Empty, GroupMemberPermission.Member, 0, null, null, now, now, now)
+            );
+        }
+
+        return (
+            new BotFriend(routingHead.FromUin, routingHead.CommonC2C?.Name ?? string.Empty, routingHead.FromUid, string.Empty, string.Empty, string.Empty, null!),
+            new BotFriend(routingHead.ToUin, string.Empty, routingHead.ToUid, string.Empty, string.Empty, string.Empty, null!)
+        );
     }
 
     private async Task<BotContact> ResolveContact(int type, RoutingHead routingHead)

@@ -42,4 +42,6 @@ public partial class BotMessage
     public ulong Sequence { get; set; }
 
     public ulong ClientSequence { get; init; } = (ulong)new Random().NextInt64(10000, 99999);
+
+    public bool IsForwarded { get; internal init; } // message inside a forwarded message
 }
