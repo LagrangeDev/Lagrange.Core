@@ -11,9 +11,22 @@ internal class MessagingLogic(BotContext context) : ILogic
 {
     private readonly MessagePacker _packer = new(context);
 
-    public Task<BotMessage> Parse(CommonMessage msg) => _packer.Parse(msg);
+    public Task<BotMessage> Parse(CommonMessage msg, bool isForwarded = false) => _packer.Parse(msg, isForwarded);
 
     public Task<CommonMessage> BuildFake(BotMessage msg) => _packer.BuildFake(msg);
+
+    public async Task<List<BotMessage>> GetForwardedMessages(string resId)
+    {
+        // the res id does not carry its scene, try group first
+        try
+        {
+            return (await context.EventContext.SendEvent<LongMsgRecvEventResp>(new LongMsgRecvEventReq(true, resId))).Messages;
+        }
+        catch (Exception e) when (e is not OperationCanceledException)
+        {
+            return (await context.EventContext.SendEvent<LongMsgRecvEventResp>(new LongMsgRecvEventReq(false, resId))).Messages;
+        }
+    }
 
     public async Task<List<BotMessage>> GetGroupMessage(long groupUin, ulong startSequence, ulong endSequence)
     {

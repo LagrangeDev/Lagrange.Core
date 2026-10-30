@@ -15,6 +15,12 @@ public class MultiMsgEntity(string? resId) : IMessageEntity
     
     public string? ResId { get; private set; } = resId;
     
+    public string Title { get; private init; } = string.Empty;
+
+    public List<string> Preview { get; private init; } = [];
+
+    public string Summary { get; private init; } = string.Empty;
+
     public MultiMsgEntity(List<BotMessage> messages) : this(default(string))
     {
         Messages = messages;
@@ -34,7 +40,8 @@ public class MultiMsgEntity(string? resId) : IMessageEntity
     
     public async Task Postprocess(BotContext context, BotMessage message)
     {
-        if (string.IsNullOrEmpty(ResId)) return;
+        // nested forwards are fetched on demand
+        if (string.IsNullOrEmpty(ResId) || message.IsForwarded) return;
 
         bool isGroup = message.Contact is BotGroupMember;
         var result = await context.EventContext.SendEvent<LongMsgRecvEventResp>(new LongMsgRecvEventReq(isGroup, ResId));
@@ -108,7 +115,15 @@ public class MultiMsgEntity(string? resId) : IMessageEntity
             
             var doc = new XmlDocument();
             doc.Load(xmlReader);
-            return new MultiMsgEntity(doc["msg"]?.Attributes["m_resid"]?.Value ?? string.Empty);
+
+            // the first title is the source, the rest are the preview lines
+            var titles = doc.SelectNodes("/msg/item/title")?.Cast<XmlNode>().Select(x => x.InnerText).ToList() ?? [];
+            return new MultiMsgEntity(doc["msg"]?.Attributes["m_resid"]?.Value ?? string.Empty)
+            {
+                Title = titles.FirstOrDefault() ?? string.Empty,
+                Preview = titles.Skip(1).ToList(),
+                Summary = doc.SelectSingleNode("/msg/item/summary")?.InnerText ?? string.Empty
+            };
         }
 
         return null;

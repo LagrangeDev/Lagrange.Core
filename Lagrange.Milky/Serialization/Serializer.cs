@@ -84,6 +84,8 @@ public static partial class Serializer
     [JsonSerializable(typeof(GetMessageHandler.Result), TypeInfoPropertyName = "GetMessageResult")]
     [JsonSerializable(typeof(GetHistoryMessagesHandler.Request), TypeInfoPropertyName = "GetHistoryMessagesRequest")]
     [JsonSerializable(typeof(GetHistoryMessagesHandler.Result), TypeInfoPropertyName = "GetHistoryMessagesResult")]
+    [JsonSerializable(typeof(GetForwardedMessagesHandler.Request), TypeInfoPropertyName = "GetForwardedMessagesRequest")]
+    [JsonSerializable(typeof(GetForwardedMessagesHandler.Result), TypeInfoPropertyName = "GetForwardedMessagesResult")]
     [JsonSerializable(typeof(GetResourceTempUrlHandler.Request), TypeInfoPropertyName = "GetResourceTempUrlRequest")]
     [JsonSerializable(typeof(GetResourceTempUrlHandler.Result), TypeInfoPropertyName = "GetResourceTempUrlResult")]
     [JsonSerializable(typeof(SendFriendNudgeHandler.Request), TypeInfoPropertyName = "SendFriendNudgeRequest")]

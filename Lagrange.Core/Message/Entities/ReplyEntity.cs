@@ -14,7 +14,11 @@ public class ReplyEntity : IMessageEntity
 
     internal List<Elem> Elems { get; private init; } = [];
 
-    private long SourceUin { get; set; } // only for storage, not used in protocol
+    public long SourceUin { get; private set; } // only for storage, not used in protocol
+
+    public long SourceTime { get; private init; }
+
+    public MessageChain SourceEntities { get; } = [];
 
     public ReplyEntity(BotMessage source)
     {
@@ -25,6 +29,9 @@ public class ReplyEntity : IMessageEntity
 
     async Task IMessageEntity.Postprocess(BotContext context, BotMessage message)
     {
+        // the source of a quote in a forwarded message is usually not a contact of the bot
+        if (message.IsForwarded) return;
+
         Source = message.Contact switch
         {
             BotFriend => await context.CacheContext.ResolveFriend(SourceUin),
@@ -85,6 +92,7 @@ public class ReplyEntity : IMessageEntity
                 SrcSequence = srcMsg.OrigSeqs[0],
                 Elems = (srcMsg.Elems ?? []).Select(x => ProtoHelper.Deserialize<Elem>(x.Span)).ToList(),
                 SourceUin = (long)srcMsg.SenderUin,
+                SourceTime = srcMsg.Time,
             };
         }
 

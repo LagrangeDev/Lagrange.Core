@@ -83,9 +83,9 @@ public partial class MilkyConverter
             Data = new ForwardIncomingSegmentData
             {
                 ForwardId = forward.ResId ?? throw new Exception(""),
-                Title = string.Empty,   // TODO: field is not implemented in core
-                Preview = [],           // TODO: field is not implemented in core
-                Summary = string.Empty, // TODO: field is not implemented in core
+                Title = forward.Title,
+                Preview = forward.Preview,
+                Summary = forward.Summary,
             }
         },
         // TODO: market_face is not implemented in core
@@ -103,6 +103,9 @@ public partial class MilkyConverter
 
     private async Task<ReplyIncomingSegment> ToReplyIncomingSegmentAsync(ReplyEntity reply, MessageType type, long ownerPeerUin, CancellationToken ct = default)
     {
+        // the source is unknown for quotes in a forwarded message, use the content carried by the reply
+        if (reply.Source == null) return await ToCarriedReplyIncomingSegmentAsync(reply, type, ownerPeerUin, ct);
+
         var message = _cache.Get(type, ownerPeerUin, reply.SrcSequence)
             ?? (type switch
             {
@@ -141,6 +144,17 @@ public partial class MilkyConverter
             }
         };
     }
+
+    private async Task<ReplyIncomingSegment> ToCarriedReplyIncomingSegmentAsync(ReplyEntity reply, MessageType type, long ownerPeerUin, CancellationToken ct = default) => new()
+    {
+        Data = new ReplyIncomingSegmentData
+        {
+            MessageSeq = (long)reply.SrcSequence,
+            SenderId = reply.SourceUin,
+            Time = reply.SourceTime,
+            Segments = await ToIncomingSegmentsAsync(reply.SourceEntities, type, ownerPeerUin, ct),
+        }
+    };
 
     public async Task<MessageChain> FromOutgoingSegmentsAsync(IReadOnlyList<OutgoingSegmentBase> segments, MessageType type, long ownerPeerUin, CancellationToken ct = default)
     {

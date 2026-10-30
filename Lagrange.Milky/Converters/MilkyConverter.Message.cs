@@ -32,6 +32,23 @@ public partial class MilkyConverter
         };
     }
 
+    public async Task<IncomingForwardedMessage> ToForwardedMessageAsync(BotMessage message, CancellationToken ct = default)
+    {
+        long peerUin = message.Contact is BotGroupMember member ? member.Group.Uin : message.Contact.Uin;
+        return new IncomingForwardedMessage
+        {
+            MessageSeq = message.Type switch
+            {
+                MessageType.Private => (long)message.ClientSequence,
+                _ => (long)message.Sequence,
+            },
+            SenderName = message.Contact.Nickname,
+            AvatarUrl = $"https://q.qlogo.cn/headimg_dl?dst_uin={message.Contact.Uin}&spec=640",
+            Time = message.Time,
+            Segments = await ToIncomingSegmentsAsync(message.Entities, message.Type, peerUin, ct),
+        };
+    }
+
     private async Task<GroupIncomingMessage> ToGroupMessageAsync(BotMessage message, CancellationToken ct = default)
     {
         var member = (BotGroupMember)message.Contact;

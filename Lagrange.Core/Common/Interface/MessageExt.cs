@@ -16,6 +16,9 @@ public static class MessageExt
     public static Task<List<BotMessage>> GetGroupMessage(this BotContext context, long groupUin, ulong startSequence, ulong endSequence)
         => context.EventContext.GetLogic<MessagingLogic>().GetGroupMessage(groupUin, startSequence, endSequence);
 
+    public static Task<List<BotMessage>> GetForwardedMessages(this BotContext context, string resId)
+        => context.EventContext.GetLogic<MessagingLogic>().GetForwardedMessages(resId);
+
     public static Task<List<BotMessage>> GetRoamMessage(this BotContext context, long friendUin, uint timestamp, uint count)
         => context.EventContext.GetLogic<MessagingLogic>().GetRoamMessage(friendUin, timestamp, count);
 
