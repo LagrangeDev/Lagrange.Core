@@ -179,7 +179,7 @@ Write an implementation of `IEventConverter<TEvent, TData>` in `Lagrange.Milky\E
   - [ ] title
   - [ ] preview
   - [ ] summary
-- [ ] market_face
+- [x] market_face
 - [x] light_app
 - [ ] xml
 
