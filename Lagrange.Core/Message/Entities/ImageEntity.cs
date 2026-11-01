@@ -1,6 +1,7 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using Lagrange.Core.Internal.Events.Message;
 using Lagrange.Core.Internal.Packets.Message;
 using Lagrange.Core.Internal.Packets.Service;
@@ -11,6 +12,10 @@ namespace Lagrange.Core.Message.Entities;
 
 public class ImageEntity : RichMediaEntityBase
 {
+    private const string BaseUrl = "https://multimedia.nt.qq.com.cn";
+
+    private const string LegacyBaseUrl = "https://gchat.qpic.cn";
+
     internal override Lazy<Stream>? Stream { get; }
     
     public Vector2 ImageSize { get; set; }
@@ -64,6 +69,8 @@ public class ImageEntity : RichMediaEntityBase
 
     public override async Task Postprocess(BotContext context, BotMessage message)
     {
+        if (MsgInfo == null) return;
+
         NTV2RichMediaDownloadEventResp result = message.IsGroup()
             ? await context.EventContext.SendEvent<ImageGroupDownloadEventResp>(new ImageGroupDownloadEventReq(message, this))
             : await context.EventContext.SendEvent<ImageDownloadEventResp>(new ImageDownloadEventReq(message, this));
@@ -127,6 +134,40 @@ public class ImageEntity : RichMediaEntityBase
             };
         }
         
+        // NTQQ sends the legacy element along with the CommonElem above, only clients before NTQQ send it alone
+        if (elements.Any(x => x.CommonElem is { BusinessType: 10 or 20 })) return null;
+
+        if (target.CustomFace is { OrigUrl.Length: > 0 } face)
+        {
+            return new ImageEntity
+            {
+                FileUrl = GetLegacyUrl(face.OrigUrl),
+                FileName = face.FilePath,
+                FileMd5 = Convert.ToHexString(face.Md5.AsSpan()),
+                FileSize = face.Size,
+                ImageSize = new Vector2(face.Width, face.Height),
+                SubType = face.PbReserve?.SubType ?? 0,
+                Summary = string.IsNullOrEmpty(face.PbReserve?.Summary) ? "[图片]" : face.PbReserve.Summary,
+            };
+        }
+
+        if (target.NotOnlineImage is { OrigUrl.Length: > 0 } image)
+        {
+            var reserve = image.PbReserve is { Length: > 0 } ? ProtoHelper.Deserialize<NotOnlineImage.PbReserve1>(image.PbReserve) : null;
+            return new ImageEntity
+            {
+                FileUrl = GetLegacyUrl(image.OrigUrl),
+                FileName = Encoding.UTF8.GetString(image.FilePath.AsSpan()),
+                FileMd5 = Convert.ToHexString(image.PicMd5.AsSpan()),
+                FileSize = image.FileLen,
+                ImageSize = new Vector2(image.PicWidth, image.PicHeight),
+                SubType = reserve?.SubType ?? 0,
+                Summary = string.IsNullOrEmpty(reserve?.Summary) ? "[图片]" : reserve.Summary,
+            };
+        }
+
         return null;
     }
+
+    private static string GetLegacyUrl(string url) => (url.Contains("&fileid=") ? BaseUrl : LegacyBaseUrl) + url;
 }

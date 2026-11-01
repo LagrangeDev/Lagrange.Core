@@ -102,7 +102,15 @@ internal partial class NotOnlineImage
 
     [ProtoMember(28)] public uint Height400 { get; set; }
 
-    [ProtoMember(29)] public byte[] PbReserve { get; set; }
+    [ProtoMember(29)] public byte[] PbReserve { get; set; } // PbReserve1, kept as bytes to send the compat element back unchanged
+
+    [ProtoPackable]
+    public partial class PbReserve1
+    {
+        [ProtoMember(1)] public int SubType { get; set; }
+
+        [ProtoMember(8)] public string Summary { get; set; }
+    }
 }
 
 [ProtoPackable]
