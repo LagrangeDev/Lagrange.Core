@@ -169,7 +169,7 @@ Write an implementation of `IEventConverter<TEvent, TData>` in `Lagrange.Milky\E
 - [x] text
 - [x] mention
 - [x] mention_all
-- [ ] face
+- [x] face
 - [x] reply
 - [x] image
 - [x] record

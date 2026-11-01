@@ -39,7 +39,14 @@ public partial class MilkyConverter
                     Name = mention.Display ?? string.Empty,
                 }
             },
-        // TODO: face is not implemented in core
+        FaceEntity face => new FaceIncomingSegment
+        {
+            Data = new FaceIncomingSegmentData
+            {
+                FaceId = face.FaceId.ToString(),
+                IsLarge = face.IsLarge,
+            }
+        },
         ReplyEntity reply => await ToReplyIncomingSegmentAsync(reply, type, ownerPeerUin, ct),
         ImageEntity image => new ImageIncomingSegment
         {

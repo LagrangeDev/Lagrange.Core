@@ -6,6 +6,7 @@ namespace Lagrange.Milky.Models.Segments;
 [JsonDerivedType(typeof(TextIncomingSegment), "text")]
 [JsonDerivedType(typeof(MentionIncomingSegment), "mention")]
 [JsonDerivedType(typeof(MentionAllIncomingSegment), "mention_all")]
+[JsonDerivedType(typeof(FaceIncomingSegment), "face")]
 [JsonDerivedType(typeof(ReplyIncomingSegment), "reply")]
 [JsonDerivedType(typeof(ImageIncomingSegment), "image")]
 [JsonDerivedType(typeof(RecordIncomingSegment), "record")]
