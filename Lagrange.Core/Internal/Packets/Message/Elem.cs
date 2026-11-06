@@ -8,6 +8,8 @@ internal partial class Elem
 {
     [ProtoMember(1)] public Text? Text { get; set; } 
     
+    [ProtoMember(2)] public Face? Face { get; set; }
+    
     [ProtoMember(4)] public NotOnlineImage? NotOnlineImage { get; set; }
 
     [ProtoMember(5)] public TransElem? TransElemInfo { get; set; }
@@ -41,6 +43,12 @@ internal partial class Text
     [ProtoMember(11)] public byte[] Buf { get; set; }
 
     [ProtoMember(12)] public ReadOnlyMemory<byte> PbReserve { get; set; }
+}
+
+[ProtoPackable]
+internal partial class Face
+{
+    [ProtoMember(1)] public uint Index { get; set; }
 }
 
 [ProtoPackable]
@@ -351,4 +359,16 @@ internal partial class CommonElem
     [ProtoMember(2)] public ReadOnlyMemory<byte> PbElem { get; set; }
 
     [ProtoMember(3)] public uint BusinessType { get; set; }
+}
+
+[ProtoPackable]
+internal partial class QSmallFaceExtra // PbElem of CommonElem 33
+{
+    [ProtoMember(1)] public uint FaceId { get; set; }
+}
+
+[ProtoPackable]
+internal partial class QBigFaceExtra // PbElem of CommonElem 37
+{
+    [ProtoMember(3)] public uint FaceId { get; set; }
 }
