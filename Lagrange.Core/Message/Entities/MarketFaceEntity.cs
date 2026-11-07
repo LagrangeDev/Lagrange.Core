@@ -23,7 +23,7 @@ public class MarketFaceEntity : IMessageEntity
         return new MarketFaceEntity
         {
             EmojiPackageId = (int)face.TabId,
-            EmojiId = Convert.ToHexStringLower(face.FaceId),
+            EmojiId = Convert.ToHexString(face.FaceId).ToLowerInvariant(),
             Key = face.Key,
             Summary = face.Summary
         };
